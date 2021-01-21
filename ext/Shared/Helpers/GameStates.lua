@@ -16,16 +16,8 @@ GameStates =
     PlaneToFirstCircle = 4,
 
     -- Circles
-    CircleOne = 5,
-    CircleTwo = 6,
-    CircleThree = 7,
-    CircleFour = 8,
-    CircleFive = 9,
-    CircleSix = 10,
-    CircleSeven = 11,
-    CircleEight = 12,
-    CircleNine = 13, -- Final circle to nothingness
+    Match = 5,
 
     -- End of the round
-    EndGame = 14,
+    EndGame = 6,
 }

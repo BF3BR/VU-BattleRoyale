@@ -4,8 +4,8 @@ require ("__shared/Utils/LevelNameHelper")
 
 require ("__shared/Configs/MapsConfig")
 require ("__shared/Configs/ServerConfig")
-require ("__shared/Configs/CircleConfig")
 
+require ("__shared/Utils/LevelNameHelper")
 require ("__shared/Helpers/GameStates")
 
 function Match:__init(p_Server)
@@ -22,15 +22,7 @@ function Match:__init(p_Server)
     self.m_UpdateStates[GameStates.WarmupToPlane] = self.OnWarmupToPlane
     self.m_UpdateStates[GameStates.Plane] = self.OnPlane
     self.m_UpdateStates[GameStates.PlaneToFirstCircle] = self.OnPlaneToFirstCircle
-    self.m_UpdateStates[GameStates.CircleOne] = self.OnCircle
-    self.m_UpdateStates[GameStates.CircleTwo] = self.OnCircle
-    self.m_UpdateStates[GameStates.CircleThree] = self.OnCircle
-    self.m_UpdateStates[GameStates.CircleFour] = self.OnCircle
-    self.m_UpdateStates[GameStates.CircleFive] = self.OnCircle
-    self.m_UpdateStates[GameStates.CircleSix] = self.OnCircle
-    self.m_UpdateStates[GameStates.CircleSeven] = self.OnCircle
-    self.m_UpdateStates[GameStates.CircleEight] = self.OnCircle
-    self.m_UpdateStates[GameStates.CircleNine] = self.OnCircle
+    self.m_UpdateStates[GameStates.Match] = self.OnMatch
     self.m_UpdateStates[GameStates.EndGame] = self.OnEndGame
 
     -- State ticks
@@ -40,16 +32,11 @@ function Match:__init(p_Server)
     self.m_UpdateTicks[GameStates.WarmupToPlane] = 0.0
     self.m_UpdateTicks[GameStates.Plane] = 0.0
     self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
-    self.m_UpdateTicks[GameStates.CircleOne] = 0.0
-    self.m_UpdateTicks[GameStates.CircleTwo] = 0.0
-    self.m_UpdateTicks[GameStates.CircleThree] = 0.0
-    self.m_UpdateTicks[GameStates.CircleFour] = 0.0
-    self.m_UpdateTicks[GameStates.CircleFive] = 0.0
-    self.m_UpdateTicks[GameStates.CircleSix] = 0.0
-    self.m_UpdateTicks[GameStates.CircleSeven] = 0.0
-    self.m_UpdateTicks[GameStates.CircleEight] = 0.0
-    self.m_UpdateTicks[GameStates.CircleNine] = 0.0
+    self.m_UpdateTicks[GameStates.Match] = 0.0
     self.m_UpdateTicks[GameStates.EndGame] = 0.0
+
+    -- Circle index
+    self.m_CircleIndex = 1
 end
 
 
@@ -139,41 +126,50 @@ function Match:OnPlaneToFirstCircle(p_DeltaTime)
 
     self:DoWeHaveAWinner()
 
-    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >= CircleConfig.BeforeFirstCircleDelay then
+    local s_LevelName = LevelNameHelper:GetLevelName()
+    if s_LevelName == nil then
+        return
+    end
+
+    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >=  MapsConfig[s_LevelName]["BeforeFirstCircleDelay"] then
         self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
-        self.m_Server:ChangeGameState(GameStates.CircleOne)
+        self.m_Server:ChangeGameState(GameStates.Match)
         return
     end
 
     self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = self.m_UpdateTicks[GameStates.PlaneToFirstCircle] + p_DeltaTime
 end
 
-function Match:OnCircle(p_DeltaTime)
-    if self.m_UpdateTicks[self.m_CurrentState] == 0.0 then
+function Match:OnMatch(p_DeltaTime)
+    if self.m_UpdateTicks[GameStates.Match] == 0.0 then
         -- TODO: Set the client timer
         -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
     end
 
     self:DoWeHaveAWinner()
 
-    if self.m_UpdateTicks[self.m_CurrentState] >= CircleConfig.CircleDetails[self.m_CurrentState].StartsAt then
+    local s_LevelName = LevelNameHelper:GetLevelName()
+    if s_LevelName == nil then
+        return
+    end
+
+    if self.m_UpdateTicks[GameStates.Match] >= MapsConfig[s_LevelName]["Circles"][self.m_CircleIndex]["StartsAt"] then
         -- TODO: Update the ring state
         return
     end
 
-    local s_StartToEnd = CircleConfig.CircleDetails[self.m_CurrentState].StartsAt + CircleConfig.CircleDetails[self.m_CurrentState].EndsAt
-    if self.m_UpdateTicks[self.m_CurrentState] >= s_StartToEnd then
-        print("INFO: Circle stopped shrinking")
-        self.m_UpdateTicks[self.m_CurrentState] = 0.0
+    local s_StartToEnd = MapsConfig[s_LevelName]["Circles"][self.m_CircleIndex]["StartsAt"] + MapsConfig[s_LevelName]["Circles"][self.m_CircleIndex]["EndsAt"]
+    if self.m_UpdateTicks[GameStates.Match] >= s_StartToEnd then
+        if self.m_CircleIndex < MapsConfig[s_LevelName]["CirclesCount"] then
+            print("INFO: Circle stopped shrinking")
+            self.m_UpdateTicks[GameStates.Match] = 0.0
 
-        -- TODO: Check if its the last circle (GameStates.CircleNine), if it is then we should just wait for the winner
-
-        local s_NextState = self.m_CurrentState + 1
-        self.m_Server:ChangeGameState(s_NextState)
+            self.m_CircleIndex = self.m_CircleIndex + 1
+        end
         return
     end
 
-    self.m_UpdateTicks[self.m_CurrentState] = self.m_UpdateTicks[self.m_CurrentState] + p_DeltaTime
+    self.m_UpdateTicks[GameStates.Match] = self.m_UpdateTicks[GameStates.Match] + p_DeltaTime
 end
 
 function Match:OnEndGame(p_DeltaTime)
@@ -189,6 +185,8 @@ function Match:OnEndGame(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.EndGame] >= ServerConfig.EndGameTime then
         self.m_UpdateTicks[GameStates.EndGame] = 0.0
         -- TODO: Reset the clients UI
+
+        self.m_CircleIndex = 1
 
         self.m_Server:ChangeGameState(GameStates.None)
         return
