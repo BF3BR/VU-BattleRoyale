@@ -1,0 +1,11 @@
+{
+    "Name": "VU-BattleRoyale",
+    "Description": "Battle Royale gamemode for VU.",
+    "Authors": [ "KVN", "Flash_Hit", "breaknix" ],
+    "Version": "1.0.0",
+    "HasVeniceEXT": true,
+    "HasWebUI": false,
+    "Dependencies": {
+        "veniceext": "^1.0.0"
+    }
+}
