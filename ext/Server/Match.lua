@@ -8,6 +8,8 @@ require ("__shared/Configs/ServerConfig")
 
 require ("__shared/Helpers/GameStates")
 
+require ("Gunship")
+
 function Match:__init(p_Server)
     -- Save server reference
     self.m_Server = p_Server
@@ -40,6 +42,8 @@ function Match:__init(p_Server)
 
     -- Winner
     self.m_Winner = nil
+
+    self.m_Gunship = Gunship()
 end
 
 
@@ -108,6 +112,7 @@ function Match:OnPlane(p_DeltaTime)
         -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
 
         -- TODO: Spawn the plane, set the camera for players and enable players to jump out
+        self.m_Gunship:Spawn()
     end
 
     self:DoWeHaveAWinner()
@@ -161,7 +166,7 @@ function Match:OnMatch(p_DeltaTime)
         return
     end
 
-    local s_StartToEnd = MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] + MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["EndsAt"]
+    local s_StartToEnd = MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] + MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["MoveDuration"]
     if self.m_UpdateTicks[GameStates.Match] >= s_StartToEnd then
         if self.m_CircleIndex < MapsConfig[s_LevelName]["PhasesCount"] then
             print("INFO: Circle stopped shrinking")

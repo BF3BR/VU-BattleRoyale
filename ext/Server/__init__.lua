@@ -56,10 +56,6 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     -- Level events
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-
-    -- This starts the round manually, skipping any preround logic.
-    -- It also requires the PreRoundEntity to be removed for it to work properly.
-    self.m_EntityFactoryCreateFromBlueprintHook = Hooks:Install("EntityFactory:CreateFromBlueprint", 100, self, self.OnEntityFactoryCreateFromBlueprint)
 end
 
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
@@ -125,22 +121,81 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 end
 
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
+    self:DisablePreRound()
     self:SetupRconVariables()
 end
 
-function VuBattleRoyaleServer:OnEntityFactoryCreateFromBlueprint(p_Hook, p_Blueprint, p_Transform, p_Variation, p_ParentRepresentative)
-    if Blueprint(p_Blueprint).name == 'Gameplay/Level_Setups/Complete_setup/Full_TeamDeathmatch' then
-        local s_TdmBus = p_Hook:Call()
-        for _, l_Entity in pairs(s_TdmBus.entities) do
-            if l_Entity:Is('ServerInputRestrictionEntity') then
-                l_Entity:FireEvent('Deactivate')
-            elseif l_Entity:Is('ServerRoundOverEntity') then
-                l_Entity:FireEvent('RoundStarted')
-            elseif l_Entity:Is('EventGateEntity') and l_Entity.data.instanceGuid == Guid('B7F13498-C61B-47E6-895E-0ED2048E7AF4') then
-                l_Entity:FireEvent('Close')
-            end
-        end
-    end
+function VuBattleRoyaleServer:DisablePreRound()
+    -- Tahnks to https://github.com/FlashHit/VU-Mods/blob/master/No-PreRound/ext/Server/__init__.lua
+	-- This is for Conquest tickets etc.
+	local ticketCounterIterator = EntityManager:GetIterator("ServerTicketCounterEntity")
+	
+	local ticketCounterEntity = ticketCounterIterator:Next()
+	while ticketCounterEntity do
+
+		ticketCounterEntity = Entity(ticketCounterEntity)
+		ticketCounterEntity:FireEvent('StartRound')
+		ticketCounterEntity = ticketCounterIterator:Next()
+	end
+	
+	-- This is for Rush tickets etc.
+	local lifeCounterIterator = EntityManager:GetIterator("ServerLifeCounterEntity")
+	
+	local lifeCounterEntity = lifeCounterIterator:Next()
+	while lifeCounterEntity do
+
+		lifeCounterEntity = Entity(lifeCounterEntity)
+		lifeCounterEntity:FireEvent('StartRound')
+		lifeCounterEntity = lifeCounterIterator:Next()
+	end
+	
+	-- This is for TDM tickets etc.
+	local killCounterIterator = EntityManager:GetIterator("ServerKillCounterEntity")
+	
+	local killCounterEntity = killCounterIterator:Next()
+	while killCounterEntity do
+
+		killCounterEntity = Entity(killCounterEntity)
+		killCounterEntity:FireEvent('StartRound')
+		killCounterEntity = killCounterIterator:Next()
+	end
+	
+	-- This is needed so you are able to move
+	local inputRestrictionIterator = EntityManager:GetIterator("ServerInputRestrictionEntity")
+	
+	local inputRestrictionEntity = inputRestrictionIterator:Next()
+	while inputRestrictionEntity do
+
+		inputRestrictionEntity = Entity(inputRestrictionEntity)
+		inputRestrictionEntity:FireEvent('Disable')
+		
+		inputRestrictionEntity = inputRestrictionIterator:Next()
+	end
+	
+	-- This Entity is needed so the round ends when tickets are reached
+	local roundOverIterator = EntityManager:GetIterator("ServerRoundOverEntity")
+	
+	local roundOverEntity = roundOverIterator:Next()
+	while roundOverEntity do
+
+		roundOverEntity = Entity(roundOverEntity)
+		roundOverEntity:FireEvent('RoundStarted')
+		
+		roundOverEntity = roundOverIterator:Next()
+	end
+	
+	-- This EventGate needs to be closed otherwise Attacker can't win in Rush 
+	local eventGateIterator = EntityManager:GetIterator("EventGateEntity")
+	
+	local eventGateEntity = eventGateIterator:Next()
+	while eventGateEntity do
+
+		eventGateEntity = Entity(eventGateEntity)
+		if eventGateEntity.data.instanceGuid == Guid('253BD7C1-920E-46D6-B112-5857D88DAF41') then
+			eventGateEntity:FireEvent('Close')
+		end
+		eventGateEntity = eventGateIterator:Next()
+	end
 end
 
 
@@ -155,8 +210,8 @@ function VuBattleRoyaleServer:ChangeGameState(p_GameState)
     end
 
     -- Reset tickets for TDM
-    TicketManager:SetTicketCount(TeamId.Team1, 0)
-    TicketManager:SetTicketCount(TeamId.Team2, 0)
+    TicketManager:SetTicketCount(TeamId.Team1, 999)
+    TicketManager:SetTicketCount(TeamId.Team2, 999)
 
     print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 
