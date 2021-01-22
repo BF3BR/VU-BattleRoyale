@@ -1,11 +1,11 @@
 local Match = class("Match")
 
 require ("__shared/Utils/LevelNameHelper")
+require ("__shared/Utils/TableHelper")
 
 require ("__shared/Configs/MapsConfig")
 require ("__shared/Configs/ServerConfig")
 
-require ("__shared/Utils/LevelNameHelper")
 require ("__shared/Helpers/GameStates")
 
 function Match:__init(p_Server)
@@ -204,6 +204,10 @@ function Match:OnEndGame(p_DeltaTime)
         self.m_CircleIndex = 1
         self.m_Winner = nil
 
+        self:Cleanup()
+
+        self:SpawnWarmupAllPlayers()
+
         self.m_Server:ChangeGameState(GameStates.None)
         return
     end
@@ -245,5 +249,137 @@ function Match:DoWeHaveAWinner()
     end
 end
 
+function Match:SpawnWarmupAllPlayers()
+    local s_Players = PlayerManager:GetPlayers()
+    for l_Index, l_Player in ipairs(s_Players) do
+        -- Validate our player
+        if l_Player == nil then
+            goto _spawn_all_players_continue_
+        end
+
+        if l_Player.alive and l_Player.soldier ~= nil then
+            l_Player.soldier:Kill()
+        end
+
+        self:SpawnWarmupPlayer(l_Player)
+
+        ::_spawn_all_players_continue_::
+    end
+end
+
+
+function Match:SpawnWarmupPlayer(p_Player)
+    if p_Player == nil then
+        return
+    end
+
+    local s_SpawnTrans = self:GetRandomWarmupSpawnpoint(p_Player)
+    if s_SpawnTrans == nil then
+        print('ERROR: (Warmup) Coulnd\'t spawn player: ' .. p_Player.name)
+        return
+    end
+
+    self:SpawnPlayer(p_Player, s_SpawnTrans)
+end
+
+function Match:SpawnPlayer(p_Player, p_Transform)
+    if p_Player == nil then
+        return
+    end
+
+    if p_Player.alive then
+        return
+    end
+
+    print('INFO: Spawning player: ' .. p_Player.name)
+
+    local s_SoldierAsset = nil
+    local s_Appearance = nil
+    local s_SoldierBlueprint = ResourceManager:SearchForDataContainer('Characters/Soldiers/MpSoldier')
+
+    if p_Player.teamId == TeamId.Team1 then
+        s_SoldierAsset = ResourceManager:SearchForDataContainer('Gameplay/Kits/USAssault')
+        s_Appearance = ResourceManager:SearchForDataContainer('Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01')
+    elseif p_Player.teamId == TeamId.Team2 then
+        s_SoldierAsset = ResourceManager:SearchForDataContainer('Gameplay/Kits/RUAssault')
+        s_Appearance = ResourceManager:SearchForDataContainer('Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01')
+    end
+
+    if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
+        return
+    end
+
+    -- Spawn the player with only a knife
+    local s_Knife = ResourceManager:SearchForDataContainer('Weapons/Knife/U_Knife')
+    p_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Knife, {})
+    p_Player:SelectWeapon(WeaponSlot.WeaponSlot_7, s_Knife, {})
+
+    p_Player:SelectUnlockAssets(s_SoldierAsset, { s_Appearance })
+
+    local s_SpawnedSoldier = p_Player:CreateSoldier(s_SoldierBlueprint, p_Transform)
+
+	p_Player:SpawnSoldierAt(s_SpawnedSoldier, p_Transform, CharacterPoseType.CharacterPoseType_Stand)
+	p_Player:AttachSoldier(s_SpawnedSoldier)
+
+    return s_SpawnedSoldier
+end
+
+function Match:GetRandomWarmupSpawnpoint(p_Player)
+    if p_Player == nil then
+        return nil
+    end
+
+    local s_LevelName = LevelNameHelper:GetLevelName()
+    if s_LevelName == nil then
+        return nil
+    end
+    
+    local s_SpawnTrans = nil;
+    s_SpawnTrans = MapsConfig[s_LevelName]["WarmupSpawnPoints"][ math.random( #MapsConfig[s_LevelName]["WarmupSpawnPoints"] ) ]
+
+    return s_SpawnTrans
+end
+
+function Match:Cleanup()
+    self:CleanupSpecificEntity("ServerPickupEntity")
+    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientPickupEntity")
+
+    self:CleanupSpecificEntity("ServerMedicBagEntity")
+    self:CleanupSpecificEntity("ServerMedicBagHealingSphereEntity")
+    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientMedicBagEntity")
+    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientMedicBagHealingSphereEntity")
+
+    self:CleanupSpecificEntity("ServerSupplySphereEntity")
+    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientSupplySphereEntity")
+
+    self:CleanupSpecificEntity("ServerExplosionEntity")
+    self:CleanupSpecificEntity("ServerExplosionPackEntity")
+    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientExplosionEntity")
+    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientExplosionPackEntity")
+
+    self:CleanupSpecificEntity("ServerGrenadeEntity")
+    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientGrenadeEntity")
+end
+
+function Match:CleanupSpecificEntity(p_EntityType)
+    if p_EntityType == nil then
+        return
+    end
+
+    local s_Entities = {}
+
+    local s_Iterator = EntityManager:GetIterator(p_EntityType)
+    local s_Entity = s_Iterator:Next()
+    while s_Entity do
+        s_Entities[#s_Entities+1] = Entity(s_Entity)
+        s_Entity = s_Iterator:Next()
+    end
+
+    for _, l_Entity in pairs(s_Entities) do
+        if l_Entity ~= nil then
+            l_Entity:Destroy()
+        end
+    end
+end
 
 return Match

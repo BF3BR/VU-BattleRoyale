@@ -1,7 +1,7 @@
 ServerConfig = 
 {
     -- Minimum ammounts of players to start the warmup and then the match
-    MinPlayersToStart = 1, -- TODO: Set it to 10 later
+    MinPlayersToStart = 2,
 
     -- Warmup time
     WarmupTime = 30.0,

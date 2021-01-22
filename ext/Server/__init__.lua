@@ -112,6 +112,16 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
     end
 
     -- TODO: Update the connected clients UI
+
+    -- Send out gamestate information if he connects or reconnects
+    NetEvents:SendTo("VuBattleRoyale:GameStateChanged", p_Player, GameStates.None, self.m_GameState)
+
+    -- TODO: Send out the timer if its mid round
+
+    -- Spawn player if the current gamestate is warmup
+    if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
+        self.m_Match:SpawnWarmupPlayer(p_Player)
+    end
 end
 
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
@@ -153,8 +163,8 @@ function VuBattleRoyaleServer:ChangeGameState(p_GameState)
     local s_OldGameState = self.m_GameState
     self.m_GameState = p_GameState
 
-    -- TODO: Broadcast the gamestate changes to the clients 
-    -- NetEvents:Broadcast("VuBattleRoyaleServer:GameStateChanged", s_OldGameState, p_GameState)
+    -- Broadcast the gamestate changes to the clients 
+    NetEvents:Broadcast("VuBattleRoyale:GameStateChanged", s_OldGameState, p_GameState)
 end
 
 function VuBattleRoyaleServer:SetupRconVariables()
