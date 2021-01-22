@@ -32,8 +32,8 @@ function Gunship:OnJumpOutOfGunship(p_Player)
 	end
 	
 	print("Debug: SpawnPlayer " .. p_Player.name)
-	--SpawnPlayer(p_Player, s_Transform)
-	p_Player.soldier:SetTransform(s_Transform)
+	Match:SpawnPlayer(p_Player, s_Transform)
+	-- p_Player.soldier:SetTransform(s_Transform)
 end
 	
 function Gunship:Spawn()

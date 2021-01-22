@@ -113,6 +113,18 @@ function Match:OnPlane(p_DeltaTime)
 
         -- TODO: Spawn the plane, set the camera for players and enable players to jump out
         self.m_Gunship:Spawn()
+		
+		local s_HumanPlayerEntityIterator = EntityManager:GetIterator("ServerHumanPlayerEntity")
+		local s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
+		
+		while s_HumanPlayerEntity do
+			s_HumanPlayerEntity = Entity(s_HumanPlayerEntity)	
+			print("UnSpawnAllSoldiers")
+			s_HumanPlayerEntity:FireEvent("UnSpawnAllSoldiers")
+			
+			s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
+		end
+		
     end
 
     self:DoWeHaveAWinner()
