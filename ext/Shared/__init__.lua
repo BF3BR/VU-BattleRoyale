@@ -2,7 +2,8 @@ class "VuBattleRoyaleShared"
 
 require ("__shared/Utils/LevelNameHelper")
 require ("__shared/Configs/MapsConfig")
-require '__shared/dropWeapons'
+
+require ("__shared/DropWeapons")
 
 function VuBattleRoyaleShared:__init()
     -- Extension events
