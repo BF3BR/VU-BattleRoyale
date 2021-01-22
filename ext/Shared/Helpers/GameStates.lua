@@ -15,7 +15,7 @@ GameStates =
     -- After everyone jumped out and the plane is gone
     PlaneToFirstCircle = 4,
 
-    -- Circles
+    -- Match
     Match = 5,
 
     -- End of the round

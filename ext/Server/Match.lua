@@ -153,14 +153,14 @@ function Match:OnMatch(p_DeltaTime)
         return
     end
 
-    if self.m_UpdateTicks[GameStates.Match] >= MapsConfig[s_LevelName]["Circles"][self.m_CircleIndex]["StartsAt"] then
+    if self.m_UpdateTicks[GameStates.Match] >= MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] then
         -- TODO: Update the ring state
         return
     end
 
-    local s_StartToEnd = MapsConfig[s_LevelName]["Circles"][self.m_CircleIndex]["StartsAt"] + MapsConfig[s_LevelName]["Circles"][self.m_CircleIndex]["EndsAt"]
+    local s_StartToEnd = MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] + MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["EndsAt"]
     if self.m_UpdateTicks[GameStates.Match] >= s_StartToEnd then
-        if self.m_CircleIndex < MapsConfig[s_LevelName]["CirclesCount"] then
+        if self.m_CircleIndex < MapsConfig[s_LevelName]["PhasesCount"] then
             print("INFO: Circle stopped shrinking")
             self.m_UpdateTicks[GameStates.Match] = 0.0
 
