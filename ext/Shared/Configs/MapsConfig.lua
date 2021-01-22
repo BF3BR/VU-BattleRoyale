@@ -2,80 +2,98 @@ MapsConfig =
 {
     -- Kiasar Railroad
     XP5_003 = {
-        BeforeFirstCircleDelay = 120.0,
-        CirclesCount = 9,
-        Circles = {
+        BeforeFirstCircleDelay = 60.0,
+        PhasesCount = 9,
+        Phases = {
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 300.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 120.0,
                 -- Time until blue meets white
-                EndsAt = 720.0,
+                MoveDuration = 120.0,
                 -- Damage per second
                 Damage = 0.4,
+                -- Circle's shrinking ratio
+                Ratio = 0.550
             },
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 200.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 120.0,
                 -- Time until blue meets white
-                EndsAt = 340.0,
+                MoveDuration = 90.0,
                 -- Damage per second
                 Damage = 0.6,
+                -- Circle's shrinking ratio
+                Ratio = 0.700
             },
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 150.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 90.0,
                 -- Time until blue meets white
-                EndsAt = 240.0,
+                MoveDuration = 90.0,
                 -- Damage per second
                 Damage = 0.8,
+                -- Circle's shrinking ratio
+                Ratio = 0.600
             },
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 120.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 60.0,
                 -- Time until blue meets white
-                EndsAt = 180.0,
+                MoveDuration = 60.0,
                 -- Damage per second
                 Damage = 1.0,
+                -- Circle's shrinking ratio
+                Ratio = 0.600
             },
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 120.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 60.0,
                 -- Time until blue meets white
-                EndsAt = 160.0,
+                MoveDuration = 60.0,
                 -- Damage per second
                 Damage = 3.0,
+                -- Circle's shrinking ratio
+                Ratio = 0.600
             },
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 90.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 30.0,
                 -- Time until blue meets white
-                EndsAt = 120.0,
+                MoveDuration = 60.0,
                 -- Damage per second
                 Damage = 5.0,
+                -- Circle's shrinking ratio
+                Ratio = 0.500
             },
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 90.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 30.0,
                 -- Time until blue meets white
-                EndsAt = 120.0,
+                MoveDuration = 30.0,
                 -- Damage per second
                 Damage = 7.0,
+                -- Circle's shrinking ratio
+                Ratio = 0.500
             },
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 60.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 30.0,
                 -- Time until blue meets white
-                EndsAt = 90.0,
+                MoveDuration = 30.0,
                 -- Damage per second
                 Damage = 9.0,
+                -- Circle's shrinking ratio
+                Ratio = 0.500
             },
             {
-                -- Time until blue circle srtats to shrink
-                StartsAt = 60.0,
+                -- Time until blue circle starts to shrink
+                StartsAt = 30.0,
                 -- Time until blue meets white
-                EndsAt = 60.0,
+                MoveDuration = 30.0,
                 -- Damage per second
                 Damage = 11.0,
+                -- Circle's shrinking ratio
+                Ratio = 0.001
             },
         }
     }
