@@ -8,6 +8,7 @@ require ("__shared/Configs/ServerConfig")
 require ("__shared/Helpers/GameStates")
 
 require ("Match")
+require ("Gunship")
 
 function VuBattleRoyaleServer:__init()
     -- Extension events
