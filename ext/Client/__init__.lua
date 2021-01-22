@@ -8,6 +8,7 @@ require ("__shared/Helpers/GameStates")
 
 require ("UICleanup")
 require ("ClientCommands")
+require ("Gunship")
 
 function VuBattleRoyaleClient:__init()
     -- Extension events

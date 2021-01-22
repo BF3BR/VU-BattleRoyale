@@ -3,11 +3,43 @@ local Gunship = class 'Gunship'
 function Gunship:__init(p_Match)
 	-- Save match reference
 	self.m_Match = p_Match
+	
+	self.m_JumpOutOfGunshipEvent = NetEvents:Subscribe('JumpOutOfGunship', self, self.OnJumpOutOfGunship)
+end
+
+function Gunship:OnJumpOutOfGunship(p_Player)
+	
+	-- Get the Gunship transform
+	local s_Transform = nil
+	
+	local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
+	local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
+	
+	while s_VehicleSpawnEntity do
+		
+		if s_VehicleSpawnEntity.data.instanceGuid == Guid('81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778') then
+			
+			s_VehicleSpawnEntity = SpatialEntity(s_VehicleSpawnEntity)
+			s_Transform = s_VehicleSpawnEntity.transform
+			s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 10, s_Transform.trans.z)
+			
+			break
+			
+		end
+		
+		s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
+	
+	end
+	
+	print("Debug: SpawnPlayer " .. p_Player.name)
+	--SpawnPlayer(p_Player, s_Transform)
+	p_Player.soldier:SetTransform(s_Transform)
 end
 	
 function Gunship:Spawn()
 	print("INFO: Spawning the gunship.")
-
+	NetEvents:BroadcastLocal('GunshipCamera')
+	
 	local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleSpawnEntity")
 	local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
 	
@@ -37,6 +69,7 @@ end
 function Gunship:OnSequenceEntityEventCallback(ent, entityEvent)
 	if entityEvent.eventId == 229946160 then -- "Reset"
 		print("INFO: OnSequenceEntityEventCallback - Reset")
+		NetEvents:BroadcastLocal('ForceJumpOufOfGunship')
 	end
 end
 
