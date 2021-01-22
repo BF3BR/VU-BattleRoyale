@@ -21,3 +21,14 @@ GameStates =
     -- End of the round
     EndGame = 6,
 }
+
+GameStatesStrings = 
+{
+    [GameStates.None] = "None",
+    [GameStates.Warmup] = "Warmup",
+    [GameStates.WarmupToPlane] = "To Plane",
+    [GameStates.Plane] = "Plane",
+    [GameStates.PlaneToFirstCircle] = "To Match",
+    [GameStates.Match] = "Match",
+    [GameStates.EndGame] = "EndGame",
+}

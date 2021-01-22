@@ -148,7 +148,7 @@ function VuBattleRoyaleServer:ChangeGameState(p_GameState)
     TicketManager:SetTicketCount(TeamId.Team1, 0)
     TicketManager:SetTicketCount(TeamId.Team2, 0)
 
-    print("INFO: Transitioning from " .. self.m_GameState .. " to " .. p_GameState)
+    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 
     local s_OldGameState = self.m_GameState
     self.m_GameState = p_GameState

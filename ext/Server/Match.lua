@@ -37,6 +37,9 @@ function Match:__init(p_Server)
 
     -- Circle index
     self.m_CircleIndex = 1
+
+    -- Winner
+    self.m_Winner = nil
 end
 
 
@@ -131,7 +134,7 @@ function Match:OnPlaneToFirstCircle(p_DeltaTime)
         return
     end
 
-    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >=  MapsConfig[s_LevelName]["BeforeFirstCircleDelay"] then
+    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >= MapsConfig[s_LevelName]["BeforeFirstCircleDelay"] then
         self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
         self.m_Server:ChangeGameState(GameStates.Match)
         return
@@ -174,7 +177,12 @@ end
 
 function Match:OnEndGame(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.EndGame] == 0.0 then
-        print('INFO: We have a winner!')
+        if self.m_Winner ~= nil then
+            print('INFO: We have a winner: ' .. self.m_Winner.name)
+        else
+            print('INFO: Round ended without a winner.')
+        end
+        
 
         -- TODO: Set client UI to show the winners name
 
@@ -183,10 +191,18 @@ function Match:OnEndGame(p_DeltaTime)
     end
 
     if self.m_UpdateTicks[GameStates.EndGame] >= ServerConfig.EndGameTime then
-        self.m_UpdateTicks[GameStates.EndGame] = 0.0
         -- TODO: Reset the clients UI
 
+        -- Reset
+        self.m_UpdateTicks[GameStates.None] = 0.0
+        self.m_UpdateTicks[GameStates.Warmup] = 0.0
+        self.m_UpdateTicks[GameStates.WarmupToPlane] = 0.0
+        self.m_UpdateTicks[GameStates.Plane] = 0.0
+        self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
+        self.m_UpdateTicks[GameStates.Match] = 0.0
+        self.m_UpdateTicks[GameStates.EndGame] = 0.0
         self.m_CircleIndex = 1
+        self.m_Winner = nil
 
         self.m_Server:ChangeGameState(GameStates.None)
         return
@@ -201,6 +217,12 @@ end
 
 function Match:DoWeHaveAWinner()
     local s_AlivePlayersCount = 0
+    local s_Winner = nil
+
+    if PlayerManager:GetPlayerCount() == 0 then
+        self.m_Server:ChangeGameState(GameStates.EndGame)
+        return
+    end
 
     -- TODO: FIXME: This only works for solo gamemode
     local s_Players = PlayerManager:GetPlayers()
@@ -211,12 +233,14 @@ function Match:DoWeHaveAWinner()
 
         if l_Player.alive then
             s_AlivePlayersCount = s_AlivePlayersCount + 1
+            s_Winner = l_Player
         end
 
         ::_on_loop_continue_::
     end
 
-    if s_AlivePlayersCount <= 1 then
+    if s_AlivePlayersCount <= 1 and s_Winner ~= nil then
+        self.m_Winner = s_Winner
         self.m_Server:ChangeGameState(GameStates.EndGame)
     end
 end
