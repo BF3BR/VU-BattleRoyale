@@ -1,11 +1,10 @@
 class 'DropWeapons'
 
 function DropWeapons:__init()
-	self.m_CenterOffset = 1.2
-	self.m_HeightOffset = -0.5
-	self.m_SubWorldDataLoaded = ResourceManager:RegisterInstanceLoadHandler(Guid('4D59552D-787F-402E-8FED-7B360186BD8A'), Guid('ED72C0EE-BAB1-4588-82AA-0BA8394EEEFB'), self, self.OnSubworldDataLoaded)
+    self.m_CenterOffset = 1.2
+    self.m_HeightOffset = -0.5
+    self.m_SubWorldDataLoaded = ResourceManager:RegisterInstanceLoadHandler(Guid('4D59552D-787F-402E-8FED-7B360186BD8A'), Guid('ED72C0EE-BAB1-4588-82AA-0BA8394EEEFB'), self, self.OnSubworldDataLoaded)
 end
-
 
 -- Wait for the gamemode subworld to load
 function DropWeapons:OnSubworldDataLoaded(p_Instance)
@@ -13,7 +12,7 @@ function DropWeapons:OnSubworldDataLoaded(p_Instance)
     -- weapons in p_WeaponSlot 0 and 1 will be dropped as pickups for slot 0 or 1
     local s_PrimaryWeaponPickupAsset = PickupEntityAsset()
     s_PrimaryWeaponPickupAsset.data = self:CreatePickupEntityDataForSlot(0, 1)
-	
+
     local s_PrimaryWeaponDropComponent = DropWeaponComponentData()
     s_PrimaryWeaponDropComponent.deathPickup = s_PrimaryWeaponPickupAsset
     s_PrimaryWeaponDropComponent.transform.trans = Vec3(self.m_CenterOffset, self.m_HeightOffset, 0)
@@ -21,8 +20,8 @@ function DropWeapons:OnSubworldDataLoaded(p_Instance)
 
     local s_SecondaryWeaponPickupAsset = PickupEntityAsset()
     s_SecondaryWeaponPickupAsset.data = self:CreatePickupEntityDataForSlot(1, 0)
-   
-	local s_SecondaryWeaponDropComponent = DropWeaponComponentData()
+
+    local s_SecondaryWeaponDropComponent = DropWeaponComponentData()
     s_SecondaryWeaponDropComponent.deathPickup = s_SecondaryWeaponPickupAsset
     s_SecondaryWeaponDropComponent.transform.trans = Vec3(-self.m_CenterOffset, self.m_HeightOffset, 0)
 
@@ -30,30 +29,27 @@ function DropWeapons:OnSubworldDataLoaded(p_Instance)
     -- gadgets in p_WeaponSlot 2 and 5 will be dropped as pickups for slot 2 or 5
     local s_PrimaryGadgetPickupAsset = PickupEntityAsset()
     s_PrimaryGadgetPickupAsset.data = self:CreatePickupEntityDataForSlot(2, 5)
-   
-	local s_PrimaryGadgetDropComponent = DropWeaponComponentData()
+
+    local s_PrimaryGadgetDropComponent = DropWeaponComponentData()
     s_PrimaryGadgetDropComponent.deathPickup = s_PrimaryGadgetPickupAsset
     s_PrimaryGadgetDropComponent.transform.trans = Vec3(0, self.m_HeightOffset, self.m_CenterOffset)
 
 
     local s_SecondaryGadgetPickupAsset = PickupEntityAsset()
     s_SecondaryGadgetPickupAsset.data = self:CreatePickupEntityDataForSlot(5, 2)
-   
-	local s_SecondaryGadgetDropComponent = DropWeaponComponentData()
+
+    local s_SecondaryGadgetDropComponent = DropWeaponComponentData()
     s_SecondaryGadgetDropComponent.deathPickup = s_SecondaryGadgetPickupAsset
     s_SecondaryGadgetDropComponent.transform.trans = Vec3(0, self.m_HeightOffset, -self.m_CenterOffset)
-	
-	
-	-- grenade in p_WeaponSlot 6 and 8 will be dropped as pickups for slot 6 or 8
+
+    -- grenade in p_WeaponSlot 6 and 8 will be dropped as pickups for slot 6 or 8
     local s_GrenadePickupAsset = PickupEntityAsset()
     s_GrenadePickupAsset.data = self:CreatePickupEntityDataForSlot(6, 8)
-    
-	local s_GrenadeDropComponent = DropWeaponComponentData()
+
+    local s_GrenadeDropComponent = DropWeaponComponentData()
     s_GrenadeDropComponent.deathPickup = s_GrenadePickupAsset
     s_GrenadeDropComponent.transform.trans = Vec3(0, self.m_HeightOffset, -self.m_CenterOffset*2)
-	
-	
-	
+
     -- Add the components to the s_SoldierBlueprint and recreate the l_Connections required for a s_DropWeaponComponent
     local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier"))
     s_SoldierBlueprint:MakeWritable()
@@ -69,11 +65,11 @@ function DropWeapons:OnSubworldDataLoaded(p_Instance)
     -- The vanilla MP soldier s_DropWeaponComponent, uses KitPickupEntityData
     local s_DropWeaponComponent = DropWeaponComponentData(s_SoldierBodyComponent.components[11])
 
-	self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_PrimaryWeaponDropComponent)
-	self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_SecondaryWeaponDropComponent)
-	self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_PrimaryGadgetDropComponent)
-	self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_SecondaryGadgetDropComponent)
-	self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_GrenadeDropComponent)
+    self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_PrimaryWeaponDropComponent)
+    self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_SecondaryWeaponDropComponent)
+    self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_PrimaryGadgetDropComponent)
+    self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_SecondaryGadgetDropComponent)
+    self:CloneConnections(s_SoldierBlueprint, s_DropWeaponComponent, s_GrenadeDropComponent)
 
     -- Erase the oringal s_DropWeaponComponent and add the custom ones
     s_SoldierBodyComponent.components:erase(11)
@@ -93,8 +89,8 @@ function DropWeapons:OnSubworldDataLoaded(p_Instance)
     s_Registry.entityRegistry:add(s_PrimaryGadgetPickupAsset.data)
     s_Registry.entityRegistry:add(s_SecondaryGadgetPickupAsset.data)
     s_Registry.entityRegistry:add(s_GrenadePickupAsset.data)
-	
-	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
+
+    ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end
 
 function DropWeapons:CreatePickupEntityDataForSlot(p_WeaponSlot, p_AltWeaponSlot)
