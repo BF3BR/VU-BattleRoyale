@@ -35,8 +35,11 @@ function VuBattleRoyaleShared:OnWorldPartData(p_Instance)
 	for i,l_Object in pairs(p_Instance.objects) do
 		if l_Object:Is('ReferenceObjectData') then
 			l_Object = ReferenceObjectData(l_Object)
-			l_Object:MakeWritable()
-			l_Object.excluded = true
+			if not l_Object.blueprint.name:match("HQ") then
+				l_Object = ReferenceObjectData(l_Object)
+				l_Object:MakeWritable()
+				l_Object.excluded = true
+			end
 		end
 	end
 end
