@@ -26,28 +26,25 @@ function VuBattleRoyaleShared:OnExtensionUnloaded()
 end
 
 function VuBattleRoyaleShared:RegisterEvents()
-    self.m_PartitionLoadedEvent = Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded)
+	self.m_WorldPartData = ResourceManager:RegisterInstanceLoadHandler(Guid('B6BD6848-37DF-463A-81C5-33A5B3D6F623'), Guid('A048FCDD-2F98-432A-A5B7-5CC49F2AB21E'), self, self.OnWorldPartData)
+	self.m_PreRoundEntityData = ResourceManager:RegisterInstanceLoadHandler(Guid('0C342A8C-BCDE-11E0-8467-9159D6ACA94C'), Guid('B3AF5AF0-4703-402C-A238-601E610A0B48'), self, self.OnPreRoundEntityData)
 end
 
-function VuBattleRoyaleShared:OnPartitionLoaded(p_Partition)
-    -- Thanks to https://github.com/FlashHit/VU-Mods/blob/master/No-PreRound/ext/Server/__init__.lua
-	for _, instance in pairs(p_Partition.instances) do
-		if instance:Is('PreRoundEntityData') then
-			instance = PreRoundEntityData(instance)
-			instance:MakeWritable()
-			instance.enabled = false
-        end
-        
-        if instance:Is('ReferenceObjectData') then
-            instance = ReferenceObjectData(instance)
-            if instance.blueprint ~= nil then
-                if string.match(instance.blueprint.name, "Gameplay/Level_Setups/Components/CapturePointPrefab") then
-                    instance:MakeWritable()
-                    instance.excluded = true
-                end
-            end
-        end
+function VuBattleRoyaleShared:OnWorldPartData(p_Instance)
+	p_Instance = WorldPartData(p_Instance)
+	for i,l_Object in pairs(p_Instance.objects) do
+		if l_Object:Is('ReferenceObjectData') then
+			l_Object = ReferenceObjectData(l_Object)
+			l_Object:MakeWritable()
+			l_Object.excluded = true
+		end
 	end
+end
+
+function VuBattleRoyaleShared:OnPreRoundEntityData(p_Instance)
+	p_Instance = PreRoundEntityData(p_Instance)
+	p_Instance:MakeWritable()
+	p_Instance.enabled = false
 end
 
 return VuBattleRoyaleShared()
