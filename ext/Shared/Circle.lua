@@ -1,4 +1,4 @@
-class('Circle')
+class 'Circle'
 
 function Circle:__init(p_Center, p_Radius)
     self:Update(p_Center or Vec3(0, 0, 0), p_Radius or 1)
@@ -52,3 +52,5 @@ end
 function Circle:Clone()
     return Circle(self.m_Center, self.m_Radius)
 end
+
+return Circle
