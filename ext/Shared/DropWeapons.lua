@@ -95,7 +95,7 @@ end
 
 function DropWeapons:CreatePickupEntityDataForSlot(p_WeaponSlot, p_AltWeaponSlot)
 
-	local s_PhysicsBlueprint = ObjectBlueprint(ResourceManager:SearchForDataContainer("Weapons/M16A4/M16A4KitPickup"))
+    local s_PhysicsBlueprint = ObjectBlueprint(ResourceManager:SearchForDataContainer("Weapons/M16A4/M16A4KitPickup"))
 
     local s_DynamicWeaponPickupSlotData = DynamicWeaponPickupSlotData()
     s_DynamicWeaponPickupSlotData.weaponSlot = p_WeaponSlot
@@ -133,13 +133,13 @@ function DropWeapons:CloneConnections(p_Blueprint, p_OriginalData,  p_CustomData
 
     for _, l_Connection in pairs(p_Blueprint.eventConnections) do
         
-		if l_Connection.source == p_OriginalData then
+        if l_Connection.source == p_OriginalData then
 
             local s_Clone = EventConnection(l_Connection:Clone())
             s_Clone.source = p_CustomData
 
             p_Blueprint.eventConnections:add(s_Clone)
-			
+
         end
 
         if l_Connection.target == p_OriginalData then
@@ -148,11 +148,11 @@ function DropWeapons:CloneConnections(p_Blueprint, p_OriginalData,  p_CustomData
             s_Clone.target = p_CustomData
 
             p_Blueprint.eventConnections:add(s_Clone)
-			
+
         end
-		
+
     end
-	
+
 end
 
 g_DropWeapons = DropWeapons()

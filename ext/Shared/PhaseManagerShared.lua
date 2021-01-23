@@ -1,17 +1,21 @@
-class 'PhaseManagerShared'
-
 require ('__shared/Helpers/SubphaseTypes')
+require ('__shared/Mixins/TimersMixin')
+
+class ('PhaseManagerShared', TimersMixin)
 
 function PhaseManagerShared:__init(p_InnerCircle, p_OuterCircle)
-    self.m_Phases = phases
+    TimersMixin.__init(self)
+
+    self.m_Phases = nil
     self.m_PhaseIndex = 1
     self.m_SubphaseIndex = SubphaseType.InitialDelay
+    self.m_InitialDelay = 0
     self.m_Completed = false
 
     self.m_InnerCircle = p_InnerCircle
     self.m_OuterCircle = p_OuterCircle
 
-    self.m_PrevOuterCircle = Circle2d()
+    self.m_PrevOuterCircle = Circle()
 end
 
 function PhaseManagerShared:GetCurrentPhase()
@@ -20,7 +24,7 @@ end
 
 function PhaseManagerShared:GetCurrentDelay()
     if self.m_SubphaseIndex == SubphaseType.InitialDelay then
-        return 1 -- TODO
+        return self.m_InitialDelay
     end
 
     local l_phase = self:GetCurrentPhase()
@@ -32,7 +36,7 @@ function PhaseManagerShared:GetCurrentDelay()
 end
 
 function PhaseManagerShared:IsIdle()
-    return self.m_PhaseIndex == 1 and self.m_SubphaseIndex == 1
+    return self.m_PhaseIndex == 1 and self.m_SubphaseIndex == SubphaseType.InitialDelay
 end
 
 function PhaseManagerShared:MoveOuterCircle(p_Timer)
