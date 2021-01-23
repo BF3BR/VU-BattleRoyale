@@ -1,4 +1,4 @@
-TimersMixin = class('TimersMixin')
+class ('TimersMixin')
 
 function TimersMixin:__init()
     self.m__Timers = {}
@@ -31,3 +31,5 @@ function TimersMixin:ClearAllTimers()
 
     self.m__Timers = {}
 end
+
+return TimersMixin
