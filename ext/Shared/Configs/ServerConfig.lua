@@ -14,4 +14,10 @@ ServerConfig =
 
     -- Time to wait after the round ends
     EndGameTime = 15.0,
+
+
+    -- DEBUG STUFF
+    Debug = {
+        EnableLootPointSpheres = true,
+    }
 }
