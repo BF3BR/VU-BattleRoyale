@@ -1,0 +1,104 @@
+@font-face {
+    font-family: 'Blinker';
+    src: url('./assets/font/Blinker-ExtraLight.woff2') format('woff2');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Blinker';
+    src: url('./assets/font/Blinker-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Blinker';
+    src: url('./assets/font/Blinker-ExtraBold.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Blinker';
+    src: url('./assets/font/Blinker-Black.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Blinker';
+    src: url('./assets/font/Blinker-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Blinker';
+    src: url('./assets/font/Blinker-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Blinker';
+    src: url('./assets/font/Blinker-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+:root {
+    --primary: #a3956e;
+    --success: #448c68;
+    --warning: #ac862d;
+    --danger: #c43a3a;
+}
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    color: #fff;
+    font-family: "Blinker";
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: 'Blinker';
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+}
+
+#debug {
+    display: none !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999999999;
+}
