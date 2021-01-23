@@ -1,4 +1,4 @@
-class ('Circle')
+class 'Circle'
 
 function Circle:__init(p_Center, p_Radius)
     self:Update(p_Center or Vec3(0, 0, 0), p_Radius or 1)
@@ -15,8 +15,8 @@ function Circle2d:CircumferencePoint(p_Angle, p_Y, p_Radius)
     p_Y = p_Y or 0
     p_Radius = p_Radius or self.m_Radius
 
-    local l_X = self.center.x + p_Radius * math.cos(p_Angle)
-    local l_Z = self.center.z + p_Radius * math.sin(p_Angle)
+    local l_X = self.m_Center.x + p_Radius * math.cos(p_Angle)
+    local l_Z = self.m_Center.z + p_Radius * math.sin(p_Angle)
 
     return Vec3(l_X, p_Y, l_Z)
   end
@@ -31,7 +31,7 @@ end
 
 -- Returns a random point inside the circle
 function Circle:RandomInnerPoint(p_MaxDistance, p_Y)
-    p_MaxDistance = p_MaxDistance or self.radius
+    p_MaxDistance = p_MaxDistance or self.m_Radius
     p_Y = p_Y or 0
 
     local l_Angle = MathUtils:GetRandom(0, 2 * math.pi)

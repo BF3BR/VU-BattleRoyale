@@ -10,6 +10,7 @@ end
 function Gunship:OnJumpOutOfGunship(p_Player)
 	
 	-- Get the Gunship transform
+	-- TODO: Default transform should be the endposition of the gunship
 	local s_Transform = nil
 	
 	local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
