@@ -29,25 +29,24 @@ function VuBattleRoyaleShared:RegisterEvents()
 end
 
 function VuBattleRoyaleShared:OnPartitionLoaded(p_Partition)
-    for _, l_Instance in pairs(p_Partition.instances) do
-        if l_Instance.instanceGuid == Guid('5FA66B8C-BE0E-3758-7DE9-533EA42F5364') then
-            -- Get rid of the PreRoundEntity. We don't need preround in this gamemode.
-            local s_Bp = LogicPrefabBlueprint(l_Instance)
-            s_Bp:MakeWritable()
-
-            for i = #s_Bp.objects, 1, -1 do
-                if s_Bp.objects[i]:Is('PreRoundEntityData') then
-                    s_Bp.objects:erase(i)
-                end
-            end
-
-            for i = #s_Bp.eventConnections, 1, -1 do
-                if s_Bp.eventConnections[i].source:Is('PreRoundEntityData') or s_Bp.eventConnections[i].target:Is('PreRoundEntityData') then
-                    s_Bp.eventConnections:erase(i)
+    -- Thanks to https://github.com/FlashHit/VU-Mods/blob/master/No-PreRound/ext/Server/__init__.lua
+	for _, instance in pairs(p_Partition.instances) do
+		if instance:Is('PreRoundEntityData') then
+			instance = PreRoundEntityData(instance)
+			instance:MakeWritable()
+			instance.enabled = false
+        end
+        
+        if instance:Is('ReferenceObjectData') then
+            instance = ReferenceObjectData(instance)
+            if instance.blueprint ~= nil then
+                if string.match(instance.blueprint.name, "Gameplay/Level_Setups/Components/CapturePointPrefab") then
+                    instance:MakeWritable()
+                    instance.excluded = true
                 end
             end
         end
-    end
+	end
 end
 
 return VuBattleRoyaleShared()

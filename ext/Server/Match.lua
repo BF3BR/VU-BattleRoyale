@@ -8,6 +8,8 @@ require ("__shared/Configs/ServerConfig")
 
 require ("__shared/Helpers/GameStates")
 
+require ("Gunship")
+
 function Match:__init(p_Server)
     -- Save server reference
     self.m_Server = p_Server
@@ -40,6 +42,8 @@ function Match:__init(p_Server)
 
     -- Winner
     self.m_Winner = nil
+
+    self.m_Gunship = Gunship(self)
 end
 
 
@@ -108,9 +112,10 @@ function Match:OnPlane(p_DeltaTime)
         -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
 
         -- TODO: Spawn the plane, set the camera for players and enable players to jump out
+        self.m_Gunship:Spawn()
+        
+        self:UnspawnAllSoldiers()
     end
-
-    self:DoWeHaveAWinner()
 
     if self.m_UpdateTicks[GameStates.Plane] >= ServerConfig.PlaneTime then
         self.m_UpdateTicks[GameStates.Plane] = 0.0
@@ -161,7 +166,7 @@ function Match:OnMatch(p_DeltaTime)
         return
     end
 
-    local s_StartToEnd = MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] + MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["EndsAt"]
+    local s_StartToEnd = MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] + MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["MoveDuration"]
     if self.m_UpdateTicks[GameStates.Match] >= s_StartToEnd then
         if self.m_CircleIndex < MapsConfig[s_LevelName]["PhasesCount"] then
             print("INFO: Circle stopped shrinking")
@@ -250,6 +255,8 @@ function Match:DoWeHaveAWinner()
 end
 
 function Match:SpawnWarmupAllPlayers()
+    self:UnspawnAllSoldiers()
+    
     local s_Players = PlayerManager:GetPlayers()
     for l_Index, l_Player in ipairs(s_Players) do
         -- Validate our player
@@ -257,16 +264,11 @@ function Match:SpawnWarmupAllPlayers()
             goto _spawn_all_players_continue_
         end
 
-        if l_Player.alive and l_Player.soldier ~= nil then
-            l_Player.soldier:Kill()
-        end
-
         self:SpawnWarmupPlayer(l_Player)
 
         ::_spawn_all_players_continue_::
     end
 end
-
 
 function Match:SpawnWarmupPlayer(p_Player)
     if p_Player == nil then
@@ -379,6 +381,17 @@ function Match:CleanupSpecificEntity(p_EntityType)
         if l_Entity ~= nil then
             l_Entity:Destroy()
         end
+    end
+end
+
+function Match:UnspawnAllSoldiers()
+    local s_HumanPlayerEntityIterator = EntityManager:GetIterator("ServerHumanPlayerEntity")
+    local s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
+    
+    while s_HumanPlayerEntity do
+        s_HumanPlayerEntity = Entity(s_HumanPlayerEntity)	
+        s_HumanPlayerEntity:FireEvent("UnSpawnAllSoldiers")
+        s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
     end
 end
 

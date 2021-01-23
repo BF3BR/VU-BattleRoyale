@@ -7,5 +7,6 @@
     "HasWebUI": false,
     "Dependencies": {
         "veniceext": "^1.0.0"
-    }
+    },
+    "RequiredXPacks": ["5"]
 }
