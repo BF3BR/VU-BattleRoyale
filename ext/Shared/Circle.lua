@@ -52,3 +52,5 @@ end
 function Circle:Clone()
     return Circle(self.m_Center, self.m_Radius)
 end
+
+return Circle
