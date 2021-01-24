@@ -1,7 +1,7 @@
 require ('__shared/Utils/Timers')
 require ('__shared/PhaseManagerShared')
 require ('__shared/Circle')
-require ('OOBVision')
+require ('Visuals/OOBVision')
 
 class ('PhaseManagerClient', PhaseManagerShared)
 

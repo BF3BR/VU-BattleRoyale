@@ -1,40 +1,40 @@
-class ('OOBVision')
+class 'OOBVision'
 
 function OOBVision:__init()
-  self.m_IsEnabled = false
+    self.m_IsEnabled = false
 
-  self.m_SoundEntity = nil
-  self.m_VisualsEntity = nil
+    self.m_SoundEntity = nil
+    self.m_VisualsEntity = nil
 
-  self:RegisterEvents()
+    self:RegisterEvents()
 end
 
 function OOBVision:RegisterEvents()
-  Events:Subscribe('Level:Loaded', self, self.CreateEntities)
-  Events:Subscribe('Extension:Unloading', self, self.Destroy)
-  Events:Subscribe('Level:Destroy', self, self.Destroy)
+    Events:Subscribe('Level:Loaded', self, self.CreateEntities)
+    Events:Subscribe('Extension:Unloading', self, self.Destroy)
+    Events:Subscribe('Level:Destroy', self, self.Destroy)
 end
 
 function OOBVision:CreateSound()
-  if self.m_SoundEntity ~= nil then
-    return
-  end
-
-  -- oob sound resource
-  local l_EntityData = ResourceManager:SearchForInstanceByGuid(Guid('0047C675-053C-4D84-860E-661555D20D27'))
-
-  -- create sound entity
-  if l_EntityData ~= nil then
-    local l_EntityPos = LinearTransform()
-    l_EntityPos.trans = Vec3(0.0, 0.0, 0.0)
-
-    local l_Entity = EntityManager:CreateEntity(l_EntityData, l_EntityPos)
-
-    if l_Entity ~= nil then
-      l_Entity:Init(Realm.Realm_Client, true)
-      self.m_SoundEntity = SoundEntity(l_Entity)
+    if self.m_SoundEntity ~= nil then
+        return
     end
-  end
+
+    -- oob sound resource
+    local l_EntityData = ResourceManager:SearchForInstanceByGuid(Guid('0047C675-053C-4D84-860E-661555D20D27'))
+
+    -- create sound entity
+    if l_EntityData ~= nil then
+        local l_EntityPos = LinearTransform()
+        l_EntityPos.trans = Vec3(0.0, 0.0, 0.0)
+
+        local l_Entity = EntityManager:CreateEntity(l_EntityData, l_EntityPos)
+
+        if l_Entity ~= nil then
+            l_Entity:Init(Realm.Realm_Client, true)
+            self.m_SoundEntity = SoundEntity(l_Entity)
+        end
+    end
 end
 
 function OOBVision:CreateVisuals()
@@ -67,13 +67,6 @@ function OOBVision:CreateVisuals()
 
   veData.components:add(colorCorrection)
   veData.runtimeComponentCount = veData.runtimeComponentCount + 1
-
-  -- local vignette = VignetteComponentData()
-  -- vignette.enable = true
-  -- vignette.scale = Vec2(2.5, 2.5)
-  -- vignette.exponent = 2.0
-  -- vignette.color = Vec3(0.12, 0.0, 0.0)
-  -- vignette.opacity = 0.4
 
   local fog = FogComponentData()
   fog.enable = true
@@ -108,45 +101,45 @@ function OOBVision:CreateVisuals()
 end
 
 function OOBVision:CreateEntities()
-  self:CreateSound()
-  self:CreateVisuals()
+    self:CreateSound()
+    self:CreateVisuals()
 end
 
 function OOBVision:Enable()
-  if self.m_IsEnabled or self.m_SoundEntity == nil or self.m_VisualsEntity == nil then
-    return
-  end
+    if self.m_IsEnabled or self.m_SoundEntity == nil or self.m_VisualsEntity == nil then
+        return
+    end
 
-  self.m_SoundEntity:FireEvent('Start')
-  self.m_VisualsEntity:FireEvent('Enable')
-  self.m_IsEnabled = true
+    self.m_SoundEntity:FireEvent('Start')
+    self.m_VisualsEntity:FireEvent('Enable')
+    self.m_IsEnabled = true
 end
 
 function OOBVision:Disable()
-  if (not self.m_IsEnabled) or self.m_SoundEntity == nil or self.m_VisualsEntity == nil then
-    self.m_IsEnabled = false
-    return
-  end
+    if (not self.m_IsEnabled) or self.m_SoundEntity == nil or self.m_VisualsEntity == nil then
+        self.m_IsEnabled = false
+        return
+    end
 
-  self.m_SoundEntity:FireEvent('Stop')
-  self.m_VisualsEntity:FireEvent('Disable')
-  self.m_IsEnabled = false
+    self.m_SoundEntity:FireEvent('Stop')
+    self.m_VisualsEntity:FireEvent('Disable')
+    self.m_IsEnabled = false
 end
 
 function OOBVision:Destroy()
-  self:Disable()
+    self:Disable()
 
-  -- destroy sound entity
-  if self.m_SoundEntity ~= nil then
-    self.m_SoundEntity:Destroy()
-    self.m_SoundEntity = nil
-  end
+    -- destroy sound entity
+    if self.m_SoundEntity ~= nil then
+        self.m_SoundEntity:Destroy()
+        self.m_SoundEntity = nil
+    end
 
-  -- destroy visuals entity
-  if self.m_VisualsEntity ~= nil then
-    self.m_VisualsEntity:Destroy()
-    self.m_VisualsEntity = nil
-  end
+    -- destroy visuals entity
+    if self.m_VisualsEntity ~= nil then
+        self.m_VisualsEntity:Destroy()
+        self.m_VisualsEntity = nil
+    end
 end
 
 return OOBVision()
