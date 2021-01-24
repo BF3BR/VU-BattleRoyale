@@ -19,10 +19,10 @@ function UICleanup:__init()
     self.m_UITeamSupportTagCompData = ResourceManager:RegisterInstanceLoadHandler(Guid('4EA75D30-765F-11E0-A82A-C41FAD23BE85'), Guid('97C619F1-A2E3-DC55-02F2-BA61BA3CD36B'), self, self.OnUI3dIconCompData)
     -- self.m_UIInteractionCompData = ResourceManager:RegisterInstanceLoadHandler(Guid('35DF1891-EB38-11DF-9230-E11388AEEF3E'), Guid('F159BE6E-611C-C1D7-2E49-DC50AD11A42A'), self, self.OnUI3dIconCompData)
 
-	-- requires build 17490 
-	-- as soon as we get a new vext version we should require it (in the mod.json), otherwise players with an older build would still see the nametags
-	self.m_UIDrawFriendlyNametag =  Hooks:Install('UI:DrawFriendlyNametag', 1, self, self.OnUIDrawFriendlyNametag)
-	self.m_UIDrawEnemyNametag =  Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag)
+    -- requires build 17490 
+    -- as soon as we get a new vext version we should require it (in the mod.json), otherwise players with an older build would still see the nametags
+    self.m_UIDrawFriendlyNametag =  Hooks:Install('UI:DrawFriendlyNametag', 1, self, self.OnUIDrawFriendlyNametag)
+    self.m_UIDrawEnemyNametag =  Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag)
 end
 
 function UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
@@ -75,11 +75,11 @@ function UICleanup:OnUI3dIconCompData(p_Instance)
 end
 
 function UICleanup:OnUIDrawFriendlyNametag(p_Hook)
-	p_Hook:Return()
+    p_Hook:Return()
 end
 
 function UICleanup:OnUIDrawEnemyNametag(p_Hook)
-	p_Hook:Return()
+    p_Hook:Return()
 end
 
 -- Edit selected UIScreenAsset's nodes
