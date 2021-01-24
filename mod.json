@@ -8,5 +8,5 @@
     "Dependencies": {
         "veniceext": "^1.0.8"
     },
-    "RequiredXPacks": ["5"]
+    "RequiredXPacks": [5]
 }
