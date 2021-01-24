@@ -17,10 +17,12 @@ function UICleanup:__init()
     self.m_UI3dLaserTagCompData = ResourceManager:RegisterInstanceLoadHandler(Guid('60FAA143-B12F-11E0-99F6-E16488F9EB8F'), Guid('6866048A-4072-0257-D6D1-21785F9E8C10'), self, self.OnUI3dIconCompData)
     self.m_UIMapmarkertagCompData = ResourceManager:RegisterInstanceLoadHandler(Guid('5D9E85C0-CBC1-11DF-97A3-94A49B4BAE71'), Guid('6F016F11-321C-EDD4-6D66-8F65485808E7'), self, self.OnUI3dIconCompData)
     self.m_UITeamSupportTagCompData = ResourceManager:RegisterInstanceLoadHandler(Guid('4EA75D30-765F-11E0-A82A-C41FAD23BE85'), Guid('97C619F1-A2E3-DC55-02F2-BA61BA3CD36B'), self, self.OnUI3dIconCompData)
-    --self.m_UIInteractionCompData = ResourceManager:RegisterInstanceLoadHandler(Guid('35DF1891-EB38-11DF-9230-E11388AEEF3E'), Guid('F159BE6E-611C-C1D7-2E49-DC50AD11A42A'), self, self.OnUI3dIconCompData)
+    -- self.m_UIInteractionCompData = ResourceManager:RegisterInstanceLoadHandler(Guid('35DF1891-EB38-11DF-9230-E11388AEEF3E'), Guid('F159BE6E-611C-C1D7-2E49-DC50AD11A42A'), self, self.OnUI3dIconCompData)
 
-    -- temp. till the hooks for enemy and friendly nametags work.
-    self.m_UINametagCompData = ResourceManager:RegisterInstanceLoadHandler(Guid('2E84F3D0-8DB2-11DF-9DBF-90F9B54D8E77'), Guid('1061D316-4366-BCA2-27D6-50D43543A41D'), self, self.OnUI3dIconCompData)
+	-- requires build 17490 
+	-- as soon as we get a new vext version we should require it (in the mod.json), otherwise players with an older build would still see the nametags
+	self.m_UIDrawFriendlyNametag =  Hooks:Install('UI:DrawFriendlyNametag', 1, self, self.OnUIDrawFriendlyNametag)
+	self.m_UIDrawEnemyNametag =  Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag)
 end
 
 function UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
@@ -70,6 +72,14 @@ function UICleanup:OnUI3dIconCompData(p_Instance)
     p_Instance.trackerHudRadiusX = 20
     p_Instance.trackerHudRadiusY = 20
     p_Instance.circularSnap = true
+end
+
+function UICleanup:OnUIDrawFriendlyNametag(p_Hook)
+	p_Hook:Return()
+end
+
+function UICleanup:OnUIDrawEnemyNametag(p_Hook)
+	p_Hook:Return()
 end
 
 -- Edit selected UIScreenAsset's nodes
