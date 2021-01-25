@@ -236,7 +236,7 @@ function VuBattleRoyaleServer:SetupRconVariables()
         ["vars.teamKillValueForKick"] = "0",
         ["vars.teamKillValueIncrease"] = "0",
         ["vars.teamKillValueDecreasePerSecond"] = "0",
-        ["vars.idleTimeout"] = "300",
+        ["vars.idleTimeout"] = "0",
         ["vars.3pCam"] = "false",
         ["vars.killCam"] = "false",
         ["vars.roundStartPlayerCount"] = "0",

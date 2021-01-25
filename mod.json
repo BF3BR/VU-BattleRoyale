@@ -4,7 +4,7 @@
     "Authors": [ "KVN", "Flash_Hit", "breaknix", "Janssent" ],
     "Version": "1.0.0",
     "HasVeniceEXT": true,
-    "HasWebUI": false,
+    "HasWebUI": true,
     "Dependencies": {
         "veniceext": "^1.0.8"
     },

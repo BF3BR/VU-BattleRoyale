@@ -1,15 +1,16 @@
 class "VuBattleRoyaleClient"
 
-require ("__shared/Utils/LevelNameHelper")
+require("__shared/Utils/LevelNameHelper")
 
-require ("__shared/Configs/MapsConfig")
+require("__shared/Configs/MapsConfig")
 
-require ("__shared/Helpers/GameStates")
+require("__shared/Helpers/GameStates")
 
-require ("UICleanup")
-require ("ClientCommands")
-require ("Gunship")
-require ("Helpers/LootPointHelper")
+require("UICleanup")
+require("ClientCommands")
+require("Gunship")
+require("Helpers/LootPointHelper")
+require('CachedJsExecutor')
 
 function VuBattleRoyaleClient:__init()
     -- Extension events
@@ -22,6 +23,9 @@ function VuBattleRoyaleClient:__init()
 
     -- The current gamestate, it's read-only and can only be changed by the SERVER
     self.m_GameState = GameStates.None
+
+    self.m_UiOnPlayerYaw = CachedJsExecutor('OnPlayerYaw(%s)', 0)
+    self.m_UiOnPlayerPos = CachedJsExecutor('OnPlayerPos(%s)', nil)
 end
 
 -- ==========
@@ -36,17 +40,16 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
     self:RegisterEvents()
 
     -- Initialize the WebUI
-    -- WebUI:Init()
+    WebUI:Init()
 
     -- Show the WebUI
-    -- WebUI:Show()
+    WebUI:Show()
 end
 
 function VuBattleRoyaleClient:OnExtensionUnloaded()
     self:UnregisterCommands()
     self:UnregisterEvents()
 end
-
 
 -- ==========
 -- Console Commands
@@ -56,10 +59,9 @@ function VuBattleRoyaleClient:RegisterCommands()
     self.m_PosCommand = Console:Register("vubr_pos", "Get the current position for the player", ClientCommands.PlayerPosition)
 end
 
-function VuBattleRoyaleClient:UnregisterCommands()
+function VuBattleRoyaleClient:UnregisterCommands() 
     Console:Deregister("vubr_pos")
 end
-
 
 -- ==========
 -- Events
@@ -78,22 +80,56 @@ function VuBattleRoyaleClient:RegisterEvents()
 
     -- Player Events
     self.m_PlayerConnectedEvent = Events:Subscribe('Player:Connected', self, self.OnPlayerConnected)
+
+    -- UI Events
+    self.m_UIDrawHudEvent = Events:Subscribe('UI:DrawHud', self, self.OnUIDrawHud)
 end
 
-function VuBattleRoyaleClient:UnregisterEvents()
+function VuBattleRoyaleClient:UnregisterEvents() end
+
+function VuBattleRoyaleClient:OnLevelDestroy() end
+
+function VuBattleRoyaleClient:OnLevelLoaded() end
+
+function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime) 
+    self:PushLocalPlayerPos()
+    self:PushLocalPlayerYaw()
+end
+
+function VuBattleRoyaleClient:OnUIDrawHud()
 
 end
 
-function VuBattleRoyaleClient:OnLevelDestroy()
+function VuBattleRoyaleClient:PushLocalPlayerPos()
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == nil then return end
 
+    if s_LocalPlayer.alive == false then return end
+    local s_LocalSoldier = s_LocalPlayer.soldier
+    if s_LocalSoldier == nil then return end
+
+    local s_SoldierLinearTransform = s_LocalSoldier.worldTransform
+
+    local s_Position = s_SoldierLinearTransform.trans
+
+    local s_Table = {x = s_Position.x, y = s_Position.y, z = s_Position.z}
+
+    self.m_UiOnPlayerPos:Update(json.encode(s_Table))
+    return
 end
 
-function VuBattleRoyaleClient:OnLevelLoaded()
+function VuBattleRoyaleClient:PushLocalPlayerYaw()
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == nil or (s_LocalPlayer.soldier == nil and s_LocalPlayer.corpse == nil) then 
+        return
+    end
 
-end
+    local s_Camera = ClientUtils:GetCameraTransform()
 
-function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
-
+    -- TODO: Put this in utils
+    local s_YawRad = (math.atan(s_Camera.forward.z, s_Camera.forward.x) + (math.pi / 2)) % (2 * math.pi)
+    self.m_UiOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
+    return
 end
 
 function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
@@ -103,12 +139,11 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
         return
     end
 
-    if p_OldGameState == p_GameState then
-        return
-    end
+    if p_OldGameState == p_GameState then return end
 
-    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
-    
+    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] ..
+              " to " .. GameStatesStrings[p_GameState])
+
     self.m_GameState = p_GameState
 
     -- Update the WebUI
@@ -116,30 +151,24 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 end
 
 function VuBattleRoyaleClient:OnCleanupEntities(p_EntityType)
-    if p_EntityType == nil then
-        return
-    end
+    if p_EntityType == nil then return end
 
     local s_Entities = {}
 
     local s_Iterator = EntityManager:GetIterator(p_EntityType)
     local s_Entity = s_Iterator:Next()
     while s_Entity do
-        s_Entities[#s_Entities+1] = Entity(s_Entity)
+        s_Entities[#s_Entities + 1] = Entity(s_Entity)
         s_Entity = s_Iterator:Next()
     end
 
     for _, l_Entity in pairs(s_Entities) do
-        if l_Entity ~= nil then
-            l_Entity:Destroy()
-        end
+        if l_Entity ~= nil then l_Entity:Destroy() end
     end
 end
 
 function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
-    if p_Player == nil then
-        return
-    end
+    if p_Player == nil then return end
 
     NetEvents:Send("VuBattleRoyale:PlayerConnected")
 end

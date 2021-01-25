@@ -1,0 +1,26 @@
+#miniMap {
+    position: absolute;
+    bottom: 5vh;
+    left: 15vw;
+    height: 10vw;
+    width: 10vw;
+    background: rgba(0,0,0,0.1);
+    transition: all .2s ease;
+
+    &.open {
+        position: absolute;
+        bottom: 5vh;
+        left: 50%;
+        transform: translate(-50%, 0);
+        height: 90vh;
+        width: 90vh;
+        background: rgba(0, 0, 0, 0.1);
+        transition: all .2s ease;
+    }
+
+    #minimapCanvas {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+}
