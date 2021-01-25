@@ -64,7 +64,7 @@ function PhaseManagerShared:MoveOuterCircle(p_Timer)
 end
 
 function PhaseManagerShared:Destroy()
-    -- TODO
+    self:ClearAllTimers()
 end
 
 return PhaseManagerShared

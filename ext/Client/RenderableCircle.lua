@@ -12,7 +12,7 @@ function RenderableCircle:__init(p_Center, p_Radius)
     self.m_NumPointsToDraw = nil
     self.m_ThetaStep = nil
     self.m_DrawCircleClosed = false
-    self.m_UseRaycasts = true
+    self.m_UseRaycasts = CircleConfig.UseRaycasts
 
     self.m_RenderPoints = {}
     self.m_PrevStartingAngle = nil

@@ -1,13 +1,16 @@
-require ('__shared/Utils/Timers')
-require ('__shared/PhaseManagerShared')
-require ('__shared/Circle')
-require ('Visuals/OOBVision')
+require('__shared/Utils/Timers')
+require('__shared/Configs/CircleConfig')
+require('__shared/PhaseManagerShared')
+require('__shared/Circle')
+require('Visuals/OOBVision')
+require('Visuals/CircleRenderers')
 
-class ('PhaseManagerClient', PhaseManagerShared)
+class('PhaseManagerClient', PhaseManagerShared)
 
 function PhaseManagerClient:__init()
     PhaseManagerShared.__init(self)
 
+    self.m_RenderInnerCircle = CircleConfig.RenderInnerCircle
     self.m_OOBVision = OOBVision
 
     self:RegisterEvents()
@@ -33,11 +36,12 @@ function PhaseManagerClient:OnUpdateState(p_State)
     -- check if all phases are completed
     if p_State.Duration < 0 then
         self.m_Completed = true
-    -- start moving the outer circle if in Moving Subphase
+        -- start moving the outer circle if in Moving Subphase
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
         local l_RenderDelay = 0.3
         self.m_PrevOuterCircle = Circle(self.m_OuterCircle.m_Center, self.m_OuterCircle.m_Radius)
-        self:SetTimer('MovingCircle', g_Timers:Sequence(l_RenderDelay, math.floor(phaseDuration / l_RenderDelay) + 1 , self, self.MoveOuterCircle))
+        self:SetTimer('MovingCircle', g_Timers:Sequence(l_RenderDelay, math.floor(phaseDuration / l_RenderDelay) + 1,
+                                                        self, self.MoveOuterCircle))
     end
 
     -- update inner circle data
@@ -48,20 +52,16 @@ function PhaseManagerClient:OnUpdateState(p_State)
 end
 
 -- 
-function PhaseManagerClient:OnPreSim(deltaTime, p_UpdatePass)
-    if p_UpdatePass ~= UpdatePass.UpdatePass_PreSim or self:IsIdle() then
-        return
-    end
+function PhaseManagerClient:OnPreSim(p_DeltaTime, p_UpdatePass)
+    if p_UpdatePass ~= UpdatePass.UpdatePass_PreSim or self:IsIdle() then return end
 
     -- get local player position
     local p_Player = PlayerManager:GetLocalPlayer()
-    if p_Player == nil or p_Player.soldier == nil then
-        return
-    end
-    local p_PlayerPos = player.soldier.transform.trans
+    if p_Player == nil or p_Player.soldier == nil then return end
+    local l_PlayerPos = player.soldier.transform.trans
 
     -- toggle OOB vision
-    if self.m_OuterCircle:IsInnerPoint(p_PlayerPos) then
+    if self.m_OuterCircle:IsInnerPoint(l_PlayerPos) then
         self.m_OOBVision:Disable()
     else
         self.m_OOBVision:Enable()
@@ -69,28 +69,24 @@ function PhaseManagerClient:OnPreSim(deltaTime, p_UpdatePass)
 
     -- TODO
     -- calculate render points for both circles
-    -- self.m_OuterCircle:CalculateRenderPoints(p_PlayerPos)
+    -- self.m_OuterCircle:CalculateRenderPoints(l_PlayerPos)
     -- if not self.m_Completed then
-    --     self.m_InnerCircle:CalculateRenderPoints(p_PlayerPos)
+    --     self.m_InnerCircle:CalculateRenderPoints(l_PlayerPos)
     -- end
 end
 
 -- Renders the two circles
 function PhaseManagerClient:OnRender()
-    if self:IsIdle() then
-        return
-    end
+    if self:IsIdle() then return end
 
     -- get local player position
     local l_Player = PlayerManager:GetLocalPlayer()
-    if l_Player == nil or l_Player.soldier == nil then
-        return
-    end
+    if l_Player == nil or l_Player.soldier == nil then return end
     local l_PlayerPos = l_Player.soldier.transform.trans
 
     -- render circles
     self.m_OuterCircle:Render(OuterCircleRenderer, l_PlayerPos)
-    if not self.m_Completed then
+    if self.m_RenderInnerCircle and not self.m_Completed then
         self.m_InnerCircle:Render(InnerCircleRenderer, l_PlayerPos)
     end
 end
