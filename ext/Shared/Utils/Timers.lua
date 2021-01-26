@@ -18,22 +18,16 @@ function TimerManager:Update()
 
     local l_Now = SharedUtils:GetTimeMS()
     for id, timer in pairs(self.m_Timers) do
-        if timer ~= nil then
-          timer:Update(l_Now)
-        end
+        if timer ~= nil then timer:Update(l_Now) end
 
-      if self.__CreatedDuringUpdate then
-        return self:Update()
-      end
+        if self.__CreatedDuringUpdate then return self:Update() end
     end
     self.__Updating = false
 end
 
 -- Removes a timer from the manager
 function TimerManager:Remove(p_Timer)
-    if self.m_Timers[p_Timer.m_Id] == nil then
-        return
-    end
+    if self.m_Timers[p_Timer.m_Id] == nil then return end
 
     self.m_Timers[p_Timer.m_Id] = nil
 
@@ -54,11 +48,7 @@ function TimerManager:RemoveAll()
     end
 
     -- destroy all timers
-    for id, timer in pairs(self.m_Timers) do
-        if timer ~= nil then
-            timer:Destroy()
-        end
-    end
+    for id, timer in pairs(self.m_Timers) do if timer ~= nil then timer:Destroy() end end
 
     self.m_ActiveTimers = 0
     self.m_Timers = {}
@@ -71,15 +61,11 @@ function TimerManager:CreateTimer(p_Delay, p_Cycles, p_UserData, p_Callback)
     self.m_Timers[timer.m_Id] = timer
 
     -- update flags
-    if self.__Updating then
-        self.__CreatedDuringUpdate = true
-    end
+    if self.__Updating then self.__CreatedDuringUpdate = true end
 
     -- subscribe to update event if needed
     self.m_ActiveTimers = self.m_ActiveTimers + 1
-    if self.m_UpdateEvent == nil then
-        self.m_UpdateEvent = Events:Subscribe('Engine:Update', self, self.Update)
-    end
+    if self.m_UpdateEvent == nil then self.m_UpdateEvent = Events:Subscribe('Engine:Update', self, self.Update) end
 
     return timer
 end
@@ -133,17 +119,13 @@ function Timer:Update(now)
         end
 
         -- move to next cycle
-        if not self:Next() then
-            self:Destroy()
-        end
+        if not self:Next() then self:Destroy() end
     end
 end
 
 -- Move to the next cycle
 function Timer:Next()
-    if self.m_Cycles == 0 then
-        return true
-    end
+    if self.m_Cycles == 0 then return true end
 
     -- increment cycle counter
     self.m_CurrentCycle = self.m_CurrentCycle + 1
@@ -164,15 +146,11 @@ function Timer:Destroy()
 end
 
 -- Returns the time elapsed since the beginning
-function Timer:Elapsed()
-    return (SharedUtils:GetTimeMS() - self.m_StartedAt) / 1000
-end
+function Timer:Elapsed() return (SharedUtils:GetTimeMS() - self.m_StartedAt) / 1000 end
 
 -- Returns the time remaining until the timer is completed
 function Timer:Remaining()
-    if self.m_Cycles == 0 then
-        return 0
-    end
+    if self.m_Cycles == 0 then return 0 end
 
     return math.max(0, (self.m_Cycles - self.m_CurrentCycle - 1) * self.m_Delay) / 1000
 end

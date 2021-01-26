@@ -1,5 +1,5 @@
-require('__shared/Utils/Timers')
 require('__shared/Configs/CircleConfig')
+require('__shared/Utils/Timers')
 require('__shared/PhaseManagerShared')
 require('__shared/Circle')
 require('Visuals/OOBVision')
@@ -9,11 +9,17 @@ class('PhaseManagerClient', PhaseManagerShared)
 
 function PhaseManagerClient:__init()
     PhaseManagerShared.__init(self)
-
-    self.m_RenderInnerCircle = CircleConfig.RenderInnerCircle
-    self.m_OOBVision = OOBVision
-
     self:RegisterEvents()
+end
+
+function PhaseManagerClient:RegisterVars()
+    PhaseManagerShared.RegisterVars(self)
+
+    self.m_InnerCircle = RenderableCircle()
+    self.m_OuterCircle = RenderableCircle()
+
+    self.m_OOBVision = OOBVision
+    self.m_RenderInnerCircle = CircleConfig.RenderInnerCircle
 end
 
 function PhaseManagerClient:RegisterEvents()
@@ -36,8 +42,8 @@ function PhaseManagerClient:OnUpdateState(p_State)
     -- check if all phases are completed
     if p_State.Duration < 0 then
         self.m_Completed = true
-        -- start moving the outer circle if in Moving Subphase
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
+        -- start moving the outer circle
         local l_RenderDelay = 0.3
         self.m_PrevOuterCircle = Circle(self.m_OuterCircle.m_Center, self.m_OuterCircle.m_Radius)
         self:SetTimer('MovingCircle', g_Timers:Sequence(l_RenderDelay, math.floor(phaseDuration / l_RenderDelay) + 1,
@@ -70,7 +76,7 @@ function PhaseManagerClient:OnPreSim(p_DeltaTime, p_UpdatePass)
     -- TODO
     -- calculate render points for both circles
     -- self.m_OuterCircle:CalculateRenderPoints(l_PlayerPos)
-    -- if not self.m_Completed then
+    -- if self.m_RenderInnerCircle and not self.m_Completed then
     --     self.m_InnerCircle:CalculateRenderPoints(l_PlayerPos)
     -- end
 end

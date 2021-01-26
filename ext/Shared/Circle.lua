@@ -50,7 +50,7 @@ end
 
 -- Returns a copy of this circle
 function Circle:Clone()
-    return Circle(self.m_Center, self.m_Radius)
+    return Circle(self.m_Center:Clone(), self.m_Radius)
 end
 
 return Circle

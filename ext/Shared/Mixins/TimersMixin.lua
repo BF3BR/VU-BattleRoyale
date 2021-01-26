@@ -1,8 +1,6 @@
-class ('TimersMixin')
+class('TimersMixin')
 
-function TimersMixin:__init()
-    self.m__Timers = {}
-end
+function TimersMixin:__init() self.m__Timers = {} end
 
 -- Sets a new timer
 function TimersMixin:SetTimer(p_Key, p_Timer)
@@ -25,9 +23,7 @@ end
 
 -- Destroys every timer and empties the timers table
 function TimersMixin:ClearAllTimers()
-    for l_Key, _ in pairs(self.m__Timers) do
-        self:ClearTimer(l_Key)
-    end
+    for l_Key, _ in pairs(self.m__Timers) do self:ClearTimer(l_Key) end
 
     self.m__Timers = {}
 end

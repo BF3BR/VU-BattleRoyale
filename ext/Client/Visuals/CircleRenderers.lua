@@ -1,7 +1,7 @@
 local l_WhiteColor = Vec3(1, 1, 1)
 local l_BlueColor = Vec3(0, 0, 1)
 
--- 
+-- Draws a Rectangle using DebugRenderer
 function DrawRect(p_From, p_To, p_Height, p_Opacity, p_Color)
     p_Height = p_Height or 1
     p_Opacity = p_Opacity or 0.25

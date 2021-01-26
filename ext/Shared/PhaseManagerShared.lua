@@ -7,18 +7,19 @@ PhaseManagerNetEvents = {
     UpdateState = 1
 }
 
-function PhaseManagerShared:__init(p_InnerCircle, p_OuterCircle, p_InitialDelay)
+function PhaseManagerShared:__init()
     TimersMixin.__init(self)
-    self:RegisterVars(p_InnerCircle, p_OuterCircle, p_InitialDelay)
+    self:RegisterVars()
 end
 
-function PhaseManagerShared:RegisterVars(p_InnerCircle, p_OuterCircle, p_InitialDelay)
-    self.m_InnerCircle = p_InnerCircle
-    self.m_OuterCircle = p_OuterCircle
-    self.m_InitialDelay = p_InitialDelay
-
+function PhaseManagerShared:RegisterVars()
+    self.m_InnerCircle = Circle()
+    self.m_OuterCircle = Circle()
     self.m_PrevOuterCircle = Circle()
-    self.m_Phases = nil
+
+    -- TODO
+    self.m_Phases = MapsConfig.XP5_003.Phases
+    self.m_InitialDelay = MapsConfig.XP5_003.BeforeFirstCircleDelay
     self.m_PhaseIndex = 1
     self.m_SubphaseIndex = SubphaseType.InitialDelay
     self.m_Completed = false
@@ -28,6 +29,7 @@ function PhaseManagerShared:GetCurrentPhase()
     return self.m_Phases[self.m_PhaseIndex]
 end
 
+-- 
 function PhaseManagerShared:GetCurrentDelay()
     if self.m_Completed then
         return -1
@@ -43,21 +45,23 @@ function PhaseManagerShared:GetCurrentDelay()
     end
 end
 
+-- 
 function PhaseManagerShared:IsIdle()
     return self.m_PhaseIndex == 1 and self.m_SubphaseIndex == SubphaseType.InitialDelay
 end
 
+-- Moves the outer circle (danger zone)
 function PhaseManagerShared:MoveOuterCircle(p_Timer)
     local l_Prc = math.min(p_Timer:Elapsed() / self:GetCurrentDelay(), 1.0)
 
     -- new radius
-    local l_RadiusDiff = self.m_PrevOuterCircle.radius - self.m_InnerCircle.radius
-    local l_NewRadius = self.m_InnerCircle.radius + l_RadiusDiff * (1 - l_Prc)
+    local l_RadiusDiff = self.m_PrevOuterCircle.m_Radius - self.m_InnerCircle.m_Radius
+    local l_NewRadius = self.m_InnerCircle.m_Radius + l_RadiusDiff * (1 - l_Prc)
 
     -- new center
-    local l_Dx = self.m_InnerCircle.center.x - self.m_PrevOuterCircle.center.x
-    local l_Dz = self.m_InnerCircle.center.z - self.m_PrevOuterCircle.center.z
-    local l_NewCenter = self.m_PrevOuterCircle.center + Vec3(l_Prc * l_Dx, 0, l_Prc * l_Dz)
+    local l_Dx = self.m_InnerCircle.m_Center.x - self.m_PrevOuterCircle.m_Center.x
+    local l_Dz = self.m_InnerCircle.m_Center.z - self.m_PrevOuterCircle.m_Center.z
+    local l_NewCenter = self.m_PrevOuterCircle.m_Center + Vec3(l_Prc * l_Dx, 0, l_Prc * l_Dz)
 
     -- update outer circle
     self.outerCircle:Update(l_NewCenter, l_NewRadius)
