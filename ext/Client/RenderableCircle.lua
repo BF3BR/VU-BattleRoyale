@@ -1,5 +1,7 @@
 require('__shared/Configs/CircleConfig')
+require('__shared/Utils/MathHelper')
 require('__shared/Circle')
+require('Helpers/RaycastHelper')
 
 local TWO_PI = 2 * math.pi
 
@@ -43,7 +45,7 @@ end
 -- 
 function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
     -- calculate angle to center
-    local l_PlayerAngle = VectorAngle(self.center, p_PlayerPos)
+    local l_PlayerAngle = MathHelper:VectorAngle(self.center, p_PlayerPos)
     local closestCircumPoint = self:CircumferencePoint(l_PlayerAngle, p_PlayerPos.y)
 
     -- check if it should draw the circle
@@ -72,7 +74,7 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
 
         -- update y using raycasts
         if m_UseRaycasts then
-            l_Point.y = GetYFromRaycast(l_Point)
+            l_Point.y = g_RaycastHelper:GetY(l_Point)
         end
 
         table.insert(self.m_RenderPoints, l_Point)
@@ -85,7 +87,7 @@ function RenderableCircle:Render(p_Renderer, p_PlayerPos)
 
     if self.m_ShouldDrawPoints and #self.m_RenderPoints > 1 then
         for i = 2, #self.m_RenderPoints do
-            p_Renderer(self.m_RenderPoints[i-1], self.m_RenderPoints[i], DoubleDistance(p_PlayerPos, self.m_RenderPoints[i]))
+            p_Renderer(self.m_RenderPoints[i-1], self.m_RenderPoints[i], MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]))
         end
     end
 end

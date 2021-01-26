@@ -2,9 +2,9 @@ require('__shared/Configs/CircleConfig')
 require('__shared/Utils/Timers')
 require('__shared/PhaseManagerShared')
 require('__shared/Circle')
-require('RenderableCircle')
 require('Visuals/OOBVision')
 require('Visuals/CircleRenderers')
+require('RenderableCircle')
 
 class('PhaseManagerClient', PhaseManagerShared)
 
