@@ -33,6 +33,7 @@ function InteractiveManDown:OnVeniceSoldierHealthModuleData(p_Instance)
 	PoseConstraintsData(p_Instance.interactiveManDownPoseConstraints).crouchPose  = false
 	p_Instance.manDownStateHealthPoints = 100.0
 	p_Instance.immortalTimeAfterSpawn = 0.0
+	p_Instance.timeForCorpse = 1.0
 	AntRef(SoldierHealthModuleBinding(p_Instance.binding).interactiveManDown).assetId = 357042550 --not working 
 end
 
