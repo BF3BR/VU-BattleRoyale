@@ -4,6 +4,8 @@ class 'UICleanup'
 
 function UICleanup:__init()
     self.m_UIPushScreenHook =  Hooks:Install('UI:PushScreen', 999, self, self.OnUIPushScreen)
+    self.m_HudScreen = ResourceManager:RegisterInstanceLoadHandler(Guid('D05E6145-8816-11DF-AA1B-BA7094D44A63'), Guid('E63B81E3-67FA-F6C3-2980-D899055DAB0C'), self, self.OnHudScreen)
+    self.m_HudMpScreen = ResourceManager:RegisterInstanceLoadHandler(Guid('3343E3E3-F3C4-11DF-90D5-D8126D045289'), Guid('241F5AE9-2027-508E-98D1-506928AA1E3A'), self, self.OnHudMpScreen)
     self.m_HudConquestScreen = ResourceManager:RegisterInstanceLoadHandler(Guid('0C14516A-02F0-4A81-B88B-6010A6A6DDC6'), Guid('2A2B8447-C938-407A-951A-C3BA099F0374'), self, self.OnHudConquestScreen)
 
     -- need healing/ repair/ ammo indicators
@@ -41,14 +43,20 @@ function UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGra
     end
 end
 
-function UICleanup:OnHudConquestScreen(p_Instance)
-    -- self:EraseNodes(p_Instance, {
-    --     'TicketCounter',
-    --     'HudBackgroundWidget',
-    --     'CapturepointManager',
-    --     'ObjectiveBar',
-    -- })
+function UICleanup:OnHudScreen(p_Instance)
+    self:KeepNodes(p_Instance, {'InteractionManager'})
+end
 
+function UICleanup:OnHudMpScreen(p_Instance)
+    self:KeepNodes(p_Instance, {
+        'Health',
+        'Ammo',
+        'LatencyIndicator',
+        'AdminYellMessage'
+    })
+end
+
+function UICleanup:OnHudConquestScreen(p_Instance)
     self:KeepNodes(p_Instance, {'Minimap'})
 end
 
