@@ -95,7 +95,12 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 
         p_Info.damage = 0.0
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+    else
+	if soldier.isInteractiveManDown and info.damage >= soldier.health and giverInfo.giver ~= nil then
+            soldier:ForceDead()
+	end
     end
+
 end
 
 function VuBattleRoyaleServer:OnPartitionLoaded(p_Partition)
