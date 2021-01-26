@@ -4,7 +4,7 @@ require ('__shared/Mixins/TimersMixin')
 class ('PhaseManagerShared', TimersMixin)
 
 PhaseManagerNetEvents = {
-    UpdateState = 1
+    UpdateState = 'PM:UpdateState'
 }
 
 function PhaseManagerShared:__init()

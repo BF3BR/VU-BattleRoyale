@@ -7,6 +7,8 @@ require ("__shared/Configs/ServerConfig")
 
 require ("__shared/Helpers/GameStates")
 
+require ("PhaseManagerServer")
+
 require ("Match")
 
 function VuBattleRoyaleServer:__init()
@@ -23,6 +25,8 @@ function VuBattleRoyaleServer:__init()
 
     -- Create a new match
     self.m_Match = Match(self)
+
+    self.m_PhaseManager = PhaseManagerServer()
 
     -- Sets the custom gamemode name
     ServerUtils:SetCustomGameModeName("Battle Royale")

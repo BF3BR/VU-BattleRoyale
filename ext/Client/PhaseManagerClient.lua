@@ -2,6 +2,7 @@ require('__shared/Configs/CircleConfig')
 require('__shared/Utils/Timers')
 require('__shared/PhaseManagerShared')
 require('__shared/Circle')
+require('RenderableCircle')
 require('Visuals/OOBVision')
 require('Visuals/CircleRenderers')
 
@@ -27,7 +28,7 @@ function PhaseManagerClient:RegisterEvents()
     Events:Subscribe('UI:DrawHud', self, self.OnRender)
     Events:Subscribe('Level:Destroy', self, self.Destroy)
     Events:Subscribe('Extension:Unloading', self, self.Destroy)
-    NetEvents:Subscribe(NetEventsTypes.UpdateState, self, self.OnUpdateState)
+    NetEvents:Subscribe(PhaseManagerNetEvents.UpdateState, self, self.OnUpdateState)
 end
 
 -- Updates the state of the PhaseManager from the server

@@ -25,14 +25,14 @@ function RenderableCircle:Update(p_Center, p_Radius)
 
     -- update step length
     self.m_Circumference = TWO_PI * p_Radius
-    local drawArcLen = math.min(self.m_Circumference, g_Config.circle.maxArcLen * g_Config.circle.maxRenderPoints)
-    local arcLength = drawArcLen / g_Config.circle.maxRenderPoints
-    self.m_DrawCircleClosed = arcLength <= g_Config.circle.maxArcLen
-    arcLength = math.max(g_Config.circle.minArcLen, math.min(g_Config.circle.maxArcLen, arcLength))
+    local drawArcLen = math.min(self.m_Circumference, CircleConfig.ArcLen.Max * CircleConfig.RenderPoints.Max)
+    local arcLength = drawArcLen / CircleConfig.RenderPoints.Max
+    self.m_DrawCircleClosed = arcLength <= CircleConfig.ArcLen.Max
+    arcLength = math.max(CircleConfig.ArcLen.Min, math.min(CircleConfig.ArcLen.Max, arcLength))
     local m_NumPointsToDraw = math.floor(drawArcLen / arcLength)
 
     -- calculate final points to draw and
-    m_NumPointsToDraw = math.max(g_Config.circle.minRenderPoints, math.min(g_Config.circle.maxRenderPoints, m_NumPointsToDraw))
+    m_NumPointsToDraw = math.max(CircleConfig.RenderPoints.Min, math.min(CircleConfig.RenderPoints.Max, m_NumPointsToDraw))
     arcLength = drawArcLen / m_NumPointsToDraw
     self.m_NumPointsToDraw = m_NumPointsToDraw
 
@@ -47,7 +47,7 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
     local closestCircumPoint = self:CircumferencePoint(l_PlayerAngle, p_PlayerPos.y)
 
     -- check if it should draw the circle
-    if closestCircumPoint:Distance(p_PlayerPos) >= g_Config.circle.maxDrawDistance then
+    if closestCircumPoint:Distance(p_PlayerPos) >= CircleConfig.DrawDistance then
         self.m_ShouldDrawPoints = false
         return
     else

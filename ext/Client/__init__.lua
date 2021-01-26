@@ -6,6 +6,8 @@ require ("__shared/Configs/MapsConfig")
 
 require ("__shared/Helpers/GameStates")
 
+require ("PhaseManagerClient")
+
 require ("UICleanup")
 require ("ClientCommands")
 require ("Gunship")
@@ -22,6 +24,8 @@ function VuBattleRoyaleClient:__init()
 
     -- The current gamestate, it's read-only and can only be changed by the SERVER
     self.m_GameState = GameStates.None
+
+    self.m_PhaseManager = PhaseManagerClient()
 end
 
 -- ==========

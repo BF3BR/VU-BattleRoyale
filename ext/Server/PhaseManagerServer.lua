@@ -18,8 +18,8 @@ function PhaseManagerServer:Start()
     self:InitPhase()
 end
 
--- Stops the PhaseManager logic
-function PhaseManagerServer:Stop()
+-- Ends the PhaseManager logic
+function PhaseManagerServer:End()
     self:ClearAllTimers()
 end
 
@@ -65,7 +65,7 @@ function PhaseManagerServer:InitPhase()
     self:ClearTimer('MovingCircle')
 
     -- start the timer for the next phase
-    self:SetTimer('NextSubphase', Timers:Timeout(self:GetCurrentDelay(), self, self.Next))
+    self:SetTimer('NextSubphase', g_Timers:Timeout(self:GetCurrentDelay(), self, self.Next))
 
     if self.m_SubphaseIndex == SubphaseType.Waiting then
         local l_Phase = self:GetCurrentPhase()
@@ -85,7 +85,7 @@ function PhaseManagerServer:InitPhase()
         -- set new safezone
         -- self.m_InnerCircle.m_Center = l_NewCenter
         -- self.m_InnerCircle.m_Radius = l_NewRadius
-        self.m_InnerCircle(l_NewCenter, l_NewRadius)
+        self.m_InnerCircle:Update(l_NewCenter, l_NewRadius)
 
         -- update initial outer circle center
         if self.phaseIndex == 1 then 
@@ -93,7 +93,7 @@ function PhaseManagerServer:InitPhase()
         end
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
         self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
-        self:SetTimer('MovingCircle', Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
+        self:SetTimer('MovingCircle', g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
     end
 
     self:BroadcastState()
