@@ -8,6 +8,11 @@ PhaseManagerNetEvents = {
     UpdateState = 'PM:UpdateState',
 }
 
+PhaseManagerCustomEvents = {
+    Update = 'PhaseManager:Update',
+    CircleMove = 'PhaseManager:CircleMove'
+}
+
 function PhaseManagerShared:__init()
     TimersMixin.__init(self)
 

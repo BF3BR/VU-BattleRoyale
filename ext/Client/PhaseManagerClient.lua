@@ -64,6 +64,13 @@ function PhaseManagerClient:OnUpdateState(p_State)
 
     -- update outer circle data
     self.m_OuterCircle:Update(p_State.OuterCircle.Center, p_State.OuterCircle.Radius)
+
+    -- custom event to inform the rest of the client scripts about the state update
+    Events:DispatchLocal(PhaseManagerCustomEvents.Update, {
+        InnerCircle = p_State.InnerCircle,
+        OuterCircle = p_State.OuterCircle,
+        Duration = p_State.Duration,
+    })
 end
 
 -- 
@@ -103,6 +110,12 @@ function PhaseManagerClient:OnRender()
     if self.m_RenderInnerCircle and not self.m_Completed then
         self.m_InnerCircle:Render(InnerCircleRenderer, l_PlayerPos)
     end
+end
+
+-- Moves the outer circle (danger zone)
+function PhaseManagerClient:MoveOuterCircle(p_Timer)
+    PhaseManagerShared.MoveOuterCircle(self, p_Timer)
+    Events:DispatchLocal(PhaseManagerCustomEvents.CircleMove, self.m_OuterCircle:AsTable())
 end
 
 return PhaseManagerClient
