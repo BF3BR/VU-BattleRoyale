@@ -9,6 +9,7 @@ require ("__shared/Configs/ServerConfig")
 require ("__shared/Helpers/GameStates")
 
 require ("Gunship")
+require ("PhaseManagerServer")
 
 function Match:__init(p_Server)
     -- Save server reference
@@ -43,7 +44,15 @@ function Match:__init(p_Server)
     -- Winner
     self.m_Winner = nil
 
+    -- Gunship
     self.m_Gunship = Gunship(self)
+
+    -- PhaseManagerServer
+    self.m_PhaseManager = PhaseManagerServer()
+
+    self.m_RestartQueue = false
+
+    self.m_IsFadeOutSet = false
 end
 
 
@@ -66,6 +75,15 @@ function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
     s_Callback(self, p_DeltaTime)
 end
 
+function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
+    if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
+        if self.m_RestartQueue then
+            print('INFO: Restart triggered.')
+            local s_Rcon = RCON:SendCommand('mapList.restartRound')
+            self.m_RestartQueue = false
+        end
+    end
+end
 
 -- ==========
 -- Match Logic
@@ -75,6 +93,12 @@ function Match:OnWarmup(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.Warmup] == 0.0 then
         -- TODO: Set the client timer
         -- self.m_Server:SetClientTimer(ServerConfig.WarmupTime)
+    end
+
+    
+    if self.m_UpdateTicks[GameStates.Warmup] >= ServerConfig.WarmupTime - 2.0 and not self.m_IsFadeOutSet then
+        self.m_IsFadeOutSet = true
+        PlayerManager:FadeOutAll(2.0)
     end
 
     if self.m_UpdateTicks[GameStates.Warmup] >= ServerConfig.WarmupTime then
@@ -93,8 +117,8 @@ function Match:OnWarmupToPlane(p_DeltaTime)
         -- TODO: Set the client timer
         --self.m_Server:SetClientTimer(ServerConfig.WarmupToPlaneTime)
 
-        -- Kill all players and disable their ability to spawn
-        -- TODO: self:KillAllPlayers(false)
+        -- Fade out then kill all the players
+        self:UnspawnAllSoldiers()
     end
 
     if self.m_UpdateTicks[GameStates.WarmupToPlane] >= ServerConfig.WarmupToPlaneTime then
@@ -111,10 +135,9 @@ function Match:OnPlane(p_DeltaTime)
         -- TODO: Set the client timer
         -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
 
-        -- TODO: Spawn the plane, set the camera for players and enable players to jump out
         self.m_Gunship:Spawn()
-        
-        self:UnspawnAllSoldiers()
+        PlayerManager:FadeInAll(2.0)
+        self.m_IsFadeOutSet = false
     end
 
     if self.m_UpdateTicks[GameStates.Plane] >= ServerConfig.PlaneTime then
@@ -132,16 +155,14 @@ function Match:OnPlaneToFirstCircle(p_DeltaTime)
         -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
     end
 
-    self:DoWeHaveAWinner()
-
-    local s_LevelName = LevelNameHelper:GetLevelName()
-    if s_LevelName == nil then
-        return
-    end
-
-    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >= MapsConfig[s_LevelName]["BeforeFirstCircleDelay"] then
+    -- No delay needed, Phase Manager solves all of our problems
+    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >= 0.0 then
         self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
         self.m_Server:ChangeGameState(GameStates.Match)
+
+        -- Start the Circle of Death
+        self.m_PhaseManager:Start()
+
         return
     end
 
@@ -163,6 +184,7 @@ function Match:OnMatch(p_DeltaTime)
 
     if self.m_UpdateTicks[GameStates.Match] >= MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] then
         -- TODO: Update the ring state
+        -- Not needed, Phase Manager solves all of our problems
         return
     end
 
@@ -182,6 +204,9 @@ end
 
 function Match:OnEndGame(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.EndGame] == 0.0 then
+        -- End the Circle of Death
+        self.m_PhaseManager:End()
+
         if self.m_Winner ~= nil then
             print('INFO: We have a winner: ' .. self.m_Winner.name)
         else
@@ -196,28 +221,33 @@ function Match:OnEndGame(p_DeltaTime)
     end
 
     if self.m_UpdateTicks[GameStates.EndGame] >= ServerConfig.EndGameTime then
-        -- TODO: Reset the clients UI
-
-        -- Reset
-        self.m_UpdateTicks[GameStates.None] = 0.0
-        self.m_UpdateTicks[GameStates.Warmup] = 0.0
-        self.m_UpdateTicks[GameStates.WarmupToPlane] = 0.0
-        self.m_UpdateTicks[GameStates.Plane] = 0.0
-        self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
-        self.m_UpdateTicks[GameStates.Match] = 0.0
         self.m_UpdateTicks[GameStates.EndGame] = 0.0
-        self.m_CircleIndex = 1
-        self.m_Winner = nil
 
-        self:Cleanup()
+        -- Queue round reset
+        self.m_RestartQueue = true
 
-        self:SpawnWarmupAllPlayers()
-
-        self.m_Server:ChangeGameState(GameStates.None)
         return
     end
 
     self.m_UpdateTicks[GameStates.EndGame] = self.m_UpdateTicks[GameStates.EndGame] + p_DeltaTime
+end
+
+function Match:OnRestartRound()
+    self.m_RestartQueue = false
+
+    self.m_UpdateTicks[GameStates.None] = 0.0
+    self.m_UpdateTicks[GameStates.Warmup] = 0.0
+    self.m_UpdateTicks[GameStates.WarmupToPlane] = 0.0
+    self.m_UpdateTicks[GameStates.Plane] = 0.0
+    self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
+    self.m_UpdateTicks[GameStates.Match] = 0.0
+    self.m_UpdateTicks[GameStates.EndGame] = 0.0
+    self.m_CircleIndex = 1
+    self.m_Winner = nil
+
+    self:Cleanup()
+
+    self.m_Server:ChangeGameState(GameStates.None)
 end
 
 -- ==========
@@ -248,8 +278,9 @@ function Match:DoWeHaveAWinner()
         ::_on_loop_continue_::
     end
 
-    if s_AlivePlayersCount <= 1 and s_Winner ~= nil then
-        self.m_Winner = s_Winner
+    self.m_Winner = s_Winner
+
+    if s_AlivePlayersCount <= 1 then
         self.m_Server:ChangeGameState(GameStates.EndGame)
     end
 end

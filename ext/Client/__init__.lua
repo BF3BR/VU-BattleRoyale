@@ -111,6 +111,10 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
         return
     end
 
+    if self.m_GameState == p_GameState then
+        return
+    end
+
     print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
     
     self.m_GameState = p_GameState

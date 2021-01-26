@@ -7,8 +7,6 @@ require ("__shared/Configs/ServerConfig")
 
 require ("__shared/Helpers/GameStates")
 
-require ("PhaseManagerServer")
-
 require ("Match")
 
 function VuBattleRoyaleServer:__init()
@@ -26,10 +24,8 @@ function VuBattleRoyaleServer:__init()
     -- Create a new match
     self.m_Match = Match(self)
 
-    self.m_PhaseManager = PhaseManagerServer()
-
     -- Sets the custom gamemode name
-    ServerUtils:SetCustomGameModeName("Battle Royale")
+    ServerUtils:SetCustomGameModeName("Baguette")
 end
 
 function VuBattleRoyaleServer:OnExtensionLoaded()
@@ -60,6 +56,10 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     -- Level events
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
+    self.m_LevelDestroyEvent = Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
+
+    -- UpdateManager events
+    self.m_UpdateManagerUpdateEvent = Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
 end
 
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
@@ -70,6 +70,11 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
     if self.m_GameState == GameStates.None and s_PlayerCount >= ServerConfig.MinPlayersToStart then
         self:ChangeGameState(GameStates.Warmup)
     end
+end
+
+function VuBattleRoyaleServer:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
+    -- Update the match
+    self.m_Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 end
 
 function VuBattleRoyaleServer:OnPlayerFindBestSquad(p_Hook, p_Player)
@@ -88,7 +93,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
     end
 
     -- If we are in warmup we should disable all damages
-    if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
+    if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.WarmupToPlane then
         if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
             return
         end
@@ -132,6 +137,11 @@ end
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
     self:DisablePreRound()
     self:SetupRconVariables()
+end
+
+function VuBattleRoyaleServer:OnLevelDestroy()
+    -- Reset the match
+    self.m_Match:OnRestartRound()
 end
 
 function VuBattleRoyaleServer:DisablePreRound()
