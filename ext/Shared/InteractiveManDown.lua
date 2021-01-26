@@ -12,6 +12,16 @@ function InteractiveManDown:__init()
 	self.m_SoldierEntityDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('A9FFE6B4-257F-4FE8-A950-B323B50D2112'), self, self.OnSoldierEntityData)
 	self.m_ReviveCustomizeSoldierDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('4EF77C47-6512-11E0-9AE6-EF0E747BA479'), Guid('B407182A-1C98-13DE-49A3-EE7F7EADFB4D'), self, self.OnReviveCustomizeSoldierData)
 	
+	self.m_MeleeEntityCommonDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('B6CDC48A-3A8C-11E0-843A-AC0656909BCB'), Guid('F21FB5EA-D7A6-EE7E-DDA2-C776D604CD2E'), self, self.OnMeleeEntityCommonData)
+	
+end
+
+-- disable knife animation
+function InteractiveManDown:OnMeleeEntityCommonData(p_Instance)
+	p_Instance = MeleeEntityCommonData(p_Instance)
+	p_Instance:MakeWritable()
+	p_Instance.meleeAttackDistance = 0
+	p_Instance.maxAttackHeightDifference = 0
 end
 
 -- allow the interaction with soldiers which are in the interactiveManDown state on the EntityInteractionComponentData
@@ -33,6 +43,7 @@ function InteractiveManDown:OnVeniceSoldierHealthModuleData(p_Instance)
 	PoseConstraintsData(p_Instance.interactiveManDownPoseConstraints).crouchPose  = false
 	p_Instance.manDownStateHealthPoints = 100.0
 	p_Instance.immortalTimeAfterSpawn = 0.0
+	p_Instance.timeForCorpse = 1.0
 	AntRef(SoldierHealthModuleBinding(p_Instance.binding).interactiveManDown).assetId = 357042550 --not working 
 end
 

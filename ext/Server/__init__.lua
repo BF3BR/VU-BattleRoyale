@@ -100,12 +100,24 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 
         p_Info.damage = 0.0
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
-    else
-        if p_Soldier.isInteractiveManDown and p_Info.damage >= p_Soldier.health and p_GiverInfo.giver ~= nil then
-            p_Soldier:ForceDead()
-        end
     end
-
+    if p_GiverInfo == nil or p_GiverInfo.giver == nil or p_Soldier.player == nil then
+        return	
+    end
+    if p_GiverInfo.giver.teamId ~= p_Soldier.player.teamId or p_GiverInfo.giver.squadId ~= p_Soldier.player.squadId then
+        NetEvents:SendToLocal('ConfirmHit', p_GiverInfo.giver, p_Info.damage)
+        if p_Soldier.health <= p_Info.damage then
+            if p_Soldier.isInteractiveManDown == false then
+                NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player.name)
+            else
+                p_Soldier:ForceDead()
+                NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player.name)
+            end
+        end
+    elseif p_GiverInfo.giver ~= p_Soldier.player then
+        p_Info.damage = 0.0
+        p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+    end
 end
 
 function VuBattleRoyaleServer:OnPartitionLoaded(p_Partition)
