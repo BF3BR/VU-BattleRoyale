@@ -4,12 +4,15 @@ require ('__shared/Mixins/TimersMixin')
 class ('PhaseManagerShared', TimersMixin)
 
 PhaseManagerNetEvents = {
-    UpdateState = 'PM:UpdateState'
+    InitialState = 'PM:InitialState',
+    UpdateState = 'PM:UpdateState',
 }
 
 function PhaseManagerShared:__init()
     TimersMixin.__init(self)
+
     self:RegisterVars()
+    self:RegisterEvents()
 end
 
 function PhaseManagerShared:RegisterVars()
@@ -23,6 +26,10 @@ function PhaseManagerShared:RegisterVars()
     self.m_PhaseIndex = 1
     self.m_SubphaseIndex = SubphaseType.InitialDelay
     self.m_Completed = false
+end
+
+function PhaseManagerShared:RegisterEvents()
+    -- empty
 end
 
 function PhaseManagerShared:GetCurrentPhase()
@@ -64,7 +71,7 @@ function PhaseManagerShared:MoveOuterCircle(p_Timer)
     local l_NewCenter = self.m_PrevOuterCircle.m_Center + Vec3(l_Prc * l_Dx, 0, l_Prc * l_Dz)
 
     -- update outer circle
-    self.outerCircle:Update(l_NewCenter, l_NewRadius)
+    self.m_OuterCircle:Update(l_NewCenter, l_NewRadius)
 end
 
 function PhaseManagerShared:Destroy()

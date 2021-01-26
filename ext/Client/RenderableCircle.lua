@@ -45,7 +45,7 @@ end
 -- 
 function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
     -- calculate angle to center
-    local l_PlayerAngle = MathHelper:VectorAngle(self.center, p_PlayerPos)
+    local l_PlayerAngle = MathHelper:VectorAngle(self.m_Center, p_PlayerPos)
     local closestCircumPoint = self:CircumferencePoint(l_PlayerAngle, p_PlayerPos.y)
 
     -- check if it should draw the circle
@@ -70,10 +70,10 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
     self.m_RenderPoints = {}
     for i = 0, self.m_NumPointsToDraw do
         local l_Angle = l_StartingAngle + i * self.m_ThetaStep
-        local l_Point = self:CircumferencePoint(l_Angle, playerPos.y)
+        local l_Point = self:CircumferencePoint(l_Angle, p_PlayerPos.y)
 
         -- update y using raycasts
-        if m_UseRaycasts then
+        if self.m_UseRaycasts then
             l_Point.y = g_RaycastHelper:GetY(l_Point)
         end
 
@@ -83,7 +83,7 @@ end
 
 -- 
 function RenderableCircle:Render(p_Renderer, p_PlayerPos)
-    -- DebugRenderer:DrawSphere(self.center + Vec3(0, 180, 0), 1, Vec4(1, 0, 0, 0.5), false, false)
+    -- DebugRenderer:DrawSphere(self.m_Center + Vec3(0, 180, 0), 1, Vec4(1, 0, 0, 0.5), false, false)
 
     if self.m_ShouldDrawPoints and #self.m_RenderPoints > 1 then
         for i = 2, #self.m_RenderPoints do

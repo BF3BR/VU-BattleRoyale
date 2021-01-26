@@ -43,8 +43,8 @@ end
 -- Returns circle's data as a table
 function Circle:AsTable()
     return {
-        center = self.m_Center,
-        radius = self.m_Radius
+        Center = self.m_Center,
+        Radius = self.m_Radius
     }
 end
 

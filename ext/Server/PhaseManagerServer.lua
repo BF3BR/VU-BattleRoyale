@@ -8,8 +8,18 @@ function PhaseManagerServer:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
 
     -- TODO
-    self.m_InnerCircle = Circle(Vec3(148, 0, -864), 1500)
+    self.m_InnerCircle = Circle(Vec3(148, 0, -864), 300)
     self.m_OuterCircle = Circle(Vec3(148, 0, -864), 3000)
+
+    -- Debug
+    Events:Subscribe('Player:Chat',
+                     function(player, recipientMask, message) if message == '!pmstart' then self:Start() end end)
+end
+
+function PhaseManagerServer:RegisterEvents()
+    PhaseManagerShared.RegisterEvents(self)
+
+    NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.BroadcastState)
 end
 
 -- Starts the PhaseManager logic
@@ -19,9 +29,7 @@ function PhaseManagerServer:Start()
 end
 
 -- Ends the PhaseManager logic
-function PhaseManagerServer:End()
-    self:ClearAllTimers()
-end
+function PhaseManagerServer:End() self:ClearAllTimers() end
 
 -- 
 function PhaseManagerServer:Next()
@@ -76,24 +84,19 @@ function PhaseManagerServer:InitPhase()
         if self.phaseIndex == 1 then
             l_NewCenter = Vec3(148, 0, -864) -- TODO pick random point from polygon, this is a fixed initial center for Kiasar
         else
-            -- self.m_OuterCircle.m_Center = self.m_InnerCircle.m_Center
-            -- self.m_OuterCircle.m_Radius = self.m_InnerCircle.m_Radius
             self.m_OuterCircle = self.m_InnerCircle:Clone()
-            l_NewCenter = self.m_InnerCircle:RandomPoint(l_NewRadius)
+            l_NewCenter = self.m_InnerCircle:RandomInnerPoint(l_NewRadius)
         end
 
         -- set new safezone
-        -- self.m_InnerCircle.m_Center = l_NewCenter
-        -- self.m_InnerCircle.m_Radius = l_NewRadius
         self.m_InnerCircle:Update(l_NewCenter, l_NewRadius)
 
         -- update initial outer circle center
-        if self.phaseIndex == 1 then 
-            self.m_OuterCircle.m_Center = l_NewCenter
-        end
+        if self.phaseIndex == 1 then self.m_OuterCircle.m_Center = l_NewCenter end
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
         self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
-        self:SetTimer('MovingCircle', g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
+        self:SetTimer('MovingCircle',
+                      g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
     end
 
     self:BroadcastState()
@@ -110,32 +113,38 @@ function PhaseManagerServer:Finalize()
 end
 
 -- Broadcasts PhaseManager's state to all players
-function PhaseManagerServer:BroadcastState()
-    local l_Duration = -1
+function PhaseManagerServer:BroadcastState(p_Player)
+    local l_Duration = 0
     local l_Timer = self:GetTimer('NextSubphase')
 
     -- Send remaning time to complete
-    if l_Timer == nil then l_Duration = l_Timer:Remaining() end
+    if l_Timer ~= nil then l_Duration = l_Timer:Remaining() end
 
-    NetEvents:BroadcastLocal(PhaseManagerNetEvents.UpdateState, {
+    local l_Data = {
         PhaseIndex = self.m_PhaseIndex,
         SubphaseIndex = self.m_SubphaseIndex,
         InnerCircle = self.m_InnerCircle:AsTable(),
         OuterCircle = self.m_OuterCircle:AsTable(),
         Duration = l_Duration
-    })
+    }
+
+    if p_Player ~= nil then
+        NetEvents:SendToLocal(PhaseManagerNetEvents.UpdateState, p_Player, l_Data)
+    else
+        NetEvents:BroadcastLocal(PhaseManagerNetEvents.UpdateState, l_Data)
+    end
 end
 
 -- Damages every player outside of the outer circle
 function PhaseManagerServer:ApplyDamage()
     if self:IsIdle() then return end
 
-    local l_Damage = self.GetCurrentPhase().Damage
+    local l_Damage = self:GetCurrentPhase().Damage
     for _, l_Player in ipairs(PlayerManager:GetPlayers()) do
         if l_Player.soldier ~= nil then
-            if not self.m_OuterCircle:IsPointInside(l_Player.soldier.transform.trans) then
+            if not self.m_OuterCircle:IsInnerPoint(l_Player.soldier.transform.trans) then
                 local l_NewHealth = l_Player.soldier.health - l_Damage
-                player.soldier.health = math.max(0, l_NewHealth)
+                l_Player.soldier.health = math.max(0, l_NewHealth)
             end
         end
     end

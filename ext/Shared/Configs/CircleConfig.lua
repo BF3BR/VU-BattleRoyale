@@ -1,6 +1,6 @@
 CircleConfig = {
     -- Render the inner circle too, using a more subtle rendering style
-    RenderInnerCircle = true,
+    RenderInnerCircle = false,
 
     -- Use raycasts to calculate the ground level. If not, then the player's Y is used
     UseRaycasts = true,

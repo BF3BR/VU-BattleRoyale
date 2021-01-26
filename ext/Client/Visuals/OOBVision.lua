@@ -137,4 +137,4 @@ function OOBVision:Destroy()
     end
 end
 
-return OOBVision()
+return OOBVision
