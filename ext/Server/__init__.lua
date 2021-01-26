@@ -110,8 +110,8 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
             if p_Soldier.isInteractiveManDown == false then
                 NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player.name)
             else
-                p_Soldier:ForceDead()
                 NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player.name)
+                p_Soldier:ForceDead()
             end
         end
     elseif p_GiverInfo.giver ~= p_Soldier.player then

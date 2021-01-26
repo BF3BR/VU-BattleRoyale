@@ -5,6 +5,7 @@ require ("__shared/Configs/MapsConfig")
 
 require ("__shared/DropWeapons")
 require ("__shared/RemoveVehicles")
+require ("__shared/InteractiveManDown")
 
 function VuBattleRoyaleShared:__init()
     -- Extension events
