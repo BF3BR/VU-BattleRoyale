@@ -1,7 +1,8 @@
 class 'Circle'
 
 function Circle:__init(p_Center, p_Radius)
-    self:Update(p_Center or Vec3(0, 0, 0), p_Radius or 1)
+    self.m_Center = p_Center or Vec3(0, 0, 0)
+    self.m_Radius = p_Radius or 1
 end
 
 -- Updates circle's data

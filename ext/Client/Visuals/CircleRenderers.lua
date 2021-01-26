@@ -1,6 +1,10 @@
+require("__shared/Configs/CircleConfig")
+
 local l_WhiteColor = Vec3(1, 1, 1)
--- local l_BlueColor = Vec3(0.3, 0, 1)
 local l_BlueColor = Vec3(0.1, 0.3, 1)
+-- local l_BlueColor = Vec3(0.3, 0, 1)
+
+local l_DoubleDrawDistance = CircleConfig.DrawDistance * CircleConfig.DrawDistance
 
 -- Draws a Rectangle using DebugRenderer
 function DrawRect(p_From, p_To, p_Height, p_Opacity, p_Color)
@@ -28,9 +32,11 @@ end
 -- 
 function OuterCircleRenderer(p_From, p_To, p_DoubleDist)
     local l_Opacity = 0.16
-    if p_DoubleDist > 500 then l_Opacity = MathUtils:Lerp(0, l_Opacity, 1 - (math.min(1.0, p_DoubleDist / 1200))) end
+    if p_DoubleDist > l_DoubleDrawDistance * 0.2 then
+        l_Opacity = MathUtils:Lerp(0, l_Opacity, 1 - (math.min(1.0, p_DoubleDist / (l_DoubleDrawDistance * 0.95))))
+    end
 
     local l_Up = Vec3(0, 0.2, 0)
-    DrawRect(p_From + l_Up, p_To + l_Up, 20, l_Opacity, l_BlueColor)
+    DrawRect(p_From + l_Up, p_To + l_Up, CircleConfig.Height, l_Opacity, l_BlueColor)
     DrawRect(p_From, p_To, 0.2, l_Opacity * 1.5, l_BlueColor)
 end

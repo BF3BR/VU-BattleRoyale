@@ -6,11 +6,14 @@ CircleConfig = {
     UseRaycasts = true,
 
     -- The distance from which the circle will be visible
-    DrawDistance = 100,
+    DrawDistance = 150,
+
+    -- The height of the circle
+    Height = 200,
 
     -- The length of each arc that is used to draw the circles
-    ArcLen = { Min = 1.2, Max = 4.2},
+    ArcLen = { Min = 1.2, Max = 12},
 
     -- The number of points used to draw the circles
-    RenderPoints = { Min = 3, Max = 17}
+    RenderPoints = { Min = 7, Max = 23},
 }

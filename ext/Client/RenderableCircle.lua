@@ -5,7 +5,7 @@ require('Helpers/RaycastHelper')
 
 local TWO_PI = 2 * math.pi
 
-class ('RenderableCircle', Circle)
+class('RenderableCircle', Circle)
 
 function RenderableCircle:__init(p_Center, p_Radius)
     Circle.__init(self, p_Center, p_Radius)
@@ -15,6 +15,7 @@ function RenderableCircle:__init(p_Center, p_Radius)
     self.m_ThetaStep = nil
     self.m_DrawCircleClosed = false
     self.m_UseRaycasts = CircleConfig.UseRaycasts
+    self.m_MaxArcLength = CircleConfig.ArcLen.Max
 
     self.m_RenderPoints = {}
     self.m_PrevStartingAngle = nil
@@ -22,19 +23,27 @@ function RenderableCircle:__init(p_Center, p_Radius)
 end
 
 -- 
-function RenderableCircle:Update(p_Center, p_Radius)
+function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex)
     Circle.Update(self, p_Center, p_Radius)
+
+    -- reduce max arc length based on current phase index
+    if p_PhaseIndex ~= nil then
+        self.m_MaxArcLength = (0.9 ^ p_PhaseIndex) * CircleConfig.ArcLen.Max
+    end
 
     -- update step length
     self.m_Circumference = TWO_PI * p_Radius
-    local drawArcLen = math.min(self.m_Circumference, CircleConfig.ArcLen.Max * CircleConfig.RenderPoints.Max)
+    local drawArcLen = math.min(self.m_Circumference, self.m_MaxArcLength * CircleConfig.RenderPoints.Max)
     local arcLength = drawArcLen / CircleConfig.RenderPoints.Max
-    self.m_DrawCircleClosed = arcLength <= CircleConfig.ArcLen.Max
-    arcLength = math.max(CircleConfig.ArcLen.Min, math.min(CircleConfig.ArcLen.Max, arcLength))
+
+    -- check if we should draw the whole circle
+    self.m_DrawCircleClosed = arcLength <= self.m_MaxArcLength
+
+    arcLength = MathUtils:Clamp(arcLength, CircleConfig.ArcLen.Min, self.m_MaxArcLength)
     local m_NumPointsToDraw = math.floor(drawArcLen / arcLength)
 
     -- calculate final points to draw and
-    m_NumPointsToDraw = math.max(CircleConfig.RenderPoints.Min, math.min(CircleConfig.RenderPoints.Max, m_NumPointsToDraw))
+    m_NumPointsToDraw = MathUtils:Clamp(m_NumPointsToDraw, CircleConfig.RenderPoints.Min, CircleConfig.RenderPoints.Max)
     arcLength = drawArcLen / m_NumPointsToDraw
     self.m_NumPointsToDraw = m_NumPointsToDraw
 
@@ -57,13 +66,11 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
     end
 
     -- discritize starting angle
-    local l_StartingAngle = l_PlayerAngle - math.floor(self.m_NumPointsToDraw/2) * self.m_ThetaStep
+    local l_StartingAngle = l_PlayerAngle - math.floor(self.m_NumPointsToDraw / 2) * self.m_ThetaStep
     l_StartingAngle = math.floor(l_StartingAngle / self.m_ThetaStep) * self.m_ThetaStep
 
     -- check if starting angle is the same as before
-    if l_StartingAngle == self.m_PrevStartingAngle then
-        return
-    end
+    if l_StartingAngle == self.m_PrevStartingAngle then return end
     self.m_PrevStartingAngle = l_StartingAngle
 
     -- calculate points
@@ -73,9 +80,7 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
         local l_Point = self:CircumferencePoint(l_Angle, p_PlayerPos.y)
 
         -- update y using raycasts
-        if self.m_UseRaycasts then
-            l_Point.y = g_RaycastHelper:GetY(l_Point)
-        end
+        if self.m_UseRaycasts then l_Point.y = g_RaycastHelper:GetY(l_Point) end
 
         table.insert(self.m_RenderPoints, l_Point)
     end
@@ -87,7 +92,8 @@ function RenderableCircle:Render(p_Renderer, p_PlayerPos)
 
     if self.m_ShouldDrawPoints and #self.m_RenderPoints > 1 then
         for i = 2, #self.m_RenderPoints do
-            p_Renderer(self.m_RenderPoints[i-1], self.m_RenderPoints[i], MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]))
+            p_Renderer(self.m_RenderPoints[i - 1], self.m_RenderPoints[i],
+                       MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]))
         end
     end
 end
