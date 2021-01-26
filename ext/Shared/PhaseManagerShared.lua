@@ -29,7 +29,8 @@ function PhaseManagerShared:RegisterVars()
 end
 
 function PhaseManagerShared:RegisterEvents()
-    -- empty
+    Events:Subscribe('Level:Destroy', self, self.Destroy)
+    Events:Subscribe('Extension:Unloading', self, self.Destroy)
 end
 
 function PhaseManagerShared:GetCurrentPhase()
@@ -76,6 +77,7 @@ end
 
 function PhaseManagerShared:Destroy()
     self:ClearAllTimers()
+    self:RegisterVars()
 end
 
 return PhaseManagerShared

@@ -152,7 +152,6 @@ function Timer:Elapsed() return (SharedUtils:GetTimeMS() - self.m_StartedAt) / 1
 function Timer:Remaining()
     if self.m_Cycles == 0 then return 0 end
 
-    -- local l_Time = (self.m_UpdatedAt + (self.m_Cycles - self.m_CurrentCycle) * (self.m_Delay * 1000)) - SharedUtils:GetTimeMS()
     local l_Time = (self.m_StartedAt + (self.m_Cycles * self.m_Delay)) - SharedUtils:GetTimeMS()
     return math.max(0, l_Time / 1000)
 end

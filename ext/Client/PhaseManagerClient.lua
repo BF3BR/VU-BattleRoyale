@@ -27,15 +27,16 @@ function PhaseManagerClient:RegisterEvents()
     self.m_LevelLoadedEvent = Events:Subscribe('Level:Loaded', self, self.RequestInitialState)
     Events:Subscribe('UpdateManager:Update', self, self.OnPreSim)
     Events:Subscribe('UI:DrawHud', self, self.OnRender)
-    Events:Subscribe('Level:Destroy', self, self.Destroy)
-    Events:Subscribe('Extension:Unloading', self, self.Destroy)
     NetEvents:Subscribe(PhaseManagerNetEvents.UpdateState, self, self.OnUpdateState)
 end
 
 -- Requests initial state update
 function PhaseManagerClient:RequestInitialState()
     NetEvents:SendLocal(PhaseManagerNetEvents.InitialState)
-    self.m_LevelLoadedEvent:Unsubscribe()
+
+    if self.m_LevelLoadedEvent then
+        self.m_LevelLoadedEvent:Unsubscribe()
+    end
 end
 
 -- Updates the state of the PhaseManager from the server
