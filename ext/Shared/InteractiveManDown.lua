@@ -1,8 +1,8 @@
 class 'InteractiveManDown'
 
 function InteractiveManDown:__init()
-	self.m_EventConnections = require "__shared/EventConnections"
-	self.m_LinkConnections = require "__shared/LinkConnections"
+	self.m_EventConnections = require "__shared/Utils/EventConnections"
+	self.m_LinkConnections = require "__shared/Utils/LinkConnections"
 	
 	self.m_NewSoldierEntityDataGuid = MathUtils:RandomGuid()
 	self.m_CoopManDownM9Guid = MathUtils:RandomGuid()
