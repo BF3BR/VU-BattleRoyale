@@ -10,16 +10,15 @@ function PhaseManagerServer:RegisterVars()
     -- TODO
     self.m_InnerCircle = Circle(Vec3(148, 0, -864), 300)
     self.m_OuterCircle = Circle(Vec3(148, 0, -864), 3000)
-
-    -- Debug
-    Events:Subscribe('Player:Chat',
-                     function(player, recipientMask, message) if message == '!pmstart' then self:Start() end end)
 end
 
 function PhaseManagerServer:RegisterEvents()
     PhaseManagerShared.RegisterEvents(self)
 
     NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.BroadcastState)
+
+    -- Debug
+    Events:Subscribe('Player:Chat', self, self.OnChat)
 end
 
 -- Starts the PhaseManager logic
@@ -147,6 +146,13 @@ function PhaseManagerServer:ApplyDamage()
                 l_Player.soldier.health = math.max(0, l_NewHealth)
             end
         end
+    end
+end
+
+-- Starts the PhaseManager from the chat
+function PhaseManagerServer:OnChat(player, recipientMask, message)
+    if message == '!pmstart' then
+        self:Start()
     end
 end
 
