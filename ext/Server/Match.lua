@@ -79,7 +79,14 @@ function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
     if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
         if self.m_RestartQueue then
             print('INFO: Restart triggered.')
-            local s_Rcon = RCON:SendCommand('mapList.restartRound')
+
+            local s_Result = RCON:SendCommand('mapList.restartRound')
+            if #s_Result >= 1 then
+                if s_Result[1] ~= "OK" then
+                    print("INFO: Command: mapList.restartRound returned: " .. s_Result[1])
+                end
+            end
+            
             self.m_RestartQueue = false
         end
     end
