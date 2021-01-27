@@ -30,6 +30,7 @@ end
 
 -- Ends the PhaseManager logic
 function PhaseManagerServer:End()
+    self:ClearAllTimers()
     self:Finalize()
 end
 
@@ -108,7 +109,10 @@ end
 -- 
 function PhaseManagerServer:Finalize()
     self.m_Completed = true
-    self:ClearAllTimers()
+
+    -- clear timers
+    self:ClearTimer('NextSubphase')
+    self:ClearTimer('MovingCircle')
 
     -- Match outer circle with inner circle
     self.m_OuterCircle = self.m_InnerCircle:Clone()
