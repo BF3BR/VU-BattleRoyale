@@ -1,3 +1,4 @@
+require('__shared/Helpers/SubphaseTypes')
 require('__shared/PhaseManagerShared')
 require('__shared/Utils/Timers')
 require('__shared/Circle')
@@ -28,7 +29,9 @@ function PhaseManagerServer:Start()
 end
 
 -- Ends the PhaseManager logic
-function PhaseManagerServer:End() self:ClearAllTimers() end
+function PhaseManagerServer:End()
+    self:Finalize()
+end
 
 -- 
 function PhaseManagerServer:Next()
@@ -98,16 +101,20 @@ function PhaseManagerServer:InitPhase()
                       g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
     end
 
+    self:DebugMessage()
     self:BroadcastState()
 end
 
 -- 
 function PhaseManagerServer:Finalize()
     self.m_Completed = true
+    self:ClearAllTimers()
 
     -- Match outer circle with inner circle
     self.m_OuterCircle = self.m_InnerCircle:Clone()
 
+    -- display debug message and update clients
+    self:DebugMessage()
     self:BroadcastState()
 end
 
@@ -154,6 +161,26 @@ function PhaseManagerServer:OnChat(player, recipientMask, message)
     if message == '!pmstart' then
         self:Start()
     end
+end
+
+-- Prints a debug message about the current status of PhaseManager
+function PhaseManagerServer:DebugMessage()
+    local l_Delay = self:GetCurrentDelay()
+
+    -- check if PhaseManager's work is completed
+    if l_Delay < 0 then
+        print('PM: Completed')
+        return
+    end
+
+    -- debug messages for each SubphaseType
+    local l_Messages = {
+        [SubphaseType.InitialDelay] = 'Initial Delay',
+        [SubphaseType.Waiting] = 'Circle is waiting',
+        [SubphaseType.Moving] = 'Circle is moving',
+    }
+
+    print(string.format('PM: [%d] %s for %.2f seconds', self.m_PhaseIndex, l_Messages[self.m_SubphaseIndex], l_Delay))
 end
 
 return PhaseManagerServer

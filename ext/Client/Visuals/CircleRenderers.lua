@@ -31,7 +31,7 @@ end
 
 -- 
 function OuterCircleRenderer(p_From, p_To, p_DoubleDist)
-    local l_Opacity = 0.16
+    local l_Opacity = CircleConfig.OuterCircleMaxOpacity
     if p_DoubleDist > l_DoubleDrawDistance * 0.2 then
         l_Opacity = MathUtils:Lerp(0, l_Opacity, 1 - (math.min(1.0, p_DoubleDist / (l_DoubleDrawDistance * 0.95))))
     end

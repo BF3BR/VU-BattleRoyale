@@ -16,4 +16,7 @@ CircleConfig = {
 
     -- The number of points used to draw the circles
     RenderPoints = { Min = 7, Max = 23},
+
+    -- The maximum opacity of the outer circle
+    OuterCircleMaxOpacity = 0.28
 }
