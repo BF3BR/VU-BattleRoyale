@@ -25,7 +25,7 @@ function VuBattleRoyaleServer:__init()
     self.m_Match = Match(self)
 
     -- Sets the custom gamemode name
-    ServerUtils:SetCustomGameModeName("Battle Royale")
+    ServerUtils:SetCustomGameModeName("Baguette")
 end
 
 function VuBattleRoyaleServer:OnExtensionLoaded()
@@ -56,6 +56,10 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     -- Level events
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
+    self.m_LevelDestroyEvent = Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
+
+    -- UpdateManager events
+    self.m_UpdateManagerUpdateEvent = Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
 end
 
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
@@ -66,6 +70,11 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
     if self.m_GameState == GameStates.None and s_PlayerCount >= ServerConfig.MinPlayersToStart then
         self:ChangeGameState(GameStates.Warmup)
     end
+end
+
+function VuBattleRoyaleServer:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
+    -- Update the match
+    self.m_Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 end
 
 function VuBattleRoyaleServer:OnPlayerFindBestSquad(p_Hook, p_Player)
@@ -84,11 +93,28 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
     end
 
     -- If we are in warmup we should disable all damages
-    if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
+    if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.WarmupToPlane then
         if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
             return
         end
 
+        p_Info.damage = 0.0
+        p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+    end
+    if p_GiverInfo == nil or p_GiverInfo.giver == nil or p_Soldier.player == nil then
+        return	
+    end
+    if p_GiverInfo.giver.teamId ~= p_Soldier.player.teamId or p_GiverInfo.giver.squadId ~= p_Soldier.player.squadId then
+        NetEvents:SendToLocal('ConfirmHit', p_GiverInfo.giver, p_Info.damage)
+        if p_Soldier.health <= p_Info.damage then
+            if p_Soldier.isInteractiveManDown == false then
+                NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player.name)
+            else
+                NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player.name)
+                p_Soldier:ForceDead()
+            end
+        end
+    elseif p_GiverInfo.giver ~= p_Soldier.player then
         p_Info.damage = 0.0
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
     end
@@ -123,6 +149,11 @@ end
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
     self:DisablePreRound()
     self:SetupRconVariables()
+end
+
+function VuBattleRoyaleServer:OnLevelDestroy()
+    -- Reset the match
+    self.m_Match:OnRestartRound()
 end
 
 function VuBattleRoyaleServer:DisablePreRound()
@@ -246,7 +277,8 @@ function VuBattleRoyaleServer:SetupRconVariables()
         ["vu.ColorCorrectionEnabled"] = "false",
         ["vu.SunFlareEnabled"] = "false",
         ["vu.SuppressionMultiplier"] = "0",
-        ["vu.DestructionEnabled"] = "false",
+        ["vu.DestructionEnabled"] = "true",
+        ["vu.DesertingAllowed"] = "true",
     }
 
     -- Iterate through all of the commands and set their values via rcon

@@ -16,4 +16,14 @@ function TableHelper:empty(table)
     return true
 end
 
+-- Converts an array to a Map
+function TableHelper:ToMap(p_Array, p_Value)
+    local l_Map = {}
+    for _, l_Name in ipairs(p_Array) do
+        l_Map[l_Name] = p_Value
+    end
+
+    return l_Map
+end
+
 return TableHelper

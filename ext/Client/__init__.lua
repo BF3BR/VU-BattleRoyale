@@ -6,11 +6,12 @@ require("__shared/Configs/MapsConfig")
 
 require("__shared/Helpers/GameStates")
 
-require("UICleanup")
-require("ClientCommands")
-require("Gunship")
-require("Helpers/LootPointHelper")
-require('CachedJsExecutor')
+require ("PhaseManagerClient")
+
+require ("UICleanup")
+require ("ClientCommands")
+require ("Gunship")
+require ("Helpers/LootPointHelper")
 
 function VuBattleRoyaleClient:__init()
     -- Extension events
@@ -26,6 +27,8 @@ function VuBattleRoyaleClient:__init()
 
     self.m_UiOnPlayerYaw = CachedJsExecutor('OnPlayerYaw(%s)', 0)
     self.m_UiOnPlayerPos = CachedJsExecutor('OnPlayerPos(%s)', nil)
+    
+    self.m_PhaseManager = PhaseManagerClient()
 end
 
 -- ==========
@@ -144,6 +147,12 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
     print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] ..
               " to " .. GameStatesStrings[p_GameState])
 
+    if self.m_GameState == p_GameState then
+        return
+    end
+
+    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
+    
     self.m_GameState = p_GameState
 
     -- Update the WebUI
