@@ -89,11 +89,13 @@ end
 -- 
 function RenderableCircle:Render(p_Renderer, p_PlayerPos)
     -- DebugRenderer:DrawSphere(self.m_Center + Vec3(0, 180, 0), 1, Vec4(1, 0, 0, 0.5), false, false)
+    local l_RadiusDrawDistance = 6 * (self.m_Radius * self.m_Radius)
+    local l_DoubleDrawDistance = math.min(l_RadiusDrawDistance, CircleConfig.DrawDistance * CircleConfig.DrawDistance)
 
     if self.m_ShouldDrawPoints and #self.m_RenderPoints > 1 then
         for i = 2, #self.m_RenderPoints do
             p_Renderer(self.m_RenderPoints[i - 1], self.m_RenderPoints[i],
-                       MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]))
+                       MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]), l_DoubleDrawDistance)
         end
     end
 end
