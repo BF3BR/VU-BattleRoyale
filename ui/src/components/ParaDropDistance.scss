@@ -1,0 +1,54 @@
+#paraDropDistance {
+    background: rgba(255,255,255,0.15);
+    position: absolute;
+    left: 3vw;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 40vh;
+    width: .5vw;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+    .percentage {
+        background: #fff;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: .5vw;
+    }
+
+    .warnPercentage {
+        background: var(--primary);
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: .5vw;
+        opacity: .75;
+    }
+
+    .distance {
+        position: absolute;
+        left: 1.5vw;
+        width: 4vw;
+        color: #fff;
+        transform: translateY(50%);
+        font-size: 1.3vw;
+        font-weight: 600;
+        text-align: center;
+        height: 3vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-shadow: 0 2px 15px rgba(0, 0, 0, 0.25);
+
+        &::before {
+            content: '-';
+            position: absolute;
+            left: -0.55vw;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #fff;
+            font-weight: 100;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.25);
+        }
+    }
+}

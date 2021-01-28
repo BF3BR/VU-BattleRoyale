@@ -1,17 +1,19 @@
 class "VuBattleRoyaleClient"
 
-require ("__shared/Utils/LevelNameHelper")
+require "__shared/Utils/LevelNameHelper"
 
-require ("__shared/Configs/MapsConfig")
+require "__shared/Configs/MapsConfig"
 
-require ("__shared/Helpers/GameStates")
+require "__shared/Helpers/GameStates"
 
-require ("PhaseManagerClient")
+require "Helpers/LootPointHelper"
 
-require ("UICleanup")
-require ("ClientCommands")
-require ("Gunship")
-require ("Helpers/LootPointHelper")
+require "PhaseManagerClient"
+require "UICleanup"
+require "ClientCommands"
+require "Gunship"
+
+local m_Hud = require "Hud"
 
 function VuBattleRoyaleClient:__init()
     -- Extension events
@@ -24,7 +26,7 @@ function VuBattleRoyaleClient:__init()
 
     -- The current gamestate, it's read-only and can only be changed by the SERVER
     self.m_GameState = GameStates.None
-
+    
     self.m_PhaseManager = PhaseManagerClient()
 end
 
@@ -39,18 +41,13 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
     -- Register all of the events
     self:RegisterEvents()
 
-    -- Initialize the WebUI
-    -- WebUI:Init()
-
-    -- Show the WebUI
-    -- WebUI:Show()
+    m_Hud:OnExtensionLoaded()
 end
 
 function VuBattleRoyaleClient:OnExtensionUnloaded()
     self:UnregisterCommands()
     self:UnregisterEvents()
 end
-
 
 -- ==========
 -- Console Commands
@@ -60,10 +57,9 @@ function VuBattleRoyaleClient:RegisterCommands()
     self.m_PosCommand = Console:Register("vubr_pos", "Get the current position for the player", ClientCommands.PlayerPosition)
 end
 
-function VuBattleRoyaleClient:UnregisterCommands()
+function VuBattleRoyaleClient:UnregisterCommands() 
     Console:Deregister("vubr_pos")
 end
-
 
 -- ==========
 -- Events
@@ -74,7 +70,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_LevelDestroyEvent = Events:Subscribe('Level:Destroy', self, self.OnLevelDestroy)
     self.m_EngineUpdateEvent = Events:Subscribe('Engine:Update', self, self.OnEngineUpdate)
 
-    -- Game State events
+    -- Game State Events
     self.m_GameStateChangedEvent = NetEvents:Subscribe("VuBattleRoyale:GameStateChanged", self, self.OnGameStateChanged)
 
     -- Cleanup Events
@@ -82,22 +78,32 @@ function VuBattleRoyaleClient:RegisterEvents()
 
     -- Player Events
     self.m_PlayerConnectedEvent = Events:Subscribe('Player:Connected', self, self.OnPlayerConnected)
+    self.m_PlayerRespawnEvent = Events:Subscribe('Player:Respawn', self, self.OnPlayerRespawn)
+
+    -- UI Events
+    self.m_InputConceptEventHook = Hooks:Install('UI:InputConceptEvent', 999, self, self.OnInputConceptEvent)
+    self.m_UIDrawHudEvent = Events:Subscribe('UI:DrawHud', self, self.OnUIDrawHud)
+
+    -- PhaseManager Events
+    self.m_PhaseManagerUpdateEvent = Events:Subscribe('PhaseManager:Update', self, self.OnPhaseManagerUpdate)
 end
 
-function VuBattleRoyaleClient:UnregisterEvents()
+function VuBattleRoyaleClient:UnregisterEvents() end
 
+function VuBattleRoyaleClient:OnLevelDestroy() end
+
+function VuBattleRoyaleClient:OnLevelLoaded() end
+
+function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime) 
+    m_Hud:OnEngineUpdate(p_DeltaTime)
 end
 
-function VuBattleRoyaleClient:OnLevelDestroy()
-
+function VuBattleRoyaleClient:OnUIDrawHud() 
+    m_Hud:OnUIDrawHud()
 end
 
-function VuBattleRoyaleClient:OnLevelLoaded()
-
-end
-
-function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
-
+function VuBattleRoyaleClient:OnInputConceptEvent(p_Hook, p_EventType, p_Action) 
+    m_Hud:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
 end
 
 function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
@@ -107,9 +113,10 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
         return
     end
 
-    if p_OldGameState == p_GameState then
-        return
-    end
+    if p_OldGameState == p_GameState then return end
+
+    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] ..
+              " to " .. GameStatesStrings[p_GameState])
 
     if self.m_GameState == p_GameState then
         return
@@ -124,32 +131,34 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 end
 
 function VuBattleRoyaleClient:OnCleanupEntities(p_EntityType)
-    if p_EntityType == nil then
-        return
-    end
+    if p_EntityType == nil then return end
 
     local s_Entities = {}
 
     local s_Iterator = EntityManager:GetIterator(p_EntityType)
     local s_Entity = s_Iterator:Next()
     while s_Entity do
-        s_Entities[#s_Entities+1] = Entity(s_Entity)
+        s_Entities[#s_Entities + 1] = Entity(s_Entity)
         s_Entity = s_Iterator:Next()
     end
 
     for _, l_Entity in pairs(s_Entities) do
-        if l_Entity ~= nil then
-            l_Entity:Destroy()
-        end
+        if l_Entity ~= nil then l_Entity:Destroy() end
     end
 end
 
 function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
-    if p_Player == nil then
-        return
-    end
+    if p_Player == nil then return end
 
     NetEvents:Send("VuBattleRoyale:PlayerConnected")
+end
+
+function VuBattleRoyaleClient:OnPlayerRespawn(p_Player)
+    m_Hud:OnPlayerRespawn(p_Player)
+end
+
+function VuBattleRoyaleClient:OnPhaseManagerUpdate(p_Data)
+    m_Hud:OnPhaseManagerUpdate(p_Data)
 end
 
 return VuBattleRoyaleClient()
