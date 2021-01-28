@@ -13,7 +13,16 @@ function InteractiveManDown:__init()
 	self.m_ReviveCustomizeSoldierDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('4EF77C47-6512-11E0-9AE6-EF0E747BA479'), Guid('B407182A-1C98-13DE-49A3-EE7F7EADFB4D'), self, self.OnReviveCustomizeSoldierData)
 	
 	self.m_MeleeEntityCommonDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('B6CDC48A-3A8C-11E0-843A-AC0656909BCB'), Guid('F21FB5EA-D7A6-EE7E-DDA2-C776D604CD2E'), self, self.OnMeleeEntityCommonData)
-	
+	self.m_InputRestriction = ResourceManager:RegisterInstanceLoadHandler(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('8B5295FF-8770-4587-B436-1F2E71F97F35'), self, self.OnInputRestrictionData)	
+end
+
+function InteractiveManDown:OnInputRestrictionData(p_Instance)
+	p_Instance = InputRestrictionEntityData(p_Instance)
+	p_Instance:MakeWritable()
+	p_Instance.selectWeapon9 = true
+	p_Instance.sprint = false
+	p_Instance.changeWeapon = false
+	p_Instance.zoom = false
 end
 
 -- disable knife animation
@@ -26,11 +35,9 @@ end
 
 -- allow the interaction with soldiers which are in the interactiveManDown state on the EntityInteractionComponentData
 function InteractiveManDown:OnEntityInteractionComponentData(p_Instance)
-	
 	p_Instance = EntityInteractionComponentData(p_Instance)
 	p_Instance:MakeWritable()
 	p_Instance.allowInteractionWithSoldiers = true
-	
 end
 
 -- enable the interactiveManDown state and disable the stand and crouch pose
@@ -42,9 +49,13 @@ function InteractiveManDown:OnVeniceSoldierHealthModuleData(p_Instance)
 	PoseConstraintsData(p_Instance.interactiveManDownPoseConstraints).standPose = false
 	PoseConstraintsData(p_Instance.interactiveManDownPoseConstraints).crouchPose  = false
 	p_Instance.manDownStateHealthPoints = 100.0
-	p_Instance.immortalTimeAfterSpawn = 0.0
+	p_Instance.interactiveManDownThreshold = 100.0
+	p_Instance.manDownStateHealthPoints = 100.0
 	p_Instance.timeForCorpse = 1.0
-	AntRef(SoldierHealthModuleBinding(p_Instance.binding).interactiveManDown).assetId = 357042550 --not working 
+	p_Instance.immortalTimeAfterSpawn = 0.0
+	p_Instance.manDownStateTime = 60.0
+	p_Instance.regenerationRate = 0.0
+	AntRef(SoldierHealthModuleBinding(p_Instance.binding).interactiveManDown).assetId = 357042550
 end
 
 function InteractiveManDown:OnReviveCustomizeSoldierData(p_Instance)
@@ -64,6 +75,10 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
 	-- create EventConnection so it is connected to interactiveManDown
 	p_Instance = SoldierEntityData(p_Instance)
 	p_Instance:MakeWritable()
+
+	-- changing Max Health to 300hp
+	p_Instance.maxHealth = 300
+
 	local s_ManDownConnection = self.m_EventConnections:Create(p_Instance, s_CustomizeSoldierEntityData, -563307660, 206074481, 3) 
 	
 	-- Region add all created to the MPSoldier and Registry of the game
@@ -82,15 +97,15 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
 			s_SoldierBlueprint.eventConnections:erase(i)
 		elseif s_SoldierBlueprint.eventConnections[i].source:Is('SoldierEntityData') and s_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid('8B5295FF-8770-4587-B436-1F2E71F97F35') then
 			-- Remove inputrestriction
-			--[[if s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then -- (OnRevived)
+			if s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then -- (OnRevived)
 				s_SoldierBlueprint.eventConnections[i].targetEvent.id = 1928776733 -- (Deactivate)
 				
 			elseif s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 2030068478 then --(OnReviveAccepted)
 				s_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660 --(OnManDown)
 				s_SoldierBlueprint.eventConnections[i].targetEvent.id = -559281700 --(Activate)
-			else]]
+			else
 				s_SoldierBlueprint.eventConnections:erase(i)
-			--end
+			end
 		end
 	end
 	
