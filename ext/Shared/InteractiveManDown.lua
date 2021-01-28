@@ -7,6 +7,9 @@ function InteractiveManDown:__init()
 	self.m_NewSoldierEntityDataGuid = MathUtils:RandomGuid()
 	self.m_CoopManDownM9Guid = MathUtils:RandomGuid()
 	
+	self.m_LevelLoadResourcesEvent = Events:Subscribe('Level:LoadResources', self, self.OnLevelLoadResources)
+	self.m_ResourceManagerLoadBundlesHook = Hooks:Install('ResourceManager:LoadBundles', 100, self, self.OnResourceManagerLoadBundles)
+
 	self.m_EntityInteractionComponentDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('9C51D42E-94F9-424A-89D2-CBBCA32F1BCE'), self, self.OnEntityInteractionComponentData)
 	self.m_VeniceSoldierHealthModuleDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('705967EE-66D3-4440-88B9-FEEF77F53E77'), self, self.OnVeniceSoldierHealthModuleData)
 	self.m_SoldierEntityDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('A9FFE6B4-257F-4FE8-A950-B323B50D2112'), self, self.OnSoldierEntityData)
@@ -14,6 +17,21 @@ function InteractiveManDown:__init()
 	
 	self.m_MeleeEntityCommonDataCallback = ResourceManager:RegisterInstanceLoadHandler(Guid('B6CDC48A-3A8C-11E0-843A-AC0656909BCB'), Guid('F21FB5EA-D7A6-EE7E-DDA2-C776D604CD2E'), self, self.OnMeleeEntityCommonData)
 	self.m_InputRestriction = ResourceManager:RegisterInstanceLoadHandler(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('8B5295FF-8770-4587-B436-1F2E71F97F35'), self, self.OnInputRestrictionData)	
+end
+
+function InteractiveManDown:OnLevelLoadResources()
+	ResourceManager:MountSuperBundle('spchunks')
+	ResourceManager:MountSuperBundle('levels/coop_010/coop_010')
+end
+	
+function InteractiveManDown:OnResourceManagerLoadBundles(p_HookCtx, p_Bundles, p_Compartment)
+	if #p_Bundles == 1 and p_Bundles[1] == SharedUtils:GetLevelName() then
+		p_Bundles = {
+			'levels/coop_010/coop_010',
+			p_Bundles[1],
+		}
+		p_HookCtx:Pass(bundles, p_Compartment)
+	end
 end
 
 function InteractiveManDown:OnInputRestrictionData(p_Instance)
