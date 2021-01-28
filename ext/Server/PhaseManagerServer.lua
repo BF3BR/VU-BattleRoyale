@@ -88,7 +88,7 @@ function PhaseManagerServer:InitPhase()
             l_NewCenter = Vec3(148, 0, -864) -- TODO pick random point from polygon, this is a fixed initial center for Kiasar
         else
             self.m_OuterCircle = self.m_InnerCircle:Clone()
-            l_NewCenter = self.m_InnerCircle:RandomInnerPoint(l_NewRadius)
+            l_NewCenter = self.m_InnerCircle:RandomInnerPoint(self.m_InnerCircle.m_Radius - l_NewRadius)
         end
 
         -- set new safezone
