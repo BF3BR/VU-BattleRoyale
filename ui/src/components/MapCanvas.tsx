@@ -1,26 +1,41 @@
 import React, { useRef, useEffect, useState } from 'react'
+import Circle from '../helpers/Circle';
+import Vec3 from '../helpers/Vec3';
+
+const arrowImage = new Image();
+arrowImage.src = 'img/compass.svg';
+
+// TODO: Get levelname from server
+const mapImage = new Image();
+mapImage.src = 'img/XP5_003.jpg';
+
+
+// TODO: Load in top left pos using levelname
+const topLeftPos = {
+    x: 667.28,
+    z: -290.44,
+};
+
+const terrainWidthHeight = 2048;
+
+// TODO: Create multiple camHeights
+const camHeight = 600;
 
 const MapCanvas = (props: any) => {
-    const [winWidth, setWinWidth] = useState<number>(0);
-    const [winHeight, setWinHeight] = useState<number>(0);
+    const propsRef = useRef(null);
+    const requestIdRef = useRef(null);
 
-    const canvasRef = useRef(null);
+    /*const [playerLocalPos, setPlayerLocalPos] = useState<Vec3|null>(null);
+    const [playerLocalYaw, setPlayerLocalYaw] = useState<number|null>(null);
 
-    let mapImage = new Image();
-    mapImage.src = 'img/finalimage.jpg';
+    const playerLocalPosRef = useRef(playerLocalPos);
+    const playerLocalYawRef = useRef(playerLocalYaw);*/
 
-    let arrowImage = new Image();
-    arrowImage.src = 'img/up-arrow.svg';
+    const canvasMinimapRef = useRef(null);
+    const canvasCirclesRef = useRef(null);
 
-    var topLeftPos = {
-        x: 654.49,
-        z: -318.81,
-    };
-
-    var terrainWidthHeight = 4096;
-
-    const GetMapPos = (pos: number, topLeftPos: number, canvasSize: number)  => {
-        if (props.open) {
+    const getMapPos = (pos: number, topLeftPos: number, canvasSize: number)  => {
+        if (propsRef.current.open) {
             return (topLeftPos - pos) * (canvasSize / 1250);
         } else {
             return (topLeftPos - pos) * (terrainWidthHeight / 1250);
@@ -28,22 +43,15 @@ const MapCanvas = (props: any) => {
     }
 
     const drawPlayer = (ctx: any, playerMapX: number, playerMapZ: number) => {
-        ctx.save();
-        ctx.shadowColor = "rgba(0,0,0,1)";
-        ctx.shadowBlur = 12;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-        drawCircle(ctx, playerMapX, playerMapZ, ctx.canvas.width, "rgba(255,225,0,0.8)");
-        ctx.restore();
-
-        drawCircle(ctx, playerMapX, playerMapZ, ctx.canvas.width / 4, "rgba(255,255,255,1)");
+        //drawPlayerShape(ctx, playerMapX, playerMapZ, ctx.canvas.width, "rgba(255,225,0,0.8)");
+        //drawPlayerShape(ctx, playerMapX, playerMapZ, ctx.canvas.width / 4, "rgba(255,255,255,1)");
         drawArrow(ctx, playerMapX, playerMapZ);
     }
 
-    const drawCircle = (ctx: any, playerMapX: number, playerMapZ: number, size: number, color: string) => {
+    /*const drawPlayerShape = (ctx: any, playerMapX: number, playerMapZ: number, size: number, color: string) => {
         ctx.beginPath();
 
-        if (props.open) {
+        if (propsRef.current.open) {
             ctx.arc(playerMapX, playerMapZ, size / 80, 0, Math.PI * 2);
         } else {
             ctx.arc(ctx.canvas.width / 2, ctx.canvas.height / 2, size / 20, 0, Math.PI * 2);
@@ -52,93 +60,155 @@ const MapCanvas = (props: any) => {
         ctx.fillStyle = color;
         ctx.fill();
         ctx.closePath();
-    }
+    }*/
 
     const drawArrow = (ctx: any, playerMapX: number, playerMapZ: number) => {
-        var arrowSize = ctx.canvas.width / 60;
+        var arrowWidth = arrowImage.width / ctx.canvas.width * 120;
+        var arrowHeight = arrowImage.height / ctx.canvas.height * 120;
         ctx.save();
 
-        if (props.open) {
+        ctx.shadowColor = "rgba(0,0,0,.7)";
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        if (propsRef.current.open) {
+            arrowWidth = arrowWidth * 3;
+            arrowHeight = arrowHeight * 3;
             ctx.translate(playerMapX, playerMapZ);
-            ctx.rotate(Math.PI / 180 * props.playerYaw);
+            ctx.rotate(Math.PI / 180 * propsRef.current.playerYaw);
             ctx.translate(-(playerMapX), -(playerMapZ));
-            ctx.drawImage(arrowImage, playerMapX - (ctx.canvas.width / 60) + (arrowSize / 2), playerMapZ - (ctx.canvas.width / 45), arrowSize, arrowSize);
+            ctx.drawImage(
+                arrowImage, 
+                playerMapX - (arrowWidth / 2), 
+                playerMapZ - (arrowHeight / 2), 
+                arrowWidth, 
+                arrowHeight
+            );
         } else {
-            arrowSize = arrowSize / 1.4;
-            ctx.drawImage(arrowImage, (ctx.canvas.width / 2) - arrowSize * 2.5, (ctx.canvas.height / 2) - arrowSize * 7, arrowSize * 5, arrowSize * 5);
+            ctx.drawImage(
+                arrowImage, 
+                (ctx.canvas.width / 2) - arrowWidth / 2, 
+                (ctx.canvas.height / 2) - arrowHeight / 2, 
+                arrowWidth, 
+                arrowHeight
+            );
         }
         
         ctx.restore();
     }
     
-    function drawMap(ctx: any, playerMapX: number, playerMapZ: number) {
-        if (props.open) {
-            ctx.drawImage(mapImage, 0, 0, terrainWidthHeight, terrainWidthHeight, 0, 0, ctx.canvas.width, ctx.canvas.height);
-        } else {
-            var buffer = (ctx.canvas.width / 2);
-            var scale = 4;
+    function drawMap(ctx: any, playerMapX: number, playerMapZ: number, circlesCanvas: any) {
+        var buffer = ctx.canvas.width / 2;
 
+        if (propsRef.current.open) {
+            ctx.drawImage(mapImage, 0, 0, terrainWidthHeight, terrainWidthHeight, 0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.drawImage(circlesCanvas, 0, 0, terrainWidthHeight, terrainWidthHeight, 0, 0, ctx.canvas.width, ctx.canvas.height);
+        } else {
             ctx.save();
             ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
-            ctx.rotate(Math.PI / 180 * -props.playerYaw);
+            ctx.rotate(Math.PI / 180 * -propsRef.current.playerYaw);
             ctx.translate(-(ctx.canvas.width / 2), -(ctx.canvas.height / 2));
-
-            playerMapZ = playerMapZ - ctx.canvas.width * scale / 2;
-            playerMapX = playerMapX - ctx.canvas.width * scale / 2;
-            
-            ctx.drawImage(mapImage, 
-                playerMapX - buffer, 
-                playerMapZ  - buffer, 
-                (ctx.canvas.width * scale) + (2 * buffer), 
-                (ctx.canvas.width * scale) + (2 * buffer), 
+            ctx.drawImage(
+                mapImage, 
+                playerMapX - (camHeight / 2), 
+                playerMapZ  - (camHeight / 2), 
+                camHeight, 
+                camHeight, 
                 -buffer, 
                 -buffer, 
                 ctx.canvas.width + (2 * buffer), 
                 ctx.canvas.height + (2 * buffer)
             );
-            
+            ctx.drawImage(
+                circlesCanvas, 
+                playerMapX - (camHeight / 2), 
+                playerMapZ  - (camHeight / 2), 
+                camHeight, 
+                camHeight, 
+                -buffer, 
+                -buffer, 
+                ctx.canvas.width + (2 * buffer), 
+                ctx.canvas.height + (2 * buffer)
+            );
             ctx.restore();
         }
     }
 
-    const draw = (ctx: any, frameCount: number) => {
+    const draw = (ctx: any, circlesCanvas: any) => {
         ctx.canvas.width  = ctx.canvas.offsetWidth;
         ctx.canvas.height = ctx.canvas.offsetHeight;
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        if (props.playerPos !== null) {
-            var pX = GetMapPos(props.playerPos.x, topLeftPos.x, ctx.canvas.width);
-            var pZ = GetMapPos(props.playerPos.z, topLeftPos.z, ctx.canvas.height);
-            drawMap(ctx, pX, pZ);
+        if (propsRef.current !== null && propsRef.current.playerPos !== null) {
+            var pX = getMapPos(propsRef.current.playerPos.x, topLeftPos.x, ctx.canvas.width);
+            var pZ = getMapPos(propsRef.current.playerPos.z, topLeftPos.z, ctx.canvas.height);
+            drawMap(ctx, pX, pZ, circlesCanvas);
             drawPlayer(ctx, pX, pZ);
         }
     }
 
-    window.addEventListener('resize', () => {
-        setWinWidth(window.innerWidth);
-        setWinHeight(window.innerHeight);
-    });
+    function drawSingleCircle(ctx: any, circle: Circle, color: string) {
+        var radius = circle.radius;
+
+        var scaledCenterX = getMapPos(circle.center.x, topLeftPos.x, ctx.canvas.width);
+        var scaledCenterZ = getMapPos(circle.center.z, topLeftPos.z, ctx.canvas.height);
+        
+        ctx.lineWidth = ctx.canvas.width / 600;
+        radius = radius * (terrainWidthHeight / 1250);
+
+        ctx.beginPath();
+        ctx.arc(scaledCenterX, scaledCenterZ, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = color;
+        ctx.stroke();
+    }
+    
+    const drawCircles = (ctx: any) => {
+        ctx.canvas.width = terrainWidthHeight;
+        ctx.canvas.height = terrainWidthHeight;
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+        if (propsRef.current !== null) {
+            if (propsRef.current.innerCircle !== null) {
+                drawSingleCircle(ctx, propsRef.current.innerCircle, '#ffffff');
+            }
+    
+            if (propsRef.current.outerCircle !== null) {
+                drawSingleCircle(ctx, propsRef.current.outerCircle, '#0000ff');
+            }
+        }
+    }
+
+    const tick = () => {
+        let minimapCanvas = canvasMinimapRef.current;
+        let minimapContext = minimapCanvas.getContext('2d');
+
+        let circlesCanvas = canvasCirclesRef.current;
+        let circlesContext = circlesCanvas.getContext('2d');
+
+        drawCircles(circlesContext);
+        draw(minimapContext, circlesCanvas);
+
+        requestIdRef.current = requestAnimationFrame(tick);
+    };
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-        let frameCount: number = 0;
-        let animationFrameId: any = null;
-        
-        //Our draw came here
-        const render = () => {
-            frameCount++
-            draw(context, frameCount)
-            animationFrameId = window.requestAnimationFrame(render)
-        }
-        render()
-
+        requestIdRef.current = requestAnimationFrame(tick);
         return () => {
-            window.cancelAnimationFrame(animationFrameId)
-        }
-    }, [draw, winHeight, winWidth]);
+            cancelAnimationFrame(requestIdRef.current);
+        };
+    }, []);
 
-    return <canvas id="minimapCanvas" ref={canvasRef} {...props} />
+    useEffect(() => {
+        propsRef.current = props;
+    }, [props])
+
+    return (
+        <>
+            <canvas id="minimapCanvas" ref={canvasMinimapRef} />
+            <canvas id="circlesCanvas" ref={canvasCirclesRef} />
+        </>
+    );
 }
 
-export default MapCanvas
+export default MapCanvas;

@@ -350,8 +350,10 @@ function Match:SpawnPlayer(p_Player, p_Transform)
     end
 
     -- Spawn the player with only a knife
+    local s_M9 = ResourceManager:SearchForDataContainer('Weapons/M9/U_M9')
     local s_Knife = ResourceManager:SearchForDataContainer('Weapons/Knife/U_Knife')
-    p_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Knife, {})
+    p_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_M9, {})
+    p_Player:SelectWeapon(WeaponSlot.WeaponSlot_5, s_Knife, {})
     p_Player:SelectWeapon(WeaponSlot.WeaponSlot_7, s_Knife, {})
 
     p_Player:SelectUnlockAssets(s_SoldierAsset, { s_Appearance })

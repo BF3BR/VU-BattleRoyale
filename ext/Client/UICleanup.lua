@@ -52,7 +52,7 @@ function UICleanup:OnHudMpScreen(p_Instance)
         'Health',
         'Ammo',
         'LatencyIndicator',
-        'AdminYellMessage'
+        'AdminYellMessage',
     })
 end
 
