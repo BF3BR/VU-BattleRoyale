@@ -1,7 +1,12 @@
 require "__shared/Configs/CircleConfig"
 
-local l_WhiteColor = Vec3(1, 1, 1)
-local l_BlueColor = Vec3(0.1, 0.3, 1)
+local s_EasingFunctions = require "__shared/Libs/easing"
+local s_WhiteColor = Vec3(1, 1, 1)
+local s_BlueColor = Vec3(0.1, 0.3, 1)
+
+function EasedValue(t)
+    return s_EasingFunctions.inOutQuad(t, 0, 1, 1)
+end
 
 -- Draws a Rectangle using DebugRenderer
 function DrawRect(p_From, p_To, p_Height, p_Opacity, p_Color)
@@ -25,17 +30,17 @@ function InnerCircleRenderer(p_From, p_To, p_DoubleDist, p_DoubleDrawDistance)
         l_Opacity = MathUtils:Lerp(0, l_Opacity, 1 - (math.min(1.0, p_DoubleDist / 500)))
     end
 
-    DrawRect(p_From, p_To, 0.1, l_Opacity, l_WhiteColor)
+    DrawRect(p_From, p_To, 0.1, l_Opacity, s_WhiteColor)
 end
 
 -- 
 function OuterCircleRenderer(p_From, p_To, p_DoubleDist, p_DoubleDrawDistance)
     local l_Opacity = CircleConfig.OuterCircleMaxOpacity
-    if p_DoubleDist > p_DoubleDrawDistance * 0.16 then
-        l_Opacity = MathUtils:Lerp(0.00, l_Opacity, 1 - (math.min(1.0, p_DoubleDist / (p_DoubleDrawDistance * 0.95))))
+    if p_DoubleDist > p_DoubleDrawDistance * 0.12 then
+        l_Opacity = MathUtils:Lerp(0.04, l_Opacity, 1 - EasedValue(math.min(1.0, (p_DoubleDist / p_DoubleDrawDistance) * 1.4)))
     end
 
-    local l_Up = Vec3(0, 0.16, 0)
-    DrawRect(p_From + l_Up, p_To + l_Up, CircleConfig.Height, l_Opacity, l_BlueColor)
-    DrawRect(p_From, p_To, 0.16, l_Opacity * 1.6, l_BlueColor)
+    local l_Up = Vec3(0, 0.1, 0)
+    DrawRect(p_From + l_Up, p_To + l_Up, CircleConfig.Height, l_Opacity, s_BlueColor)
+    DrawRect(p_From, p_To, 0.1, l_Opacity * 1.6, s_BlueColor)
 end

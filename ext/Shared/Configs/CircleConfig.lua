@@ -12,11 +12,14 @@ CircleConfig = {
     Height = 200,
 
     -- The length of each arc that is used to draw the circles
-    ArcLen = { Min = 1.2, Max = 12},
+    ArcLen = { Min = 1.6, Max = 15},
 
     -- The number of points used to draw the circles
     RenderPoints = { Min = 7, Max = 23},
 
     -- The maximum opacity of the outer circle
-    OuterCircleMaxOpacity = 0.28
+    OuterCircleMaxOpacity = 0.28,
+
+    -- Use fog to give the player a better sense of the playable area
+    UseFog = true
 }

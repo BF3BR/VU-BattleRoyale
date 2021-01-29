@@ -11,6 +11,11 @@ function Circle:Update(p_Center, p_Radius)
     self.m_Radius = p_Radius
 end
 
+-- Returns circle's diameter
+function Circle:Diameter()
+    return self.m_Radius * 2
+end
+
 -- Returns a circumference point at a certain angle
 function Circle:CircumferencePoint(p_Angle, p_Y, p_Radius)
     p_Y = p_Y or 0

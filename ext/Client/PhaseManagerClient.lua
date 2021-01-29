@@ -3,11 +3,12 @@ require "__shared/Enums/PhaseManagerEvents"
 require "__shared/Utils/Timers"
 require "__shared/PhaseManagerShared"
 require "__shared/Circle"
-require "Visuals/OOBVision"
+require "Visuals/IOCVision"
+require "Visuals/OOCVision"
 require "Visuals/CircleRenderers"
 require "RenderableCircle"
 
-class ("PhaseManagerClient", PhaseManagerShared)
+class("PhaseManagerClient", PhaseManagerShared)
 
 function PhaseManagerClient:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
@@ -15,7 +16,8 @@ function PhaseManagerClient:RegisterVars()
     self.m_InnerCircle = RenderableCircle()
     self.m_OuterCircle = RenderableCircle()
 
-    self.m_OOBVision = OOBVision()
+    self.m_IOCVision = g_IOCVision
+    self.m_OOCVision = g_OOCVision
     self.m_RenderInnerCircle = CircleConfig.RenderInnerCircle
 
     -- events/hooks
@@ -89,9 +91,9 @@ function PhaseManagerClient:OnPreSim(p_DeltaTime, p_UpdatePass)
 
     -- toggle OOB vision
     if self.m_OuterCircle:IsInnerPoint(l_PlayerPos) then
-        self.m_OOBVision:Disable()
+        self.m_OOCVision:Disable()
     else
-        self.m_OOBVision:Enable()
+        self.m_OOCVision:Enable()
     end
 
     -- calculate render points for both circles

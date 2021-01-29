@@ -1,6 +1,7 @@
-class "OOBVision"
+class "OOCVision"
 
-function OOBVision:__init()
+-- Out of Circle Vision
+function OOCVision:__init()
     self.m_IsEnabled = false
 
     self.m_SoundEntity = nil
@@ -9,13 +10,13 @@ function OOBVision:__init()
     self:RegisterEvents()
 end
 
-function OOBVision:RegisterEvents()
+function OOCVision:RegisterEvents()
     Events:Subscribe("Level:Loaded", self, self.CreateEntities)
     Events:Subscribe("Extension:Unloading", self, self.Destroy)
     Events:Subscribe("Level:Destroy", self, self.Destroy)
 end
 
-function OOBVision:CreateSound()
+function OOCVision:CreateSound()
     if self.m_SoundEntity ~= nil then
         return
     end
@@ -37,7 +38,7 @@ function OOBVision:CreateSound()
     end
 end
 
-function OOBVision:CreateVisuals()
+function OOCVision:CreateVisuals()
     if self.m_VisualsEntity ~= nil then
         return
     end
@@ -74,7 +75,7 @@ function OOBVision:CreateVisuals()
     fog.fogDistanceMultiplier = 1.0
     fog.fogGradientEnable = true
     fog.start = 0
-    fog.endValue = 500
+    fog.endValue = 150
     fog.curve = Vec4(0, 0.5, 5.5, -1)
     fog.fogColorEnable = true
     fog.fogColor = Vec3(1.0, 1.0, 1.0)
@@ -101,12 +102,12 @@ function OOBVision:CreateVisuals()
     end
 end
 
-function OOBVision:CreateEntities()
+function OOCVision:CreateEntities()
     self:CreateSound()
     self:CreateVisuals()
 end
 
-function OOBVision:Enable()
+function OOCVision:Enable()
     if self.m_IsEnabled or self.m_SoundEntity == nil or self.m_VisualsEntity == nil then
         return
     end
@@ -116,7 +117,7 @@ function OOBVision:Enable()
     self.m_IsEnabled = true
 end
 
-function OOBVision:Disable()
+function OOCVision:Disable()
     if (not self.m_IsEnabled) or self.m_SoundEntity == nil or self.m_VisualsEntity == nil then
         self.m_IsEnabled = false
         return
@@ -127,7 +128,7 @@ function OOBVision:Disable()
     self.m_IsEnabled = false
 end
 
-function OOBVision:Destroy()
+function OOCVision:Destroy()
     self:Disable()
 
     -- destroy sound entity
@@ -142,3 +143,5 @@ function OOBVision:Destroy()
         self.m_VisualsEntity = nil
     end
 end
+
+g_OOCVision = OOCVision()
