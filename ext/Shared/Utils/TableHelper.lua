@@ -1,16 +1,18 @@
-class 'TableHelper'
+class "TableHelper"
 
-function TableHelper:contains(table, val)
-    for i = 1, #table do
-        if table[i] == val then
+-- Checks if a table contains a value
+function TableHelper:Contains(p_Table, p_Val)
+    for i = 1, #p_Table do
+        if p_Table[i] == p_Val then
             return true
         end
     end
     return false
 end
 
-function TableHelper:empty(table)
-    for _, _ in pairs(table) do
+-- Checks if a table is empty
+function TableHelper:Empty(p_Table)
+    for _, _ in pairs(p_Table) do
         return false
     end
     return true
@@ -25,5 +27,3 @@ function TableHelper:ToMap(p_Array, p_Value)
 
     return l_Map
 end
-
-return TableHelper

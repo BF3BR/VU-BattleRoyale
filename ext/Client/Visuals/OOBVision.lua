@@ -1,4 +1,4 @@
-class 'OOBVision'
+class "OOBVision"
 
 function OOBVision:__init()
     self.m_IsEnabled = false
@@ -10,16 +10,18 @@ function OOBVision:__init()
 end
 
 function OOBVision:RegisterEvents()
-    Events:Subscribe('Level:Loaded', self, self.CreateEntities)
-    Events:Subscribe('Extension:Unloading', self, self.Destroy)
-    Events:Subscribe('Level:Destroy', self, self.Destroy)
+    Events:Subscribe("Level:Loaded", self, self.CreateEntities)
+    Events:Subscribe("Extension:Unloading", self, self.Destroy)
+    Events:Subscribe("Level:Destroy", self, self.Destroy)
 end
 
 function OOBVision:CreateSound()
-    if self.m_SoundEntity ~= nil then return end
+    if self.m_SoundEntity ~= nil then
+        return
+    end
 
     -- oob sound resource
-    local l_EntityData = ResourceManager:SearchForInstanceByGuid(Guid('0047C675-053C-4D84-860E-661555D20D27'))
+    local l_EntityData = ResourceManager:SearchForInstanceByGuid(Guid("0047C675-053C-4D84-860E-661555D20D27"))
 
     -- create sound entity
     if l_EntityData ~= nil then
@@ -36,7 +38,9 @@ function OOBVision:CreateSound()
 end
 
 function OOBVision:CreateVisuals()
-    if self.m_VisualsEntity ~= nil then return end
+    if self.m_VisualsEntity ~= nil then
+        return
+    end
 
     local veData = VisualEnvironmentEntityData()
     veData.enabled = true
@@ -59,7 +63,7 @@ function OOBVision:CreateVisuals()
     colorCorrection.saturation = Vec3(0.3, 0.3, 1.0)
     colorCorrection.hue = 0.0
     colorCorrection.colorGradingTexture = TextureAsset(ResourceManager:SearchForInstanceByGuid(
-                                                           Guid('E79F27A1-7B97-4A63-8ED8-372FE5012A31')))
+                                                           Guid("E79F27A1-7B97-4A63-8ED8-372FE5012A31")))
     colorCorrection.colorGradingEnable = true
 
     veData.components:add(colorCorrection)
@@ -103,10 +107,12 @@ function OOBVision:CreateEntities()
 end
 
 function OOBVision:Enable()
-    if self.m_IsEnabled or self.m_SoundEntity == nil or self.m_VisualsEntity == nil then return end
+    if self.m_IsEnabled or self.m_SoundEntity == nil or self.m_VisualsEntity == nil then
+        return
+    end
 
-    self.m_SoundEntity:FireEvent('Start')
-    self.m_VisualsEntity:FireEvent('Enable')
+    self.m_SoundEntity:FireEvent("Start")
+    self.m_VisualsEntity:FireEvent("Enable")
     self.m_IsEnabled = true
 end
 
@@ -116,8 +122,8 @@ function OOBVision:Disable()
         return
     end
 
-    self.m_SoundEntity:FireEvent('Stop')
-    self.m_VisualsEntity:FireEvent('Disable')
+    self.m_SoundEntity:FireEvent("Stop")
+    self.m_VisualsEntity:FireEvent("Disable")
     self.m_IsEnabled = false
 end
 
@@ -136,5 +142,3 @@ function OOBVision:Destroy()
         self.m_VisualsEntity = nil
     end
 end
-
-return OOBVision

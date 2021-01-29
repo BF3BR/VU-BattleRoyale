@@ -1,11 +1,11 @@
-require('__shared/Configs/CircleConfig')
-require('__shared/Utils/MathHelper')
-require('__shared/Circle')
-require('Helpers/RaycastHelper')
+require "__shared/Configs/CircleConfig"
+require "__shared/Utils/MathHelper"
+require "__shared/Circle"
+require "Helpers/RaycastHelper"
 
-local TWO_PI = 2 * math.pi
+local s_TwoPi = 2 * math.pi
 
-class('RenderableCircle', Circle)
+class ("RenderableCircle", Circle)
 
 function RenderableCircle:__init(p_Center, p_Radius)
     Circle.__init(self, p_Center, p_Radius)
@@ -32,7 +32,7 @@ function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex)
     end
 
     -- update step length
-    self.m_Circumference = TWO_PI * p_Radius
+    self.m_Circumference = s_TwoPi * p_Radius
     local drawArcLen = math.min(self.m_Circumference, self.m_MaxArcLength * CircleConfig.RenderPoints.Max)
     local arcLength = drawArcLen / CircleConfig.RenderPoints.Max
 
@@ -70,7 +70,9 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
     l_StartingAngle = math.floor(l_StartingAngle / self.m_ThetaStep) * self.m_ThetaStep
 
     -- check if starting angle is the same as before
-    if l_StartingAngle == self.m_PrevStartingAngle then return end
+    if l_StartingAngle == self.m_PrevStartingAngle then
+        return
+    end
     self.m_PrevStartingAngle = l_StartingAngle
 
     -- calculate points
@@ -80,7 +82,9 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
         local l_Point = self:CircumferencePoint(l_Angle, p_PlayerPos.y)
 
         -- update y using raycasts
-        if self.m_UseRaycasts then l_Point.y = g_RaycastHelper:GetY(l_Point) end
+        if self.m_UseRaycasts then
+            l_Point.y = g_RaycastHelper:GetY(l_Point)
+        end
 
         table.insert(self.m_RenderPoints, l_Point)
     end
@@ -99,5 +103,3 @@ function RenderableCircle:Render(p_Renderer, p_PlayerPos)
         end
     end
 end
-
-return RenderableCircle

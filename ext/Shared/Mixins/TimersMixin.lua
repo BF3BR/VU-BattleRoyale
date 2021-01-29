@@ -1,10 +1,12 @@
-class('TimersMixin')
+class "TimersMixin"
 
-function TimersMixin:__init() self.m__Timers = {} end
+function TimersMixin:__init()
+    self.m__Timers = {}
+end
 
 -- Sets a new timer
 function TimersMixin:SetTimer(p_Key, p_Timer)
-    self:ClearTimer(p_Key)
+    self:RemoveTimer(p_Key)
     self.m__Timers[p_Key] = p_Timer
 end
 
@@ -14,7 +16,7 @@ function TimersMixin:GetTimer(p_Key)
 end
 
 -- Destroys and nils a timer
-function TimersMixin:ClearTimer(p_Key)
+function TimersMixin:RemoveTimer(p_Key)
     if self.m__Timers[p_Key] ~= nil then
         self.m__Timers[p_Key]:Destroy()
         self.m__Timers[p_Key] = nil
@@ -22,10 +24,8 @@ function TimersMixin:ClearTimer(p_Key)
 end
 
 -- Destroys every timer and empties the timers table
-function TimersMixin:ClearAllTimers()
-    for l_Key, _ in pairs(self.m__Timers) do self:ClearTimer(l_Key) end
+function TimersMixin:RemoveTimers()
+    for l_Key, _ in pairs(self.m__Timers) do self:RemoveTimer(l_Key) end
 
     self.m__Timers = {}
 end
-
-return TimersMixin

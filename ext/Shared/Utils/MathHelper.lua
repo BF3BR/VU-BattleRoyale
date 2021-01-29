@@ -1,4 +1,4 @@
-class 'MathHelper'
+class "MathHelper"
 
 function MathHelper:VectorAngle(p_VectorA, p_VectorB)
     return math.atan(p_VectorB.z - p_VectorA.z, p_VectorB.x - p_VectorA.x)
@@ -10,5 +10,3 @@ function MathHelper:SquaredDistance(p_PointA, p_PointB)
 
     return l_Dx * l_Dx + l_Dz * l_Dz
 end
-
-return MathHelper

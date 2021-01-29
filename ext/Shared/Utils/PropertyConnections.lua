@@ -1,7 +1,6 @@
 class "PropertyConnections"
 
 function PropertyConnections:Create(source, target, sourceFieldId, targetFieldId)
-	
     local PropertyConnection = PropertyConnection()
     PropertyConnection.source = source
     PropertyConnection.target = target

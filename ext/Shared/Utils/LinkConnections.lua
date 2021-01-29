@@ -1,7 +1,6 @@
 class "LinkConnections"
 
 function LinkConnections:Create(source, target, sourceFieldId)
-	
     local LinkConnection = LinkConnection()
     LinkConnection.source = source
     LinkConnection.target = target
@@ -12,6 +11,3 @@ function LinkConnections:Create(source, target, sourceFieldId)
 end
 
 return LinkConnections()
-
-
-

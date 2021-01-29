@@ -1,4 +1,4 @@
-CachedJsExecutor = class('CachedJsExecutor')
+class "CachedJsExecutor"
 
 function CachedJsExecutor:__init(funcTemplate, initialValue)
     self.funcTemplate = funcTemplate
@@ -8,7 +8,9 @@ function CachedJsExecutor:__init(funcTemplate, initialValue)
 end
 
 function CachedJsExecutor:Update(value)
-    if self.prev == value then return value end
+    if self.prev == value then
+        return value
+    end
     self.prev = value
 
     WebUI:ExecuteJS(string.format(self.funcTemplate, value))

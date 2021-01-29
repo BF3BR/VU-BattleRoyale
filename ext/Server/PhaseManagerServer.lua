@@ -1,9 +1,9 @@
-require('__shared/Helpers/SubphaseTypes')
-require('__shared/PhaseManagerShared')
-require('__shared/Utils/Timers')
-require('__shared/Circle')
+require "__shared/Helpers/SubphaseTypes"
+require "__shared/PhaseManagerShared"
+require "__shared/Utils/Timers"
+require "__shared/Circle"
 
-class('PhaseManagerServer', PhaseManagerShared)
+class ("PhaseManagerServer", PhaseManagerShared)
 
 function PhaseManagerServer:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
@@ -19,18 +19,18 @@ function PhaseManagerServer:RegisterEvents()
     NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.BroadcastState)
 
     -- Debug
-    Events:Subscribe('Player:Chat', self, self.OnChat)
+    Events:Subscribe("Player:Chat", self, self.OnChat)
 end
 
 -- Starts the PhaseManager logic
 function PhaseManagerServer:Start()
-    self:SetTimer('Damage', g_Timers:Interval(1, self, self.ApplyDamage))
+    self:SetTimer("Damage", g_Timers:Interval(1, self, self.ApplyDamage))
     self:InitPhase()
 end
 
 -- Ends the PhaseManager logic
 function PhaseManagerServer:End()
-    self:ClearAllTimers()
+    self:RemoveTimers()
     self:Finalize()
 end
 
@@ -72,11 +72,11 @@ function PhaseManagerServer:NextSubphase()
 end
 
 function PhaseManagerServer:InitPhase()
-    self:ClearTimer('NextSubphase')
-    self:ClearTimer('MovingCircle')
+    self:RemoveTimer("NextSubphase")
+    self:RemoveTimer("MovingCircle")
 
     -- start the timer for the next phase
-    self:SetTimer('NextSubphase', g_Timers:Timeout(self:GetCurrentDelay(), self, self.Next))
+    self:SetTimer("NextSubphase", g_Timers:Timeout(self:GetCurrentDelay(), self, self.Next))
 
     if self.m_SubphaseIndex == SubphaseType.Waiting then
         local l_Phase = self:GetCurrentPhase()
@@ -98,7 +98,7 @@ function PhaseManagerServer:InitPhase()
         if self.phaseIndex == 1 then self.m_OuterCircle.m_Center = l_NewCenter end
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
         self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
-        self:SetTimer('MovingCircle',
+        self:SetTimer("MovingCircle",
                       g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
     end
 
@@ -111,8 +111,8 @@ function PhaseManagerServer:Finalize()
     self.m_Completed = true
 
     -- clear timers
-    self:ClearTimer('NextSubphase')
-    self:ClearTimer('MovingCircle')
+    self:RemoveTimer("NextSubphase")
+    self:RemoveTimer("MovingCircle")
 
     -- Match outer circle with inner circle
     self.m_OuterCircle = self.m_InnerCircle:Clone()
@@ -125,7 +125,7 @@ end
 -- Broadcasts PhaseManager's state to all players
 function PhaseManagerServer:BroadcastState(p_Player)
     local l_Duration = 0
-    local l_Timer = self:GetTimer('NextSubphase')
+    local l_Timer = self:GetTimer("NextSubphase")
 
     -- Send remaning time to complete
     if l_Timer ~= nil then l_Duration = l_Timer:Remaining() end
@@ -162,9 +162,7 @@ end
 
 -- Starts the PhaseManager from the chat
 function PhaseManagerServer:OnChat(player, recipientMask, message)
-    if message == '!pmstart' then
-        self:Start()
-    end
+    if message == "!pmstart" then self:Start() end
 end
 
 -- Prints a debug message about the current status of PhaseManager
@@ -173,18 +171,16 @@ function PhaseManagerServer:DebugMessage()
 
     -- check if PhaseManager's work is completed
     if l_Delay < 0 then
-        print('PM: Completed')
+        print("PM: Completed")
         return
     end
 
     -- debug messages for each SubphaseType
     local l_Messages = {
-        [SubphaseType.InitialDelay] = 'Initial Delay',
-        [SubphaseType.Waiting] = 'Circle is waiting',
-        [SubphaseType.Moving] = 'Circle is moving',
+        [SubphaseType.InitialDelay] = "Initial Delay",
+        [SubphaseType.Waiting] = "Circle is waiting",
+        [SubphaseType.Moving] = "Circle is moving"
     }
 
-    print(string.format('PM: [%d] %s for %.2f seconds', self.m_PhaseIndex, l_Messages[self.m_SubphaseIndex], l_Delay))
+    print(string.format("PM: [%d] %s for %.2f seconds", self.m_PhaseIndex, l_Messages[self.m_SubphaseIndex], l_Delay))
 end
-
-return PhaseManagerServer

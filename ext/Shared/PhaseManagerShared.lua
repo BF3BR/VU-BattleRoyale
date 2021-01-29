@@ -1,17 +1,11 @@
-require ('__shared/Helpers/SubphaseTypes')
-require ('__shared/Mixins/TimersMixin')
+require "__shared/Helpers/SubphaseTypes"
+require "__shared/Mixins/TimersMixin"
 
-class ('PhaseManagerShared', TimersMixin)
+class ("PhaseManagerShared", TimersMixin)
 
-PhaseManagerNetEvents = {
-    InitialState = 'PM:InitialState',
-    UpdateState = 'PM:UpdateState',
-}
+PhaseManagerNetEvents = {InitialState = "PM:InitialState", UpdateState = "PM:UpdateState"}
 
-PhaseManagerCustomEvents = {
-    Update = 'PhaseManager:Update',
-    CircleMove = 'PhaseManager:CircleMove'
-}
+PhaseManagerCustomEvents = {Update = "PhaseManager:Update", CircleMove = "PhaseManager:CircleMove"}
 
 function PhaseManagerShared:__init()
     TimersMixin.__init(self)
@@ -28,16 +22,18 @@ function PhaseManagerShared:RegisterVars()
     -- TODO
     self.m_Phases = MapsConfig.XP5_003.Phases
     self.m_InitialDelay = MapsConfig.XP5_003.BeforeFirstCircleDelay
+
     self.m_PhaseIndex = 1
     self.m_SubphaseIndex = SubphaseType.InitialDelay
     self.m_Completed = false
 end
 
 function PhaseManagerShared:RegisterEvents()
-    Events:Subscribe('Level:Destroy', self, self.Destroy)
-    Events:Subscribe('Extension:Unloading', self, self.Destroy)
+    Events:Subscribe("Level:Destroy", self, self.Destroy)
+    Events:Subscribe("Extension:Unloading", self, self.Destroy)
 end
 
+-- 
 function PhaseManagerShared:GetCurrentPhase()
     return self.m_Phases[self.m_PhaseIndex]
 end
@@ -58,7 +54,7 @@ function PhaseManagerShared:GetCurrentDelay()
     end
 end
 
--- 
+-- Checks if the PhaseManager is in the initial delay phase
 function PhaseManagerShared:IsIdle()
     return self.m_PhaseIndex == 1 and self.m_SubphaseIndex == SubphaseType.InitialDelay
 end
@@ -81,8 +77,6 @@ function PhaseManagerShared:MoveOuterCircle(p_Timer)
 end
 
 function PhaseManagerShared:Destroy()
-    self:ClearAllTimers()
+    self:RemoveTimers()
     self:RegisterVars()
 end
-
-return PhaseManagerShared

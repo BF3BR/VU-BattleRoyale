@@ -1,4 +1,4 @@
-require ('__shared/Utils/TableHelper')
+require '__shared/Utils/TableHelper'
 
 class 'UICleanup'
 

@@ -1,12 +1,12 @@
-require('__shared/Configs/CircleConfig')
-require('__shared/Utils/Timers')
-require('__shared/PhaseManagerShared')
-require('__shared/Circle')
-require('Visuals/OOBVision')
-require('Visuals/CircleRenderers')
-require('RenderableCircle')
+require "__shared/Configs/CircleConfig"
+require "__shared/Utils/Timers"
+require "__shared/PhaseManagerShared"
+require "__shared/Circle"
+require "Visuals/OOBVision"
+require "Visuals/CircleRenderers"
+require "RenderableCircle"
 
-class('PhaseManagerClient', PhaseManagerShared)
+class ("PhaseManagerClient", PhaseManagerShared)
 
 function PhaseManagerClient:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
@@ -24,9 +24,9 @@ end
 function PhaseManagerClient:RegisterEvents()
     PhaseManagerShared.RegisterEvents(self)
 
-    self.m_LevelLoadedEvent = Events:Subscribe('Level:Loaded', self, self.RequestInitialState)
-    Events:Subscribe('UpdateManager:Update', self, self.OnPreSim)
-    Events:Subscribe('UI:DrawHud', self, self.OnRender)
+    self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
+    Events:Subscribe("UpdateManager:Update", self, self.OnPreSim)
+    Events:Subscribe("UI:DrawHud", self, self.OnRender)
     NetEvents:Subscribe(PhaseManagerNetEvents.UpdateState, self, self.OnUpdateState)
 end
 
@@ -42,7 +42,7 @@ end
 -- Updates the state of the PhaseManager from the server
 function PhaseManagerClient:OnUpdateState(p_State)
     -- destroy moving circle update timer
-    self:ClearTimer('MovingCircle')
+    self:RemoveTimer("MovingCircle")
 
     -- update indices
     self.m_PhaseIndex = p_State.PhaseIndex
@@ -55,7 +55,7 @@ function PhaseManagerClient:OnUpdateState(p_State)
         -- start moving the outer circle
         local l_RenderDelay = 0.3
         self.m_PrevOuterCircle = Circle(self.m_OuterCircle.m_Center, self.m_OuterCircle.m_Radius)
-        self:SetTimer('MovingCircle', g_Timers:Sequence(l_RenderDelay, math.floor(p_State.Duration / l_RenderDelay) + 1,
+        self:SetTimer("MovingCircle", g_Timers:Sequence(l_RenderDelay, math.floor(p_State.Duration / l_RenderDelay) + 1,
                                                         self, self.MoveOuterCircle))
     end
 
@@ -69,17 +69,21 @@ function PhaseManagerClient:OnUpdateState(p_State)
     Events:DispatchLocal(PhaseManagerCustomEvents.Update, {
         InnerCircle = p_State.InnerCircle,
         OuterCircle = p_State.OuterCircle,
-        Duration = p_State.Duration,
+        Duration = p_State.Duration
     })
 end
 
 -- 
 function PhaseManagerClient:OnPreSim(p_DeltaTime, p_UpdatePass)
-    if p_UpdatePass ~= UpdatePass.UpdatePass_PreSim or self:IsIdle() then return end
+    if p_UpdatePass ~= UpdatePass.UpdatePass_PreSim or self:IsIdle() then
+        return
+    end
 
     -- get local player position
     local p_Player = PlayerManager:GetLocalPlayer()
-    if p_Player == nil or p_Player.soldier == nil then return end
+    if p_Player == nil or p_Player.soldier == nil then
+        return
+    end
     local l_PlayerPos = p_Player.soldier.transform.trans
 
     -- toggle OOB vision
@@ -98,11 +102,15 @@ end
 
 -- Renders the two circles
 function PhaseManagerClient:OnRender()
-    if self:IsIdle() then return end
+    if self:IsIdle() then
+        return
+    end
 
     -- get local player position
     local l_Player = PlayerManager:GetLocalPlayer()
-    if l_Player == nil or l_Player.soldier == nil then return end
+    if l_Player == nil or l_Player.soldier == nil then
+        return
+    end
     local l_PlayerPos = l_Player.soldier.transform.trans
 
     -- render circles
@@ -117,5 +125,3 @@ function PhaseManagerClient:MoveOuterCircle(p_Timer)
     PhaseManagerShared.MoveOuterCircle(self, p_Timer)
     Events:DispatchLocal(PhaseManagerCustomEvents.CircleMove, self.m_OuterCircle:AsTable())
 end
-
-return PhaseManagerClient

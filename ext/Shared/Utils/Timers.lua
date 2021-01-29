@@ -1,4 +1,4 @@
-local TimerManager = class('TimerManager')
+class "TimerManager"
 
 function TimerManager:__init()
     self.m_LastId = 1
@@ -65,7 +65,7 @@ function TimerManager:CreateTimer(p_Delay, p_Cycles, p_UserData, p_Callback)
 
     -- subscribe to update event if needed
     self.m_ActiveTimers = self.m_ActiveTimers + 1
-    if self.m_UpdateEvent == nil then self.m_UpdateEvent = Events:Subscribe('Engine:Update', self, self.Update) end
+    if self.m_UpdateEvent == nil then self.m_UpdateEvent = Events:Subscribe("Engine:Update", self, self.Update) end
 
     return timer
 end
@@ -86,7 +86,7 @@ function TimerManager:Interval(p_Delay, p_UserData, p_Callback)
 end
 
 -- Timer
-local Timer = class('Timer')
+class "Timer"
 
 function Timer:__init(p_Manager, p_Id, p_Delay, p_Cycles, p_UserData, p_Callback)
     self.m_Manager = p_Manager
@@ -146,7 +146,9 @@ function Timer:Destroy()
 end
 
 -- Returns the time elapsed since the beginning
-function Timer:Elapsed() return (SharedUtils:GetTimeMS() - self.m_StartedAt) / 1000 end
+function Timer:Elapsed()
+    return (SharedUtils:GetTimeMS() - self.m_StartedAt) / 1000
+end
 
 -- Returns the time remaining until the timer is completed
 function Timer:Remaining()
