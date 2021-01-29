@@ -1,12 +1,12 @@
 local Match = class("Match")
 
-require ("__shared/Utils/LevelNameHelper")
-require ("__shared/Utils/TableHelper")
+require ("__shared/Helpers/LevelNameHelper")
+require ("__shared/Helpers/TableHelper")
 
 require ("__shared/Configs/MapsConfig")
 require ("__shared/Configs/ServerConfig")
 
-require ("__shared/Helpers/GameStates")
+require ("__shared/Enums/GameStates")
 
 require ("Gunship")
 require ("PhaseManagerServer")

@@ -82,6 +82,12 @@ function VuBattleRoyaleHud:OnPhaseManagerUpdate(p_Data)
     self.m_HudOnUpdateCircles:Update(json.encode(p_Data))
 end
 
+function VuBattleRoyaleHud:OnOuterCircleMove(p_OuterCircle)
+    self.m_HudOnUpdateCircles:Update(json.encode({
+        OuterCircle = p_OuterCircle
+    }))
+end
+
 if g_VuBattleRoyaleHud == nil then
     g_VuBattleRoyaleHud = VuBattleRoyaleHud()
 end

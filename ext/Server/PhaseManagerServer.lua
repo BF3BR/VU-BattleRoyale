@@ -1,4 +1,5 @@
-require "__shared/Helpers/SubphaseTypes"
+require "__shared/Enums/PhaseManagerEvents"
+require "__shared/Enums/SubphaseTypes"
 require "__shared/PhaseManagerShared"
 require "__shared/Utils/Timers"
 require "__shared/Circle"

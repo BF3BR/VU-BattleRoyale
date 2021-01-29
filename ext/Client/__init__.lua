@@ -1,13 +1,10 @@
 class "VuBattleRoyaleClient"
 
-require "__shared/Utils/LevelNameHelper"
-
+require "__shared/Helpers/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
-
-require "__shared/Helpers/GameStates"
-
+require "__shared/Enums/GameStates"
+require "__shared/Enums/PhaseManagerEvents"
 require "Helpers/LootPointHelper"
-
 require "PhaseManagerClient"
 require "UICleanup"
 require "ClientCommands"
@@ -85,7 +82,8 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_UIDrawHudEvent = Events:Subscribe('UI:DrawHud', self, self.OnUIDrawHud)
 
     -- PhaseManager Events
-    self.m_PhaseManagerUpdateEvent = Events:Subscribe('PhaseManager:Update', self, self.OnPhaseManagerUpdate)
+    self.m_PhaseManagerUpdateEvent = Events:Subscribe(PhaseManagerCustomEvents.Update, self, self.OnPhaseManagerUpdate)
+    self.m_PhaseManagerUpdateEvent = Events:Subscribe(PhaseManagerCustomEvents.CircleMove, self, self.OnOuterCircleMove)
 end
 
 function VuBattleRoyaleClient:UnregisterEvents() end
@@ -159,6 +157,10 @@ end
 
 function VuBattleRoyaleClient:OnPhaseManagerUpdate(p_Data)
     m_Hud:OnPhaseManagerUpdate(p_Data)
+end
+
+function VuBattleRoyaleClient:OnOuterCircleMove(p_OuterCircle)
+    m_Hud:OnOuterCircleMove(p_OuterCircle)
 end
 
 return VuBattleRoyaleClient()

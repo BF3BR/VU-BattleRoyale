@@ -1,11 +1,8 @@
-require "__shared/Helpers/SubphaseTypes"
+require "__shared/Enums/PhaseManagerEvents"
+require "__shared/Enums/SubphaseTypes"
 require "__shared/Mixins/TimersMixin"
 
 class ("PhaseManagerShared", TimersMixin)
-
-PhaseManagerNetEvents = {InitialState = "PM:InitialState", UpdateState = "PM:UpdateState"}
-
-PhaseManagerCustomEvents = {Update = "PhaseManager:Update", CircleMove = "PhaseManager:CircleMove"}
 
 function PhaseManagerShared:__init()
     TimersMixin.__init(self)
