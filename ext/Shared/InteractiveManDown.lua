@@ -44,7 +44,7 @@ end
 function InteractiveManDown:OnResourceManagerLoadBundles(p_HookCtx, p_Bundles, p_Compartment)
     if #p_Bundles == 1 and p_Bundles[1] == SharedUtils:GetLevelName() then
         p_Bundles = {"levels/coop_010/coop_010", p_Bundles[1]}
-        p_HookCtx:Pass(bundles, p_Compartment)
+        p_HookCtx:Pass(p_Bundles, p_Compartment)
     end
 end
 
