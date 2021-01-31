@@ -225,9 +225,9 @@ function LootPointHelper:PrintPointsAsLinearTransforms()
 	local result = "points = { "
 	for index, point in pairs(self.m_Points) do
 		result = result.."LinearTransform("..
-			"Vec3"..tostring(point.left)..
-			", Vec3"..tostring(point.up)..
-			", Vec3"..tostring(point.forward)..
+			"Vec3"..string.gsub(tostring(point.left),"000000","0")..
+			", Vec3"..string.gsub(tostring(point.up),"000000","0")..
+			", Vec3"..string.gsub(tostring(point.forward),"000000","0")..
 			", Vec3"..tostring(point.trans).."), "
 	end
 	print(result.."}")
