@@ -3,6 +3,7 @@ class "DropWeapons"
 function DropWeapons:__init()
     self.m_CenterOffset = 1.2
     self.m_HeightOffset = -0.5
+
     self.m_SubWorldDataLoaded = ResourceManager:RegisterInstanceLoadHandler(
                                     Guid("4D59552D-787F-402E-8FED-7B360186BD8A"),
                                     Guid("ED72C0EE-BAB1-4588-82AA-0BA8394EEEFB"), self, self.OnSubworldDataLoaded)

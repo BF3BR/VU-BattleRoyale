@@ -26,9 +26,9 @@ GameStatesStrings =
 {
     [GameStates.None] = "None",
     [GameStates.Warmup] = "Warmup",
-    [GameStates.WarmupToPlane] = "To Plane",
+    [GameStates.WarmupToPlane] = "Before Plane",
     [GameStates.Plane] = "Plane",
-    [GameStates.PlaneToFirstCircle] = "To Match",
+    [GameStates.PlaneToFirstCircle] = "Before Match",
     [GameStates.Match] = "Match",
     [GameStates.EndGame] = "EndGame",
 }

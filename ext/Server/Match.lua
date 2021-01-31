@@ -383,6 +383,7 @@ function Match:GetRandomWarmupSpawnpoint(p_Player)
 end
 
 function Match:Cleanup()
+    -- TODO: We might not even need this beacuse of the round restarts
     self:CleanupSpecificEntity("ServerPickupEntity")
     NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientPickupEntity")
 

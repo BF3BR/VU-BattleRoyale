@@ -6,10 +6,10 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/PhaseManagerEvents"
 require "Helpers/LootPointHelper"
 require "PhaseManagerClient"
-require "UICleanup"
 require "ClientCommands"
-require "Gunship"
 
+local m_UICleanup = require "UICleanup"
+local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
 
 function VuBattleRoyaleClient:__init()
@@ -23,7 +23,7 @@ function VuBattleRoyaleClient:__init()
 
     -- The current gamestate, it's read-only and can only be changed by the SERVER
     self.m_GameState = GameStates.None
-    
+
     self.m_PhaseManager = PhaseManagerClient()
 end
 
@@ -38,12 +38,16 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
     -- Register all of the events
     self:RegisterEvents()
 
+    -- Register all of the hooks
+    self:RegisterHooks()
+
     m_Hud:OnExtensionLoaded()
 end
 
 function VuBattleRoyaleClient:OnExtensionUnloaded()
     self:UnregisterCommands()
     self:UnregisterEvents()
+    self:UnregisterHooks()
 end
 
 -- ==========
@@ -51,56 +55,72 @@ end
 -- ==========
 
 function VuBattleRoyaleClient:RegisterCommands()
-    self.m_PosCommand = Console:Register("vubr_pos", "Get the current position for the player", ClientCommands.PlayerPosition)
+    self.m_PosCommand = Console:Register("vubr_pos", "Get the current position for the player",
+                                         ClientCommands.PlayerPosition)
 end
 
-function VuBattleRoyaleClient:UnregisterCommands() 
+function VuBattleRoyaleClient:UnregisterCommands()
     Console:Deregister("vubr_pos")
 end
 
 -- ==========
--- Events
+-- Events & Hooks
 -- ==========
 
 function VuBattleRoyaleClient:RegisterEvents()
-    self.m_LevelLoadedEvent = Events:Subscribe('Level:Loaded', self, self.OnLevelLoaded)
-    self.m_LevelDestroyEvent = Events:Subscribe('Level:Destroy', self, self.OnLevelDestroy)
-    self.m_EngineUpdateEvent = Events:Subscribe('Engine:Update', self, self.OnEngineUpdate)
-
-    -- Game State Events
-    self.m_GameStateChangedEvent = NetEvents:Subscribe("VuBattleRoyale:GameStateChanged", self, self.OnGameStateChanged)
-
-    -- Cleanup Events
-    self.m_CleanupEntitiesEvent = NetEvents:Subscribe("VuBattleRoyale:Cleanup", self, self.OnCleanupEntities)
+    self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
+    self.m_LevelDestroyEvent = Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
+    self.m_EngineUpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
 
     -- Player Events
-    self.m_PlayerConnectedEvent = Events:Subscribe('Player:Connected', self, self.OnPlayerConnected)
-    self.m_PlayerRespawnEvent = Events:Subscribe('Player:Respawn', self, self.OnPlayerRespawn)
+    self.m_PlayerConnectedEvent = Events:Subscribe("Player:Connected", self, self.OnPlayerConnected)
+    self.m_PlayerRespawnEvent = Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn)
+    self.m_ClientUpdateInputEvent = Events:Subscribe("Client:UpdateInput", self, self.OnClientUpdateInput)
 
     -- UI Events
-    self.m_InputConceptEventHook = Hooks:Install('UI:InputConceptEvent', 999, self, self.OnInputConceptEvent)
-    self.m_UIDrawHudEvent = Events:Subscribe('UI:DrawHud', self, self.OnUIDrawHud)
+    self.m_UIDrawHudEvent = Events:Subscribe("UI:DrawHud", self, self.OnUIDrawHud)
 
-    -- PhaseManager Events
+    -- ==========
+    -- Custom events
+    -- ==========
     self.m_PhaseManagerUpdateEvent = Events:Subscribe(PhaseManagerCustomEvents.Update, self, self.OnPhaseManagerUpdate)
     self.m_PhaseManagerUpdateEvent = Events:Subscribe(PhaseManagerCustomEvents.CircleMove, self, self.OnOuterCircleMove)
+
+    self.m_GameStateChangedEvent = NetEvents:Subscribe("VuBattleRoyale:GameStateChanged", self, self.OnGameStateChanged)
+
+    -- TODO: We might not even need this beacuse of the round restarts
+    self.m_CleanupEntitiesEvent = NetEvents:Subscribe("VuBattleRoyale:Cleanup", self, self.OnCleanupEntities)
+
+    self.m_GunshipCameraNetEvent = NetEvents:Subscribe("ForceJumpOufOfGunship", self, self.OnForceJumpOufOfGunship)
+    self.m_GunshipCameraNetEvent = NetEvents:Subscribe("GunshipCamera", self, self.OnGunShipCamera)
 end
 
-function VuBattleRoyaleClient:UnregisterEvents() end
+function VuBattleRoyaleClient:RegisterHooks()
+    self.m_InputConceptEventHook = Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent)
 
-function VuBattleRoyaleClient:OnLevelDestroy() end
+    self.m_UIPushScreenHook = Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen)
+    self.m_UIDrawFriendlyNametag = Hooks:Install("UI:DrawFriendlyNametag", 1, self, self.OnUIDrawFriendlyNametag)
+    self.m_UIDrawEnemyNametag = Hooks:Install("UI:DrawEnemyNametag", 1, self, self.OnUIDrawEnemyNametag)
+end
 
-function VuBattleRoyaleClient:OnLevelLoaded() end
+function VuBattleRoyaleClient:UnregisterEvents()
+end
 
-function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime) 
+function VuBattleRoyaleClient:OnLevelDestroy()
+end
+
+function VuBattleRoyaleClient:OnLevelLoaded()
+end
+
+function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)
 end
 
-function VuBattleRoyaleClient:OnUIDrawHud() 
+function VuBattleRoyaleClient:OnUIDrawHud()
     m_Hud:OnUIDrawHud()
 end
 
-function VuBattleRoyaleClient:OnInputConceptEvent(p_Hook, p_EventType, p_Action) 
+function VuBattleRoyaleClient:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
     m_Hud:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
 end
 
@@ -111,17 +131,18 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
         return
     end
 
-    if p_OldGameState == p_GameState then return end
+    if p_OldGameState == p_GameState then
+        return
+    end
 
-    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] ..
-              " to " .. GameStatesStrings[p_GameState])
+    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 
     if self.m_GameState == p_GameState then
         return
     end
 
     print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
-    
+
     self.m_GameState = p_GameState
 
     -- Update the WebUI
@@ -129,7 +150,9 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 end
 
 function VuBattleRoyaleClient:OnCleanupEntities(p_EntityType)
-    if p_EntityType == nil then return end
+    if p_EntityType == nil then
+        return
+    end
 
     local s_Entities = {}
 
@@ -141,12 +164,16 @@ function VuBattleRoyaleClient:OnCleanupEntities(p_EntityType)
     end
 
     for _, l_Entity in pairs(s_Entities) do
-        if l_Entity ~= nil then l_Entity:Destroy() end
+        if l_Entity ~= nil then
+            l_Entity:Destroy()
+        end
     end
 end
 
 function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
-    if p_Player == nil then return end
+    if p_Player == nil then
+        return
+    end
 
     NetEvents:Send("VuBattleRoyale:PlayerConnected")
 end
@@ -155,12 +182,36 @@ function VuBattleRoyaleClient:OnPlayerRespawn(p_Player)
     m_Hud:OnPlayerRespawn(p_Player)
 end
 
+function VuBattleRoyaleClient:OnClientUpdateInput()
+    m_Gunship:OnClientUpdateInput()
+end
+
 function VuBattleRoyaleClient:OnPhaseManagerUpdate(p_Data)
     m_Hud:OnPhaseManagerUpdate(p_Data)
 end
 
 function VuBattleRoyaleClient:OnOuterCircleMove(p_OuterCircle)
     m_Hud:OnOuterCircleMove(p_OuterCircle)
+end
+
+function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
+    m_Gunship:OnForceJumpOufOfGunship()
+end
+
+function VuBattleRoyaleClient:OnGunShipCamera()
+    m_Gunship:OnGunShipCamera()
+end
+
+function VuBattleRoyaleClient:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
+    m_UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
+end
+
+function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_Hook)
+    m_UICleanup:OnUIDrawFriendlyNametag(p_Hook)
+end
+
+function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_Hook)
+    m_UICleanup:OnUIDrawEnemyNametag(p_Hook)
 end
 
 return VuBattleRoyaleClient()

@@ -19,10 +19,14 @@ end
 function VuBattleRoyaleShared:OnExtensionLoaded()
     -- Register all of the events
     self:RegisterEvents()
+
+    -- Register all of the hooks
+    self:RegisterHooks()
 end
 
 function VuBattleRoyaleShared:OnExtensionUnloaded()
     self:UnregisterEvents()
+    self:UnregisterHooks()
 end
 
 function VuBattleRoyaleShared:RegisterEvents()
@@ -36,6 +40,18 @@ function VuBattleRoyaleShared:RegisterEvents()
                                          Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"),
                                          Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"), self,
                                          self.OnDisableCamerasOnUnspawn)
+end
+
+function VuBattleRoyaleShared:RegisterHooks()
+
+end
+
+function VuBattleRoyaleShared:UnregisterEvents()
+
+end
+
+function VuBattleRoyaleShared:UnregisterHooks()
+
 end
 
 function VuBattleRoyaleShared:OnWorldPartData(p_Instance)
