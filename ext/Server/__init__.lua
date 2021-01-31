@@ -60,6 +60,9 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     -- UpdateManager events
     self.m_UpdateManagerUpdateEvent = Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
+
+    -- InteractiveManDown revived event
+    self.m_ManDownRevivedEvent = Events:Subscribe("Player:ManDownRevived", self, self.OnManDownRevived)
 end
 
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
@@ -101,22 +104,50 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
         p_Info.damage = 0.0
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
     end
-    if p_GiverInfo == nil or p_GiverInfo.giver == nil or p_Soldier.player == nil then
+    if p_Soldier.player == nil then
+        return
+    end
+    if (p_Soldier.health - 100) <= p_Info.damage and p_Soldier.isInteractiveManDown == false then
+        local s_PlayerName = p_Soldier.player.name
+        local s_Damage = p_Info.damage - p_Soldier.health + 100
+        local s_Table = {s_PlayerName, s_Damage}
+        g_Timers:Timeout(0.1, s_Table, function(p_Table)
+            local s_Player = PlayerManager:GetPlayerByName(p_Table[1])
+            if s_Player == nil or s_Player.soldier == nil then
+                return
+            end
+            if p_Soldier.health > p_Info.damage then
+                s_Player.soldier.health = s_Player.soldier.health - p_Table[2]
+            else
+                s_Player.soldier.health = 0
+            end
+        end)
+    end
+    if p_GiverInfo == nil or p_GiverInfo.giver == nil then
+        if p_Soldier.health <= p_Info.damage then
+            p_Soldier:ForceDead()
+        end
         return	
     end
     if p_GiverInfo.giver.teamId ~= p_Soldier.player.teamId or p_GiverInfo.giver.squadId ~= p_Soldier.player.squadId then
         NetEvents:SendToLocal('ConfirmHit', p_GiverInfo.giver, p_Info.damage)
         if p_Soldier.health <= p_Info.damage then
-            if p_Soldier.isInteractiveManDown == false then
-                NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player.name)
-            else
-                NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player.name)
-                p_Soldier:ForceDead()
-            end
+            NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player.name)
+            p_Soldier:ForceDead()
+        elseif (p_Soldier.health - 100) <= p_Info.damage and p_Soldier.isInteractiveManDown == false then
+            NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player.name)
         end
     elseif p_GiverInfo.giver ~= p_Soldier.player then
         p_Info.damage = 0.0
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+    end
+end
+
+function VuBattleRoyaleServer:OnManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
+    if p_Reviver ~= nil then
+        p_Player.soldier.health = 130
+    else
+        p_Player.soldier.health = 0.0001
     end
 end
 
