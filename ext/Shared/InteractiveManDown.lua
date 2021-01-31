@@ -31,9 +31,14 @@ function InteractiveManDown:__init()
                                                Guid("B6CDC48A-3A8C-11E0-843A-AC0656909BCB"),
                                                Guid("F21FB5EA-D7A6-EE7E-DDA2-C776D604CD2E"), self,
                                                self.OnMeleeEntityCommonData)
-    self.m_InputRestriction = ResourceManager:RegisterInstanceLoadHandler(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
-                                                                          Guid("8B5295FF-8770-4587-B436-1F2E71F97F35"),
-                                                                          self, self.OnInputRestrictionData)
+    self.m_InputRestriction = ResourceManager:RegisterInstanceLoadHandler(
+                                               Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+                                               Guid("8B5295FF-8770-4587-B436-1F2E71F97F35"),
+                                               self, self.OnInputRestrictionData)
+    self.m_CollisionDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+                                               Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+                                               Guid("5917C5BE-142C-498F-9EA0-CCC6211746D2"), self,
+                                               self.OnCollisionData)
 end
 
 function InteractiveManDown:OnLevelLoadResources()
@@ -65,6 +70,17 @@ function InteractiveManDown:OnMeleeEntityCommonData(p_Instance)
     p_Instance.maxAttackHeightDifference = 0
 end
 
+function InteractiveManDown:OnCollisionData(p_Instance)
+    p_Instance = CollisionData(p_Instance)
+    p_Instance:MakeWritable()
+    p_Instance.damageAtVerticalVelocity:add(ValueAtX())
+    p_Instance.damageAtVerticalVelocity[#p_Instance.damageAtVerticalVelocity].x = 50
+    p_Instance.damageAtVerticalVelocity[#p_Instance.damageAtVerticalVelocity].value = 200
+    p_Instance.damageAtVerticalVelocity:add(ValueAtX())
+    p_Instance.damageAtVerticalVelocity[#p_Instance.damageAtVerticalVelocity].x = 70
+    p_Instance.damageAtVerticalVelocity[#p_Instance.damageAtVerticalVelocity].value = 300
+end
+
 -- allow the interaction with soldiers which are in the interactiveManDown state on the EntityInteractionComponentData
 function InteractiveManDown:OnEntityInteractionComponentData(p_Instance)
     p_Instance = EntityInteractionComponentData(p_Instance)
@@ -88,6 +104,7 @@ function InteractiveManDown:OnVeniceSoldierHealthModuleData(p_Instance)
     p_Instance.manDownStateTime = 60.0
     p_Instance.regenerationRate = 0.0
     AntRef(SoldierHealthModuleBinding(p_Instance.binding).interactiveManDown).assetId = 357042550
+    AntRef(SoldierHealthModuleBinding(p_Instance.binding).revived).assetId = -1
 end
 
 function InteractiveManDown:OnReviveCustomizeSoldierData(p_Instance)
