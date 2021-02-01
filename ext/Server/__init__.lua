@@ -140,10 +140,10 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
     if p_GiverInfo.giver.teamId ~= p_Soldier.player.teamId or p_GiverInfo.giver.squadId ~= p_Soldier.player.squadId then
         NetEvents:SendToLocal('ConfirmHit', p_GiverInfo.giver, p_Info.damage)
         if p_Soldier.health <= p_Info.damage then
-            NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player.name)
+            NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player)
             p_Soldier:ForceDead()
         elseif (p_Soldier.health - 100) <= p_Info.damage and p_Soldier.isInteractiveManDown == false then
-            NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player.name)
+            NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player)
         end
     elseif p_GiverInfo.giver ~= p_Soldier.player then
         p_Info.damage = 0.0

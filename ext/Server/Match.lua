@@ -61,6 +61,8 @@ end
 -- ==========
 
 function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
+    self.m_Gunship:OnEngineUpdate(p_DeltaTime)
+
     local s_Callback = self.m_UpdateStates[p_GameState]
     if s_Callback == nil then
         return
@@ -142,7 +144,7 @@ function Match:OnPlane(p_DeltaTime)
         -- TODO: Set the client timer
         -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
 
-        self.m_Gunship:Spawn()
+        self.m_Gunship:Spawn(self:GetRandomGunshipStart())
         PlayerManager:FadeInAll(2.0)
         self.m_IsFadeOutSet = false
     end
@@ -434,6 +436,31 @@ function Match:UnspawnAllSoldiers()
         s_HumanPlayerEntity:FireEvent("UnSpawnAllSoldiers")
         s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
     end
+end
+
+function Match:GetRandomGunshipStart()
+    local s_LevelName = LevelNameHelper:GetLevelName()
+    if s_LevelName == nil then
+        return nil
+    end
+
+    local s_Center = Vec3(
+        MapsConfig[s_LevelName]["MapTopLeftPos"].x - 1250 / 2, 
+        555, 
+        MapsConfig[s_LevelName]["MapTopLeftPos"].z - 1250 / 2
+    )
+
+    local s_OffsetAngle = s_Center:Clone()
+    s_OffsetAngle.x = s_OffsetAngle.x + MathUtils:GetRandom(-1250, 1250)
+    s_OffsetAngle.z = s_OffsetAngle.z + MathUtils:GetRandom(-1250, 1250)
+
+    local s_Return = LinearTransform()
+    s_Return:LookAtTransform(s_Center, s_OffsetAngle)
+
+    s_Return.trans.x = s_Return.trans.x - s_Return.forward.x * 550
+    s_Return.trans.z = s_Return.trans.z - s_Return.forward.z * 550
+
+    return s_Return
 end
 
 return Match

@@ -101,6 +101,8 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_GunshipCameraNetEvent = NetEvents:Subscribe("GunshipCamera", self, self.OnGunShipCamera)
 
     self.m_PlayersPitchAndYawEvent = NetEvents:Subscribe("VuBattleRoyale:PlayersPitchAndYaw", self, self.OnPlayersPitchAndYaw)
+
+    self.m_ConfirmPlayerKillEvent = NetEvents:Subscribe("ConfirmPlayerKill", self, self.OnConfirmPlayerKill)
 end
 
 function VuBattleRoyaleClient:RegisterHooks()
@@ -206,6 +208,10 @@ function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
 end
 
 function VuBattleRoyaleClient:OnPlayerKilled(p_Player)
+    m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
+end
+
+function VuBattleRoyaleClient:OnConfirmPlayerKill(p_Giver, p_Player)
     m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
 end
 

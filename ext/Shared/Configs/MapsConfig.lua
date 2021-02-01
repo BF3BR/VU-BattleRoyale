@@ -1,6 +1,7 @@
 MapsConfig = {
     -- Kiasar Railroad
     XP5_003 = {
+        MapTopLeftPos = Vec3(667.28, 0, -290.44),
         BeforeFirstCircleDelay = 60.0,
         PhasesCount = 9,
         Phases = {
