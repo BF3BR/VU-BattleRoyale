@@ -9,6 +9,9 @@ require ("__shared/Enums/GameStates")
 
 require ("Match")
 
+-- only devs should be able to join
+require ("Whitelist")
+
 function VuBattleRoyaleServer:__init()
     -- Extension events
     self.m_ExtensionLoadedEvent = nil
