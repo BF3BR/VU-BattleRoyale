@@ -38,6 +38,7 @@ function Gunship:OnJumpOutOfGunship(p_Player)
 	end
 	
 	self.m_Match:SpawnPlayer(p_Player, s_Transform)
+	p_Player.soldier.health = 200.0
 end
 
 function Gunship:OnEngineUpdate(p_DeltaTime)
