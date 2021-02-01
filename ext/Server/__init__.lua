@@ -115,23 +115,8 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
     if p_Soldier.player == nil then
         return
     end
-    if (p_Soldier.health - 100) <= p_Info.damage and p_Soldier.isInteractiveManDown == false then
-        local s_PlayerName = p_Soldier.player.name
-        local s_Damage = p_Info.damage - p_Soldier.health + 100
-        local s_Table = {s_PlayerName, s_Damage}
-        g_Timers:Timeout(0.1, s_Table, function(p_Table)
-            local s_Player = PlayerManager:GetPlayerByName(p_Table[1])
-            if s_Player == nil or s_Player.soldier == nil then
-                return
-            end
-            if p_Soldier.health > p_Info.damage then
-                s_Player.soldier.health = s_Player.soldier.health - p_Table[2]
-            else
-                s_Player.soldier.health = 0
-            end
-        end)
-    end
     if p_GiverInfo == nil or p_GiverInfo.giver == nil then
+        self:LeftOverDamageOnManDown(p_Soldier, p_Info.damage, p_GiverInfo)
         if p_Soldier.health <= p_Info.damage then
             p_Soldier:ForceDead()
         end
@@ -143,11 +128,33 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
             NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player)
             p_Soldier:ForceDead()
         elseif (p_Soldier.health - 100) <= p_Info.damage and p_Soldier.isInteractiveManDown == false then
+            self:LeftOverDamageOnManDown(p_Soldier, p_Info.damage, p_GiverInfo)
             NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player)
         end
     elseif p_GiverInfo.giver ~= p_Soldier.player then
         p_Info.damage = 0.0
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+    else
+        self:LeftOverDamageOnManDown(p_Soldier, p_Info.damage, p_GiverInfo)
+    end
+end
+
+function VuBattleRoyaleServer:LeftOverDamageOnManDown(p_Soldier, p_Damage, p_GiverInfo)
+    if (p_Soldier.health - 100) <= p_Damage and p_Soldier.isInteractiveManDown == false then
+        local s_PlayerName = p_Soldier.player.name
+        local s_Damage = p_Damage - p_Soldier.health + 100
+        local s_Table = {s_PlayerName, s_Damage}
+        g_Timers:Timeout(0.1, s_Table, function(p_Table)
+            local s_Player = PlayerManager:GetPlayerByName(p_Table[1])
+            if s_Player == nil or s_Player.soldier == nil then
+                return
+            end
+            if p_Soldier.health > p_Damage then
+                s_Player.soldier.health = s_Player.soldier.health - p_Table[2]
+            else
+                s_Player.soldier.health = 0
+            end
+        end)
     end
 end
 
