@@ -11,6 +11,7 @@ require "ClientCommands"
 local m_UICleanup = require "UICleanup"
 local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
+local m_SpectatorCamera = require "SpectatorCamera"
 
 function VuBattleRoyaleClient:__init()
     -- Extension events
@@ -75,10 +76,15 @@ function VuBattleRoyaleClient:RegisterEvents()
     -- Player Events
     self.m_PlayerConnectedEvent = Events:Subscribe("Player:Connected", self, self.OnPlayerConnected)
     self.m_PlayerRespawnEvent = Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn)
+    self.m_PlayerDeletedEvent = Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted)
+    self.m_PlayerKilledEvent = Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
+
     self.m_ClientUpdateInputEvent = Events:Subscribe("Client:UpdateInput", self, self.OnClientUpdateInput)
 
     -- UI Events
     self.m_UIDrawHudEvent = Events:Subscribe("UI:DrawHud", self, self.OnUIDrawHud)
+
+    self.m_ExtensionUnloadingEvent = Events:Subscribe('Extension:Unloading', self, self.OnExtensionUnloading)
 
     -- ==========
     -- Custom events
@@ -93,6 +99,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 
     self.m_GunshipCameraNetEvent = NetEvents:Subscribe("ForceJumpOufOfGunship", self, self.OnForceJumpOufOfGunship)
     self.m_GunshipCameraNetEvent = NetEvents:Subscribe("GunshipCamera", self, self.OnGunShipCamera)
+
+    self.m_PlayersPitchAndYawEvent = NetEvents:Subscribe("VuBattleRoyale:PlayersPitchAndYaw", self, self.OnPlayersPitchAndYaw)
 end
 
 function VuBattleRoyaleClient:RegisterHooks()
@@ -107,6 +115,7 @@ function VuBattleRoyaleClient:UnregisterEvents()
 end
 
 function VuBattleRoyaleClient:OnLevelDestroy()
+    m_SpectatorCamera:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLevelLoaded()
@@ -114,10 +123,15 @@ end
 
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)
+    m_SpectatorCamera:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUIDrawHud()
     m_Hud:OnUIDrawHud()
+end
+
+function VuBattleRoyaleClient:OnExtensionUnloading()
+    m_SpectatorCamera:OnExtensionUnloading()
 end
 
 function VuBattleRoyaleClient:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
@@ -175,15 +189,29 @@ function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
         return
     end
 
-    NetEvents:Send("VuBattleRoyale:PlayerConnected")
+    if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
+        NetEvents:Send("VuBattleRoyale:PlayerConnected")
+    else
+        m_SpectatorCamera:Enable()
+    end
 end
 
 function VuBattleRoyaleClient:OnPlayerRespawn(p_Player)
     m_Hud:OnPlayerRespawn(p_Player)
+    m_SpectatorCamera:OnPlayerRespawn(p_Player)
+end
+
+function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
+    m_SpectatorCamera:OnPlayerDeleted(p_Player)
+end
+
+function VuBattleRoyaleClient:OnPlayerKilled(p_Player)
+    m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
 end
 
 function VuBattleRoyaleClient:OnClientUpdateInput()
     m_Gunship:OnClientUpdateInput()
+    m_SpectatorCamera:OnClientUpdateInput()
 end
 
 function VuBattleRoyaleClient:OnPhaseManagerUpdate(p_Data)
@@ -200,6 +228,10 @@ end
 
 function VuBattleRoyaleClient:OnGunShipCamera()
     m_Gunship:OnGunShipCamera()
+end
+
+function VuBattleRoyaleClient:OnPlayersPitchAndYaw(p_PitchAndYaw)
+    m_SpectatorCamera:OnPlayersPitchAndYaw(p_PitchAndYaw)
 end
 
 function VuBattleRoyaleClient:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)

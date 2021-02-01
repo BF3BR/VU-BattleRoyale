@@ -24,6 +24,8 @@ function VuBattleRoyaleServer:__init()
     -- Create a new match
     self.m_Match = Match(self)
 
+    self.m_PlayersPitchAndYaw = { }
+
     -- Sets the custom gamemode name
     ServerUtils:SetCustomGameModeName("Baguette")
 end
@@ -65,6 +67,9 @@ end
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
     -- Update the match
     self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
+
+    -- Update the players pitch and yaw table
+    self:GetPlayersPitchAndYaw()
 
     local s_PlayerCount = PlayerManager:GetPlayerCount()
     if self.m_GameState == GameStates.None and s_PlayerCount >= ServerConfig.MinPlayersToStart then
@@ -290,6 +295,27 @@ function VuBattleRoyaleServer:SetupRconVariables()
             end
         end
     end
+end
+
+function VuBattleRoyaleServer:GetPlayersPitchAndYaw()
+    self.m_PlayersPitchAndYaw = { }
+
+    local s_Players = PlayerManager:GetPlayers()
+    for l_Index, l_Player in ipairs(s_Players) do
+        if l_Player == nil and l_Player.alive == false then
+            goto update_allowed_guids_continue
+        end
+
+        self.m_PlayersPitchAndYaw[l_Player.id] = {
+            Yaw = l_Player.input.authoritativeAimingYaw,
+            Pitch = l_Player.input.authoritativeAimingPitch,
+            Camera = l_Player.input.authoritativeCameraPosition,
+        }
+
+        ::update_allowed_guids_continue::
+    end
+    
+    NetEvents:BroadcastUnreliable("VuBattleRoyale:PlayersPitchAndYaw", self.m_PlayersPitchAndYaw)
 end
 
 return VuBattleRoyaleServer()
