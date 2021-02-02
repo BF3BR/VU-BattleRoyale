@@ -4,7 +4,7 @@ ServerConfig =
     MinPlayersToStart = 2,
 
     -- Warmup time
-    WarmupTime = 30.0,
+    WarmupTime = 60.0,
 
     -- WarmupToPlane transition time
     WarmupToPlaneTime = 5.0,

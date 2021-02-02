@@ -151,8 +151,6 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
         return
     end
 
-    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
-
     if self.m_GameState == p_GameState then
         return
     end
@@ -211,8 +209,12 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Player)
     m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
 end
 
-function VuBattleRoyaleClient:OnConfirmPlayerKill(p_GiverId, p_PlayerId)
-    m_SpectatorCamera:OnPlayerKilled(PlayerManager:GetPlayerById(p_PlayerId), self.m_GameState)
+function VuBattleRoyaleClient:OnConfirmPlayerKill(p_Giver, p_PlayerName)
+    if p_PlayerName == nil then
+        return
+    end
+
+    m_SpectatorCamera:OnPlayerKilled(PlayerManager:GetPlayerByName(p_PlayerName), self.m_GameState)
 end
 
 function VuBattleRoyaleClient:OnClientUpdateInput()
