@@ -7,6 +7,8 @@ import Circle from "./helpers/Circle";
 /* Components */
 import ParaDropDistance from "./components/ParaDropDistance";
 import MiniMap from "./components/MiniMap";
+import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
+import MatchInfo from "./components/MatchInfo";
 
 /* Style */
 import './App.scss';
@@ -15,7 +17,7 @@ const App: React.FC = () => {
     /*
     * Debug
     */
-    let debugMode: boolean = true;
+    let debugMode: boolean = false;
     if (!navigator.userAgent.includes('VeniceUnleashed')) {
         if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
             debugMode = true;
@@ -88,7 +90,8 @@ const App: React.FC = () => {
                 <style dangerouslySetInnerHTML={{
                     __html: `
                     body {
-                        /*background: #333;*/
+                        background: #333 url('/img/demo.png') 50% 50% no-repeat;
+                        background-size: cover;
                     }
 
                     #debug {
@@ -121,11 +124,15 @@ const App: React.FC = () => {
             </div>
 
             <div id="VUBattleRoyale">
+
+                <AmmoAndHealthCounter />
+
                 {/*<ParaDropDistance 
                     percentage={paradropPercentage}
                     distance={300}
                     warnPercentage={15}
                 />*/}
+                <MatchInfo />
                 {showMinimap &&
                     <MiniMap 
                         open={openMap}

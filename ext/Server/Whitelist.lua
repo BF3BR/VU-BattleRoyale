@@ -9,7 +9,8 @@ function Whitelist:__init()
         "breaknix",
         "kiwidog",
         "kiwidoggie",
-        "keku645"
+        "keku645",
+        "DankBoi21",
     }
     Hooks:Install('Player:RequestJoin', 100, self, self.OnPlayerRequestJoin) 
 end

@@ -51,11 +51,11 @@ function SpectatorCamera:OnPlayerRespawn(p_Player)
 end
 
 function SpectatorCamera:OnPlayerKilled(p_Player)
-    print("INFO: Player killed: " .. p_Player.name)
-
     if p_Player == nil then
         return
-    end
+	end
+	
+	print("INFO: Player killed: " .. p_Player.name)
 
     local s_Player = PlayerManager:GetLocalPlayer()
 

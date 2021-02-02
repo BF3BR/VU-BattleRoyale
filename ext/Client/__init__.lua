@@ -211,8 +211,8 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Player)
     m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
 end
 
-function VuBattleRoyaleClient:OnConfirmPlayerKill(p_Giver, p_Player)
-    m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
+function VuBattleRoyaleClient:OnConfirmPlayerKill(p_GiverId, p_PlayerId)
+    m_SpectatorCamera:OnPlayerKilled(PlayerManager:GetPlayerById(p_PlayerId), self.m_GameState)
 end
 
 function VuBattleRoyaleClient:OnClientUpdateInput()

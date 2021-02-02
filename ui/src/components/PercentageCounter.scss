@@ -1,0 +1,39 @@
+.PercentageCounter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    height: 1.2vw;
+    margin-bottom: .25vw;
+
+    img {
+        max-width: .9vw;
+        margin-right: .65vw;
+        filter: drop-shadow(0 0 0.05vw rgba(0, 0, 0, .4));
+    }
+
+    .PercentageBg {
+        flex: 1 1 auto;
+        height: .4vw;
+        background: rgba(255,255,255,0.25);
+        box-shadow: 0 0 0.3vw rgba(0, 0, 0, .15);
+    }
+
+    .PercentageFg {
+        flex: 1 1 auto;
+        height: .4vw;
+        background: rgba(255,255,255,1);
+    }
+
+    
+    &.PercentageTypeArmor {
+        .PercentageBg {
+            background: rgba(50,122,196,0.25);
+        }
+
+        .PercentageFg {
+            background: rgba(50,122,196,1);
+        }
+    }
+}

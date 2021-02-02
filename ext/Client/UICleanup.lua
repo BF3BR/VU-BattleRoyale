@@ -58,7 +58,7 @@ function UICleanup:OnHudScreen(p_Instance)
 end
 
 function UICleanup:OnHudMpScreen(p_Instance)
-    self:KeepNodes(p_Instance, {"Health", "Ammo", "LatencyIndicator", "AdminYellMessage"})
+    self:KeepNodes(p_Instance, {"LatencyIndicator", "AdminYellMessage"})
 end
 
 function UICleanup:OnHudConquestScreen(p_Instance)

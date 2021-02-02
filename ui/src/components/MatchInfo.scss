@@ -1,0 +1,16 @@
+#MatchInfo {
+    position: absolute;
+    bottom: 15.5vw;
+    left: 4vw;
+    height: 2.5vw;
+    width: 10vw;
+    border-left: 0.1vw solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1vw;
+    font-size: 1vw;
+    text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
+    background: rgba(0,0,0,0.4);
+    background: linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 80%);
+}
