@@ -70,6 +70,7 @@ end
 
 function VuBattleRoyaleClient:RegisterEvents()
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
+    self.m_LevelFinalizedEvent = Events:Subscribe("Level:Finalized", self, self.OnLevelFinalized)
     self.m_LevelDestroyEvent = Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
     self.m_EngineUpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
 
@@ -116,14 +117,22 @@ function VuBattleRoyaleClient:RegisterHooks()
 end
 
 function VuBattleRoyaleClient:UnregisterEvents()
+    
 end
 
 function VuBattleRoyaleClient:OnLevelDestroy()
     m_SpectatorCamera:OnLevelDestroy()
+    m_Hud:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLevelLoaded()
+
 end
+
+function VuBattleRoyaleClient:OnLevelFinalized(p_LevelName, p_GameMode)
+    m_Hud:OnLevelFinalized(p_LevelName, p_GameMode)
+end
+
 
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)

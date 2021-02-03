@@ -24,8 +24,17 @@ end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
     WebUI:Init()
+    WebUI:Hide()
+end
+
+function VuBattleRoyaleHud:OnLevelFinalized(p_LevelName, p_GameMode)
     WebUI:Show()
 end
+
+function VuBattleRoyaleHud:OnLevelDestroy()
+    WebUI:Hide()
+end
+
 
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
     if self.m_Ticks >= ServerConfig.HudUpdateTime then

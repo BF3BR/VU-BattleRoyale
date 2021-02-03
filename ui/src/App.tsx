@@ -97,6 +97,7 @@ const App: React.FC = () => {
 
     const [innerCircle, setInnerCircle] = useState<Circle|null>(null);
     const [outerCircle, setOuterCircle] = useState<Circle|null>(null);
+    const [subPhaseIndex, setSubPhaseIndex] = useState<number>(1);
     window.OnUpdateCircles = (data: any) => {
         if (data.InnerCircle) {
             setInnerCircle({
@@ -118,6 +119,10 @@ const App: React.FC = () => {
                 },
                 radius: data.OuterCircle.Radius,
             });
+        }
+
+        if (data.SubphaseIndex) {
+            setSubPhaseIndex(data.SubphaseIndex);
         }
     }
 
@@ -176,6 +181,7 @@ const App: React.FC = () => {
                     noMap={!showMinimap || openMap}
                     players={players}
                     minPlayersToStart={minPlayersToStart}
+                    subPhaseIndex={subPhaseIndex}
                 />
 
                 {showMinimap &&

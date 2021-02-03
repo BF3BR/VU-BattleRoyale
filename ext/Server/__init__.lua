@@ -29,6 +29,8 @@ function VuBattleRoyaleServer:__init()
 
     self.m_PlayersPitchAndYaw = { }
 
+    self.m_WaitForStart = true 
+
     -- Sets the custom gamemode name
     ServerUtils:SetCustomGameModeName("Baguette")
 end
@@ -71,15 +73,17 @@ function VuBattleRoyaleServer:RegisterEvents()
 end
 
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
-    -- Update the match
-    self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
+    if not self.m_WaitForStart then
+        -- Update the match
+        self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
 
-    -- Update the players pitch and yaw table
-    self:GetPlayersPitchAndYaw()
+        -- Update the players pitch and yaw table
+        self:GetPlayersPitchAndYaw()
 
-    local s_PlayerCount = PlayerManager:GetPlayerCount()
-    if self.m_GameState == GameStates.None and s_PlayerCount >= ServerConfig.MinPlayersToStart then
-        self:ChangeGameState(GameStates.Warmup)
+        local s_PlayerCount = PlayerManager:GetPlayerCount()
+        if self.m_GameState == GameStates.None and s_PlayerCount >= ServerConfig.MinPlayersToStart then
+            self:ChangeGameState(GameStates.Warmup)
+        end
     end
 end
 
@@ -195,11 +199,15 @@ end
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
     self:DisablePreRound()
     self:SetupRconVariables()
+
+    self.m_WaitForStart = false
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
     -- Reset the match
     self.m_Match:OnRestartRound()
+
+    self.m_WaitForStart = true
 end
 
 function VuBattleRoyaleServer:DisablePreRound()

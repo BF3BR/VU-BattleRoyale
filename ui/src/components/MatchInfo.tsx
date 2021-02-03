@@ -12,11 +12,12 @@ interface Props {
     noMap: boolean;
     players: Player[]|null;
     minPlayersToStart: number|null;
+    subPhaseIndex: number;
 }
 
-const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToStart }) => {
+const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToStart, subPhaseIndex }) => {
 
-    const getStateString = (state: string) => {
+    const getStateString = (state: string, subPhaseIndex: number) => {
         switch (state) {
             default:
             case "None":
@@ -28,7 +29,13 @@ const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToS
                 return "Plane";
             case "Before Match":
             case "Match":
-                return "Match";
+                if (subPhaseIndex === 1) {
+                    return "Begins in";
+                } else if (subPhaseIndex === 2) {
+                    return "Waiting";
+                } else {
+                    return "Moving";
+                }
             case "EndGame":
                 return "Round restarts in";
         }
@@ -38,7 +45,7 @@ const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToS
         <>
             <div id="MatchInfo" className={noMap ? 'noMap' : ''}>
                 <span className="MatchInfoState">
-                    {getStateString(state)}
+                    {getStateString(state, subPhaseIndex)}
                 </span>
                 <span className="MatchInfoTimerOrPlayer">
                     {(state === 'None')

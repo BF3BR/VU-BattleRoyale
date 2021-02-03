@@ -12,6 +12,8 @@ function Gunship:__init(p_Match)
 
     self.m_SetFlyPath = false
     self.m_CumulatedTime = 0
+
+    self.m_Enabled = false
 end
 
 function Gunship:OnJumpOutOfGunship(p_Player)
@@ -58,6 +60,10 @@ function Gunship:OnEngineUpdate(p_DeltaTime)
 end
 
 function Gunship:Spawn(p_StartTransform, p_Enable)
+    if p_Enable == self.m_Enabled then
+        return
+    end
+
     local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleSpawnEntity")
     local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
 
@@ -71,9 +77,13 @@ function Gunship:Spawn(p_StartTransform, p_Enable)
                 self.m_StartTransform = p_StartTransform
 
                 s_VehicleSpawnEntity:FireEvent("Spawn")
+
                 self.m_SetFlyPath = true
+                self.m_Enabled = true
             else
                 s_VehicleSpawnEntity:FireEvent("Unspawn")
+                
+                self.m_Enabled = false
             end
             return
         end

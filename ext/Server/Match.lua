@@ -292,7 +292,7 @@ function Match:SpawnWarmupPlayer(p_Player)
 end
 
 function Match:SpawnPlayer(p_Player, p_Transform)
-    if p_Player == nil then
+    if p_Player == nil or p_Transform == nil  then
         return
     end
 
