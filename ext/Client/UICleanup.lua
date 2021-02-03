@@ -47,7 +47,7 @@ function UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGra
         "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen" or s_Screen.name ==
         "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen" or s_Screen.name ==
         "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD64Screen" or s_Screen.name == "UI/Flow/Screen/KillScreen" or
-        s_Screen.name == "UI/Flow/Screen/SpawnButtonScreen" then
+        s_Screen.name == "UI/Flow/Screen/SpawnButtonScreen" or s_Screen.name == "UI/Flow/Screen/EmptyScreen" then
         p_Hook:Return()
         return
     end
