@@ -4,17 +4,21 @@ ServerConfig =
     MinPlayersToStart = 2,
 
     -- Warmup time
-    WarmupTime = 60.0,
+    WarmupTime = 20.0,
 
     -- WarmupToPlane transition time
     WarmupToPlaneTime = 5.0,
 
     -- Plane travel time
-    PlaneTime = 45.0,
+    PlaneTime = 35.0,
 
     -- Time to wait after the round ends
     EndGameTime = 15.0,
 
+    -- Time to update some of the HUD components
+    HudUpdateTime = 2.5,
+
+    GunshipDespawn = 60.0,
 
     -- DEBUG STUFF
     Debug = {

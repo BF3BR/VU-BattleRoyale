@@ -1,11 +1,25 @@
 class "VuBattleRoyaleHud"
 
+require "__shared/Configs/ServerConfig"
+require "__shared/Enums/GameStates"
 require "CachedJsExecutor"
 
 function VuBattleRoyaleHud:__init()
     self.m_HudOnPlayerYaw = CachedJsExecutor("OnPlayerYaw(%s)", 0)
     self.m_HudOnPlayerPos = CachedJsExecutor("OnPlayerPos(%s)", nil)
     self.m_HudOnUpdateCircles = CachedJsExecutor("OnUpdateCircles(%s)", nil)
+
+    self.m_HudOnGameState = CachedJsExecutor("OnGameState('%s')", GameStates.None)
+    self.m_GameState = GameStates.None
+
+    self.m_HudOnPlayersInfo = CachedJsExecutor("OnPlayersInfo(%s)", nil)
+    self.m_HudOnLocalPlayerInfo = CachedJsExecutor("OnLocalPlayerInfo(%s)", nil)
+
+    self.m_HudOnUpdateTimer = CachedJsExecutor("OnUpdateTimer(%s)", nil)
+
+    self.m_HudOnMinPlayersToStart = CachedJsExecutor("OnMinPlayersToStart(%s)", nil)
+
+    self.m_Ticks = 0.0
 end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
@@ -14,7 +28,24 @@ function VuBattleRoyaleHud:OnExtensionLoaded()
 end
 
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
+    if self.m_Ticks >= ServerConfig.HudUpdateTime then
+        self.m_HudOnMinPlayersToStart:Update(ServerConfig.MinPlayersToStart)
+        self:PushUpdatePlayersInfo()
 
+        self.m_Ticks = 0.0
+    end
+
+    self.m_Ticks = self.m_Ticks + p_DeltaTime
+end
+
+function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
+    if p_GameState == nil then
+        return
+    end
+
+    self.m_GameState = p_GameState
+
+    self.m_HudOnGameState:Update(GameStatesStrings[p_GameState])
 end
 
 function VuBattleRoyaleHud:OnUIDrawHud()
@@ -60,6 +91,32 @@ function VuBattleRoyaleHud:PushLocalPlayerYaw()
     return
 end
 
+function VuBattleRoyaleHud:PushUpdatePlayersInfo()
+    local s_Players = PlayerManager:GetPlayers()
+
+    local s_PlayersObject = {}
+    for _, l_Player in pairs(s_Players) do
+		table.insert(s_PlayersObject, {
+            ["id"] = l_Player.id,
+            ["name"] = l_Player.name,
+            ["kill"] = l_Player.kills,
+            ["alive"] = l_Player.alive,
+        })
+    end
+    self.m_HudOnPlayersInfo:Update(json.encode(s_PlayersObject))
+
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer ~= nil then
+        local s_LocalPlayerTable = {
+            ["id"] = s_LocalPlayer.id,
+            ["name"] = s_LocalPlayer.name,
+            ["kill"] = s_LocalPlayer.kills,
+            ["alive"] = s_LocalPlayer.alive,
+        }
+        self.m_HudOnLocalPlayerInfo:Update(json.encode(s_LocalPlayerTable))
+    end
+end
+
 function VuBattleRoyaleHud:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
     if p_Action == UIInputAction.UIInputAction_MapSize and p_EventType ==
         UIInputActionEventType.UIInputActionEventType_Pressed then
@@ -84,10 +141,15 @@ end
 
 function VuBattleRoyaleHud:OnPhaseManagerUpdate(p_Data)
     self.m_HudOnUpdateCircles:Update(json.encode(p_Data))
+    self:OnUpdateTimer(p_Data.Duration)
 end
 
 function VuBattleRoyaleHud:OnOuterCircleMove(p_OuterCircle)
     self.m_HudOnUpdateCircles:Update(json.encode({OuterCircle = p_OuterCircle}))
+end
+
+function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
+    self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
 end
 
 if g_VuBattleRoyaleHud == nil then

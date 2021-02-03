@@ -16,3 +16,10 @@ function CachedJsExecutor:Update(value)
     WebUI:ExecuteJS(string.format(self.funcTemplate, value))
     return value
 end
+
+function CachedJsExecutor:ForceUpdate(value)
+    self.prev = value
+
+    WebUI:ExecuteJS(string.format(self.funcTemplate, value))
+    return value
+end

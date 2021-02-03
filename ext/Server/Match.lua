@@ -1,15 +1,12 @@
 local Match = class("Match")
 
-require ("__shared/Helpers/LevelNameHelper")
-require ("__shared/Helpers/TableHelper")
-
-require ("__shared/Configs/MapsConfig")
-require ("__shared/Configs/ServerConfig")
-
-require ("__shared/Enums/GameStates")
-
-require ("Gunship")
-require ("PhaseManagerServer")
+require "__shared/Helpers/LevelNameHelper"
+require "__shared/Helpers/TableHelper"
+require "__shared/Configs/MapsConfig"
+require "__shared/Configs/ServerConfig"
+require "__shared/Enums/GameStates"
+require "Gunship"
+require "PhaseManagerServer"
 
 function Match:__init(p_Server)
     -- Save server reference
@@ -37,9 +34,6 @@ function Match:__init(p_Server)
     self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
     self.m_UpdateTicks[GameStates.Match] = 0.0
     self.m_UpdateTicks[GameStates.EndGame] = 0.0
-
-    -- Circle index
-    self.m_CircleIndex = 1
 
     -- Winner
     self.m_Winner = nil
@@ -100,8 +94,7 @@ end
 
 function Match:OnWarmup(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.Warmup] == 0.0 then
-        -- TODO: Set the client timer
-        -- self.m_Server:SetClientTimer(ServerConfig.WarmupTime)
+        self:SetClientTimer(ServerConfig.WarmupTime)
     end
 
     
@@ -123,8 +116,7 @@ end
 
 function Match:OnWarmupToPlane(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.WarmupToPlane] == 0.0 then
-        -- TODO: Set the client timer
-        --self.m_Server:SetClientTimer(ServerConfig.WarmupToPlaneTime)
+        self:SetClientTimer(ServerConfig.WarmupToPlaneTime)
 
         -- Fade out then kill all the players
         self:UnspawnAllSoldiers()
@@ -141,8 +133,7 @@ end
 
 function Match:OnPlane(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.Plane] == 0.0 then
-        -- TODO: Set the client timer
-        -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
+        self:SetClientTimer(ServerConfig.PlaneTime)
 
         self.m_Gunship:Spawn(self:GetRandomGunshipStart())
         PlayerManager:FadeInAll(2.0)
@@ -151,6 +142,7 @@ function Match:OnPlane(p_DeltaTime)
 
     if self.m_UpdateTicks[GameStates.Plane] >= ServerConfig.PlaneTime then
         self.m_UpdateTicks[GameStates.Plane] = 0.0
+        NetEvents:BroadcastLocal('ForceJumpOufOfGunship')
         self.m_Server:ChangeGameState(GameStates.PlaneToFirstCircle)
         return
     end
@@ -160,18 +152,16 @@ end
 
 function Match:OnPlaneToFirstCircle(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] == 0.0 then
-        -- TODO: Set the client timer
-        -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
+        
     end
 
-    -- No delay needed, Phase Manager solves all of our problems
+    -- No delay needed, PhaseManager solves all of our problems
     if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >= 0.0 then
         self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
         self.m_Server:ChangeGameState(GameStates.Match)
 
         -- Start the Circle of Death
         self.m_PhaseManager:Start()
-
         return
     end
 
@@ -179,34 +169,13 @@ function Match:OnPlaneToFirstCircle(p_DeltaTime)
 end
 
 function Match:OnMatch(p_DeltaTime)
-    if self.m_UpdateTicks[GameStates.Match] == 0.0 then
-        -- TODO: Set the client timer
-        -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
-    end
-
     self:DoWeHaveAWinner()
 
-    local s_LevelName = LevelNameHelper:GetLevelName()
-    if s_LevelName == nil then
-        return
+    if self.m_UpdateTicks[GameStates.Match] >= ServerConfig.GunshipDespawn then
+        self.m_Gunship:Spawn(nil, false)
     end
-
-    if self.m_UpdateTicks[GameStates.Match] >= MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] then
-        -- TODO: Update the ring state
-        -- Not needed, Phase Manager solves all of our problems
-        return
-    end
-
-    local s_StartToEnd = MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["StartsAt"] + MapsConfig[s_LevelName]["Phases"][self.m_CircleIndex]["MoveDuration"]
-    if self.m_UpdateTicks[GameStates.Match] >= s_StartToEnd then
-        if self.m_CircleIndex < MapsConfig[s_LevelName]["PhasesCount"] then
-            print("INFO: Circle stopped shrinking")
-            self.m_UpdateTicks[GameStates.Match] = 0.0
-
-            self.m_CircleIndex = self.m_CircleIndex + 1
-        end
-        return
-    end
+    
+    -- PhaseManager does the rest
 
     self.m_UpdateTicks[GameStates.Match] = self.m_UpdateTicks[GameStates.Match] + p_DeltaTime
 end
@@ -221,12 +190,10 @@ function Match:OnEndGame(p_DeltaTime)
         else
             print('INFO: Round ended without a winner.')
         end
-        
 
         -- TODO: Set client UI to show the winners name
 
-        -- TODO: Set the client timer
-        -- self.m_Server:SetClientTimer(ServerConfig.EndGameTime)
+        self:SetClientTimer(ServerConfig.EndGameTime)
     end
 
     if self.m_UpdateTicks[GameStates.EndGame] >= ServerConfig.EndGameTime then
@@ -457,10 +424,23 @@ function Match:GetRandomGunshipStart()
     local s_Return = LinearTransform()
     s_Return:LookAtTransform(s_Center, s_OffsetAngle)
 
-    s_Return.trans.x = s_Return.trans.x - s_Return.forward.x * 550
-    s_Return.trans.z = s_Return.trans.z - s_Return.forward.z * 550
+    s_Return.trans.x = s_Return.trans.x - s_Return.forward.x * 750
+    s_Return.trans.z = s_Return.trans.z - s_Return.forward.z * 750
 
     return s_Return
+end
+
+
+function Match:SetClientTimer(p_Time, p_Player)
+    if p_Time == nil then
+        return
+    end
+
+    if p_Player ~= nil then
+        NetEvents:SendTo("VuBattleRoyale:UpdateTimer", p_Player, p_Time)
+    else
+        NetEvents:Broadcast("VuBattleRoyale:UpdateTimer", p_Time)
+    end
 end
 
 return Match

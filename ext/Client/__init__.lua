@@ -93,6 +93,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_PhaseManagerUpdateEvent = Events:Subscribe(PhaseManagerCustomEvents.CircleMove, self, self.OnOuterCircleMove)
 
     self.m_GameStateChangedEvent = NetEvents:Subscribe("VuBattleRoyale:GameStateChanged", self, self.OnGameStateChanged)
+    self.m_OnUpdateTimerEvent = NetEvents:Subscribe("VuBattleRoyale:UpdateTimer", self, self.OnUpdateTimer)
 
     -- TODO: We might not even need this beacuse of the round restarts
     self.m_CleanupEntitiesEvent = NetEvents:Subscribe("VuBattleRoyale:Cleanup", self, self.OnCleanupEntities)
@@ -159,8 +160,17 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 
     self.m_GameState = p_GameState
 
-    -- Update the WebUI
-    -- TODO: WebUI:ExecuteJS("ChangeState(" .. self.m_GameState .. ");")
+    m_Hud:OnGameStateChanged(p_GameState)
+end
+
+function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
+    if p_Time == nil then
+        return
+    end
+
+    print("INFO: Set timer to: " .. p_Time)
+
+    m_Hud:OnUpdateTimer(p_Time)
 end
 
 function VuBattleRoyaleClient:OnCleanupEntities(p_EntityType)
@@ -206,15 +216,29 @@ function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
 end
 
 function VuBattleRoyaleClient:OnPlayerKilled(p_Player)
+    if p_Player == nil then
+        return
+    end
+
+    print("INFO: OnPlayerKilled: " .. p_Player.name)
+
     m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
 end
 
 function VuBattleRoyaleClient:OnConfirmPlayerKill(p_Giver, p_PlayerName)
+    print("INFO: OnConfirmPlayerKill: " .. p_PlayerName)
+
     if p_PlayerName == nil then
         return
     end
 
-    m_SpectatorCamera:OnPlayerKilled(PlayerManager:GetPlayerByName(p_PlayerName), self.m_GameState)
+    local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
+
+    if s_Player == nil then
+        return
+    end
+
+    m_SpectatorCamera:OnPlayerKilled(s_Player, self.m_GameState)
 end
 
 function VuBattleRoyaleClient:OnClientUpdateInput()

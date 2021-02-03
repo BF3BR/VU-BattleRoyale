@@ -6,7 +6,7 @@ function Gunship:__init(p_Match)
 	
 	self.m_StartTransform = nil
 
-	self.m_SpeedMultiplier = 3.0
+	self.m_SpeedMultiplier = 1.5
 
     self.m_JumpOutOfGunshipEvent = NetEvents:Subscribe("JumpOutOfGunship", self, self.OnJumpOutOfGunship)
 
@@ -25,7 +25,7 @@ function Gunship:OnJumpOutOfGunship(p_Player)
         if s_VehicleSpawnEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") then
             s_VehicleSpawnEntity = SpatialEntity(s_VehicleSpawnEntity)
             s_Transform = s_VehicleSpawnEntity.transform
-            s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 10, s_Transform.trans.z)
+            s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 20, s_Transform.trans.z)
 
             break
         end

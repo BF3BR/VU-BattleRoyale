@@ -12,6 +12,7 @@ import MatchInfo from "./components/MatchInfo";
 
 /* Style */
 import './App.scss';
+import Player from "./helpers/Player";
 
 const App: React.FC = () => {
     /*
@@ -25,10 +26,46 @@ const App: React.FC = () => {
     }
         
     /*
-    * States
+    * Paradrop
     */
     const [paradropPercentage, setParadropPercentage] = useState<number>(100);
     const [paradropDistance, setParadropDistance] = useState<number>(100);
+
+
+    /*
+    * Gamestate
+    */
+    const [gameState, setGameState] = useState<string|null>("None");
+    window.OnGameState = (state: string) => {
+        setGameState(state);
+    }
+
+
+    const [time, setTime] = useState<number|null>(null);
+    window.OnUpdateTimer = (time: number) => {
+        setTime(time);
+    }
+
+
+    /*
+    * Gamestate
+    */
+    const [players, setPlayers] = useState<Player[]|null>(null);
+    window.OnPlayersInfo = (data: any) => {
+        setPlayers(data);
+    }
+
+    const [minPlayersToStart, setMinPlayersToStart] = useState<number|null>(null);
+    window.OnMinPlayersToStart = (minPlayersToStart: number) => {
+        console.log(minPlayersToStart);
+        setMinPlayersToStart(minPlayersToStart);
+    }
+
+    const [localPlayer, setLocalPlayer] = useState<Player|null>(null);
+    window.OnLocalPlayerInfo = (data: any) => {
+        setLocalPlayer(data);
+    }
+
 
     /*
     * Map
@@ -114,6 +151,7 @@ const App: React.FC = () => {
                 <button onClick={() => setOpenMap(prevState => !prevState)}>Open Map</button>
                 <button onClick={() => window.OnPlayerPos({x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000)})}>Set Random Player Pos</button>
                 <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
+                <button onClick={() => window.OnUpdateTimer(Math.random() * 60)}>Random Timer</button>
                 {/*
                 <button onClick={() => setRandomMessages()}>Random messages</button>
                 <button onClick={() =>  window.OnFocus(MessageTarget.CctSayAll)}>isTypingActive</button>
@@ -124,7 +162,6 @@ const App: React.FC = () => {
             </div>
 
             <div id="VUBattleRoyale">
-
                 <AmmoAndHealthCounter />
 
                 {/*<ParaDropDistance 
@@ -132,7 +169,15 @@ const App: React.FC = () => {
                     distance={300}
                     warnPercentage={15}
                 />*/}
-                <MatchInfo />
+
+                <MatchInfo 
+                    state={gameState} 
+                    time={time}
+                    noMap={!showMinimap || openMap}
+                    players={players}
+                    minPlayersToStart={minPlayersToStart}
+                />
+
                 {showMinimap &&
                     <MiniMap 
                         open={openMap}
@@ -156,5 +201,10 @@ declare global {
         OnMapSizeChange: () => void;
         OnMapShow: (show: boolean) => void;
         OnUpdateCircles: (data: any) => void;
+        OnGameState: (state: string) => void;
+        OnUpdateTimer: (time: number) => void;
+        OnPlayersInfo: (data: any) => void;
+        OnLocalPlayerInfo: (data: any) => void;
+        OnMinPlayersToStart: (minPlayersToStart: number) => void;
     }
 }
