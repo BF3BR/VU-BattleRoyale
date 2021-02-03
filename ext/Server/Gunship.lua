@@ -58,12 +58,6 @@ function Gunship:OnEngineUpdate(p_DeltaTime)
 end
 
 function Gunship:Spawn(p_StartTransform, p_Enable)
-    if p_StartTransform == nil then
-        return
-    end
-
-    self.m_StartTransform = p_StartTransform
-
     local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleSpawnEntity")
     local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
 
@@ -71,6 +65,11 @@ function Gunship:Spawn(p_StartTransform, p_Enable)
         if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0") then
             s_VehicleSpawnEntity = Entity(s_VehicleSpawnEntity)
             if p_Enable == true then
+                if p_StartTransform == nil then
+                    return
+                end
+                self.m_StartTransform = p_StartTransform
+
                 s_VehicleSpawnEntity:FireEvent("Spawn")
                 self.m_SetFlyPath = true
             else
