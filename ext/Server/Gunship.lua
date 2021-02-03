@@ -57,7 +57,7 @@ function Gunship:OnEngineUpdate(p_DeltaTime)
     end
 end
 
-function Gunship:Spawn(p_StartTransform)
+function Gunship:Spawn(p_StartTransform, p_Enable)
     if p_StartTransform == nil then
         return
     end
@@ -70,9 +70,12 @@ function Gunship:Spawn(p_StartTransform)
     while s_VehicleSpawnEntity do
         if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0") then
             s_VehicleSpawnEntity = Entity(s_VehicleSpawnEntity)
-            s_VehicleSpawnEntity:FireEvent("Spawn")
-
-            self.m_SetFlyPath = true
+            if p_Enable == true then
+                s_VehicleSpawnEntity:FireEvent("Spawn")
+                self.m_SetFlyPath = true
+            else
+                s_VehicleSpawnEntity:FireEvent("Unspawn")
+            end
             return
         end
 

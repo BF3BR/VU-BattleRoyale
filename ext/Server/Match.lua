@@ -144,7 +144,7 @@ function Match:OnPlane(p_DeltaTime)
         -- TODO: Set the client timer
         -- self.m_Server:SetClientTimer(ServerConfig.PlaneTime)
 
-        self.m_Gunship:Spawn(self:GetRandomGunshipStart())
+        self.m_Gunship:Spawn(self:GetRandomGunshipStart(), true)
         PlayerManager:FadeInAll(2.0)
         self.m_IsFadeOutSet = false
     end
