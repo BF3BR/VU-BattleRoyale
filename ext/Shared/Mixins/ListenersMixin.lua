@@ -58,14 +58,8 @@ function ListenersMixin:RemoveListener(p_Key)
 end
 
 function ListenersMixin:RemoveListeners()
-    for key, item in pairs(self.m__Listeners) do
-        if item.type == ListenerType.Hook then
-            item:Uninstall()
-        else
-            item:Unsubscribe()
-        end
-
-        self.m__Listeners[key] = nil
+    for l_Key, _ in pairs(self.m__Listeners) do
+        self:RemoveListener(l_Key)
     end
 
     self.m__Listeners = {}

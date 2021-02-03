@@ -10,7 +10,7 @@ function PhaseManagerServer:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
 
     -- TODO
-    self.m_InnerCircle = Circle(Vec3(148, 0, -864), 300)
+    self.m_InnerCircle = Circle(Vec3(148, 0, -864), 400)
     self.m_OuterCircle = Circle(Vec3(148, 0, -864), 3000)
 end
 

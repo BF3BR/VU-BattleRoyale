@@ -25,7 +25,9 @@ end
 
 -- Destroys every timer and empties the timers table
 function TimersMixin:RemoveTimers()
-    for l_Key, _ in pairs(self.m__Timers) do self:RemoveTimer(l_Key) end
+    for l_Key, _ in pairs(self.m__Timers) do
+        self:RemoveTimer(l_Key)
+    end
 
     self.m__Timers = {}
 end
