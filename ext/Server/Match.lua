@@ -318,21 +318,44 @@ function Match:SpawnPlayer(p_Player, p_Transform)
         return
     end
 
-    -- Spawn the player with only a knife
-    local s_M9 = ResourceManager:SearchForDataContainer('Weapons/M9/U_M9')
-    local s_Knife = ResourceManager:SearchForDataContainer('Weapons/Knife/U_Knife')
-    p_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_M9, {})
-    p_Player:SelectWeapon(WeaponSlot.WeaponSlot_5, s_Knife, {})
-    p_Player:SelectWeapon(WeaponSlot.WeaponSlot_7, s_Knife, {})
+    -- Spawn the player with only a knife and a m9
 
     p_Player:SelectUnlockAssets(s_SoldierAsset, { s_Appearance })
 
     local s_SpawnedSoldier = p_Player:CreateSoldier(s_SoldierBlueprint, p_Transform)
-
 	p_Player:SpawnSoldierAt(s_SpawnedSoldier, p_Transform, CharacterPoseType.CharacterPoseType_Stand)
 	p_Player:AttachSoldier(s_SpawnedSoldier)
-
+    p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+   
     return s_SpawnedSoldier
+end
+
+function Match:CreateCustomizeSoldierData()
+    local s_CustomizeSoldierData = CustomizeSoldierData()
+    s_CustomizeSoldierData.restoreToOriginalVisualState = false
+    s_CustomizeSoldierData.clearVisualState = true
+    s_CustomizeSoldierData.overrideMaxHealth = -1.0
+    s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
+
+    local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
+    s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+                                                                Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),
+                                                                Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73")))
+    s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_7
+    s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
+
+    local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
+    s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+                                                                Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
+                                                                Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+    s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
+    s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
+
+    s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_9
+    s_CustomizeSoldierData.removeAllExistingWeapons = true
+    s_CustomizeSoldierData.disableDeathPickup = false
+
+    return s_CustomizeSoldierData
 end
 
 function Match:GetRandomWarmupSpawnpoint(p_Player)
