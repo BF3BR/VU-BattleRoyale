@@ -84,6 +84,7 @@ const App: React.FC = () => {
     }
 
     window.OnPlayerCurrentWeapon = (data: string) => {
+        console.log(data);
         setPlayerCurrentWeapon(data);
     }
 

@@ -184,8 +184,6 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoAndHealth()
         return
     end
 
-    print(s_LocalSoldier.health)
-
     self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
     self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
     self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)

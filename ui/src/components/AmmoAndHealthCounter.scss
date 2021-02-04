@@ -8,6 +8,21 @@
     flex-flow: column;
     text-shadow: 0 0 .3vw rgba(0, 0, 0, 0.3);
 
+    .WeaponName {
+        position: relative;
+        text-align: right;
+        padding: 0 .85vw;
+        margin-bottom: 1vw;
+        font-size: 1.25vw;
+        opacity: 0;
+        transition: opacity .1s ease;
+
+        &.IsVisible {
+            opacity: 1;
+            transition: opacity .1s ease;
+        }
+    }
+
     .AmmoCounter {
         position: relative;
         display: flex;
@@ -23,7 +38,13 @@
             line-height: 0.65;
 
             span {
-                opacity: 0.3;
+                width: 1.6vw;
+                display: inline-block;
+                text-align: center;
+
+                &.zero {
+                    opacity: 0.3;
+                }
             }
         }
 
@@ -36,9 +57,17 @@
 
             .mag {
                 font-size: 1.1vw;
+                display: flex;
+                min-width: 2.4vw;
                 
                 span {
-                    opacity: 0.3;
+                    width: 0.7vw;
+                    display: inline-block;
+                    text-align: center;
+
+                    &.zero {
+                        opacity: 0.3;
+                    }
                 }
             }
 
