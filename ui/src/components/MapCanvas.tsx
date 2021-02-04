@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect } from 'react'
 import Circle from '../helpers/Circle';
-import Vec3 from '../helpers/Vec3';
 
 const arrowImage = new Image();
 arrowImage.src = 'img/compass.svg';

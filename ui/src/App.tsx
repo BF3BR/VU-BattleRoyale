@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 /* Helpers */
 import Vec3 from "./helpers/Vec3";
@@ -48,7 +48,7 @@ const App: React.FC = () => {
 
 
     /*
-    * Gamestate
+    * Player
     */
     const [players, setPlayers] = useState<Player[]|null>(null);
     window.OnPlayersInfo = (data: any) => {
@@ -57,13 +57,34 @@ const App: React.FC = () => {
 
     const [minPlayersToStart, setMinPlayersToStart] = useState<number|null>(null);
     window.OnMinPlayersToStart = (minPlayersToStart: number) => {
-        console.log(minPlayersToStart);
         setMinPlayersToStart(minPlayersToStart);
     }
 
     const [localPlayer, setLocalPlayer] = useState<Player|null>(null);
     window.OnLocalPlayerInfo = (data: any) => {
         setLocalPlayer(data);
+    }
+
+
+    const [playerHealth, setPlayerHealth] = useState<number>(0);
+    const [playerPrimaryAmmo, setPlayerPrimaryAmmo] = useState<number>(0);
+    const [playerSecondaryAmmo, setPlayerSecondaryAmmo] = useState<number>(0);
+    const [playerCurrentWeapon, setPlayerCurrentWeapon] = useState<string>('');
+
+    window.OnPlayerHealth = (data: number) => {
+        setPlayerHealth(data);
+    }
+
+    window.OnPlayerPrimaryAmmo = (data: number) => {
+        setPlayerPrimaryAmmo(data);
+    }
+
+    window.OnPlayerSecondaryAmmo = (data: number) => {
+        setPlayerSecondaryAmmo(data);
+    }
+
+    window.OnPlayerCurrentWeapon = (data: string) => {
+        setPlayerCurrentWeapon(data);
     }
 
 
@@ -167,7 +188,12 @@ const App: React.FC = () => {
             </div>
 
             <div id="VUBattleRoyale">
-                <AmmoAndHealthCounter />
+                <AmmoAndHealthCounter
+                    playerHealth={playerHealth}
+                    playerPrimaryAmmo={playerPrimaryAmmo}
+                    playerSecondaryAmmo={playerSecondaryAmmo}
+                    playerCurrentWeapon={playerCurrentWeapon}
+                />
 
                 {/*<ParaDropDistance 
                     percentage={paradropPercentage}
@@ -212,5 +238,9 @@ declare global {
         OnPlayersInfo: (data: any) => void;
         OnLocalPlayerInfo: (data: any) => void;
         OnMinPlayersToStart: (minPlayersToStart: number) => void;
+        OnPlayerHealth: (data: number) => void;
+        OnPlayerPrimaryAmmo: (data: number) => void;
+        OnPlayerSecondaryAmmo: (data: number) => void;
+        OnPlayerCurrentWeapon: (data: string) => void;
     }
 }

@@ -24,6 +24,7 @@ const PercentageCounter: React.FC<Props> = ({ type, value }) => {
                 <div className="PercentageBg">
                     <div className="PercentageFg" style={{width: value + "%"}}></div>
                 </div>
+                <div className="PercentageText">{value??0}</div>
             </div>
             
         </>

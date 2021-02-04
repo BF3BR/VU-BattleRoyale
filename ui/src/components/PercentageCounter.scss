@@ -27,6 +27,14 @@
         transition: width .1s ease;
     }
 
+    .PercentageText {
+        width: 1.95vw;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        font-size: .9vw;
+        text-shadow: 0 0 .2vw rgba(0, 0, 0, 0.5);
+    }
     
     &.PercentageTypeArmor {
         .PercentageBg {
@@ -35,6 +43,10 @@
 
         .PercentageFg {
             background: rgba(50,122,196,1);
+        }
+
+        .PercentageText {
+            color: rgba(50,122,196,1);
         }
     }
 }

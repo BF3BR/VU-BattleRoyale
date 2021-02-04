@@ -19,6 +19,11 @@ function VuBattleRoyaleHud:__init()
 
     self.m_HudOnMinPlayersToStart = CachedJsExecutor("OnMinPlayersToStart(%s)", nil)
 
+    self.m_HudOnPlayerHealth = CachedJsExecutor("OnPlayerHealth(%s)", 0)
+    self.m_HudOnPlayerPrimaryAmmo = CachedJsExecutor("OnPlayerPrimaryAmmo(%s)", 0)
+    self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
+    self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", '')
+
     self.m_Ticks = 0.0
 end
 
@@ -60,6 +65,7 @@ end
 function VuBattleRoyaleHud:OnUIDrawHud()
     self:PushLocalPlayerPos()
     self:PushLocalPlayerYaw()
+    self:PushLocalPlayerAmmoAndHealth()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
@@ -77,10 +83,12 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
     end
 
     local s_SoldierLinearTransform = s_LocalSoldier.worldTransform
-
     local s_Position = s_SoldierLinearTransform.trans
-
-    local s_Table = {x = s_Position.x, y = s_Position.y, z = s_Position.z}
+    local s_Table = {
+        x = s_Position.x,
+        y = s_Position.y,
+        z = s_Position.z
+    }
 
     self.m_HudOnPlayerPos:Update(json.encode(s_Table))
     return
@@ -159,6 +167,31 @@ end
 
 function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
     self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
+end
+
+function VuBattleRoyaleHud:PushLocalPlayerAmmoAndHealth()
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == nil then
+        return
+    end
+
+    if s_LocalPlayer.alive == false then
+        return
+    end
+
+    local s_LocalSoldier = s_LocalPlayer.soldier
+    if s_LocalSoldier == nil then
+        return
+    end
+
+    print(s_LocalSoldier.health)
+
+    self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
+    self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
+    self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
+    self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
+    --self.m_HudOnPlayerCurrentSlot:Update(s_LocalSoldier.weaponsComponent.currentWeaponSlot)
+    return
 end
 
 if g_VuBattleRoyaleHud == nil then
