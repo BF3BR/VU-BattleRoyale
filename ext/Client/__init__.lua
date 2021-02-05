@@ -101,6 +101,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 
     self.m_GunshipCameraNetEvent = NetEvents:Subscribe("ForceJumpOufOfGunship", self, self.OnForceJumpOufOfGunship)
     self.m_GunshipCameraNetEvent = NetEvents:Subscribe("GunshipCamera", self, self.OnGunShipCamera)
+    self.m_JumpOutOfGunshipNetEvent = NetEvents:Subscribe("JumpOutOfGunship", self, self.OnJumpOutOfGunship)
+    self.m_GunshipPositionNetEvent = NetEvents:Subscribe("GunshipPosition", self, self.OnGunshipPosition)
 
     self.m_PlayersPitchAndYawEvent = NetEvents:Subscribe("VuBattleRoyale:PlayersPitchAndYaw", self, self.OnPlayersPitchAndYaw)
 
@@ -270,6 +272,19 @@ end
 
 function VuBattleRoyaleClient:OnGunShipCamera()
     m_Gunship:OnGunShipCamera()
+    m_Hud:OnGunShipCamera()
+end
+
+function VuBattleRoyaleClient:OnGunshipPosition(p_Trans)
+    if p_Trans == nil then
+        return
+    end
+
+    m_Hud:OnGunshipPosition(p_Trans)
+end
+
+function VuBattleRoyaleClient:OnJumpOutOfGunship()
+    m_Hud:OnJumpOutOfGunship()
 end
 
 function VuBattleRoyaleClient:OnPlayersPitchAndYaw(p_PitchAndYaw)

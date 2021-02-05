@@ -18,7 +18,7 @@ const AmmoAndHealthCounter: React.FC<Props> = ({ playerHealth, playerPrimaryAmmo
     const padLeadingZeros = (num: number, playerCurrentWeapon: string) => {
         if (num === -1 || WeaponNames[playerCurrentWeapon] === 'Knife') {
             return ({
-                __html: '<span class=\"zero\">-</span><span class=\"zero\">-</span><span class=\"zero\">-</span>'
+                __html: '<span class="zero">-</span><span class="zero">-</span><span class="zero">-</span>'
             });
         }
 
@@ -26,12 +26,12 @@ const AmmoAndHealthCounter: React.FC<Props> = ({ playerHealth, playerPrimaryAmmo
 
         var ret = "";
         s.split("").forEach((char: string) => {
-            ret +=  "<span class=\"number\">" + char + "</span>";
+            ret +=  '<span class="number">' + char + '</span>';
         });
 
         while (s.length < 3) {
             s = "0" + s;
-            ret = "<span class=\"zero\">0</span>" + ret;
+            ret = '<span class="zero">0</span>' + ret;
         }
 
         return ({

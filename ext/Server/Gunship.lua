@@ -14,6 +14,8 @@ function Gunship:__init(p_Match)
     self.m_CumulatedTime = 0
 
     self.m_Enabled = false
+
+    self.m_VehicleEntity = nil
 end
 
 function Gunship:OnJumpOutOfGunship(p_Player)
@@ -37,10 +39,15 @@ function Gunship:OnJumpOutOfGunship(p_Player)
 
     self.m_Match:SpawnPlayer(p_Player, s_Transform)
     p_Player.soldier.health = 200.0
+    NetEvents:SendToLocal("JumpOutOfGunship", p_Player)
 end
 
 function Gunship:OnEngineUpdate(p_DeltaTime)
     if not self.m_SetFlyPath then
+        if self.m_VehicleEntity ~= nil then
+            NetEvents:BroadcastLocal("GunshipPosition", self.m_VehicleEntity.transform)
+        end
+
         return
     end
     
@@ -48,7 +55,7 @@ function Gunship:OnEngineUpdate(p_DeltaTime)
         return
     end
 	
-	self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
+    self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
 	
     if self.m_CumulatedTime >= 0.1 then
         self.m_SetFlyPath = false
@@ -83,6 +90,7 @@ function Gunship:Spawn(p_StartTransform, p_Enable)
             else
                 s_VehicleSpawnEntity:FireEvent("Unspawn")
                 
+                self.m_VehicleEntity = nil
                 self.m_Enabled = false
             end
             return
@@ -100,6 +108,7 @@ function Gunship:SetVehicleEntityTransform()
         if s_VehicleEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") then
             s_VehicleEntity = SpatialEntity(s_VehicleEntity)
             s_VehicleEntity.transform = self.m_StartTransform
+            self.m_VehicleEntity = s_VehicleEntity
             break
 		end
 		
@@ -117,7 +126,7 @@ function Gunship:SetLocatorEntityTransform()
 		local s_DirectionTransform = self.m_StartTransform
 		s_DirectionTransform.trans.x = s_DirectionTransform.trans.x - self.m_StartTransform.forward.x * self.m_SpeedMultiplier
 		s_DirectionTransform.trans.z = s_DirectionTransform.trans.z - self.m_StartTransform.forward.z * self.m_SpeedMultiplier
-		
+
         s_LocatorEntity.transform = s_DirectionTransform
         s_LocatorEntity = s_LocatorEntityIterator:Next()
     end

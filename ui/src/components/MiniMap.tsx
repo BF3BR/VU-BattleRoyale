@@ -13,9 +13,10 @@ interface Props {
     playerYaw: number|null;
     innerCircle: Circle|null;
     outerCircle: Circle|null;
+    playerIsInPlane: boolean;
 }
 
-const MiniMap: React.FC<Props> = ({ open, playerPos, playerYaw, innerCircle, outerCircle }) => {
+const MiniMap: React.FC<Props> = ({ open, playerPos, playerYaw, innerCircle, outerCircle, playerIsInPlane }) => {
 
     return (
         <>
@@ -27,6 +28,7 @@ const MiniMap: React.FC<Props> = ({ open, playerPos, playerYaw, innerCircle, out
                         playerYaw={playerYaw} 
                         innerCircle={innerCircle} 
                         outerCircle={outerCircle} 
+                        playerIsInPlane={playerIsInPlane}
                     />
                 :   
                     <></>

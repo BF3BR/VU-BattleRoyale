@@ -4,6 +4,9 @@ import Circle from '../helpers/Circle';
 const arrowImage = new Image();
 arrowImage.src = 'img/compass.svg';
 
+const airplaneImage = new Image();
+airplaneImage.src = 'img/airplane.svg';
+
 // TODO: Get levelname from server
 const mapImage = new Image();
 mapImage.src = 'img/XP5_003.jpg';
@@ -42,28 +45,24 @@ const MapCanvas = (props: any) => {
     }
 
     const drawPlayer = (ctx: any, playerMapX: number, playerMapZ: number) => {
-        //drawPlayerShape(ctx, playerMapX, playerMapZ, ctx.canvas.width, "rgba(255,225,0,0.8)");
-        //drawPlayerShape(ctx, playerMapX, playerMapZ, ctx.canvas.width / 4, "rgba(255,255,255,1)");
         drawArrow(ctx, playerMapX, playerMapZ);
     }
 
-    /*const drawPlayerShape = (ctx: any, playerMapX: number, playerMapZ: number, size: number, color: string) => {
-        ctx.beginPath();
+    const drawArrow = (ctx: any, playerMapX: number, playerMapZ: number) => {
+        var image = arrowImage;
 
-        if (propsRef.current.open) {
-            ctx.arc(playerMapX, playerMapZ, size / 80, 0, Math.PI * 2);
-        } else {
-            ctx.arc(ctx.canvas.width / 2, ctx.canvas.height / 2, size / 20, 0, Math.PI * 2);
+        if (propsRef.current.playerIsInPlane) {
+            image = airplaneImage;
         }
 
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.closePath();
-    }*/
+        var arrowWidth = image.width * (ctx.canvas.width / 550);
+        var arrowHeight = image.height * (ctx.canvas.width / 550);
 
-    const drawArrow = (ctx: any, playerMapX: number, playerMapZ: number) => {
-        var arrowWidth = arrowImage.width / ctx.canvas.width * 120;
-        var arrowHeight = arrowImage.height / ctx.canvas.height * 120;
+        if (propsRef.current.playerIsInPlane) {
+            arrowWidth = arrowWidth / 4;
+            arrowHeight = arrowHeight / 4;
+        }
+
         ctx.save();
 
         ctx.shadowColor = "rgba(0,0,0,.7)";
@@ -72,13 +71,13 @@ const MapCanvas = (props: any) => {
         ctx.shadowOffsetY = 0;
 
         if (propsRef.current.open) {
-            arrowWidth = arrowWidth * 3;
-            arrowHeight = arrowHeight * 3;
+            arrowWidth = arrowWidth / 4;
+            arrowHeight = arrowHeight / 4;
             ctx.translate(playerMapX, playerMapZ);
             ctx.rotate(Math.PI / 180 * propsRef.current.playerYaw);
             ctx.translate(-(playerMapX), -(playerMapZ));
             ctx.drawImage(
-                arrowImage, 
+                image, 
                 playerMapX - (arrowWidth / 2), 
                 playerMapZ - (arrowHeight / 2), 
                 arrowWidth, 
@@ -86,7 +85,7 @@ const MapCanvas = (props: any) => {
             );
         } else {
             ctx.drawImage(
-                arrowImage, 
+                image, 
                 (ctx.canvas.width / 2) - arrowWidth / 2, 
                 (ctx.canvas.height / 2) - arrowHeight / 2, 
                 arrowWidth, 

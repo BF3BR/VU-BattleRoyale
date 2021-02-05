@@ -24,6 +24,10 @@ function VuBattleRoyaleHud:__init()
     self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
     self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", '')
 
+    self.m_IsPlayerOnPlane = false
+    self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
+    self.m_HudOnPlanePosition = CachedJsExecutor("OnPlanePosition(%s)", nil)
+
     self.m_Ticks = 0.0
 end
 
@@ -190,6 +194,32 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoAndHealth()
     self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
     --self.m_HudOnPlayerCurrentSlot:Update(s_LocalSoldier.weaponsComponent.currentWeaponSlot)
     return
+end
+
+function VuBattleRoyaleHud:OnGunShipCamera()
+    self.m_HudOnPlayerIsInPlane:Update(true)
+    self.m_IsPlayerOnPlane = true
+end
+
+function VuBattleRoyaleHud:OnJumpOutOfGunship()
+    self.m_HudOnPlayerIsInPlane:Update(false)
+    self.m_IsPlayerOnPlane = false
+end
+
+function VuBattleRoyaleHud:OnGunshipPosition(p_Trans)
+    if p_Trans == nil or not self.m_IsPlayerOnPlane then
+        return
+    end
+
+    local s_Table = {
+        x = p_Trans.trans.x,
+        y = p_Trans.trans.y,
+        z = p_Trans.trans.z
+    }
+
+    local s_YawRad = (math.atan(p_Trans.forward.z, p_Trans.forward.x) + (math.pi / 2)) % (2 * math.pi)
+    self.m_HudOnPlayerYaw:Update(math.floor((2 * math.pi) * s_YawRad))
+    self.m_HudOnPlayerPos:Update(json.encode(s_Table))
 end
 
 if g_VuBattleRoyaleHud == nil then

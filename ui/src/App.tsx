@@ -3,16 +3,17 @@ import React, { useState } from "react";
 /* Helpers */
 import Vec3 from "./helpers/Vec3";
 import Circle from "./helpers/Circle";
+import Player from "./helpers/Player";
 
 /* Components */
 import ParaDropDistance from "./components/ParaDropDistance";
 import MiniMap from "./components/MiniMap";
 import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
+import Messages from "./components/Messages";
 
 /* Style */
 import './App.scss';
-import Player from "./helpers/Player";
 
 const App: React.FC = () => {
     /*
@@ -84,8 +85,16 @@ const App: React.FC = () => {
     }
 
     window.OnPlayerCurrentWeapon = (data: string) => {
-        console.log(data);
         setPlayerCurrentWeapon(data);
+    }
+
+    /*
+    * Plane
+    */
+    const [playerIsInPlane, setPlayerIsInPlane] = useState<boolean>(false);
+
+    window.OnPlayerIsInPlane = (isInPlane: boolean) => {
+        setPlayerIsInPlane(isInPlane);
     }
 
 
@@ -196,6 +205,9 @@ const App: React.FC = () => {
                     playerCurrentWeapon={playerCurrentWeapon}
                 />
 
+                <Messages 
+                    playerIsInPlane={playerIsInPlane}
+                />
                 {/*<ParaDropDistance 
                     percentage={paradropPercentage}
                     distance={300}
@@ -218,6 +230,7 @@ const App: React.FC = () => {
                         playerYaw={playerYaw}
                         innerCircle={innerCircle}
                         outerCircle={outerCircle}
+                        playerIsInPlane={playerIsInPlane}
                     />
                 }
             </div>
