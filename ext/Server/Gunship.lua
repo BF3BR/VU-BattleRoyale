@@ -123,9 +123,22 @@ function Gunship:SetLocatorEntityTransform()
     while s_LocatorEntity do
 		s_LocatorEntity = SpatialEntity(s_LocatorEntity)
 		
-		local s_DirectionTransform = self.m_StartTransform
-		s_DirectionTransform.trans.x = s_DirectionTransform.trans.x - self.m_StartTransform.forward.x * self.m_SpeedMultiplier
-		s_DirectionTransform.trans.z = s_DirectionTransform.trans.z - self.m_StartTransform.forward.z * self.m_SpeedMultiplier
+        local s_DirectionTransform = self.m_StartTransform
+        
+        local s_SpeedMultiplier = self.m_SpeedMultiplier
+        local s_TickRate = SharedUtils:GetTickrate()
+        if s_TickRate == 120.0 then
+            s_SpeedMultiplier = s_SpeedMultiplier / 4
+            s_DirectionTransform.trans.x = s_DirectionTransform.trans.x + self.m_StartTransform.forward.x * s_SpeedMultiplier
+            s_DirectionTransform.trans.z = s_DirectionTransform.trans.z + self.m_StartTransform.forward.z * s_SpeedMultiplier
+        elseif s_TickRate == 60.0 then
+            s_SpeedMultiplier = s_SpeedMultiplier * 2
+            s_DirectionTransform.trans.x = s_DirectionTransform.trans.x + self.m_StartTransform.forward.x * s_SpeedMultiplier
+            s_DirectionTransform.trans.z = s_DirectionTransform.trans.z + self.m_StartTransform.forward.z * s_SpeedMultiplier
+        else
+            s_DirectionTransform.trans.x = s_DirectionTransform.trans.x - self.m_StartTransform.forward.x * s_SpeedMultiplier
+            s_DirectionTransform.trans.z = s_DirectionTransform.trans.z - self.m_StartTransform.forward.z * s_SpeedMultiplier
+        end
 
         s_LocatorEntity.transform = s_DirectionTransform
         s_LocatorEntity = s_LocatorEntityIterator:Next()

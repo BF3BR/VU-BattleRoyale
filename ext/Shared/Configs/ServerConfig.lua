@@ -23,5 +23,17 @@ ServerConfig =
     -- DEBUG STUFF
     Debug = {
         EnableLootPointSpheres = true,
+
+        Whitelist = {
+            "voteban_flash",
+            "Bree",
+            "Janssent",
+            "KVN",
+            "breaknix",
+            "kiwidog",
+            "kiwidoggie",
+            "keku645",
+            "DankBoi21",
+        },
     }
 }

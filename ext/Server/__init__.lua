@@ -1,16 +1,11 @@
 class "VuBattleRoyaleServer"
 
-require ("__shared/Helpers/LevelNameHelper")
-
-require ("__shared/Configs/MapsConfig")
-require ("__shared/Configs/ServerConfig")
-
-require ("__shared/Enums/GameStates")
-
-require ("Match")
-
--- only devs should be able to join
-require ("Whitelist")
+require "__shared/Helpers/LevelNameHelper"
+require "__shared/Configs/MapsConfig"
+require "__shared/Configs/ServerConfig"
+require "__shared/Enums/GameStates"
+require "Match"
+require "Whitelist"
 
 function VuBattleRoyaleServer:__init()
     -- Extension events
@@ -36,24 +31,18 @@ function VuBattleRoyaleServer:__init()
 end
 
 function VuBattleRoyaleServer:OnExtensionLoaded()
-    -- Register all of the events
     self:RegisterEvents()
+    self:RegisterHooks()
 end
 
 function VuBattleRoyaleServer:OnExtensionUnloaded()
     self:UnregisterEvents()
+    self:UnregisterHooks()
 end
 
 function VuBattleRoyaleServer:RegisterEvents()
     -- Engine tick
     self.m_EngineUpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
-
-    -- Team and Squad management
-    self.m_PlayerFindBestSquadHook = Hooks:Install("Player:FindBestSquad", 1, self, self.OnPlayerFindBestSquad)
-    self.m_PlayerSelectTeamHook = Hooks:Install("Player:SelectTeam", 1, self, self.OnPlayerSelectTeam)
-
-    -- Damage hook
-    self.m_SoldierDamageHook = Hooks:Install("Soldier:Damage", 1, self, self.OnSoldierDamage)
 
     -- Partition events
     self.m_PartitionLoadedEvent = Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded)
@@ -70,6 +59,23 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     -- InteractiveManDown revived event
     self.m_ManDownRevivedEvent = Events:Subscribe("Player:ManDownRevived", self, self.OnManDownRevived)
+end
+
+function VuBattleRoyaleServer:UnregisterEvents()
+    
+end
+
+function VuBattleRoyaleServer:RegisterHooks()
+    -- Team and Squad management
+    self.m_PlayerFindBestSquadHook = Hooks:Install("Player:FindBestSquad", 1, self, self.OnPlayerFindBestSquad)
+    self.m_PlayerSelectTeamHook = Hooks:Install("Player:SelectTeam", 1, self, self.OnPlayerSelectTeam)
+    
+    -- Damage hook
+    self.m_SoldierDamageHook = Hooks:Install("Soldier:Damage", 1, self, self.OnSoldierDamage)
+end
+
+function VuBattleRoyaleServer:UnregisterHooks()
+    
 end
 
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)

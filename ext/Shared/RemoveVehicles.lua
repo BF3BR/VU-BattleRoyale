@@ -1,9 +1,12 @@
 class "RemoveVehicles"
 
 function RemoveVehicles:__init()
-    self.m_WorldPartData = ResourceManager:RegisterInstanceLoadHandler(Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"),
-                                                                       Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
-                                                                       self, self.OnWorldPartData)
+    self.m_WorldPartData = ResourceManager:RegisterInstanceLoadHandler(
+        Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"),
+        Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
+       self, 
+       self.OnWorldPartData
+    )
 end
 
 function RemoveVehicles:OnWorldPartData(p_Instance)
