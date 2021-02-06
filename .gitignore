@@ -2,5 +2,4 @@
 .vu
 ui.vuic
 /builds
-ui/.eslintcache
 yarn.lock
