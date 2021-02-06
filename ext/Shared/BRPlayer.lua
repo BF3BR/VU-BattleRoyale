@@ -1,3 +1,4 @@
+require '_shared/Enums/TeamManagerEvents'
 require "__shared/Items/Armor"
 
 class "BRPlayer"
@@ -21,8 +22,8 @@ function BRPlayer:SetTeam(p_Team)
 end
 
 function BRPlayer:SetArmor(p_Armor)
-    -- TODO send NetEvent to update armor
     self.m_Armor = p_Armor
+    NetEvents:SendToLocal(BRPlayerNetEvents.ArmorState, self.m_Player, self.m_Armor:AsTable())
 end
 
 -- 
@@ -30,6 +31,12 @@ function BRPlayer:ApplyDamage(p_Damage)
     -- TODO add a lot...
     local l_Damage = self.m_Armor:ApplyDamage(p_Damage)
     self.m_Player.soldier.health = self.m_Player.soldier.health - l_Damage
+end
+
+function BRPlayer:LeaveTeam()
+    if self.m_Team ~= nil then
+        self.m_Team:RemovePlayer(self)
+    end
 end
 
 -- Checks if the player and `p_OtherBrPlayer` are on the same team

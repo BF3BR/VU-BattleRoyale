@@ -2,3 +2,4 @@
 .vu
 ui.vuic
 /builds
+yarn.lock
