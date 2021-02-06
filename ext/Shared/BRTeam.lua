@@ -9,6 +9,39 @@ function BRTeam:__init(p_Id, p_Code)
     self.m_SquadId = SquadId.SquadNone
 end
 
+function BRTeam:AddPlayer(p_BrPlayer)
+    -- TODO add team is full check
+    -- if #self.m_Players >= TEAM_PLAYERS_N then
+    --     return
+    -- end
+
+    -- check if member of a team
+    if p_BrPlayer.m_Team ~= nil then
+        -- check if already in this team
+        if self:IsEqual(p_BrPlayer.m_Team) then
+            return
+        end
+
+        -- remove player from old team
+        p_BrPlayer.m_Team:RemovePlayer(p_BrPlayer)
+    end
+
+    -- add player
+    table.insert(self.m_Players, p_BrPlayer)
+    p_BrPlayer:SetTeam(self)
+end
+
+function BRTeam:RemovePlayer(p_BrPlayer)
+    -- check if player isn't a member of this team
+    if p_BrPlayer.m_Team == nil or not self:IsEqual(p_BrPlayer.m_Team) then
+        return
+    end
+
+    -- remove player
+    table.remove(self.m_Players, p_BrPlayer)
+    p_BrPlayer:SetTeam(nil)
+end
+
 function BRTeam:IsEqual(p_OtherTeam)
     -- return p_OtherTeam ~= nil and
     --     self.m_SquadId > 0 and
