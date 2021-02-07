@@ -8,6 +8,17 @@ require "BRTeamManager"
 require "Match"
 require "Whitelist"
 
+require ("__shared/Configs/MapsConfig")
+require ("__shared/Configs/ServerConfig")
+
+require ("__shared/Enums/GameStates")
+
+require ("Match")
+
+-- only devs should be able to join
+require ("Whitelist")
+require ("PingServer")
+
 function VuBattleRoyaleServer:__init()
     -- Extension events
     self.m_ExtensionLoadedEvent = nil
@@ -28,6 +39,9 @@ function VuBattleRoyaleServer:__init()
     self.m_WaitForStart = true
 
     self.m_TeamManager = BRTeamManager()
+
+    -- Server sided pinging system
+    self.m_Ping = PingServer()
 
     -- Sets the custom gamemode name
     ServerUtils:SetCustomGameModeName("Baguette")
