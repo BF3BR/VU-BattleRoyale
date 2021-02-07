@@ -1,7 +1,7 @@
 {
     "Name": "VU-BattleRoyale",
     "Description": "Battle Royale gamemode for VU.",
-    "Authors": [ "KVN", "Flash_Hit", "breaknix", "Janssent" ],
+    "Authors": [ "KVN", "Flash_Hit", "breaknix", "Janssent", "kiwidog" ],
     "Version": "1.0.0",
     "HasVeniceEXT": true,
     "HasWebUI": true,
