@@ -184,6 +184,7 @@ function Match:OnEndGame(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.EndGame] == 0.0 then
         -- End the Circle of Death
         self.m_PhaseManager:End()
+        self.m_Gunship:Spawn(nil, false)
 
         if self.m_Winner ~= nil then
             print('INFO: We have a winner: ' .. self.m_Winner.name)
