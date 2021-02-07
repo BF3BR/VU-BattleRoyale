@@ -70,11 +70,7 @@ function PhaseManagerClient:OnUpdateState(p_State)
     self.m_OuterCircle:Update(p_State.OuterCircle.Center, p_State.OuterCircle.Radius, self.m_PhaseIndex)
 
     -- custom event to inform the rest of the client scripts about the state update
-    Events:DispatchLocal(PhaseManagerCustomEvents.Update, {
-        InnerCircle = p_State.InnerCircle,
-        OuterCircle = p_State.OuterCircle,
-        Duration = p_State.Duration
-    })
+    Events:DispatchLocal(PhaseManagerCustomEvents.Update, p_State)
 end
 
 -- 
