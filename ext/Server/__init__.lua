@@ -7,17 +7,7 @@ require "__shared/Enums/GameStates"
 require "BRTeamManager"
 require "Match"
 require "Whitelist"
-
-require ("__shared/Configs/MapsConfig")
-require ("__shared/Configs/ServerConfig")
-
-require ("__shared/Enums/GameStates")
-
-require ("Match")
-
--- only devs should be able to join
-require ("Whitelist")
-require ("PingServer")
+require "PingServer"
 
 function VuBattleRoyaleServer:__init()
     -- Extension events

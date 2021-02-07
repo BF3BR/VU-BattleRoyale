@@ -1,6 +1,6 @@
 class "PingServer"
 
-require("__shared/PingEvents")
+require "__shared/Enums/PingEvents"
 
 function PingServer:__init()
     -- Subscribe to the netevent for a player ping

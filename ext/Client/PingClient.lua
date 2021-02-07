@@ -1,6 +1,6 @@
 class "PingClient"
 
-require("__shared/PingEvents")
+require "__shared/Enums/PingEvents"
 
 function PingClient:__init()
     self.m_LastPing = Vec3(0, 0, 0)
