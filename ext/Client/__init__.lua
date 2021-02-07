@@ -7,6 +7,7 @@ require "__shared/Enums/PhaseManagerEvents"
 require "Helpers/LootPointHelper"
 require "PhaseManagerClient"
 require "ClientCommands"
+require "PingClient"
 
 local m_UICleanup = require "UICleanup"
 local m_Gunship = require "Gunship"
@@ -26,6 +27,9 @@ function VuBattleRoyaleClient:__init()
     self.m_GameState = GameStates.None
 
     self.m_PhaseManager = PhaseManagerClient()
+
+    -- The client pinging system
+    self.m_Ping = PingClient()
 end
 
 -- ==========
