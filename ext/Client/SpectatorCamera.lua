@@ -386,6 +386,11 @@ function SpectatorCamera:IsEnabled()
 	return self.m_Active
 end
 
+function SpectatorCamera:OnLevelDestroy()
+	self.m_SpectatedPlayer = nil
+	self.m_PlayersPitchAndYaw = { }
+end
+
 function SpectatorCamera:OnEngineUpdate(p_DeltaTime)
 	if not self:IsEnabled() then
 		return

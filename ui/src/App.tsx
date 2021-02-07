@@ -12,10 +12,11 @@ import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
 import PlaneMessage from "./components/PlaneMessage";
 import KillAndAliveInfo from "./components/KillAndAliveInfo";
+import Alert from "./components/Alert";
+import SpactatorInfo from "./components/SpactatorInfo";
 
 /* Style */
 import './App.scss';
-import Alert from "./components/Alert";
 
 const App: React.FC = () => {
     /*
@@ -27,7 +28,7 @@ const App: React.FC = () => {
             debugMode = true;
         }
     }
-        
+
     /*
     * Paradrop
     */
@@ -38,13 +39,13 @@ const App: React.FC = () => {
     /*
     * Gamestate
     */
-    const [gameState, setGameState] = useState<string|null>("None");
+    const [gameState, setGameState] = useState<string | null>("None");
     window.OnGameState = (state: string) => {
         setGameState(state);
     }
 
 
-    const [time, setTime] = useState<number|null>(null);
+    const [time, setTime] = useState<number | null>(null);
     window.OnUpdateTimer = (time: number) => {
         setTime(time);
     }
@@ -53,22 +54,22 @@ const App: React.FC = () => {
     /*
     * Player
     */
-    const [players, setPlayers] = useState<Player[]|null>(null);
+    const [players, setPlayers] = useState<Player[] | null>(null);
     window.OnPlayersInfo = (data: any) => {
         setPlayers(data);
     }
 
-    const [minPlayersToStart, setMinPlayersToStart] = useState<number|null>(null);
+    const [minPlayersToStart, setMinPlayersToStart] = useState<number | null>(null);
     window.OnMinPlayersToStart = (minPlayersToStart: number) => {
         setMinPlayersToStart(minPlayersToStart);
     }
 
-    const [localPlayer, setLocalPlayer] = useState<Player|null>(null);
+    const [localPlayer, setLocalPlayer] = useState<Player | null>(null);
     window.OnLocalPlayerInfo = (data: any) => {
         setLocalPlayer(data);
     }
 
-    const [alertString, setAlertString] = useState<string|null>(null);
+    const [alertString, setAlertString] = useState<string | null>(null);
 
     const [playerHealth, setPlayerHealth] = useState<number>(0);
     const [playerPrimaryAmmo, setPlayerPrimaryAmmo] = useState<number>(0);
@@ -91,6 +92,23 @@ const App: React.FC = () => {
         setPlayerCurrentWeapon(data);
     }
 
+
+    /*
+    * Spectator
+    */
+    const [spectating, setSpectating] = useState<boolean>(false);
+
+    window.SpectatorEnabled = function (p_Enabled: boolean) {
+        setSpectating(p_Enabled);
+    }
+
+    const [spectatorTarget, setSpectatorTarget] = useState<string>('');
+
+    window.SpectatorTarget = function (p_TargetName: string) {
+        setSpectatorTarget(p_TargetName);
+    }
+
+
     /*
     * Plane
     */
@@ -106,8 +124,8 @@ const App: React.FC = () => {
     */
     const [openMap, setOpenMap] = useState<boolean>(false);
     const [showMinimap, setShowMinimap] = useState<boolean>(false);
-    
-    const [playerPos, setPlayerPos] = useState<Vec3|null>(null);
+
+    const [playerPos, setPlayerPos] = useState<Vec3 | null>(null);
     window.OnPlayerPos = (p_DataJson: any) => {
         setPlayerPos({
             x: p_DataJson.x,
@@ -116,7 +134,7 @@ const App: React.FC = () => {
         });
     }
 
-    const [playerYaw, setPlayerYaw] = useState<number|null>(null);
+    const [playerYaw, setPlayerYaw] = useState<number | null>(null);
     window.OnPlayerYaw = (p_YawRad: number) => {
         setPlayerYaw(p_YawRad);
     }
@@ -129,8 +147,8 @@ const App: React.FC = () => {
         setShowMinimap(show);
     }
 
-    const [innerCircle, setInnerCircle] = useState<Circle|null>(null);
-    const [outerCircle, setOuterCircle] = useState<Circle|null>(null);
+    const [innerCircle, setInnerCircle] = useState<Circle | null>(null);
+    const [outerCircle, setOuterCircle] = useState<Circle | null>(null);
     const [subPhaseIndex, setSubPhaseIndex] = useState<number>(1);
 
     window.OnUpdateCircles = (data: any) => {
@@ -183,20 +201,21 @@ const App: React.FC = () => {
             }
 
             <div id="debug">
-                <input 
-                    type="range" 
-                    min="0" 
+                <input
+                    type="range"
+                    min="0"
                     max="100"
-                    value={paradropPercentage} 
+                    value={paradropPercentage}
                     onChange={(event: any) => setParadropPercentage(event.target.value)}
                     step="1"
                 />
                 <button onClick={() => setShowMinimap(prevState => !prevState)}>Show Map</button>
                 <button onClick={() => setOpenMap(prevState => !prevState)}>Open Map</button>
-                <button onClick={() => window.OnPlayerPos({x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000)})}>Set Random Player Pos</button>
+                <button onClick={() => window.OnPlayerPos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Player Pos</button>
                 <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
                 <button onClick={() => window.OnUpdateTimer(Math.random() * 60)}>Random Timer</button>
                 <button onClick={() => setAlertString("Heads up, the Circle is moving")}>Set alert</button>
+                <button onClick={() => setSpectating(prevState => !prevState)}>Set Spectator</button>
                 {/*
                 <button onClick={() => setRandomMessages()}>Random messages</button>
                 <button onClick={() =>  window.OnFocus(MessageTarget.CctSayAll)}>isTypingActive</button>
@@ -207,51 +226,62 @@ const App: React.FC = () => {
             </div>
 
             <div id="VUBattleRoyale">
-                <AmmoAndHealthCounter
-                    playerHealth={playerHealth}
-                    playerPrimaryAmmo={playerPrimaryAmmo}
-                    playerSecondaryAmmo={playerSecondaryAmmo}
-                    playerCurrentWeapon={playerCurrentWeapon}
-                />
-
-                <PlaneMessage 
-                    playerIsInPlane={playerIsInPlane}
-                />
-
-                <Alert 
-                    alert={alertString}
-                    afterInterval={() => setAlertString(null)}
-                />
-
-                {/*<ParaDropDistance 
-                    percentage={paradropPercentage}
-                    distance={300}
-                    warnPercentage={15}
-                />*/}
-
-                <KillAndAliveInfo 
+                <KillAndAliveInfo
                     kills={localPlayer !== null ? localPlayer.kill : 0}
                     alive={players !== null ? Object.values(players).filter(player => player.alive === true).length : 0}
+                    spectating={spectating}
                 />
 
-                <MatchInfo 
-                    state={gameState} 
+                <MatchInfo
+                    state={gameState}
                     time={time}
                     noMap={!showMinimap || openMap}
                     players={players}
                     minPlayersToStart={minPlayersToStart}
                     subPhaseIndex={subPhaseIndex}
+                    spectating={spectating}
                 />
 
-                {showMinimap &&
-                    <MiniMap 
-                        open={openMap}
-                        playerPos={playerPos}
-                        playerYaw={playerYaw}
-                        innerCircle={innerCircle}
-                        outerCircle={outerCircle}
-                        playerIsInPlane={playerIsInPlane}
-                    />
+                <SpactatorInfo
+                    spectating={spectating}
+                    spectatorTarget={spectatorTarget}
+                />
+
+                {!spectating &&
+                    <>
+                        <AmmoAndHealthCounter
+                            playerHealth={playerHealth}
+                            playerPrimaryAmmo={playerPrimaryAmmo}
+                            playerSecondaryAmmo={playerSecondaryAmmo}
+                            playerCurrentWeapon={playerCurrentWeapon}
+                        />
+
+                        <PlaneMessage
+                            playerIsInPlane={playerIsInPlane}
+                        />
+
+                        <Alert
+                            alert={alertString}
+                            afterInterval={() => setAlertString(null)}
+                        />
+
+                        {/*<ParaDropDistance 
+                            percentage={paradropPercentage}
+                            distance={300}
+                            warnPercentage={15}
+                        />*/}
+
+                        {showMinimap &&
+                            <MiniMap
+                                open={openMap}
+                                playerPos={playerPos}
+                                playerYaw={playerYaw}
+                                innerCircle={innerCircle}
+                                outerCircle={outerCircle}
+                                playerIsInPlane={playerIsInPlane}
+                            />
+                        }
+                    </>
                 }
             </div>
         </>
@@ -277,5 +307,7 @@ declare global {
         OnPlayerSecondaryAmmo: (data: number) => void;
         OnPlayerCurrentWeapon: (data: string) => void;
         OnPlayerIsInPlane: (isInPlane: boolean) => void;
+        SpectatorTarget: (p_TargetName: string) => void;
+        SpectatorEnabled: (p_Enabled: boolean) => void;
     }
 }

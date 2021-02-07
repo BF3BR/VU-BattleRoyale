@@ -125,6 +125,7 @@ end
 function VuBattleRoyaleClient:OnLevelDestroy()
     m_SpectatorCamera:OnLevelDestroy()
     m_Hud:OnLevelDestroy()
+    m_SpectatorCamera:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLevelLoaded()

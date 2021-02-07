@@ -13,9 +13,10 @@ interface Props {
     players: Player[]|null;
     minPlayersToStart: number|null;
     subPhaseIndex: number;
+    spectating: boolean;
 }
 
-const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToStart, subPhaseIndex }) => {
+const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToStart, subPhaseIndex, spectating }) => {
 
     const getStateString = (state: string, subPhaseIndex: number) => {
         switch (state) {
@@ -43,7 +44,7 @@ const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToS
 
     return (
         <>
-            <div id="MatchInfo" className={noMap ? 'noMap' : ''}>
+            <div id="MatchInfo" className={(noMap || spectating) ? 'noMap' : ''}>
                 <span className="MatchInfoState">
                     {getStateString(state, subPhaseIndex)}
                 </span>
