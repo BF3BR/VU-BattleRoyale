@@ -10,10 +10,12 @@ import ParaDropDistance from "./components/ParaDropDistance";
 import MiniMap from "./components/MiniMap";
 import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
-import Messages from "./components/Messages";
+import PlaneMessage from "./components/PlaneMessage";
+import KillAndAliveInfo from "./components/KillAndAliveInfo";
 
 /* Style */
 import './App.scss';
+import Alert from "./components/Alert";
 
 const App: React.FC = () => {
     /*
@@ -66,6 +68,7 @@ const App: React.FC = () => {
         setLocalPlayer(data);
     }
 
+    const [alertString, setAlertString] = useState<string|null>(null);
 
     const [playerHealth, setPlayerHealth] = useState<number>(0);
     const [playerPrimaryAmmo, setPlayerPrimaryAmmo] = useState<number>(0);
@@ -129,6 +132,7 @@ const App: React.FC = () => {
     const [innerCircle, setInnerCircle] = useState<Circle|null>(null);
     const [outerCircle, setOuterCircle] = useState<Circle|null>(null);
     const [subPhaseIndex, setSubPhaseIndex] = useState<number>(1);
+
     window.OnUpdateCircles = (data: any) => {
         if (data.InnerCircle) {
             setInnerCircle({
@@ -154,6 +158,10 @@ const App: React.FC = () => {
 
         if (data.SubphaseIndex) {
             setSubPhaseIndex(data.SubphaseIndex);
+
+            if (data.SubphaseIndex === 3) {
+                setAlertString("Heads up, the Circle is moving");
+            }
         }
     }
 
@@ -188,6 +196,7 @@ const App: React.FC = () => {
                 <button onClick={() => window.OnPlayerPos({x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000)})}>Set Random Player Pos</button>
                 <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
                 <button onClick={() => window.OnUpdateTimer(Math.random() * 60)}>Random Timer</button>
+                <button onClick={() => setAlertString("Heads up, the Circle is moving")}>Set alert</button>
                 {/*
                 <button onClick={() => setRandomMessages()}>Random messages</button>
                 <button onClick={() =>  window.OnFocus(MessageTarget.CctSayAll)}>isTypingActive</button>
@@ -205,14 +214,25 @@ const App: React.FC = () => {
                     playerCurrentWeapon={playerCurrentWeapon}
                 />
 
-                <Messages 
+                <PlaneMessage 
                     playerIsInPlane={playerIsInPlane}
                 />
+
+                <Alert 
+                    alert={alertString}
+                    afterInterval={() => setAlertString(null)}
+                />
+
                 {/*<ParaDropDistance 
                     percentage={paradropPercentage}
                     distance={300}
                     warnPercentage={15}
                 />*/}
+
+                <KillAndAliveInfo 
+                    kills={localPlayer !== null ? localPlayer.kill : 0}
+                    alive={players !== null ? Object.values(players).filter(player => player.alive === true).length : 0}
+                />
 
                 <MatchInfo 
                     state={gameState} 
@@ -256,5 +276,6 @@ declare global {
         OnPlayerPrimaryAmmo: (data: number) => void;
         OnPlayerSecondaryAmmo: (data: number) => void;
         OnPlayerCurrentWeapon: (data: string) => void;
+        OnPlayerIsInPlane: (isInPlane: boolean) => void;
     }
 }

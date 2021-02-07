@@ -152,11 +152,11 @@ end
 
 function Match:OnPlaneToFirstCircle(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] == 0.0 then
-        
+        self:SetClientTimer(5.0)
     end
 
     -- No delay needed, PhaseManager solves all of our problems
-    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >= 0.0 then
+    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >= 5.0 then
         self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
         self.m_Server:ChangeGameState(GameStates.Match)
 

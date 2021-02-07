@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import "./Messages.scss";
 
@@ -6,7 +6,7 @@ interface Props {
     playerIsInPlane: boolean;
 };
 
-const Messages: React.FC<Props> = ({ playerIsInPlane }) => {
+const PlaneMessage: React.FC<Props> = ({ playerIsInPlane }) => {
     return (
         <div id="Messages">
             {playerIsInPlane &&
@@ -18,10 +18,4 @@ const Messages: React.FC<Props> = ({ playerIsInPlane }) => {
     );
 };
 
-export default Messages;
-
-declare global {
-    interface Window {
-        OnPlayerIsInPlane: (isInPlane: boolean) => void;
-    }
-}
+export default PlaneMessage;

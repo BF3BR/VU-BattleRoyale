@@ -1,0 +1,29 @@
+#Alert {
+    position: absolute;
+    left: 50%;
+    top: 20vh;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity .05s ease;
+
+    &.show {
+        opacity: 1;
+        transition: opacity .05s ease;
+    }
+
+    img {
+        width: 4vw;
+        margin-bottom: 1.5vw;
+        filter: drop-shadow(0 0 0.1vw rgba(0, 0, 0, .4));
+    }
+    
+    span {
+        font-size: 1.75vw;
+        text-transform: uppercase;
+        text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
+    }
+}

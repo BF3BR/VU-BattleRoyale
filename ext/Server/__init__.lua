@@ -86,7 +86,19 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
         -- Update the players pitch and yaw table
         self:GetPlayersPitchAndYaw()
 
-        local s_PlayerCount = PlayerManager:GetPlayerCount()
+        local s_PlayerCount = 0
+
+        local s_Players = PlayerManager:GetPlayers()
+        for l_Index, l_Player in ipairs(s_Players) do
+            if l_Player == nil and l_Player.alive == false then
+                goto update_allowed_guids_continue
+            end
+    
+            s_PlayerCount = s_PlayerCount + 1
+    
+            ::update_allowed_guids_continue::
+        end
+
         if self.m_GameState == GameStates.None and s_PlayerCount >= ServerConfig.MinPlayersToStart then
             self:ChangeGameState(GameStates.Warmup)
         end

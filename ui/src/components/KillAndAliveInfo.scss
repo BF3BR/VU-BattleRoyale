@@ -1,0 +1,34 @@
+#KillAndAliveInfo {
+    position: absolute;
+    top: 3vw;
+    left: 4vw;
+    display: flex;
+    width: 6.75vw;
+    justify-content: space-between;
+
+    .KillAndAliveBox {
+        width: 3vw;
+        height: 3vw;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,0.25);
+
+        span {
+            text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
+
+            &:first-of-type {
+                font-size: 1.1vw;
+                line-height: 1;
+                font-weight: 600;
+                margin-bottom: .4vw;
+            }
+
+            &:last-of-type {
+                font-size: .55vw;
+                line-height: 1;
+            }
+        }
+    }
+}
