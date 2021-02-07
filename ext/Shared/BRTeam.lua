@@ -51,6 +51,17 @@ function BRTeam:IsEqual(p_OtherTeam)
     return p_OtherTeam ~= nil and self.m_Id == p_OtherTeam.m_Id
 end
 
+-- @param p_PlayerToIgnore (optional)
+function BRTeam:HasAlivePlayers(p_PlayerToIgnore)
+    for _, l_BrPlayer in ipairs(self.m_Players) do
+        if l_BrPlayer.m_Player.alive and (p_PlayerToIgnore == nil or not l_BrPlayer:IsEqual(p_PlayerToIgnore)) then
+            return true
+        end
+    end
+
+    return false
+end
+
 function BRTeam:__gc()
     self:Destroy()
 end

@@ -39,6 +39,7 @@ function PhaseManagerClient:RequestInitialState()
 
     if self.m_LevelLoadedEvent then
         self.m_LevelLoadedEvent:Unsubscribe()
+        self.m_LevelLoadedEvent = nil
     end
 end
 
