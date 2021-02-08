@@ -1,5 +1,5 @@
 require "__shared/Configs/CircleConfig"
-require "__shared/Helpers/MathHelper"
+require "__shared/Utils/MathHelper"
 require "__shared/Circle"
 require "Helpers/RaycastHelper"
 

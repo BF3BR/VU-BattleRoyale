@@ -1,7 +1,7 @@
 class "Whitelist"
 
 require "__shared/Configs/ServerConfig"
-require "__shared/Helpers/TableHelper"
+require "__shared/Utils/TableHelper"
 
 function Whitelist:__init()
     Hooks:Install('Player:RequestJoin', 100, self, self.OnPlayerRequestJoin) 

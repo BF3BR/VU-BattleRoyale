@@ -1,6 +1,6 @@
 class 'LootPointHelper'
 
-require ("__shared/Helpers/LevelNameHelper")
+require ("__shared/Utils/LevelNameHelper")
 
 require ("__shared/Configs/MapsConfig")
 require ("__shared/Configs/ServerConfig")
