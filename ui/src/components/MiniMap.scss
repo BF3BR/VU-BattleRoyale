@@ -1,19 +1,38 @@
-#Messages {
+#miniMap {
     position: absolute;
-    bottom: 10vw;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1vw;
-    text-shadow: 0 0 .3vw rgba(0, 0, 0, 0.3);
+    bottom: 6vh;
+    left: 4vw;
+    height: 12vw;
+    width: 12vw;
+    transition: all .1s ease;
+    background: transparent url('../assets/img/noise-gif-square-anim.gif') 50% 50% no-repeat;
+    background-size: cover;
 
-    span {
-        &.keyboard {
-            display: inline-block;
-            border: .05vw solid #fff;
-            padding: .5vw .85vw;
-            margin: 0 .3vw;
-            background: rgba(0, 0, 0, 0.5);
-            font-weight: 600;
-        }
+    &.open {
+        position: absolute;
+        bottom: 50%;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        height: 90vh;
+        width: 90vh;
+        background: rgba(0, 0, 0, 0.1);
+        transition: all .1s ease;
+        max-height: 2048px;
+        max-width: 2048px;
+    }
+
+    #minimapCanvas {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    #circlesCanvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        pointer-events: none;
+        display: none;
     }
 }

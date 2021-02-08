@@ -42,6 +42,11 @@ const App: React.FC = () => {
     const [gameState, setGameState] = useState<string | null>("None");
     window.OnGameState = (state: string) => {
         setGameState(state);
+
+        if (state === "Warmup") {
+            setAlertPlaySound(false);
+            setAlertString("The round is starting soon");
+        }
     }
 
 
@@ -70,6 +75,7 @@ const App: React.FC = () => {
     }
 
     const [alertString, setAlertString] = useState<string | null>(null);
+    const [alertPlaySound, setAlertPlaySound] = useState<boolean>(false);
 
     const [playerHealth, setPlayerHealth] = useState<number>(0);
     const [playerPrimaryAmmo, setPlayerPrimaryAmmo] = useState<number>(0);
@@ -178,6 +184,7 @@ const App: React.FC = () => {
             setSubPhaseIndex(data.SubphaseIndex);
 
             if (data.SubphaseIndex === 3) {
+                setAlertPlaySound(true);
                 setAlertString("Heads up, the Circle is moving");
             }
         }
@@ -215,6 +222,7 @@ const App: React.FC = () => {
                 <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
                 <button onClick={() => window.OnUpdateTimer(Math.random() * 60)}>Random Timer</button>
                 <button onClick={() => setAlertString("Heads up, the Circle is moving")}>Set alert</button>
+                <button onClick={() => setAlertPlaySound(prevState => !prevState)}>Set alert sounds</button>
                 <button onClick={() => setSpectating(prevState => !prevState)}>Set Spectator</button>
                 {/*
                 <button onClick={() => setRandomMessages()}>Random messages</button>
@@ -263,6 +271,7 @@ const App: React.FC = () => {
                         <Alert
                             alert={alertString}
                             afterInterval={() => setAlertString(null)}
+                            playSound={alertPlaySound}
                         />
 
                         {/*<ParaDropDistance 

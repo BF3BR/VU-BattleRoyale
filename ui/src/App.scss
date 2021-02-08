@@ -55,8 +55,8 @@
 }*/
 
 @font-face {
-    font-family: 'bffont';
-    src: url('./assets/font/bffont.woff') format('woff');
+    font-family: "bffont";
+    src: url("./assets/font/bffont.woff") format("woff");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -83,7 +83,7 @@ body {
     padding: 0;
     margin: 0;
     color: #fff;
-    font-family: 'bffont';
+    font-family: "bffont";
     font-weight: 500;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -110,4 +110,41 @@ h6 {
     top: 0;
     left: 0;
     z-index: 999999999;
+}
+
+.preload-image {
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    top: -1px;
+    left: -1px;
+}
+
+.scale-up-center {
+    -webkit-animation: scale-up-center 0.15s ease both;
+    animation: scale-up-center 0.15s ease both;
+}
+
+@-webkit-keyframes scale-up-center {
+    0% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+    }
+
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
+}
+
+@keyframes scale-up-center {
+    0% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+    }
+
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+    }
 }

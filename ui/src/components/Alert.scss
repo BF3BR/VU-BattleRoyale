@@ -1,19 +1,16 @@
 #Alert {
     position: absolute;
-    left: 50%;
-    top: 20vh;
-    transform: translate(-50%, -50%);
+    left: calc(50vw - 17.5vw);
+    top: 10vh;
+    width: 35vw;
     display: flex;
     flex-flow: column;
     align-items: center;
     justify-content: center;
-    opacity: 0;
-    transition: opacity .05s ease;
-
-    &.show {
-        opacity: 1;
-        transition: opacity .05s ease;
-    }
+    background: rgba(0, 0, 0, 0.3);
+    -webkit-transform: scale(0);
+    transform: scale(0);
+    padding: 2vw 0;
 
     img {
         width: 4vw;

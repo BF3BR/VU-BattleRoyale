@@ -78,7 +78,7 @@ function VuBattleRoyaleServer:RegisterHooks()
     self.m_PlayerSelectTeamHook = Hooks:Install("Player:SelectTeam", 1, self, self.OnPlayerSelectTeam)
     
     -- Damage hook
-    self.m_SoldierDamageHook = Hooks:Install("Soldier:Damage", 1, self, self.OnSoldierDamage)
+    -- self.m_SoldierDamageHook = Hooks:Install("Soldier:Damage", 1, self, self.OnSoldierDamage)
 end
 
 function VuBattleRoyaleServer:UnregisterHooks()
@@ -140,10 +140,13 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 
         p_Info.damage = 0.0
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+        return
     end
+
     if p_Soldier.player == nil then
         return
     end
+    
     if p_GiverInfo == nil or p_GiverInfo.giver == nil then
         self:LeftOverDamageOnManDown(p_Soldier, p_Info.damage, p_GiverInfo)
         if p_Soldier.health <= p_Info.damage then
