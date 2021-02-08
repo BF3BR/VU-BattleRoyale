@@ -30,16 +30,11 @@ function VuBattleRoyaleShared:OnExtensionUnloaded()
 end
 
 function VuBattleRoyaleShared:RegisterEvents()
-    self.m_WorldPartData = ResourceManager:RegisterInstanceLoadHandler(Guid("B6BD6848-37DF-463A-81C5-33A5B3D6F623"),
-                                                                       Guid("A048FCDD-2F98-432A-A5B7-5CC49F2AB21E"),
-                                                                       self, self.OnWorldPartData)
-    self.m_PreRoundEntityData = ResourceManager:RegisterInstanceLoadHandler(
-                                    Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"),
-                                    Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"), self, self.OnPreRoundEntityData)
-    self.m_DisableCamerasOnUnspawn = ResourceManager:RegisterInstanceLoadHandler(
-                                         Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"),
-                                         Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"), self,
-                                         self.OnDisableCamerasOnUnspawn)
+    ResourceManager:RegisterInstanceLoadHandler(Guid("B6BD6848-37DF-463A-81C5-33A5B3D6F623"), Guid("A048FCDD-2F98-432A-A5B7-5CC49F2AB21E"), self, self.OnWorldPartData)
+    ResourceManager:RegisterInstanceLoadHandler(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"), self, self.OnPreRoundEntityData)
+    ResourceManager:RegisterInstanceLoadHandler(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"), self, self.OnDisableCamerasOnUnspawn)
+
+    Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
 end
 
 function VuBattleRoyaleShared:RegisterHooks()
