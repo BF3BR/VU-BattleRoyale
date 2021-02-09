@@ -2,8 +2,8 @@ class "VuBattleRoyaleShared"
 
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
-require "__shared/DropWeapons"
-require "__shared/RemoveVehicles"
+require "__shared/Modifications/DropWeapons"
+require "__shared/Modifications/RemoveVehicles"
 -- require "__shared/InteractiveManDown"
 
 function VuBattleRoyaleShared:__init()
@@ -30,11 +30,12 @@ function VuBattleRoyaleShared:OnExtensionUnloaded()
 end
 
 function VuBattleRoyaleShared:RegisterEvents()
-    ResourceManager:RegisterInstanceLoadHandler(Guid("B6BD6848-37DF-463A-81C5-33A5B3D6F623"), Guid("A048FCDD-2F98-432A-A5B7-5CC49F2AB21E"), self, self.OnWorldPartData)
-    ResourceManager:RegisterInstanceLoadHandler(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"), self, self.OnPreRoundEntityData)
-    ResourceManager:RegisterInstanceLoadHandler(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"), self, self.OnDisableCamerasOnUnspawn)
+    ResourceManager:RegisterInstanceLoadHandler(Guid("B6BD6848-37DF-463A-81C5-33A5B3D6F623"), Guid("A048FCDD-2F98-432A-A5B7-5CC49F2AB21E"), self, self.OnWorldPartDataLoaded)
+    ResourceManager:RegisterInstanceLoadHandler(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"), self, self.OnPreRoundEntityDataLoaded)
+    ResourceManager:RegisterInstanceLoadHandler(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"), self, self.OnConquestBlueprintLoaded)
 
     Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
+    Events:Subscribe('Level:RegisterEntityResources', self, self.OnRegisterEntityResources)
 end
 
 function VuBattleRoyaleShared:RegisterHooks()
@@ -49,7 +50,17 @@ function VuBattleRoyaleShared:UnregisterHooks()
 
 end
 
-function VuBattleRoyaleShared:OnWorldPartData(p_Instance)
+function VuBattleRoyaleShared:OnPartitionLoaded(p_Partition)
+    --LootShared:OnPartitionLoaded(p_Partition)
+end
+
+function VuBattleRoyaleShared:OnRegisterEntityResources(p_LevelData)
+    --local s_GameRegistry = RegistryContainer()
+    --LootShared:OnRegisterEntityResources(p_LevelData, s_GameRegistry)
+    --ResourceManager:AddRegistry(s_GameRegistry, ResourceCompartment.ResourceCompartment_Game)
+end
+
+function VuBattleRoyaleShared:OnWorldPartDataLoaded(p_Instance)
     p_Instance = WorldPartData(p_Instance)
     for i, l_Object in pairs(p_Instance.objects) do
         if l_Object:Is("ReferenceObjectData") then
@@ -63,13 +74,13 @@ function VuBattleRoyaleShared:OnWorldPartData(p_Instance)
     end
 end
 
-function VuBattleRoyaleShared:OnPreRoundEntityData(p_Instance)
+function VuBattleRoyaleShared:OnPreRoundEntityDataLoaded(p_Instance)
     p_Instance = PreRoundEntityData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.enabled = false
 end
 
-function VuBattleRoyaleShared:OnDisableCamerasOnUnspawn(p_Instance)
+function VuBattleRoyaleShared:OnConquestBlueprintLoaded(p_Instance)
     p_Instance = SpatialPrefabBlueprint(p_Instance)
     p_Instance:MakeWritable()
     for i = #p_Instance.eventConnections, 1, -1 do

@@ -1,7 +1,7 @@
 require "__shared/Configs/CircleConfig"
 require "__shared/Enums/PhaseManagerEvents"
 require "__shared/Utils/Timers"
-require "__shared/PhaseManagerShared"
+require "__shared/Logic/PhaseManagerShared"
 require "__shared/Circle"
 require "Visuals/IOCVision"
 require "Visuals/OOCVision"

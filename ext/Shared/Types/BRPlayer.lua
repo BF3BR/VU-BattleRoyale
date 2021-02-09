@@ -1,5 +1,5 @@
 require "__shared/Enums/TeamManagerEvents"
-require "__shared/Items/Armor"
+require "__shared/Types/Items/Armor"
 
 class "BRPlayer"
 
