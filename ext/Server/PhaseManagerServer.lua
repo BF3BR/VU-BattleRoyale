@@ -1,8 +1,8 @@
 require "__shared/Enums/PhaseManagerEvents"
 require "__shared/Enums/SubphaseTypes"
-require "__shared/PhaseManagerShared"
+require "__shared/Logic/PhaseManagerShared"
 require "__shared/Utils/Timers"
-require "__shared/Circle"
+require "__shared/Types/Circle"
 
 class ("PhaseManagerServer", PhaseManagerShared)
 
@@ -15,7 +15,7 @@ function PhaseManagerServer:RegisterVars()
 end
 
 function PhaseManagerServer:RegisterEvents()
-    PhaseManagerShared.RegisterEvents(self)
+    --PhaseManagerShared.RegisterEvents(self)
 
     NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.BroadcastState)
 

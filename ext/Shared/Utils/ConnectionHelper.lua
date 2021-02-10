@@ -38,6 +38,37 @@ function ConnectionHelper:CreateLinkConnection(p_Source, p_Target, p_SourceField
 	return s_LinkConnection
 end
 
+function ConnectionHelper:AddEventConnection(p_Blueprint, p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type)
+    p_Blueprint.eventConnections:add(self:CreateEventConnection(p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type))
+end
+
+function ConnectionHelper:AddPropertyConnection(p_Blueprint, p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
+    p_Blueprint.propertyConnections:add(self:CreatePropertyConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
+end
+
+function ConnectionHelper:AddLinkConnection(p_Blueprint, p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
+    p_Blueprint.linkConnections:add(self:CreateLinkConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
+end
+
+-- TODO: Add other connection types
+function ConnectionHelper:CloneConnections(p_Blueprint, p_OriginalData, p_CustomData)
+    for _, l_Connection in pairs(p_Blueprint.eventConnections) do
+        if l_Connection.source == p_OriginalData then
+            local s_Clone = EventConnection(l_Connection:Clone())
+            s_Clone.source = p_CustomData
+
+            p_Blueprint.eventConnections:add(s_Clone)
+        end
+
+        if l_Connection.target == p_OriginalData then
+            local s_Clone = EventConnection(l_Connection:Clone())
+            s_Clone.target = p_CustomData
+
+            p_Blueprint.eventConnections:add(s_Clone)
+        end
+    end
+end
+
 -- Singleton.
 if g_ConnectionHelper == nil then
 	g_ConnectionHelper = ConnectionHelper()

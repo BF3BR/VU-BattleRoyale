@@ -1,5 +1,5 @@
-require "__shared/BRTeam"
-require "__shared/BRPlayer"
+require "__shared/Types/BRTeam"
+require "__shared/Types/BRPlayer"
 
 class "BRTeamManager"
 

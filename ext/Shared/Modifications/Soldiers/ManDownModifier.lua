@@ -1,9 +1,9 @@
-class "InteractiveManDown"
+class "ManDownModifier"
 
 
-local m_ConnectionHelper = require "__shared/Utils/ConnectionsHelper"
+local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"
 
-function InteractiveManDown:__init()
+function ManDownModifier:__init()
     self.m_NewSoldierEntityDataGuid = MathUtils:RandomGuid()
     self.m_CoopManDownM9Guid = MathUtils:RandomGuid()
 
@@ -41,19 +41,19 @@ function InteractiveManDown:__init()
                                                self.OnCollisionData)
 end
 
-function InteractiveManDown:OnLevelLoadResources()
+function ManDownModifier:OnLevelLoadResources()
     ResourceManager:MountSuperBundle("spchunks")
     ResourceManager:MountSuperBundle("levels/coop_010/coop_010")
 end
 
-function InteractiveManDown:OnResourceManagerLoadBundles(p_HookCtx, p_Bundles, p_Compartment)
+function ManDownModifier:OnResourceManagerLoadBundles(p_HookCtx, p_Bundles, p_Compartment)
     if #p_Bundles == 1 and p_Bundles[1] == SharedUtils:GetLevelName() then
         p_Bundles = {"levels/coop_010/coop_010", p_Bundles[1]}
         p_HookCtx:Pass(p_Bundles, p_Compartment)
     end
 end
 
-function InteractiveManDown:OnInputRestrictionData(p_Instance)
+function ManDownModifier:OnInputRestrictionData(p_Instance)
     p_Instance = InputRestrictionEntityData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.selectWeapon9 = true
@@ -63,14 +63,14 @@ function InteractiveManDown:OnInputRestrictionData(p_Instance)
 end
 
 -- disable knife animation
-function InteractiveManDown:OnMeleeEntityCommonData(p_Instance)
+function ManDownModifier:OnMeleeEntityCommonData(p_Instance)
     p_Instance = MeleeEntityCommonData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.meleeAttackDistance = 0
     p_Instance.maxAttackHeightDifference = 0
 end
 
-function InteractiveManDown:OnCollisionData(p_Instance)
+function ManDownModifier:OnCollisionData(p_Instance)
     p_Instance = CollisionData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.damageAtVerticalVelocity:add(ValueAtX())
@@ -82,7 +82,7 @@ function InteractiveManDown:OnCollisionData(p_Instance)
 end
 
 -- allow the interaction with soldiers which are in the interactiveManDown state on the EntityInteractionComponentData
-function InteractiveManDown:OnEntityInteractionComponentData(p_Instance)
+function ManDownModifier:OnEntityInteractionComponentData(p_Instance)
     p_Instance = EntityInteractionComponentData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.allowInteractionWithSoldiers = true
@@ -90,12 +90,12 @@ end
 
 -- enable the interactiveManDown state and disable the stand and crouch pose
 -- also disable the immortalTimeAfterSpawn and edit the healthpoints 
-function InteractiveManDown:OnVeniceSoldierHealthModuleData(p_Instance)
+function ManDownModifier:OnVeniceSoldierHealthModuleData(p_Instance)
     p_Instance = VeniceSoldierHealthModuleData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.interactiveManDown = true
-    PoseConstraintsData(p_Instance.interactiveManDownPoseConstraints).standPose = false
-    PoseConstraintsData(p_Instance.interactiveManDownPoseConstraints).crouchPose = false
+    p_Instance.interactiveManDownPoseConstraints.standPose = false
+    p_Instance.interactiveManDownPoseConstraints.crouchPose = false
     p_Instance.manDownStateHealthPoints = 100.0
     p_Instance.interactiveManDownThreshold = 100.0
     p_Instance.manDownStateHealthPoints = 100.0
@@ -103,23 +103,23 @@ function InteractiveManDown:OnVeniceSoldierHealthModuleData(p_Instance)
     p_Instance.immortalTimeAfterSpawn = 0.0
     p_Instance.manDownStateTime = 60.0
     p_Instance.regenerationRate = 0.0
-    AntRef(SoldierHealthModuleBinding(p_Instance.binding).interactiveManDown).assetId = 357042550
-    AntRef(SoldierHealthModuleBinding(p_Instance.binding).revived).assetId = -1
+    p_Instance.binding.interactiveManDown.assetId = 357042550
+    p_Instance.binding.revived.assetId = -1
 end
 
-function InteractiveManDown:OnReviveCustomizeSoldierData(p_Instance)
+function ManDownModifier:OnReviveCustomizeSoldierData(p_Instance)
     p_Instance = CustomizeSoldierData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.activeSlot = WeaponSlot.WeaponSlot_0
 end
 
-function InteractiveManDown:OnSoldierEntityData(p_Instance)
-    -- M9 kit for interactiveManDown
+function ManDownModifier:OnSoldierEntityData(p_Instance)
+    -- M9 kit for ManDownModifier
     local s_ManDownCustomizeSoldierData = self:CreateManDownCustomizeSoldierData()
-    -- CustomizeSoldierEntityData that will use the M9 Kit and connect it to the interactiveManDown
+    -- CustomizeSoldierEntityData that will use the M9 Kit and connect it to the ManDownModifier
     local s_CustomizeSoldierEntityData = self:CreateManDownCustomizeSoldierEntityData(s_ManDownCustomizeSoldierData)
 
-    -- create EventConnection so it is connected to interactiveManDown
+    -- create EventConnection so it is connected to ManDownModifier
     p_Instance = SoldierEntityData(p_Instance)
     p_Instance:MakeWritable()
 
@@ -243,7 +243,7 @@ end
 
 -- TODO: Add Input Restriction with Soldier:HealthAction on client
 
-function InteractiveManDown:CreateManDownCustomizeSoldierData()
+function ManDownModifier:CreateManDownCustomizeSoldierData()
     local s_CoopManDownSoldierData = CustomizeSoldierData(self.m_CoopManDownM9Guid)
     s_CoopManDownSoldierData.restoreToOriginalVisualState = false
     s_CoopManDownSoldierData.clearVisualState = false
@@ -262,7 +262,7 @@ function InteractiveManDown:CreateManDownCustomizeSoldierData()
     return s_CoopManDownSoldierData
 end
 
-function InteractiveManDown:CreateManDownCustomizeSoldierEntityData(p_CustomizeSoldierData)
+function ManDownModifier:CreateManDownCustomizeSoldierEntityData(p_CustomizeSoldierData)
     local s_CoopManDownSoldierEntityData = CustomizeSoldierEntityData(self.m_NewSoldierEntityDataGuid)
     s_CoopManDownSoldierEntityData.isEventConnectionTarget = 1
     s_CoopManDownSoldierEntityData.isPropertyConnectionTarget = 3
@@ -272,4 +272,4 @@ function InteractiveManDown:CreateManDownCustomizeSoldierEntityData(p_CustomizeS
     return s_CoopManDownSoldierEntityData
 end
 
-g_InteractiveManDown = InteractiveManDown()
+g_ManDownModifier = ManDownModifier()

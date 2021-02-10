@@ -52,12 +52,14 @@ function VuBattleRoyaleServer:RegisterEvents()
     self.m_EngineUpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
 
     -- Partition events
-    self.m_PartitionLoadedEvent = Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded)
+    --self.m_PartitionLoadedEvent = Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded)
 
     -- Custom player connected event, we could send out UI related stuff to the client here
     self.m_PlayerConnectedEvent = NetEvents:Subscribe("VuBattleRoyale:PlayerConnected", self, self.OnPlayerConnected)
+    self.m_PlayerAuthenticatedEvent = Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
 
     -- Level events
+    self.m_LevelLoadResourcesEvent = Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
     self.m_LevelDestroyEvent = Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
 
@@ -224,8 +226,18 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
     end
 end
 
+function VuBattleRoyaleServer:OnLevelLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
+    -- Set start transform before subworld gets build
+    self.m_Match:OnLevelLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
+end
+
+function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
+    -- Send out start transform to connected clients
+    self.m_Match:OnPlayerAuthenticated(p_Player)
+end
+
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
-    self:DisablePreRound()
+    --self:DisablePreRound()
     self:SetupRconVariables()
 
     self.m_WaitForStart = false
@@ -238,7 +250,7 @@ function VuBattleRoyaleServer:OnLevelDestroy()
     self.m_WaitForStart = true
 end
 
-function VuBattleRoyaleServer:DisablePreRound()
+--[[ function VuBattleRoyaleServer:DisablePreRound()
     -- Tahnks to https://github.com/FlashHit/VU-Mods/blob/master/No-PreRound/ext/Server/__init__.lua
 	-- This is for Conquest tickets etc.
 	local ticketCounterIterator = EntityManager:GetIterator("ServerTicketCounterEntity")
@@ -309,7 +321,7 @@ function VuBattleRoyaleServer:DisablePreRound()
 		end
 		eventGateEntity = eventGateIterator:Next()
 	end
-end
+end ]]
 
 
 -- ==========
@@ -323,8 +335,8 @@ function VuBattleRoyaleServer:ChangeGameState(p_GameState)
     end
 
     -- Reset tickets for TDM
-    TicketManager:SetTicketCount(TeamId.Team1, 999)
-    TicketManager:SetTicketCount(TeamId.Team2, 999)
+    --[[ TicketManager:SetTicketCount(TeamId.Team1, 999)
+    TicketManager:SetTicketCount(TeamId.Team2, 999) ]]
 
     print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 

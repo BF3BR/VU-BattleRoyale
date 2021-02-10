@@ -24,11 +24,11 @@ function PhaseManagerShared:RegisterVars()
     self.m_SubphaseIndex = SubphaseType.InitialDelay
     self.m_Completed = false
 end
-
+--[[ 
 function PhaseManagerShared:RegisterEvents()
     Events:Subscribe("Level:Destroy", self, self.Destroy)
     Events:Subscribe("Extension:Unloading", self, self.Destroy)
-end
+end ]]
 
 -- 
 function PhaseManagerShared:GetCurrentPhase()

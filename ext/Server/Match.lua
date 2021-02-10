@@ -40,6 +40,7 @@ function Match:__init(p_Server)
 
     -- Gunship
     self.m_Gunship = Gunship(self)
+    self.m_StartTransform = nil
 
     -- PhaseManagerServer
     self.m_PhaseManager = PhaseManagerServer()
@@ -135,7 +136,7 @@ function Match:OnPlane(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.Plane] == 0.0 then
         self:SetClientTimer(ServerConfig.PlaneTime)
 
-        self.m_Gunship:Spawn(self:GetRandomGunshipStart(), true)
+        self.m_Gunship:Spawn(self.m_StartTransform, true)
         PlayerManager:FadeInAll(2.0)
         self.m_IsFadeOutSet = false
     end
@@ -303,19 +304,20 @@ function Match:SpawnPlayer(p_Player, p_Transform)
 
     print('INFO: Spawning player: ' .. p_Player.name)
 
-    local s_SoldierAsset = nil
-    local s_Appearance = nil
+    local s_SoldierAsset = ResourceManager:SearchForDataContainer('Gameplay/Kits/USAssault')
+    local s_Appearance = ResourceManager:SearchForDataContainer('Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01')
     local s_SoldierBlueprint = ResourceManager:SearchForDataContainer('Characters/Soldiers/MpSoldier')
 
-    if p_Player.teamId == TeamId.Team1 then
+    --[[ if p_Player.teamId == TeamId.Team1 then
         s_SoldierAsset = ResourceManager:SearchForDataContainer('Gameplay/Kits/USAssault')
         s_Appearance = ResourceManager:SearchForDataContainer('Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01')
     elseif p_Player.teamId == TeamId.Team2 then
         s_SoldierAsset = ResourceManager:SearchForDataContainer('Gameplay/Kits/RUAssault')
         s_Appearance = ResourceManager:SearchForDataContainer('Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01')
-    end
+    end ]]
 
     if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
+        print('ERROR: Something is nil')
         return
     end
 
@@ -327,6 +329,8 @@ function Match:SpawnPlayer(p_Player, p_Transform)
 	p_Player:SpawnSoldierAt(s_SpawnedSoldier, p_Transform, CharacterPoseType.CharacterPoseType_Stand)
 	p_Player:AttachSoldier(s_SpawnedSoldier)
     p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+
+    p_Player:Fade(1, false)
    
     return s_SpawnedSoldier
 end
@@ -427,6 +431,17 @@ function Match:UnspawnAllSoldiers()
         s_HumanPlayerEntity:FireEvent("UnSpawnAllSoldiers")
         s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
     end
+end
+
+function Match:OnLevelLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
+    self.m_StartTransform = self:GetRandomGunshipStart()
+    Events:DispatchLocal('VuBattleRoyale:GunshipStartTransform', self.m_StartTransform)
+	NetEvents:BroadcastLocal('VuBattleRoyale:GunshipStartTransform', self.m_StartTransform)
+end
+
+function Match:OnPlayerAuthenticated(p_Player)
+    print("[Match] Sending gunship transform")
+	NetEvents:SendToLocal('VuBattleRoyale:GunshipStartTransform', p_Player, self.m_StartTransform)
 end
 
 function Match:GetRandomGunshipStart()

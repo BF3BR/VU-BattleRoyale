@@ -2,7 +2,7 @@ require "__shared/Configs/CircleConfig"
 require "__shared/Enums/PhaseManagerEvents"
 require "__shared/Utils/Timers"
 require "__shared/Logic/PhaseManagerShared"
-require "__shared/Circle"
+require "__shared/Types/Circle"
 require "Visuals/IOCVision"
 require "Visuals/OOCVision"
 require "Visuals/CircleRenderers"
@@ -25,7 +25,7 @@ function PhaseManagerClient:RegisterVars()
 end
 
 function PhaseManagerClient:RegisterEvents()
-    PhaseManagerShared.RegisterEvents(self)
+    --PhaseManagerShared.RegisterEvents(self)
 
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
     Events:Subscribe("UpdateManager:Update", self, self.OnPreSim)
