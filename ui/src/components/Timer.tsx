@@ -6,7 +6,7 @@ interface Props {
 }
 
 const Timer: React.FC<Props> = ({ time }) => {
-    const { value, controls: { setTime, start, stop }} = useTimer({ initialTime: 0, direction: "backward", startImmediately: false });
+    const { value, controls: { setTime, start, stop }} = useTimer({ initialTime: 0, direction: "backward", startImmediately: false, timeToUpdate: 100 });
 
     useEffect(() => {
         if (time && time !== null) {
