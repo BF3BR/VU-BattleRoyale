@@ -14,6 +14,8 @@ import PlaneMessage from "./components/PlaneMessage";
 import KillAndAliveInfo from "./components/KillAndAliveInfo";
 import Alert from "./components/Alert";
 import SpactatorInfo from "./components/SpactatorInfo";
+import Gameover from "./components/Gameover";
+import DeployScreen from "./components/DeployScreen";
 
 /* Style */
 import './App.scss';
@@ -49,12 +51,21 @@ const App: React.FC = () => {
         }
     }
 
-
     const [time, setTime] = useState<number | null>(null);
     window.OnUpdateTimer = (time: number) => {
         setTime(time);
     }
 
+
+    const [gameOverScreen, setGameOverScreen] = useState<boolean>(false);
+    /*window.OnGameState = (state: string) => {
+        setGameState(state);
+
+        if (state === "Warmup") {
+            setAlertPlaySound(false);
+            setAlertString("The round is starting soon");
+        }
+    }*/
 
     /*
     * Player
@@ -72,6 +83,15 @@ const App: React.FC = () => {
     const [localPlayer, setLocalPlayer] = useState<Player | null>(null);
     window.OnLocalPlayerInfo = (data: any) => {
         setLocalPlayer(data);
+    }
+
+    const SetDummyLocalPlayer = () => {
+        setLocalPlayer({
+            id: 1,
+            name: 'KVN',
+            kill: 15,
+            alive: true,
+        });
     }
 
     const [alertString, setAlertString] = useState<string | null>(null);
@@ -190,6 +210,11 @@ const App: React.FC = () => {
         }
     }
 
+    /*
+    * Deploy screen
+    */
+   const [deployScreen, setDeployScreen] = useState<boolean>(true);
+
     return (
         <>
             {debugMode &&
@@ -208,14 +233,14 @@ const App: React.FC = () => {
             }
 
             <div id="debug">
-                <input
+                {/*<input
                     type="range"
                     min="0"
                     max="100"
                     value={paradropPercentage}
                     onChange={(event: any) => setParadropPercentage(event.target.value)}
                     step="1"
-                />
+                />*/}
                 <button onClick={() => setShowMinimap(prevState => !prevState)}>Show Map</button>
                 <button onClick={() => setOpenMap(prevState => !prevState)}>Open Map</button>
                 <button onClick={() => window.OnPlayerPos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Player Pos</button>
@@ -224,71 +249,79 @@ const App: React.FC = () => {
                 <button onClick={() => setAlertString("Heads up, the Circle is moving")}>Set alert</button>
                 <button onClick={() => setAlertPlaySound(prevState => !prevState)}>Set alert sounds</button>
                 <button onClick={() => setSpectating(prevState => !prevState)}>Set Spectator</button>
-                {/*
-                <button onClick={() => setRandomMessages()}>Random messages</button>
-                <button onClick={() =>  window.OnFocus(MessageTarget.CctSayAll)}>isTypingActive</button>
-                <button onClick={() =>  window.OnChangeType()}>OnChangeType</button>
-                <button onClick={() =>  window.OnClearChat()}>OnClearChat</button>
-                <button onClick={() =>  window.OnCloseChat()}>OnCloseChat</button>
-                */}
+                <button onClick={() => setGameOverScreen(prevState => !prevState)}>Set Gameover Screen</button>
+                <button onClick={() => SetDummyLocalPlayer()}>SetDummyLocalPlayer</button>
             </div>
 
             <div id="VUBattleRoyale">
-                <KillAndAliveInfo
-                    kills={localPlayer !== null ? localPlayer.kill : 0}
-                    alive={players !== null ? Object.values(players).filter(player => player.alive === true).length : 0}
-                    spectating={spectating}
-                />
-
-                <MatchInfo
-                    state={gameState}
-                    time={time}
-                    noMap={!showMinimap || openMap}
-                    players={players}
-                    minPlayersToStart={minPlayersToStart}
-                    subPhaseIndex={subPhaseIndex}
-                    spectating={spectating}
-                />
-
-                <SpactatorInfo
-                    spectating={spectating}
-                    spectatorTarget={spectatorTarget}
-                />
-
-                {!spectating &&
+                {deployScreen 
+                ?
+                    <DeployScreen />
+                :
                     <>
-                        <AmmoAndHealthCounter
-                            playerHealth={playerHealth}
-                            playerPrimaryAmmo={playerPrimaryAmmo}
-                            playerSecondaryAmmo={playerSecondaryAmmo}
-                            playerCurrentWeapon={playerCurrentWeapon}
+                        <KillAndAliveInfo
+                            kills={localPlayer !== null ? localPlayer.kill : 0}
+                            alive={players !== null ? Object.values(players).filter(player => player.alive === true).length : 0}
+                            spectating={spectating}
                         />
 
-                        <PlaneMessage
-                            playerIsInPlane={playerIsInPlane}
+                        <MatchInfo
+                            state={gameState}
+                            time={time}
+                            noMap={!showMinimap || openMap}
+                            players={players}
+                            minPlayersToStart={minPlayersToStart}
+                            subPhaseIndex={subPhaseIndex}
+                            spectating={spectating}
                         />
 
-                        <Alert
-                            alert={alertString}
-                            afterInterval={() => setAlertString(null)}
-                            playSound={alertPlaySound}
+                        <SpactatorInfo
+                            spectating={spectating}
+                            spectatorTarget={spectatorTarget}
                         />
 
-                        {/*<ParaDropDistance 
-                            percentage={paradropPercentage}
-                            distance={300}
-                            warnPercentage={15}
-                        />*/}
-
-                        {showMinimap &&
-                            <MiniMap
-                                open={openMap}
-                                playerPos={playerPos}
-                                playerYaw={playerYaw}
-                                innerCircle={innerCircle}
-                                outerCircle={outerCircle}
-                                playerIsInPlane={playerIsInPlane}
+                        {gameOverScreen &&
+                            <Gameover 
+                                localPlayer={localPlayer}
                             />
+                        }
+
+                        {!spectating &&
+                            <>
+                                <AmmoAndHealthCounter
+                                    playerHealth={playerHealth}
+                                    playerPrimaryAmmo={playerPrimaryAmmo}
+                                    playerSecondaryAmmo={playerSecondaryAmmo}
+                                    playerCurrentWeapon={playerCurrentWeapon}
+                                />
+
+                                <PlaneMessage
+                                    playerIsInPlane={playerIsInPlane}
+                                />
+
+                                <Alert
+                                    alert={alertString}
+                                    afterInterval={() => setAlertString(null)}
+                                    playSound={alertPlaySound}
+                                />
+
+                                {/*<ParaDropDistance 
+                                    percentage={paradropPercentage}
+                                    distance={300}
+                                    warnPercentage={15}
+                                />*/}
+
+                                {showMinimap &&
+                                    <MiniMap
+                                        open={openMap}
+                                        playerPos={playerPos}
+                                        playerYaw={playerYaw}
+                                        innerCircle={innerCircle}
+                                        outerCircle={outerCircle}
+                                        playerIsInPlane={playerIsInPlane}
+                                    />
+                                }
+                            </>
                         }
                     </>
                 }

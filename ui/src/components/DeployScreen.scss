@@ -1,0 +1,171 @@
+#DeployScreen {
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    padding: 0;
+    font-size: 0.8vw;
+    background: rgb(0, 0, 0);
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.4) 35%,
+        rgba(0, 0, 0, 0) 35%,
+        rgba(0, 0, 0, 0) 100%
+    );
+
+    .Title {
+        position: relative;
+        font-size: 2.5vw;
+        margin-bottom: 3vw;
+
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: -1vw;
+            left: 0;
+            width: 25%;
+            height: 0.15vw;
+            background: #fff;
+        }
+    }
+
+    .DeployBox {
+        position: absolute;
+        top: 50%;
+        left: 4vw;
+        width: 25vw;
+        transform: translateY(-50%);
+    }
+
+    .AppearanceBox,
+    .SquadBox {
+        h2 {
+            font-weight: 400;
+            margin-bottom: 1vw;
+            font-size: 1.25vw;
+            text-transform: uppercase;
+        }
+
+        h4 {
+            font-weight: 400;
+            font-size: 0.8vw;
+            margin-bottom: 1vw;
+
+            span {
+                color: #e57414;
+            }
+        }
+
+        .SquadPlayers {
+            .SquadPlayer {
+                width: 22vw;
+                height: 3vw;
+                padding: 0 1.5vw;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                font-size: 1.1vw;
+                margin-bottom: .5vw;
+                line-height: 1;
+                text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
+                background: rgba(0, 0, 0, 0.8);
+
+                &.empty {
+                    font-style: italic;
+                    color: rgba(255, 255, 255, 0.35);
+                    font-size: .75vw;
+                }
+
+                &.disable {
+                    opacity: .3;
+                }
+            }
+        }
+    }
+
+    .SquadBox {
+        margin-bottom: 3vw;
+
+        h2 {
+            margin-bottom: 0.5vw;
+        }
+
+        .SquadForm {
+            width: 100%;
+            display: flex;
+
+            input {
+                box-sizing: border-box;
+                height: auto;
+                flex: 1 1 auto;
+                border: none;
+                color: #fff;
+                text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
+                background: rgba(0, 0, 0, 0.8);
+                font-weight: 400;
+                padding: 0 0.5vw;
+                font-size: 1.5vh;
+                margin-right: .5vw;
+                border: 0.1574074074074074vh solid rgba(255, 255, 255, 0.7);
+        
+                &:focus,
+                &:active {
+                    border: .1vw solid #fff;
+                    outline: none;
+                }
+            }
+
+            button {
+                height: 2vw;
+                width: 4vw;
+                box-shadow: none;
+                
+                span {
+                    font-size: 0.85vw;
+                }
+            }
+        }
+    }
+
+    .Deploy {
+        margin-top: 3vw;
+    }
+
+    button {
+        position: relative;
+        width: 100%;
+        height: 3vw;
+        background: rgba(229, 97, 20, 0.6);
+        border: 0.1vw solid #e57414;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        box-shadow: 0 0 0.6vw 0 rgba(214, 99, 0, 0.6);
+        transition: all 0.2s ease;
+
+        span {
+            font-size: 1.25vw;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: flex;
+            line-height: 1.8vw;
+            text-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.1vw;
+        }
+
+        &:hover {
+            background: rgba(229, 97, 20, 0.8);
+            box-shadow: 0 0 1vw 0 rgba(214, 99, 0, 0.8);
+            transition: all 0.2s ease;
+        }
+
+        &:focus,
+        &:active {
+            outline: none;
+        }
+    }
+}

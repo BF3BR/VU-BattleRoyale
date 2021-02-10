@@ -1,0 +1,84 @@
+#Gameover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 6vw 4vw;
+    font-size: .8vw;
+    text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
+    background: rgba(0,0,0,0.0);
+    z-index: 999;
+    -webkit-animation: dark-background 1.5s ease both;
+    animation: dark-background 1.5s ease both;
+
+    .Name {
+        -webkit-animation: scale-up-center 0.15s ease both;
+        animation: scale-up-center 0.15s ease both;
+        animation-delay: 2s;
+        position: relative;
+        font-size: 6vw;
+        margin-bottom: 1vw;
+        letter-spacing: .75vw;
+    }
+
+    .Separator {
+        -webkit-animation: scale-up-center 0.15s ease both;
+        animation: scale-up-center 0.15s ease both;
+        animation-delay: 2.15s;
+        position: relative;
+        width: 4vw;
+        height: 0.1vw;
+        background: rgba(255,255,255,0.75);
+        margin-bottom: 1vw;
+    }
+
+    .Rank {
+        -webkit-animation: scale-up-center 0.15s ease both;
+        animation: scale-up-center 0.15s ease both;
+        animation-delay: 2.45s;
+        font-size: 2vw;
+        margin-bottom: 0.25vw;
+    }
+
+    .Kills {
+        -webkit-animation: scale-up-center 0.15s ease both;
+        animation: scale-up-center 0.15s ease both;
+        animation-delay: 2.9s;
+        font-size: 2vw;
+    }
+
+    .Rank,
+    .Kills {
+        span {
+            color: #c47532;
+            font-weight: 800;
+            margin-left: .6vw;
+        }
+    }
+}
+
+@-webkit-keyframes dark-background {
+    0% {
+        background: rgba(0,0,0,0.0);
+    }
+
+    100% {
+        background: rgba(0,0,0,0.75);
+    }
+}
+
+@keyframes dark-background {
+    0% {
+        background: rgba(0,0,0,0.0);
+    }
+
+    100% {
+        background: rgba(0,0,0,0.75);
+    }
+}
+
