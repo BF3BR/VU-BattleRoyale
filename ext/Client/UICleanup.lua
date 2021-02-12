@@ -1,4 +1,4 @@
-require "__shared/Helpers/TableHelper"
+require "__shared/Helpers/ArrayHelper"
 
 class "UICleanup"
 
@@ -121,7 +121,7 @@ function UICleanup:EditNodes(p_Screen, p_NodeNames, p_CheckValue)
     p_Screen = UIScreenAsset(p_Screen)
     p_Screen:MakeWritable()
 
-    p_NodeNames = TableHelper:ToMap(p_NodeNames, true)
+    p_NodeNames = ArrayHelper:ToMap(p_NodeNames, true)
 
     -- erase nodes
     for i = #p_Screen.nodes, 1, -1 do
