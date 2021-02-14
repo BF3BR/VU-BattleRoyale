@@ -85,8 +85,6 @@ function BRTeamManager:RemoveTeam(p_Team)
     p_Team:Destroy()
 end
 
-
-
 -- Kills every player
 function BRTeamManager:KillAllPlayers()
     for _, l_Player in pairs(self.m_Players) do
@@ -97,8 +95,10 @@ end
 -- Create a unique BRTeam id
 function BRTeamManager:CreateId()
     while true do
-        local l_Id = MathUtils:RandomGuid():ToString('N'):sub(1, 4)
-        if self.m_Teams[l_Id] == nil then return l_Id end
+        local l_Id = MathUtils:RandomGuid():ToString("N"):sub(1, 4)
+        if self.m_Teams[l_Id] == nil then
+            return l_Id
+        end
     end
 end
 

@@ -4,7 +4,7 @@ require "__shared/Items/Armor"
 class "BRPlayer"
 
 function BRPlayer:__init(p_Player, p_Team, p_Armor)
-    -- the vanilla player object of the player
+    -- the vanilla player instance of the player
     self.m_Player = p_Player
 
     -- the BRTeam that the player is part of
@@ -64,7 +64,7 @@ function BRPlayer:LeaveTeam(p_IgnoreNewTeam)
     -- join a newly created team
     if p_IgnoreNewTeam then
         -- Request TM to create a team and put this player in it
-        Events:DispatchLocal('TM:PutOnATeam', self)
+        Events:DispatchLocal("TM:PutOnATeam", self)
     end
 end
 
