@@ -3,10 +3,11 @@ require "__shared/Items/Armor"
 
 class "BRPlayer"
 
-function BRPlayer:__init(p_Player)
+function BRPlayer:__init(p_Player, p_Team, p_Armor)
     self.m_Player = p_Player
-    self.m_Team = nil
-    self.m_Armor = Armor:NoArmor()
+    self.m_Team = p_Team
+    self.m_Armor = p_Armor or Armor:NoArmor()
+
     self.m_Kills = 0
     self.m_Score = 0
 end
@@ -19,6 +20,7 @@ end
 
 -- Updates the vanilla player team/squad Ids
 function BRPlayer:ApplyTeamSquadIds()
+    -- ensure that the player is dead
     if p_Team ~= nil and not self.m_Player.alive then
         self.m_Player.TeamId = p_Team.m_TeamId
         self.m_Player.SquadId = p_Team.m_SquadId
@@ -42,10 +44,16 @@ function BRPlayer:ApplyDamage(p_Damage, p_IgnoreArmor)
     self.m_Player.soldier.health = self.m_Player.soldier.health - l_Damage
 end
 
-function BRPlayer:LeaveTeam()
+function BRPlayer:LeaveTeam(p_IgnoreNewTeam)
+    -- remove player from old team
     if self.m_Team ~= nil then
         self.m_Team:RemovePlayer(self)
         self.m_Team = nil
+    end
+
+    -- join a newly created team
+    if p_IgnoreNewTeam then
+
     end
 end
 

@@ -1,5 +1,5 @@
-require "__shared/BRTeam"
-require "__shared/BRPlayer"
+require "BRTeam"
+require "BRPlayer"
 
 class "BRTeamManager"
 
@@ -20,7 +20,9 @@ end
 
 function BRTeamManager:OnPlayerCreated(p_Player)
     print(string.format("TM: Creating BRPlayer for '%s'", p_Player.name))
-    self.m_Players[p_Player.name] = BRPlayer(p_Player)
+
+    local l_Team = self:CreateTeam()
+    self.m_Players[p_Player.name] = BRPlayer(p_Player, l_Team)
 end
 
 function BRTeamManager:OnPlayerDestroyed(p_Player)
@@ -81,7 +83,7 @@ end
 -- Creates a BRTeam
 function BRTeamManager:CreateTeam()
     -- create team
-    local l_Team = BRTeam(self:CreateId())
+    local l_Team = BRTeam(self)
 
     -- add it into the rest
     self.m_Teams[l_Team.m_Id] = l_Team

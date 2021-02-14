@@ -2,8 +2,10 @@ require "__shared/Helpers/MapHelper"
 
 class "BRTeam"
 
-function BRTeam:__init(p_Id)
-    self.m_Id = p_Id
+function BRTeam:__init(m_TeamManager)
+    self.m_TeamManager = p_TeamManager
+
+    self.m_Id = p_TeamManager:CreateId()
     self.m_Players = {}
 
     -- vanilla team/squad ids
@@ -43,8 +45,12 @@ function BRTeam:RemovePlayer(p_BrPlayer)
 
     -- remove player
     self.m_Players[p_BrPlayer.m_Player.name] = nil
-    p_BrPlayer:SetTeam(nil)
+    -- p_BrPlayer:SetTeam(nil)
 
+    -- check if team should be destroyed
+    if MapHelper:Size(self.m_Players) < 1 then
+        -- destroy team
+    end
 end
 
 -- Removes all players from the team
@@ -90,11 +96,11 @@ function BRTeam:__eq(p_OtherTeam)
 end
 
 function BRTeam:Destroy()
-    -- destroy each player
-    -- for l_Name, l_BrPlayer in pairs(self.m_Players) do
-    --     l_BrPlayer:Destroy()
-    --     self.m_Players[l_Name] = nil
-    -- end
+    -- remove players from the team
+    for l_Name, l_BrPlayer in pairs(self.m_Players) do
+        l_BrPlayer:LeaveTeam()
+        self.m_Players[l_Name] = nil
+    end
 
     -- clear players
     self.m_Players = {}
