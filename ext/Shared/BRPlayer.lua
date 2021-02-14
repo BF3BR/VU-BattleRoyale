@@ -19,7 +19,7 @@ end
 
 -- Updates the vanilla player team/squad Ids
 function BRPlayer:ApplyTeamSquadIds()
-    if p_Team ~= nil then
+    if p_Team ~= nil and not self.m_Player.alive then
         self.m_Player.TeamId = p_Team.m_TeamId
         self.m_Player.SquadId = p_Team.m_SquadId
     end
@@ -45,12 +45,13 @@ end
 function BRPlayer:LeaveTeam()
     if self.m_Team ~= nil then
         self.m_Team:RemovePlayer(self)
+        self.m_Team = nil
     end
 end
 
 -- Checks if the player and `p_OtherBrPlayer` are on the same team
 function BRPlayer:IsTeammate(p_OtherBrPlayer)
-    return self.m_Team ~= nil and self.m_Team:IsEqual(p_OtherBrPlayer.m_Team)
+    return self.m_Team ~= nil and self.m_Team:Equals(p_OtherBrPlayer.m_Team)
 end
 
 -- Checks if the player has any alive teammates
@@ -77,9 +78,13 @@ function BRPlayer:Kill(p_Forced)
     end
 end
 
+function BRPlayer:__eq(p_OtherBrPlayer)
+    return self:Equals(p_OtherBrPlayer)
+end
+
 --
-function BRPlayer:IsEqual(p_OtherBrPlayer)
-    return p_OtherBrPlayer ~= nil and self.m_Player.name == p_OtherBrPlayer.m_Player.name
+function BRPlayer:Equals(p_OtherBrPlayer)
+    return p_OtherBrPlayer ~= nil and self.m_Player.name == BRPlayer:GetPlayerName(p_OtherBrPlayer)
 end
 
 function BRPlayer:__gc()
@@ -87,6 +92,8 @@ function BRPlayer:__gc()
 end
 
 function BRPlayer:Destroy()
+    self:LeaveTeam()
+
     self.m_Player = nil
     self.m_Team = nil
     self.m_Armor = nil

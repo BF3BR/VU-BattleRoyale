@@ -9,7 +9,6 @@ function BRTeamManager:__init()
 end
 
 function BRTeamManager:RegisterVars()
-    self.m_LastTeamId = 0
     self.m_Teams = {}
     self.m_Players = {}
 end
@@ -34,40 +33,26 @@ function BRTeamManager:OnPlayerDestroyed(p_Player)
     end
 end
 
+-- Create a unique BRTeam id
+function BRTeamManager:CreateId()
+    while true do
+        local l_Id = MathUtils:RandomGuid():ToString('N'):sub(1, 4)
+        if self.m_Teams[l_Id] == nil then return l_Id end
+    end
+end
+
 -- Returns the team by it's id
 function BRTeamManager:GetById(p_Id)
-    for _, l_Team in ipairs(self.m_Teams) do
-        if l_Team.m_Id == p_Id then
-            return l_Team
-        end
-    end
-
-    return nil
-end
-
--- Returns the team by it's code
-function BRTeamManager:GetByCode(p_Code)
-    for _, l_Team in ipairs(self.m_Teams) do
-        if l_Team.m_Code == p_Code then
-            return l_Team
-        end
-    end
-
-    return nil
-end
-
--- Returns an existing team by it's code or creates a new one if none is found
-function BRTeamManager:GetOrCreateByCode(p_Code)
-    return self:GetByCode(p_Code) or self:CreateTeam(p_Code)
+    return self.m_Teams[p_Id]
 end
 
 -- Returns the team that won the match.
 -- Returns nill if more that one teams are currently alive.
-function BRTeamManager:GetWinner()
+function BRTeamManager:GetWinningTeam()
     local l_Winner = nil
     local l_TeamsAlive = 0
 
-    for _, l_Team in ipairs(self.m_Teams) do
+    for _, l_Team in pairs(self.m_Teams) do
         if l_Team:HasAlivePlayers() then
             l_Winner = l_Team
             l_TeamsAlive = l_TeamsAlive + 1
@@ -85,35 +70,31 @@ end
 -- Assigns a team to each player
 function BRTeamManager:AssignTeams()
     -- assigns everyone as solo player for now
-    for _, p_BrPlayer in pairs(self.m_Players) do
-        if p_BrPlayer.m_Team == nil then
-            local l_Team = self:CreateTeam()
-            l_Team:AddPlayer(p_BrPlayer)
-            table.insert(self.m_Teams, l_Team)
-        end
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        local l_Team = l_BrPlayer.m_Team or self:CreateTeam()
+
+        l_Team:AddPlayer(l_BrPlayer)
+        l_Team:SetTeamSquadIds(TeamId.Team1, SquadId.SquadNone)
     end
 end
 
--- Creates a team
--- @param p_Code (optional)
-function BRTeamManager:CreateTeam(p_Code)
+-- Creates a BRTeam
+function BRTeamManager:CreateTeam()
     -- create team
-    self.m_LastTeamId = self.m_LastTeamId + 1
-    local l_Team = BRTeam(self.m_LastTeamId, p_Code)
+    local l_Team = BRTeam(self:CreateId())
 
     -- add it into the rest
-    table.insert(self.m_Teams, l_Team)
-
+    self.m_Teams[l_Team.m_Id] = l_Team
     return l_Team
 end
 
--- Removes a team
+-- Removes a BRTeam
 function BRTeamManager:RemoveTeam(p_Team)
-    -- remove players from team
-end
+    -- clear reference
+    self.m_Teams[p_Team.m_Id] = nil
 
-function BRTeamManager:AddPlayerToTeam(p_Player, p_Team)
-    -- TODO
+    p_Team:RemovePlayers()
+    p_Team:Destroy()
 end
 
 -- Returns the BRPlayer instance of a player
