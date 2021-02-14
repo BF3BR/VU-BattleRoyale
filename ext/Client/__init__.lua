@@ -32,7 +32,7 @@ function VuBattleRoyaleClient:__init()
     -- The client pinging system
     self.m_Ping = PingClient()
 
-    self.m_BrPlayer = LocalBRPlayer()
+    self.m_BrPlayer = BRPlayer()
 end
 
 -- ==========

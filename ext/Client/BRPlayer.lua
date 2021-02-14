@@ -1,18 +1,35 @@
 require "__shared/Enums/BRPlayerState"
+require "__shared/Items/Armor"
 require "BRTeam"
 
-class "LocalBRPlayer"
+class "BRPlayer"
 
-function LocalBRPlayer:__init()
+function BRPlayer:__init()
+    self.m_Team = BRTeam()
     self.m_Armor = Armor:NoArmor()
     self.m_Kills = 0
     self.m_Score = 0
-    self.m_Team = BRTeam()
+
+    self:RegisterEvents()
 end
 
-class "OtherBRPlayer"
+function BRPlayer:RegisterEvents()
+    NetEvents:Subscribe("TM:PlayerState", self, self.OnPlayerState)
+    NetEvents:Subscribe("TM:PlayerArmorState", self, self.OnPlayerState)
+    NetEvents:Subscribe("TM:PlayerTeamState", self, self.OnPlayerState)
+end
 
-function OtherBRPlayer:__init(p_Name)
-    self.m_Name = p_Name
-    self.m_State = BRPlayerState.Alive
+function BRPlayer:OnPlayerState(p_State)
+    if p_State.Team ~= nil then
+        self.m_Team = BRTeam:FromTable(p_State.Team)
+    end
+
+    if p_State.Armor ~= nil then
+        self.m_Armor = Armor:FromTable(p_State.Armor)
+    end
+
+    if p_State.Data ~= nil then
+        self.m_Kills = p_State.Kills
+        self.m_Score = p_State.Score
+    end
 end
