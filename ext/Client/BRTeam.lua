@@ -1,13 +1,9 @@
 class "BRTeam"
 
-function BRTeam:__init()
+function BRTeam:__init(p_Id)
     -- the unique id of the team
-    self.m_Id = p_Id
+    self.m_Id = p_Id or "-"
 
-    -- contains the players as [name] -> [OtherBRPlayer]
+    -- contains the players as OtherBRPlayer[]
     self.m_Players = {}
-
-    -- vanilla team/squad ids
-    self.m_TeamId = TeamId.Team1
-    self.m_SquadId = SquadId.SquadNone
 end

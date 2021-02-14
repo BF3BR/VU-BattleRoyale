@@ -24,12 +24,17 @@ function BRTeamManager:RegisterEvents()
 end
 
 -- Returns a team by it's id
-function BRTeamManager:GetById(p_Id)
+--
+-- @param p_Id string
+-- @return BRTeam|nil
+function BRTeamManager:GetTeamById(p_Id)
     return self.m_Teams[p_Id]
 end
 
 -- Returns the BRPlayer instance of a player
--- @param p_Player can be the username or the vanilla player object
+--
+-- @param p_Player Player|BRPlayer|string
+-- @return BRPlayer|nil
 function BRTeamManager:GetBrPlayer(p_Player)
     return self.m_Players[BRPlayer:GetPlayerName(p_Player)]
 end
@@ -41,7 +46,7 @@ function BRTeamManager:GetWinningTeam()
     local l_TeamsAlive = 0
 
     for _, l_Team in pairs(self.m_Teams) do
-        if l_Team:HasAlivePlayers() then
+        if l_Team.m_Active and l_Team:HasAlivePlayers() then
             l_Winner = l_Team
             l_TeamsAlive = l_TeamsAlive + 1
 
@@ -59,10 +64,8 @@ end
 function BRTeamManager:AssignTeams()
     -- assigns everyone as solo player for now
     for _, l_BrPlayer in pairs(self.m_Players) do
-        local l_Team = l_BrPlayer.m_Team or self:CreateTeam()
-
-        l_Team:AddPlayer(l_BrPlayer)
-        l_Team:SetTeamSquadIds(TeamId.Team1, SquadId.SquadNone)
+        l_BrPlayer.m_Team.m_Active = true
+        l_BrPlayer.m_Team:ApplyTeamSquadIds(TeamId.Team1, SquadId.SquadNone)
     end
 end
 
@@ -85,17 +88,45 @@ function BRTeamManager:RemoveTeam(p_Team)
     p_Team:Destroy()
 end
 
+-- Creates a BRPlayer instance for the specified player
+function BRTeamManager:CreatePlayer(p_Player)
+    local l_Name = p_Player.name
+
+    -- check if BRPlayer already exists
+    if self.m_Players[l_Name] ~= nil then
+        return self.m_Players[l_Name]
+    end
+
+    -- create a team to put the player in
+    local l_Team = self:CreateTeam()
+
+    -- create and return the BRPlayer
+    self.m_Players[l_Name] = BRPlayer(p_Player, l_Team)
+    return self.m_Players[l_Name]
+end
+
+function BRTeamManager:RemovePlayer(p_Player)
+    local l_BrPlayer = self:GetBrPlayer(p_Player)
+
+    if l_BrPlayer ~= nil then
+        self.m_Players[l_BrPlayer:GetName()] = nil
+        l_BrPlayer:Destroy()
+    end
+end
+
 -- Kills every player
 function BRTeamManager:KillAllPlayers()
-    for _, l_Player in pairs(self.m_Players) do
-        l_Player:Kill(true)
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        l_BrPlayer:Kill(true)
     end
 end
 
 -- Create a unique BRTeam id
-function BRTeamManager:CreateId()
+function BRTeamManager:CreateId(p_Len)
+    p_Len = p_Len or 4
+
     while true do
-        local l_Id = MathUtils:RandomGuid():ToString("N"):sub(1, 4)
+        local l_Id = MathUtils:RandomGuid():ToString("N"):sub(1, p_Len)
         if self.m_Teams[l_Id] == nil then
             return l_Id
         end
@@ -104,26 +135,22 @@ end
 
 function BRTeamManager:OnPlayerCreated(p_Player)
     print(string.format("TM: Creating BRPlayer for '%s'", p_Player.name))
-
-    local l_Team = self:CreateTeam()
-    self.m_Players[p_Player.name] = BRPlayer(p_Player, l_Team)
+    self:CreatePlayer(p_Player)
 end
 
 function BRTeamManager:OnPlayerDestroyed(p_Player)
-    local l_BrPlayer = self.m_Players[p_Player.name]
-
-    if l_BrPlayer ~= nil then
-        print(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
-        l_BrPlayer:LeaveTeam()
-        self.m_Players[p_Player.name] = nil
-    end
+    print(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
+    self:RemovePlayer(p_Player)
 end
 
 -- Puts the requested player to a newly created team
-function BRTeamManager:OnPutOnATeam(p_Player)
-    self:CreateTeam():AddPlayer(p_Player)
+function BRTeamManager:OnPutOnATeam(p_BrPlayer)
+    self:CreateTeam():AddPlayer(p_BrPlayer)
 end
 
+-- Destroys and removes the specified team
 function BRTeamManager:OnDestroyTeam(p_Team)
-    -- TODO
+    self:RemoveTeam(p_Team)
 end
+
+g_BRTeamManager = BRTeamManager()

@@ -16,7 +16,7 @@ function BRPlayer:__init(p_Player, p_Team, p_Armor)
 end
 
 -- Returns the username of the player
-function BRPlayer:Name()
+function BRPlayer:GetName()
     return (self.m_Player ~= nil and self.m_Player.name) or nil
 end
 
@@ -52,6 +52,34 @@ function BRPlayer:ApplyDamage(p_Damage, p_IgnoreArmor)
     self.m_Player.soldier.health = self.m_Player.soldier.health - l_Damage
 end
 
+function BRPlayer:SendState()
+    local l_Data = {}
+
+    -- team state
+    if self.m_Team ~= nil then
+        l_Data.Team = self.m_Team:AsTable()
+    end
+end
+
+function BRPlayer:AsTable(p_Simple)
+    -- state used for squad members
+    if p_Simple then
+        local l_State = BRPlayerState.Dead
+        if self.m_Player ~= nil and self.m_Player.alive and self.m_Player.soldier ~= nil then
+            if self.m_Player.soldier.isAlive then
+                l_State = BRPlayerState.Alive
+            elseif self.m_Player.soldier.isInteractiveManDown then
+                l_State = BRPlayerState.Down
+            end
+        end
+
+        return {Name = self:GetName(), State = l_State}
+    end
+
+    -- state used for local player
+    return {Armor = self.m_Armor:AsTable(), Kill = self.m_Kills, Score = self.m_Score}
+end
+
 -- Removes a player from his current team and moves him to a newly created one
 -- @param p_IgnoreNewTeam
 function BRPlayer:LeaveTeam(p_IgnoreNewTeam)
@@ -61,9 +89,8 @@ function BRPlayer:LeaveTeam(p_IgnoreNewTeam)
         self.m_Team = nil
     end
 
-    -- join a newly created team
-    if p_IgnoreNewTeam then
-        -- Request TM to create a team and put this player in it
+    -- Request TM to create a team and put this player in it
+    if not p_IgnoreNewTeam then
         Events:DispatchLocal("TM:PutOnATeam", self)
     end
 end
@@ -82,7 +109,7 @@ end
 -- @param p_Forced (optional) calls :ForceDead() instead of :Kill()
 function BRPlayer:Kill(p_Forced)
     -- check if alive
-    if not self.m_Player.isAlive then
+    if not self.m_Player.alive then
         return
     end
 
@@ -97,25 +124,25 @@ function BRPlayer:Kill(p_Forced)
     end
 end
 
-function BRPlayer:__eq(p_OtherBrPlayer)
-    return self:Equals(p_OtherBrPlayer)
-end
-
 --
 function BRPlayer:Equals(p_OtherBrPlayer)
     return p_OtherBrPlayer ~= nil and self.m_Player.name == BRPlayer:GetPlayerName(p_OtherBrPlayer)
 end
 
-function BRPlayer:__gc()
-    self:Destroy()
+function BRPlayer:__eq(p_OtherBrPlayer)
+    return self:Equals(p_OtherBrPlayer)
 end
 
 function BRPlayer:Destroy()
-    self:LeaveTeam()
+    self:LeaveTeam(true)
 
     self.m_Player = nil
     self.m_Team = nil
     self.m_Armor = nil
+end
+
+function BRPlayer:__gc()
+    self:Destroy()
 end
 
 -- A helper function to get the name of the player
