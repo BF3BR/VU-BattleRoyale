@@ -4,12 +4,20 @@ require "__shared/Items/Armor"
 class "BRPlayer"
 
 function BRPlayer:__init(p_Player, p_Team, p_Armor)
+    -- the vanilla player object of the player
     self.m_Player = p_Player
-    self.m_Team = p_Team
-    self.m_Armor = p_Armor or Armor:NoArmor()
 
+    -- the BRTeam that the player is part of
+    self.m_Team = p_Team
+
+    self.m_Armor = p_Armor or Armor:NoArmor()
     self.m_Kills = 0
     self.m_Score = 0
+end
+
+-- Returns the username of the player
+function BRPlayer:Name()
+    return (self.m_Player ~= nil and self.m_Player.name) or nil
 end
 
 function BRPlayer:SetTeam(p_Team)
@@ -21,7 +29,7 @@ end
 -- Updates the vanilla player team/squad Ids
 function BRPlayer:ApplyTeamSquadIds()
     -- ensure that the player is dead
-    if p_Team ~= nil and not self.m_Player.alive then
+    if self.m_Team ~= nil and self.m_Player ~= nil and not self.m_Player.alive then
         self.m_Player.TeamId = p_Team.m_TeamId
         self.m_Player.SquadId = p_Team.m_SquadId
     end
@@ -44,6 +52,8 @@ function BRPlayer:ApplyDamage(p_Damage, p_IgnoreArmor)
     self.m_Player.soldier.health = self.m_Player.soldier.health - l_Damage
 end
 
+-- Removes a player from his current team and moves him to a newly created one
+-- @param p_IgnoreNewTeam
 function BRPlayer:LeaveTeam(p_IgnoreNewTeam)
     -- remove player from old team
     if self.m_Team ~= nil then
@@ -53,7 +63,8 @@ function BRPlayer:LeaveTeam(p_IgnoreNewTeam)
 
     -- join a newly created team
     if p_IgnoreNewTeam then
-
+        -- Request TM to create a team and put this player in it
+        Events:DispatchLocal('TM:PutOnATeam', self)
     end
 end
 

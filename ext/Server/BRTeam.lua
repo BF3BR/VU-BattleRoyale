@@ -2,11 +2,15 @@ require "__shared/Helpers/MapHelper"
 
 class "BRTeam"
 
-function BRTeam:__init(m_TeamManager)
-    self.m_TeamManager = p_TeamManager
+function BRTeam:__init(p_Id)
+    -- the unique id of the team
+    self.m_Id = p_Id
 
-    self.m_Id = p_TeamManager:CreateId()
+    -- contains the players as [name] -> [BRPlayer]
     self.m_Players = {}
+
+    -- indicates if the team is currently taking part in the match
+    self.m_IsActive = false
 
     -- vanilla team/squad ids
     self.m_TeamId = TeamId.Team1
@@ -32,7 +36,7 @@ function BRTeam:AddPlayer(p_BrPlayer)
     end
 
     -- add player
-    self.m_Players[p_BrPlayer.m_Player.name] = p_BrPlayer
+    self.m_Players[p_BrPlayer:Name()] = p_BrPlayer
     p_BrPlayer:SetTeam(self)
 end
 
@@ -44,8 +48,7 @@ function BRTeam:RemovePlayer(p_BrPlayer)
     end
 
     -- remove player
-    self.m_Players[p_BrPlayer.m_Player.name] = nil
-    -- p_BrPlayer:SetTeam(nil)
+    self.m_Players[p_BrPlayer:Name()] = nil
 
     -- check if team should be destroyed
     if MapHelper:Size(self.m_Players) < 1 then
@@ -55,9 +58,13 @@ end
 
 -- Removes all players from the team
 function BRTeam:RemovePlayers()
-    for _, l_BrPlayer in pairs(self.m_Players) do
-        self:RemovePlayer(l_BrPlayer)
+    -- remove players from the team
+    for l_Name, l_BrPlayer in pairs(self.m_Players) do
+        l_BrPlayer:LeaveTeam()
+        self.m_Players[l_Name] = nil
     end
+
+    self.m_Players = {}
 end
 
 function BRTeam:SetTeamSquadIds(p_TeamId, p_SquadId)
@@ -96,14 +103,7 @@ function BRTeam:__eq(p_OtherTeam)
 end
 
 function BRTeam:Destroy()
-    -- remove players from the team
-    for l_Name, l_BrPlayer in pairs(self.m_Players) do
-        l_BrPlayer:LeaveTeam()
-        self.m_Players[l_Name] = nil
-    end
-
-    -- clear players
-    self.m_Players = {}
+    BRTeam:RemovePlayers()
 end
 
 function BRTeam:__gc()
