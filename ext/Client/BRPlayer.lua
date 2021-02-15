@@ -1,4 +1,5 @@
 require "__shared/Enums/BRPlayerState"
+require "__shared/Enums/TeamJoinStrategy"
 require "__shared/Items/Armor"
 require "BRTeam"
 
@@ -7,6 +8,7 @@ class "BRPlayer"
 function BRPlayer:__init()
     self.m_Team = BRTeam()
     self.m_Armor = Armor:NoArmor()
+    self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
     self.m_Kills = 0
     self.m_Score = 0
 

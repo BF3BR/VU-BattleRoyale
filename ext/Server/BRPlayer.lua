@@ -1,4 +1,5 @@
 require "__shared/Enums/TeamManagerEvents"
+require "__shared/Enums/TeamJoinStrategy"
 require "__shared/Items/Armor"
 
 class "BRPlayer"
@@ -10,6 +11,7 @@ function BRPlayer:__init(p_Player, p_Team, p_Armor)
     -- the BRTeam that the player is part of
     self.m_Team = p_Team
 
+    self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
     self.m_Armor = p_Armor or Armor:NoArmor()
     self.m_Kills = 0
     self.m_Score = 0
