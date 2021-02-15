@@ -13,7 +13,7 @@ const selectStyle = {
         ...provided,
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         borderRadius: 0,
-        width: "25vw",
+        width: "auto",
         border: '0.1574074074074074vh solid rgba(255, 255, 255, 0.7)',
         '&:hover': {
             borderColor: 'rgba(255, 255, 255, 1)'
@@ -60,7 +60,8 @@ const selectStyle = {
         willChange: 'top',
         borderRadius: 0,
         boxShadow: 'none',
-        border: '0.1574074074074074vh solid rgba(255, 255, 255, 0.4)'
+        border: '0.1574074074074074vh solid rgba(255, 255, 255, 0.4)',
+        zIndex: '999',
     }),
     dropdownIndicator: (provided: any) => ({
         ...provided,

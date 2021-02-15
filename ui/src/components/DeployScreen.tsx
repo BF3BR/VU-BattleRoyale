@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import BrSelect from "./BrSelect";
 
+import logo from "../assets/img/logo.svg";
+
 import "./DeployScreen.scss";
 
 const AppearanceArray = [
@@ -32,12 +34,10 @@ const DeployScreen: React.FC = () => {
     return (
         <div id="DeployScreen">
             <div className="DeployBox">
-                <h1 className="Title">
-                    Battle Royale
-                </h1>
+                <img src={logo} alt="Logo" className="Logo" />
 
-                <div className="SquadBox">
-                    <h2>Current mode: Duo</h2>
+                <div className="card SquadBox">
+                    <h2>Squad</h2>
                     <h4>Code: <span>QWX994</span></h4>
                     <div className="SquadPlayers">
                         <div className="SquadPlayer">KVN</div>
@@ -56,7 +56,7 @@ const DeployScreen: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="AppearanceBox">
+                <div className="card AppearanceBox">
                     <h2>Appearance</h2>
                     <BrSelect 
                         options={AppearanceArray} 

@@ -5,26 +5,26 @@
     justify-content: center;
     padding: 0;
     height: 1.2vw;
-    margin-bottom: .25vw;
+    margin-bottom: 0.25vw;
 
     img {
-        max-width: .9vw;
-        margin-right: .65vw;
-        filter: drop-shadow(0 0 0.05vw rgba(0, 0, 0, .4));
+        max-width: 0.9vw;
+        margin-right: 0.65vw;
+        filter: drop-shadow(0 0 0.25vw rgba(255, 255, 255, 0.6));
     }
 
     .PercentageBg {
         flex: 1 1 auto;
-        height: .4vw;
-        background: rgba(255,255,255,0.25);
-        box-shadow: 0 0 0.3vw rgba(0, 0, 0, .15);
+        height: 0.4vw;
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.15);
     }
 
     .PercentageFg {
         flex: 1 1 auto;
-        height: .4vw;
-        background: rgba(255,255,255,1);
-        transition: width .1s ease;
+        height: 0.4vw;
+        background: rgba(255, 255, 255, 1);
+        transition: width 0.1s ease;
     }
 
     .PercentageText {
@@ -32,21 +32,27 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        font-size: .9vw;
-        text-shadow: 0 0 .2vw rgba(0, 0, 0, 0.5);
+        font-size: 0.9vw;
+        text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.4);
     }
-    
+
     &.PercentageTypeArmor {
+        img {
+            filter: drop-shadow(0 0 0.25vw rgba(50, 122, 196, 0.6));
+        }
+
         .PercentageBg {
-            background: rgba(50,122,196,0.25);
+            background: rgba(50, 122, 196, 0.25);
+            box-shadow: 0 0 0.3vw rgba(50, 122, 196, 0.15);
         }
 
         .PercentageFg {
-            background: rgba(50,122,196,1);
+            background: rgba(50, 122, 196, 1);
         }
 
         .PercentageText {
-            color: rgba(50,122,196,1);
+            color: rgba(50, 122, 196, 1);
+            text-shadow: 0 0 0.6vw rgba(50, 122, 196, 0.4);
         }
     }
 }

@@ -46,6 +46,7 @@ function Gunship:OnEngineUpdate(p_DeltaTime)
     if not self.m_SetFlyPath then
         if self.m_VehicleEntity ~= nil then
             NetEvents:BroadcastLocal("GunshipPosition", self.m_VehicleEntity.transform)
+            NetEvents:BroadcastLocal("GunshipYaw", self.m_StartTransform)
         end
 
         return

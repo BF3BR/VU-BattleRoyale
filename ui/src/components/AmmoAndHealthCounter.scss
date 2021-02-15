@@ -6,7 +6,7 @@
     height: auto;
     display: flex;
     flex-flow: column;
-    text-shadow: 0 0 .3vw rgba(0, 0, 0, 0.3);
+    text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.4);
 
     .WeaponName {
         position: relative;
@@ -80,6 +80,7 @@
                 margin-top: .2vw;
                 color: #c47532;
                 font-weight: 600;
+                text-shadow: 0 0 0.6vw rgba(196, 117, 50, 0.4);
             }
         }
     }

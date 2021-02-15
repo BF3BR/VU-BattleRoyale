@@ -65,7 +65,7 @@ const MapCanvas = (props: any) => {
 
         ctx.save();
 
-        ctx.shadowColor = "rgba(0,0,0,.7)";
+        ctx.shadowColor = "rgba(0,0,0,0.7)";
         ctx.shadowBlur = 12;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
@@ -146,13 +146,13 @@ const MapCanvas = (props: any) => {
         }
     }
 
-    function drawSingleCircle(ctx: any, circle: Circle, color: string) {
+    function drawSingleCircle(ctx: any, circle: Circle, color: string, blue?: boolean) {
         var radius = circle.radius;
 
         var scaledCenterX = getMapPos(circle.center.x, topLeftPos.x, ctx.canvas.width);
         var scaledCenterZ = getMapPos(circle.center.z, topLeftPos.z, ctx.canvas.height);
         
-        ctx.lineWidth = ctx.canvas.width / 600;
+        ctx.lineWidth = ctx.canvas.width / 400;
         radius = radius * (terrainWidthHeight / 1250);
 
         ctx.beginPath();
@@ -168,11 +168,11 @@ const MapCanvas = (props: any) => {
 
         if (propsRef.current !== null) {
             if (propsRef.current.innerCircle !== null) {
-                drawSingleCircle(ctx, propsRef.current.innerCircle, '#ffffff');
+                drawSingleCircle(ctx, propsRef.current.innerCircle, 'rgba(255, 255, 255, 0.8');
             }
     
             if (propsRef.current.outerCircle !== null) {
-                drawSingleCircle(ctx, propsRef.current.outerCircle, '#0000ff');
+                drawSingleCircle(ctx, propsRef.current.outerCircle, 'rgba(0, 0, 255, 0.8)');
             }
         }
     }
