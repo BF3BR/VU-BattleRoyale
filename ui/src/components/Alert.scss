@@ -7,7 +7,7 @@
     flex-flow: column;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
     -webkit-transform: scale(0);
     transform: scale(0);
     padding: 2vw 0;
@@ -15,12 +15,12 @@
     img {
         width: 4vw;
         margin-bottom: 1.5vw;
-        filter: drop-shadow(0 0 0.1vw rgba(0, 0, 0, .4));
+        filter: drop-shadow(0 0 0.25vw rgba(196, 117, 50, 0.6));
     }
     
     span {
         font-size: 1.75vw;
         text-transform: uppercase;
-        text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
+        text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.4);
     }
 }

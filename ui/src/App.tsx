@@ -251,6 +251,24 @@ const App: React.FC = () => {
                 <button onClick={() => setSpectating(prevState => !prevState)}>Set Spectator</button>
                 <button onClick={() => setGameOverScreen(prevState => !prevState)}>Set Gameover Screen</button>
                 <button onClick={() => SetDummyLocalPlayer()}>SetDummyLocalPlayer</button>
+                <button onClick={() => {
+                    setInnerCircle({
+                        center: {
+                            x: 148,
+                            y: 555,
+                            z: -864,
+                        },
+                        radius: 150,
+                    });
+                    setOuterCircle({
+                        center: {
+                            x: 148,
+                            y: 555,
+                            z: -864,
+                        },
+                        radius: 450,
+                    });
+                }}>setRandomCircle</button>
             </div>
 
             <div id="VUBattleRoyale">

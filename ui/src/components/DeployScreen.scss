@@ -6,14 +6,6 @@
     width: 100vw;
     padding: 0;
     font-size: 0.8vw;
-    background: rgb(0, 0, 0);
-    background: linear-gradient(
-        90deg,
-        rgba(0, 0, 0, 0.4) 0%,
-        rgba(0, 0, 0, 0.4) 35%,
-        rgba(0, 0, 0, 0) 35%,
-        rgba(0, 0, 0, 0) 100%
-    );
 
     .Title {
         position: relative;
@@ -37,15 +29,24 @@
         left: 4vw;
         width: 25vw;
         transform: translateY(-50%);
+
+        .Logo {
+            width: 75%;
+            margin-bottom: 2vw;
+        }
     }
 
-    .AppearanceBox,
-    .SquadBox {
+    .card {
+        border-left: 0.1vw solid #fff;
+        background: rgba(0,0,0,0.8);
+        padding: 1vw 1.5vw;
+
         h2 {
             font-weight: 400;
             margin-bottom: 1vw;
             font-size: 1.25vw;
             text-transform: uppercase;
+            text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.4);
         }
 
         h4 {
@@ -60,7 +61,7 @@
 
         .SquadPlayers {
             .SquadPlayer {
-                width: 22vw;
+                width: auto;
                 height: 3vw;
                 padding: 0 1.5vw;
                 display: flex;
@@ -70,7 +71,8 @@
                 margin-bottom: .5vw;
                 line-height: 1;
                 text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
-                background: rgba(0, 0, 0, 0.8);
+                background: rgba(255,255,255,0.1);
+                border-left: 0.1vw solid #fff;
 
                 &.empty {
                     font-style: italic;
@@ -86,7 +88,7 @@
     }
 
     .SquadBox {
-        margin-bottom: 3vw;
+        margin-bottom: 1vw;
 
         h2 {
             margin-bottom: 0.5vw;
@@ -130,22 +132,34 @@
     }
 
     .Deploy {
-        margin-top: 3vw;
+        margin-top: 1vw;
     }
 
     button {
         position: relative;
         width: 100%;
         height: 3vw;
-        background: rgba(229, 97, 20, 0.6);
-        border: 0.1vw solid #e57414;
+        background: transparent;
+        border: 0.1vw solid #fff;
         color: #fff;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 0;
-        box-shadow: 0 0 0.6vw 0 rgba(214, 99, 0, 0.6);
+        box-shadow: 0 0 0.4vw 0.1vw rgba(255, 255, 255, 0.15);
         transition: all 0.2s ease;
+
+        &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1;
+            transition: all 0.2s ease;
+        }
 
         span {
             font-size: 1.25vw;
@@ -155,12 +169,24 @@
             line-height: 1.8vw;
             text-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.4);
             letter-spacing: 0.1vw;
+            transition: all 0.2s ease;
+            z-index: 2;
         }
 
         &:hover {
-            background: rgba(229, 97, 20, 0.8);
-            box-shadow: 0 0 1vw 0 rgba(214, 99, 0, 0.8);
+            //background: rgba(229, 97, 20, 0.8);
+            box-shadow: 0 0 0.6vw 0.1vw rgba(255, 255, 255, 0.35);
             transition: all 0.2s ease;
+
+            &::before {
+                background: rgba(0,0,0,0.4);
+                transition: all 0.2s ease;
+            }
+
+            span {
+                text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.6);
+                transition: all 0.2s ease;
+            }
         }
 
         &:focus,

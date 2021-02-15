@@ -217,9 +217,16 @@ function VuBattleRoyaleHud:OnGunshipPosition(p_Trans)
         z = p_Trans.trans.z
     }
 
-    local s_YawRad = (math.atan(p_Trans.forward.z, p_Trans.forward.x) + (math.pi / 2)) % (2 * math.pi)
-    self.m_HudOnPlayerYaw:Update(math.floor((2 * math.pi) * s_YawRad))
     self.m_HudOnPlayerPos:Update(json.encode(s_Table))
+end
+
+function VuBattleRoyaleHud:OnGunshipYaw(p_Trans)
+    if p_Trans == nil or not self.m_IsPlayerOnPlane then
+        return
+    end
+
+    local s_YawRad = (math.atan(p_Trans.forward.z, p_Trans.forward.x) - (math.pi / 2)) % (2 * math.pi)
+    self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
 end
 
 if g_VuBattleRoyaleHud == nil then
