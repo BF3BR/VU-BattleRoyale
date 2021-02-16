@@ -49,7 +49,11 @@ function BRPlayer:OnPlayerState(p_State)
     end
 
     if p_State.Data ~= nil then
-        self.m_Kills = p_State.Kills
-        self.m_Score = p_State.Score
+        self.m_TeamJoinStrategy = p_State.Data.TeamJoinStrategy
+        self.m_Kills = p_State.Data.Kills
+        self.m_Score = p_State.Data.Score
     end
+
+    print("RECEIVED STATE")
+    print(p_State)
 end

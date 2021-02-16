@@ -104,6 +104,12 @@ function BRTeam:Merge(p_OtherTeam)
     return true
 end
 
+function BRTeam:ToggleLock()
+    -- TODO maybe add a check for squad leader only
+    self.m_Locked = not self.m_Locked
+    self:BroadcastState()
+end
+
 -- Applies team/squad ids to each player of the team
 function BRTeam:ApplyTeamSquadIds(p_TeamId, p_SquadId)
     self.m_TeamId = (p_TeamId ~= nil and p_TeamId) or self.m_TeamId
@@ -142,13 +148,23 @@ function BRTeam:HasAlivePlayers(p_PlayerToIgnore)
 end
 
 function BRTeam:BroadcastState()
+    local l_TeamData = self:AsTable()
     for _, l_BrPlayer in pairs(self.m_Players) do
-        l_BrPlayer:SendState()
+        l_BrPlayer:SendState(false, l_TeamData)
     end
 end
 
 function BRTeam:AsTable()
-    -- TODO
+    local l_Players = {}
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        table.insert(l_Players, l_BrPlayer:AsTable(true))
+    end
+
+    return {
+        Id = self.m_Id,
+        Locked = self.m_Locked,
+        Players = l_Players
+    }
 end
 
 function BRTeam:Equals(p_OtherTeam)

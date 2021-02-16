@@ -1,5 +1,6 @@
 require "__shared/Enums/TeamManagerEvents"
 require "__shared/Enums/TeamJoinStrategy"
+require "__shared/Enums/BRPlayerState"
 require "__shared/Items/Armor"
 
 class "BRPlayer"
@@ -86,16 +87,12 @@ function BRPlayer:Kill(p_Forced)
     end
 end
 
-function BRPlayer:SendState()
-    local l_Data = {}
-
-    -- team state
-    if self.m_Team ~= nil then
-        l_Data.Team = self.m_Team:AsTable()
-    end
+function BRPlayer:SendState(p_Simple, p_TeamData)
+    local l_Data = self:AsTable(p_Simple, p_TeamData)
+    NetEvents:SendToLocal(TeamManagerNetEvents.PlayerState, self.m_Player, l_Data)
 end
 
-function BRPlayer:AsTable(p_Simple)
+function BRPlayer:AsTable(p_Simple, p_TeamData)
     -- state used for squad members
     if p_Simple then
         local l_State = BRPlayerState.Dead
@@ -110,8 +107,18 @@ function BRPlayer:AsTable(p_Simple)
         return {Name = self:GetName(), State = l_State}
     end
 
+    -- get team data
+    local l_Team = p_TeamData
+    if l_Team == nil and self.m_Team ~= nil then
+        l_Team = self.m_Team:AsTable()
+    end
+
     -- state used for local player
-    return {Armor = self.m_Armor:AsTable(), Kill = self.m_Kills, Score = self.m_Score}
+    return {
+        Team = l_Team,
+        Armor = self.m_Armor:AsTable(),
+        Data = {TeamJoinStrategy = self.m_TeamJoinStrategy, Kill = self.m_Kills, Score = self.m_Score}
+    }
 end
 
 --
@@ -141,7 +148,6 @@ end
 -- * p_Player is BRPlayer        --> p_Player.m_Player.name
 -- * else                        --> nil
 function BRPlayer.static:GetPlayerName(p_Player)
-    return (type(p_Player) == "string" and p_Player) or
-        (type(p_Player) == "userdata" and p_Player.name) or
-        (type(p_Player) == "table" and p_Player.m_Player ~= nil and p_Player.m_Player.name) or nil
+    return (type(p_Player) == "string" and p_Player) or (type(p_Player) == "userdata" and p_Player.name) or
+               (type(p_Player) == "table" and p_Player.m_Player ~= nil and p_Player.m_Player.name) or nil
 end

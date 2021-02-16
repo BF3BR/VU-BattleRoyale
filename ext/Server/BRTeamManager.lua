@@ -1,4 +1,5 @@
 require "__shared/Enums/TeamManagerEvents"
+require "__shared/Enums/PhaseManagerEvents"
 require "BRTeam"
 require "BRPlayer"
 
@@ -20,10 +21,14 @@ end
 function BRTeamManager:RegisterEvents()
     Events:Subscribe("Player:Authenticated", self, self.OnVanillaPlayerCreated)
     Events:Subscribe("Player:Left", self, self.OnVanillaPlayerDestroyed)
-    Events:Subscribe("TM:PutOnATeam", self, self.OnPutOnATeam)
-    Events:Subscribe("TM:DestroyTeam", self, self.OnDestroyTeam)
+    Events:Subscribe("Player:Killed", self, self.OnSendPlayerState)
+    Events:Subscribe(TeamManagerCustomEvents.PutOnATeam, self, self.OnPutOnATeam)
+    Events:Subscribe(TeamManagerCustomEvents.DestroyTeam, self, self.OnDestroyTeam)
+
+    NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.OnSendPlayerState)
     NetEvents:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
     NetEvents:Subscribe(TeamManagerNetEvents.TeamLeave, self, self.OnLeaveTeam)
+    NetEvents:Subscribe(TeamManagerNetEvents.TeamToggleLock, self, self.OnLockToggle)
 end
 
 -- Returns the BRPlayer instance of a player
@@ -233,6 +238,19 @@ end
 function BRTeamManager:OnLeaveTeam(p_Player)
     local l_BrPlayer = self:GetPlayer(p_Player)
     l_BrPlayer:LeaveTeam()
+end
+
+function BRTeamManager:OnLockToggle(p_Player)
+    local l_BrPlayer = self:GetPlayer(p_Player)
+
+    if l_BrPlayer.m_Team ~= nil then
+        l_BrPlayer.m_Team:ToggleLock()
+    end
+end
+
+function BRTeamManager:OnSendPlayerState(p_Player)
+    local l_BrPlayer = self:GetPlayer(p_Player)
+    l_BrPlayer:SendState()
 end
 
 g_BRTeamManager = BRTeamManager()
