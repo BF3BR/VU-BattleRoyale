@@ -70,7 +70,7 @@ const AmmoAndHealthCounter: React.FC<Props> = ({ playerHealth, playerPrimaryAmmo
                         <span className="type">AUTO</span>
                     </div>
                 </div>
-                <PercentageCounter type="Armor" value={0} />
+                <PercentageCounter type="Armor" value={35} />
                 <PercentageCounter type="Health" value={playerHealth} />
             </div>
             

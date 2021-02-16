@@ -33,7 +33,7 @@ const Alert: React.FC<Props> = ({ alert, afterInterval, playSound }) => {
             }
             const interval = setInterval(() => {
                 afterInterval();
-            }, 8000);
+            }, 888000);
 
             return () => {
                 alertAudio.currentTime = 0.0;
@@ -52,8 +52,10 @@ const Alert: React.FC<Props> = ({ alert, afterInterval, playSound }) => {
             <img src={exclamation} alt="Warning" className="preload-image" />
             {alert !== null &&
                 <div id="Alert" className={"scale-up-center"}>
-                    <img src={exclamation} alt="Warning" />
-                    <span>{alert??''}</span>
+                    <div className="card-content">
+                        <img src={exclamation} alt="Warning" />
+                        <span>{alert??''}</span>
+                    </div>
                 </div>
             }
         </>

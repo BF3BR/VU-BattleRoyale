@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BrSelect from "./BrSelect";
 
-import logo from "../assets/img/logo.svg";
+import circle from "../assets/img/circle.svg";
 
 import "./DeployScreen.scss";
 
@@ -34,42 +34,71 @@ const DeployScreen: React.FC = () => {
     return (
         <div id="DeployScreen">
             <div className="DeployBox">
-                <img src={logo} alt="Logo" className="Logo" />
+                <h1 className="PageTitle">Battle Royale</h1>
+                <div className="card SquadBox">
+                    <div className="card-header">
+                        <h1>
+                            Your Squad
+                            <span>Code: <b>QWX994</b></span>
+                        </h1>
+                    </div>
+                    <div className="card-content">
+                        <div className="SquadPlayers">
+                            <div className="SquadPlayer white">
+                                <div className="circle"></div>
+                                <span>KVN</span>
+                            </div>
+                            <div className="SquadPlayer red">
+                                <div className="circle"></div>
+                                <span>Gaben</span>
+                            </div>
+                            <div className="SquadPlayer blue">
+                                <div className="circle"></div>
+                                <span>Hideo Kojima</span>
+                            </div>
+                            <div className="SquadPlayer green">
+                                <div className="circle"></div>
+                                <span>Snoop Dogg</span>
+                            </div>
+                            <div className="SquadPlayer empty">No player...</div>
+                        </div>
+                    </div>
+                </div>
 
                 <div className="card SquadBox">
-                    <h2>Squad</h2>
-                    <h4>Code: <span>QWX994</span></h4>
-                    <div className="SquadPlayers">
-                        <div className="SquadPlayer">KVN</div>
-                        <div className="SquadPlayer empty">No player...</div>
-                        <div className="SquadPlayer disable"></div>
-                        <div className="SquadPlayer disable"></div>
+                    <div className="card-header">
+                        <h1>
+                            Join a squad
+                        </h1>
                     </div>
-
-                    <div className="SquadForm">
-                        <input type="text" placeholder="Enter a Code to join a squad..." />
-                        <button>
-                            <span>
+                    <div className="card-content">
+                        <div className="SquadForm">
+                            <input type="text" placeholder="Enter a Code to join a squad..." />
+                            <button className="btn btn-primary btn-small">
                                 Join
-                            </span>
-                        </button>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <div className="card AppearanceBox">
-                    <h2>Appearance</h2>
-                    <BrSelect 
-                        options={AppearanceArray} 
-                        onChangeSelected={(selected: string) => OnSelectAppearanceChange(selected)}
-                        selectValue={{
-                            value: AppearanceArray[selectedAppearance].value,
-                            label: AppearanceArray[selectedAppearance].label,
-                        }}
-                    />
+                    <div className="card-header">
+                        <h1>Appearance</h1>
+                    </div>
+                    <div className="card-content">
+                        <BrSelect 
+                            options={AppearanceArray} 
+                            onChangeSelected={(selected: string) => OnSelectAppearanceChange(selected)}
+                            selectValue={{
+                                value: AppearanceArray[selectedAppearance].value,
+                                label: AppearanceArray[selectedAppearance].label,
+                            }}
+                        />
+                    </div>
                 </div>
 
-                <button className="Deploy">
-                    <span>Ready</span>
+                <button className="btn btn-full-width Deploy">
+                    Ready
                 </button>
             </div>
         </div>

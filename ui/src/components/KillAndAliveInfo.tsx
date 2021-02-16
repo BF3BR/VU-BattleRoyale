@@ -13,13 +13,13 @@ const KillAndAliveInfo: React.FC<Props> = ({ kills, alive, spectating }) => {
     return (
         <>
             <div id="KillAndAliveInfo">
-                <div className="KillAndAliveBox">
-                    <span>{alive}</span>
+                <div className="KillAndAliveBox Alive">
+                    <h1>{alive}</h1>
                     <span>ALIVE</span>
                 </div>
                 {!spectating &&
-                    <div className="KillAndAliveBox">
-                        <span>{kills}</span>
+                    <div className="KillAndAliveBox Kill">
+                        <h1>{kills}</h1>
                         <span>KILLS</span>
                     </div>
                 }

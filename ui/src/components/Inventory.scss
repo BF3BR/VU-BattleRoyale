@@ -1,0 +1,40 @@
+#Inventory {
+    position: absolute;
+    bottom: 9.75vw;
+    right: 1.25vw;
+    transition: all .1s ease;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+
+    img {
+        width: 8vw;
+        transition: all .1s ease;
+        margin-bottom: 1.5vw;
+        opacity: .5;
+
+        &.small {
+            width: 5.5vw;
+        }
+
+        &:last-of-type {
+            margin: 0;
+        }
+
+        &.active {
+            opacity: 1;
+        }
+    }
+
+    &.open {
+        position: absolute;
+        bottom: 5.5vw;
+        left: 1.5vw;
+        transition: all .1s ease;
+
+        /*img {
+            width: 10vw;
+            transition: all .1s ease;
+        }*/
+    }
+}

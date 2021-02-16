@@ -11,13 +11,15 @@ const SpactatorInfo: React.FC<Props> = ({ spectating, spectatorTarget }) => {
 
     return (
         <>
-            <div id="SpactatorInfo" className={spectating ? 'show' : ''}>
-                <span className="SpactatorText">
-                    Spectating:
-                </span>
-                <span className="SpactatorTarget">
-                    {spectatorTarget??''}
-                </span>
+            <div id="SpactatorInfo" className={"card " + (spectating ? 'show' : '')}>
+                <div className="card-header">
+                    <h1>
+                        Spectating
+                        <span>
+                            {spectatorTarget??''}
+                        </span>
+                    </h1>
+                </div>
             </div>
             
         </>

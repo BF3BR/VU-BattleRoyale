@@ -16,6 +16,7 @@ import Alert from "./components/Alert";
 import SpactatorInfo from "./components/SpactatorInfo";
 import Gameover from "./components/Gameover";
 import DeployScreen from "./components/DeployScreen";
+import Inventory from "./components/Inventory";
 
 /* Style */
 import './App.scss';
@@ -56,16 +57,7 @@ const App: React.FC = () => {
         setTime(time);
     }
 
-
     const [gameOverScreen, setGameOverScreen] = useState<boolean>(false);
-    /*window.OnGameState = (state: string) => {
-        setGameState(state);
-
-        if (state === "Warmup") {
-            setAlertPlaySound(false);
-            setAlertString("The round is starting soon");
-        }
-    }*/
 
     /*
     * Player
@@ -97,10 +89,11 @@ const App: React.FC = () => {
     const [alertString, setAlertString] = useState<string | null>(null);
     const [alertPlaySound, setAlertPlaySound] = useState<boolean>(false);
 
-    const [playerHealth, setPlayerHealth] = useState<number>(0);
+    const [playerHealth, setPlayerHealth] = useState<number>(45);
     const [playerPrimaryAmmo, setPlayerPrimaryAmmo] = useState<number>(0);
     const [playerSecondaryAmmo, setPlayerSecondaryAmmo] = useState<number>(0);
     const [playerCurrentWeapon, setPlayerCurrentWeapon] = useState<string>('');
+    const [playerInventory, setPlayerInventory] = useState<string[]>([]);
 
     window.OnPlayerHealth = (data: number) => {
         setPlayerHealth(data);
@@ -116,6 +109,10 @@ const App: React.FC = () => {
 
     window.OnPlayerCurrentWeapon = (data: string) => {
         setPlayerCurrentWeapon(data);
+    }
+
+    window.OnPlayerWeapons = (data: any) => {
+        console.log(data);
     }
 
 
@@ -226,7 +223,7 @@ const App: React.FC = () => {
                     }
 
                     #debug {
-                        display: block !important;
+                        display: flex !important;
                         opacity: 0.1;
                     }
                 `}} />
@@ -339,6 +336,11 @@ const App: React.FC = () => {
                                         playerIsInPlane={playerIsInPlane}
                                     />
                                 }
+
+                                <Inventory
+                                    mapOpen={openMap}
+                                    playerInventory={playerInventory}
+                                />
                             </>
                         }
                     </>
@@ -366,6 +368,7 @@ declare global {
         OnPlayerPrimaryAmmo: (data: number) => void;
         OnPlayerSecondaryAmmo: (data: number) => void;
         OnPlayerCurrentWeapon: (data: string) => void;
+        OnPlayerWeapons: (data: any) => void;
         OnPlayerIsInPlane: (isInPlane: boolean) => void;
         SpectatorTarget: (p_TargetName: string) => void;
         SpectatorEnabled: (p_Enabled: boolean) => void;

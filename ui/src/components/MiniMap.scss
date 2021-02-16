@@ -1,12 +1,28 @@
 #miniMap {
     position: absolute;
-    bottom: 6vh;
-    left: 4vw;
-    height: 12vw;
-    width: 12vw;
+    bottom: 2vw;
+    left: 2.5vw;
+    height: calc(12vw - 0.1vw);
+    width: calc(12vw - 0.1vw);
+    border: 0.1vw solid #fff;
     transition: all .1s ease;
     background: transparent url('../assets/img/noise-gif-square-anim.gif') 50% 50% no-repeat;
     background-size: cover;
+    box-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.05);
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: transparent url('../assets/img/ezgif.com-gif-maker.gif');
+        background-repeat: repeat;
+        background-size: 200px 200px;
+        width: 100%;
+        height: 100%;
+        opacity: .05;
+        filter: blur(10px) grayscale(1);
+    }
 
     &.open {
         position: absolute;

@@ -44,22 +44,23 @@ const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToS
 
     return (
         <>
-            <div id="MatchInfo" className={(noMap || spectating) ? 'noMap' : ''}>
-                <span className="MatchInfoState">
-                    {getStateString(state, subPhaseIndex)}
-                </span>
-                <span className="MatchInfoTimerOrPlayer">
-                    {(state === 'None')
-                    ?
+            <div id="MatchInfo" className={"card " + ((noMap || spectating) ? 'noMap' : '')}>
+                <div className="card-header">
+                    <h1>
+                        {getStateString(state, subPhaseIndex)}
                         <span>
-                            {players !== null ? players.length : 0} / {minPlayersToStart??0}
-                        </span> 
-                    :
-                        <Timer time={time} />
-                    }
-                </span>
+                            {(state === 'None')
+                            ?
+                                <span>
+                                    {players !== null ? players.length : 0} / {minPlayersToStart??0}
+                                </span> 
+                            :
+                                <Timer time={time} />
+                            }
+                        </span>
+                    </h1>
+                </div>
             </div>
-            
         </>
     );
 };

@@ -1,12 +1,12 @@
 #AmmoAndHealthCounter {
     position: absolute;
-    bottom: 3vw;
-    right: 4vw;
+    bottom: 1.85vw;
+    right: 2.5vw;
     width: 12vw;
     height: auto;
     display: flex;
     flex-flow: column;
-    text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.4);
+    text-shadow: 0 0 0.15vw rgba(7, 7, 7, 0.45);
 
     .WeaponName {
         position: relative;
@@ -26,8 +26,8 @@
     .AmmoCounter {
         position: relative;
         display: flex;
-        margin-bottom: .85vw;
-        padding-right: .5vw;
+        margin-bottom: 1.5vw;
+        padding: 0;
 
         .current {
             grid-row: span 2 / auto;
@@ -36,14 +36,19 @@
             padding-right: .5vw;
             flex: 1 1 auto;
             line-height: 0.65;
+            font-weight: 400;
 
             span {
                 width: 1.6vw;
                 display: inline-block;
                 text-align: center;
+                color: #fff;
+                font-style: normal;
+                font-weight: 400;
+                
 
                 &.zero {
-                    opacity: 0.3;
+                    opacity: 0.2;
                 }
             }
         }
@@ -64,23 +69,25 @@
                     width: 0.7vw;
                     display: inline-block;
                     text-align: center;
+                    font-weight: 400;
+                    color: #d5dde5;
 
                     &.zero {
-                        opacity: 0.3;
+                        opacity: 0.2;
                     }
                 }
             }
 
             .type {
-                font-size: .65vw;
+                font-size: .6vw;
                 opacity: 1;
                 width: 100%;
                 text-align: left;
                 line-height: 1;
-                margin-top: .2vw;
-                color: #c47532;
+                margin-top: .25vw;
+                color: var(--warning);
                 font-weight: 600;
-                text-shadow: 0 0 0.6vw rgba(196, 117, 50, 0.4);
+                text-shadow: 0 0 0.25vw rgba(196, 117, 50, 0.8);
             }
         }
     }

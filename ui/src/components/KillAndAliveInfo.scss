@@ -1,33 +1,39 @@
 #KillAndAliveInfo {
     position: absolute;
-    top: 3vw;
-    left: 4vw;
-    display: flex;
-    width: 6.75vw;
-    justify-content: space-between;
+    top: 2vw;
+    left: 2.5vw;
+    width: 12vw;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 1vw;
 
     .KillAndAliveBox {
-        width: 3vw;
-        height: 3vw;
+        flex: 1 1 auto;
         display: flex;
-        flex-flow: column;
-        justify-content: center;
-        align-items: center;
-        background: rgba(0,0,0,0.5);
+        flex-flow: row;
+        justify-content: space-between;
+        align-items: flex-end;
+        background-color: rgba(7, 7, 7, 0.8);
+        padding: 0.2vw 0.6vw;
 
-        span {
-            text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.4);
+        span,
+        h1 {
+            line-height: 1vw;
+            color: #d5dde5;
+            font-size: .8vw;
+            text-transform: uppercase;
+            margin: 0;
+            font-style: normal;
+            font-weight: 600;
+        }
 
-            &:first-of-type {
-                font-size: 1.1vw;
-                line-height: 1;
-                font-weight: 600;
-                margin-bottom: .4vw;
-            }
+        h1 {
+            color: #ff9f80;
+        }
 
-            &:last-of-type {
-                font-size: .55vw;
-                line-height: 1;
+        &.Alive {
+            h1 {
+                color: #94cdf3;
             }
         }
     }
