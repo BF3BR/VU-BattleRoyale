@@ -23,6 +23,7 @@ function VuBattleRoyaleHud:__init()
     self.m_HudOnPlayerPrimaryAmmo = CachedJsExecutor("OnPlayerPrimaryAmmo(%s)", 0)
     self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
     self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", '')
+    self.m_HudOnPlayerWeapons = CachedJsExecutor("OnPlayerWeapons(%s)", nil)
 
     self.m_IsPlayerOnPlane = false
     self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
@@ -187,11 +188,19 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoAndHealth()
     if s_LocalSoldier == nil then
         return
     end
+    
+    local s_Inventory = { }
+    for l_Index, l_Weapon in pairs(s_LocalSoldier.weaponsComponent.weapons) do
+        if l_Weapon ~= nil then
+            s_Inventory[l_Index] = l_Weapon.name
+        end
+    end
 
     self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
     self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
     self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
     self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
+    self.m_HudOnPlayerWeapons:Update(json.encode(s_Inventory))
     --self.m_HudOnPlayerCurrentSlot:Update(s_LocalSoldier.weaponsComponent.currentWeaponSlot)
     return
 end

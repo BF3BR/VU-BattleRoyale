@@ -1,19 +1,15 @@
 #MatchInfo {
     position: absolute;
-    bottom: calc(6vh + 12.5vw);
-    left: 4vw;
-    height: 2.5vw;
-    width: 10vw;
-    border-left: 0.05vw solid #fff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1vw;
-    font-size: .8vw;
-    text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.4);
-    background: rgba(0,0,0,0.5);
-    //background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,.1) 80%);
+    bottom: calc(2vw + 12.15vw);
+    left: 2.5vw;
+    width: 12vw;
     transition: bottom .1s ease;
+
+    .card-header {
+        h1 {
+            font-size: .65vw;
+        }
+    }
 
     &.noMap {
         bottom: 2.8vw;

@@ -8,23 +8,39 @@
     margin-bottom: 0.25vw;
 
     img {
-        max-width: 0.9vw;
+        max-width: 0.8vw;
         margin-right: 0.65vw;
-        filter: drop-shadow(0 0 0.25vw rgba(255, 255, 255, 0.6));
+        filter: drop-shadow(0 0 0.1vw rgba(7, 7, 7, 0.75));
     }
 
     .PercentageBg {
         flex: 1 1 auto;
         height: 0.4vw;
-        background: rgba(255, 255, 255, 0.25);
-        box-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.15);
+        background-color: rgba(255, 255, 255, 0.4);
+        background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 24%, transparent 25%, transparent);
+        background-size: 0.175vw 100%;
     }
 
     .PercentageFg {
+        position: relative;
         flex: 1 1 auto;
         height: 0.4vw;
-        background: rgba(255, 255, 255, 1);
         transition: width 0.1s ease;
+        background-color: #fff;
+        box-shadow: 0 0 0.2vw 0.05vw #fff inset, 0 0 0.15vw 0.05vw rgba(255, 255, 255, 0.5);
+
+        &::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 24%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0));
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 24%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0));
+            background-size: 0.175vw 100%;
+            z-index: 99;
+        }
     }
 
     .PercentageText {
@@ -33,26 +49,25 @@
         align-items: center;
         justify-content: flex-end;
         font-size: 0.9vw;
-        text-shadow: 0 0 0.6vw rgba(255, 255, 255, 0.4);
+        text-shadow: 0 0 0.15vw rgba(7, 7, 7, 0.45);
     }
 
     &.PercentageTypeArmor {
-        img {
-            filter: drop-shadow(0 0 0.25vw rgba(50, 122, 196, 0.6));
-        }
-
         .PercentageBg {
-            background: rgba(50, 122, 196, 0.25);
-            box-shadow: 0 0 0.3vw rgba(50, 122, 196, 0.15);
+            background-color: rgba(151, 215, 246, 0.4);
         }
 
         .PercentageFg {
-            background: rgba(50, 122, 196, 1);
+            background-color: #97d7f6;
+            box-shadow: 0 0 0.2vw 0.05vw #52b0df inset, 0 0 0.15vw 0.05vw rgba(40, 169, 235, 0.5);
         }
 
         .PercentageText {
-            color: rgba(50, 122, 196, 1);
-            text-shadow: 0 0 0.6vw rgba(50, 122, 196, 0.4);
+            color: #52b0df;
+        }
+
+        img {
+            filter: drop-shadow(0 0 0.1vw rgba(40, 169, 235, 0.75));
         }
     }
 }

@@ -5,7 +5,7 @@ const selectStyle = {
     container: (provided: any, state: any) => {
         return {
             ...provided, 
-            marginBottom: '2vh',
+            marginBottom: '0',
             outline: 'none',
         };
     },
@@ -20,7 +20,7 @@ const selectStyle = {
         },
         minHeight: 0,
         height: '3.703703703703704vh', // 40px
-        boxShadow: "none"
+        boxShadow: "none",
     }),
     singleValue: (provided: any) => ({
         ...provided,

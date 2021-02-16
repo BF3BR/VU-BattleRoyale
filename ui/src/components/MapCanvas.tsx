@@ -65,8 +65,8 @@ const MapCanvas = (props: any) => {
 
         ctx.save();
 
-        ctx.shadowColor = "rgba(0,0,0,0.7)";
-        ctx.shadowBlur = 12;
+        ctx.shadowColor = "rgba(158, 197, 85, .8)";
+        ctx.shadowBlur = 10;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
 
