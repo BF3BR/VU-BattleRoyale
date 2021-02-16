@@ -142,6 +142,6 @@ end
 -- * else                        --> nil
 function BRPlayer.static:GetPlayerName(p_Player)
     return (type(p_Player) == "string" and p_Player) or
-               (type(p_Player) == "table" and (p_Player.name or (p_Player.m_Player ~= nil and p_Player.m_Player.name))) or
-               nil
+        (type(p_Player) == "userdata" and p_Player.name) or
+        (type(p_Player) == "table" and p_Player.m_Player ~= nil and p_Player.m_Player.name) or nil
 end

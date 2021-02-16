@@ -19,7 +19,7 @@ end
 
 function BRTeamManager:RegisterEvents()
     Events:Subscribe("Player:Authenticated", self, self.OnVanillaPlayerCreated)
-    Events:Subscribe("Player:Destroyed", self, self.OnVanillaPlayerDestroyed)
+    Events:Subscribe("Player:Left", self, self.OnVanillaPlayerDestroyed)
     Events:Subscribe("TM:PutOnATeam", self, self.OnPutOnATeam)
     Events:Subscribe("TM:DestroyTeam", self, self.OnDestroyTeam)
     NetEvents:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
