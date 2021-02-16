@@ -1,4 +1,5 @@
 require "__shared/Helpers/MapHelper"
+require "__shared/Enums/TeamManagerEvents"
 
 class "BRTeam"
 
@@ -8,6 +9,9 @@ function BRTeam:__init(p_Id)
 
     -- contains the players as [name] -> [BRPlayer]
     self.m_Players = {}
+
+    -- indicates if the team let's random players to fill the remaining positions
+    self.m_Locked = false
 
     -- indicates if the team is currently taking part in the match
     self.m_Active = false
@@ -53,7 +57,7 @@ function BRTeam:RemovePlayer(p_BrPlayer)
 
     -- check if team should be destroyed
     if MapHelper:Size(self.m_Players) < 1 then
-        Events:DispatchLocal("TM:DestroyTeam", self)
+        Events:DispatchLocal(TeamManagerCustomEvents.DestroyTeam, self)
         return
     end
 

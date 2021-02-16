@@ -15,6 +15,9 @@ function BRTeam:__init(p_Id)
     -- the unique id of the team
     self.m_Id = p_Id or "-"
 
+    -- indicates if the team let's random players to fill the remaining positions
+    self.m_Locked = false
+
     -- contains the players as Teammate[]
     self.m_Players = {}
 end

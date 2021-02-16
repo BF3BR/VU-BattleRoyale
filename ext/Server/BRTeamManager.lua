@@ -1,3 +1,4 @@
+require "__shared/Enums/TeamManagerEvents"
 require "BRTeam"
 require "BRPlayer"
 
@@ -21,6 +22,8 @@ function BRTeamManager:RegisterEvents()
     Events:Subscribe("Player:Destroyed", self, self.OnPlayerDestroyed)
     Events:Subscribe("TM:PutOnATeam", self, self.OnPutOnATeam)
     Events:Subscribe("TM:DestroyTeam", self, self.OnDestroyTeam)
+    NetEvent:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
+    NetEvent:Subscribe(TeamManagerNetEvents.TeamLeave, self, self.OnLeaveTeam)
 end
 
 -- Returns a team by it's id
@@ -151,6 +154,26 @@ end
 -- Destroys and removes the specified team
 function BRTeamManager:OnDestroyTeam(p_Team)
     self:RemoveTeam(p_Team)
+end
+
+function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
+    local l_BrPlayer = self:GetBrPlayer(p_Player)
+    local l_Team = self:GetTeamById(p_Id)
+
+    -- check if team/player not found
+    if l_Team == nil or l_BrPlayer == nil then
+        NetEvents:SendToLocal(TeamManagerNetEvents.TeamJoinDenied, p_Player, TeamManagerErrors.InvalidTeamId)
+    end
+
+    -- add player to the team
+    if not l_Team:AddPlayer(l_BrPlayer) then
+        NetEvents:SendToLocal(TeamManagerNetEvents.TeamJoinDenied, p_Player, TeamManagerErrors.TeamIsFull)
+    end
+end
+
+function BRTeamManager:OnLeaveTeam(p_Player)
+    local l_BrPlayer = self:GetBrPlayer(p_Player)
+    l_BrPlayer:LeaveTeam()
 end
 
 g_BRTeamManager = BRTeamManager()
