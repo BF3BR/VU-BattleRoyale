@@ -4,11 +4,13 @@ BRPlayerNetEvents = {
 TeamManagerNetEvents = {
     RequestTeamJoin = "TM:RTJ",
     TeamJoinDenied = "TM:TJD",
-    TeamLeave = "TM:TL"
+    TeamLeave = "TM:TL",
+    TeamJoinStrategy = "TM:TJS"
 }
 
 TeamManagerCustomEvents = {
-    DestroyTeam = "TM:DestroyTeam"
+    DestroyTeam = "TM:DestroyTeam",
+    PutOnATeam = "TM:PutOnATeam"
 }
 
 TeamManagerErrors = {

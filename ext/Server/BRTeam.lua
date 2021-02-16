@@ -1,6 +1,9 @@
 require "__shared/Helpers/MapHelper"
 require "__shared/Enums/TeamManagerEvents"
 
+-- TODO move this to config
+local MAX_NUMBER_OF_PLAYERS = 2
+
 class "BRTeam"
 
 function BRTeam:__init(p_Id)
@@ -39,50 +42,41 @@ function BRTeam:AddPlayer(p_BrPlayer)
         p_BrPlayer:LeaveTeam(true)
     end
 
-    -- add player
+    -- add references
     self.m_Players[p_BrPlayer:GetName()] = p_BrPlayer
-    p_BrPlayer:SetTeam(self)
+    p_BrPlayer.m_Team = self
+
+    -- update client state
+    self:BroadcastState()
+
     return true
 end
 
 -- Removes a player from the team
-function BRTeam:RemovePlayer(p_BrPlayer)
+function BRTeam:RemovePlayer(p_BrPlayer, p_Forced)
     -- check if player isn't a member of this team
     if p_BrPlayer.m_Team == nil or not self:Equals(p_BrPlayer.m_Team) then
-        return
+        return false
     end
 
-    -- remove player reference
+    -- check if team only has one player
+    if not p_Forced and MapHelper:Size(self.m_Players) == 1 then
+        return false
+    end
+
+    -- remove references
     self.m_Players[p_BrPlayer:GetName()] = nil
+    p_BrPlayer.m_Team = nil
+
+    -- update client state
+    self:BroadcastState()
 
     -- check if team should be destroyed
     if MapHelper:Size(self.m_Players) < 1 then
         Events:DispatchLocal(TeamManagerCustomEvents.DestroyTeam, self)
-        return
     end
 
-    -- TODO send event to update team state
-end
-
--- Removes all players from the team
-function BRTeam:RemovePlayers(p_IgnoreDestroyEvent)
-    -- remove players from the team
-    for l_Name, l_BrPlayer in pairs(self.m_Players) do
-        l_BrPlayer:LeaveTeam()
-        self.m_Players[l_Name] = nil
-    end
-
-    self.m_Players = {}
-end
-
-function BRTeam:SendState()
-    for _, l_BrPlayer in pairs(self.m_Players) do
-        l_BrPlayer:SendState()
-    end
-end
-
-function BRTeam:AsTable()
-
+    return true
 end
 
 -- Applies team/squad ids to each player of the team
@@ -98,15 +92,12 @@ end
 
 -- Checks if the team is full and has no space for more players
 function BRTeam:IsFull()
-    -- TODO move this to config
-    local MAX_NUMBER_OF_PLAYERS = 2
-
     return MapHelper:Size(self.m_Players) >= MAX_NUMBER_OF_PLAYERS
 end
 
 -- Checks if the team has any players
-function BRTeam:HasPlayers()
-    return not MapHelper:Empty(self.m_Players)
+function BRTeam:IsEmpty()
+    return MapHelper:Empty(self.m_Players)
 end
 
 -- Checks if the team has any alive players
@@ -121,6 +112,16 @@ function BRTeam:HasAlivePlayers(p_PlayerToIgnore)
     return false
 end
 
+function BRTeam:BroadcastState()
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        l_BrPlayer:SendState()
+    end
+end
+
+function BRTeam:AsTable()
+    -- TODO
+end
+
 function BRTeam:Equals(p_OtherTeam)
     return p_OtherTeam ~= nil and self.m_Id == p_OtherTeam.m_Id
 end
@@ -130,7 +131,16 @@ function BRTeam:__eq(p_OtherTeam)
 end
 
 function BRTeam:Destroy()
-    self:RemovePlayers()
+    -- force remove all players from the team
+    for l_Name, l_BrPlayer in pairs(self.m_Players) do
+        l_BrPlayer:LeaveTeam()
+        self.m_Players[l_Name] = nil
+
+        -- move removed player to another team
+        Events:SendLocal(TeamManagerCustomEvents.PutOnATeam, l_BrPlayer)
+    end
+
+    self.m_Players = {}
 end
 
 function BRTeam:__gc()

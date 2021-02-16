@@ -4,15 +4,15 @@ require "__shared/Items/Armor"
 
 class "BRPlayer"
 
-function BRPlayer:__init(p_Player, p_Team, p_Armor)
+function BRPlayer:__init(p_Player)
     -- the vanilla player instance of the player
     self.m_Player = p_Player
 
     -- the BRTeam that the player is part of
-    self.m_Team = p_Team
+    self.m_Team = nil
 
     self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
-    self.m_Armor = p_Armor or Armor:NoArmor()
+    self.m_Armor = Armor:NoArmor()
     self.m_Kills = 0
     self.m_Score = 0
 end
@@ -22,25 +22,19 @@ function BRPlayer:GetName()
     return (self.m_Player ~= nil and self.m_Player.name) or nil
 end
 
-function BRPlayer:SetTeam(p_Team)
-    -- TODO send NetEvent to update team
-    self.m_Team = p_Team
-    self:ApplyTeamSquadIds()
+-- 
+function BRPlayer:SetArmor(p_Armor)
+    self.m_Armor = p_Armor
+    NetEvents:SendToLocal(BRPlayerNetEvents.ArmorState, self.m_Player, self.m_Armor:AsTable())
 end
 
 -- Updates the vanilla player team/squad Ids
 function BRPlayer:ApplyTeamSquadIds()
     -- ensure that the player is dead
-    if self.m_Team ~= nil and self.m_Player ~= nil and not self.m_Player.alive then
-        self.m_Player.TeamId = p_Team.m_TeamId
-        self.m_Player.SquadId = p_Team.m_SquadId
+    if self.m_Player ~= nil and not self.m_Player.alive then
+        self.m_Player.TeamId = (self.m_Team ~= nil and self.m_Team.m_TeamId) or TeamId.Team1
+        self.m_Player.SquadId = (self.m_Team ~= nil and self.m_Team.m_SquadId) or SquadId.SquadNone
     end
-end
-
--- 
-function BRPlayer:SetArmor(p_Armor)
-    self.m_Armor = p_Armor
-    NetEvents:SendToLocal(BRPlayerNetEvents.ArmorState, self.m_Player, self.m_Armor:AsTable())
 end
 
 -- 
@@ -54,47 +48,13 @@ function BRPlayer:ApplyDamage(p_Damage, p_IgnoreArmor)
     self.m_Player.soldier.health = self.m_Player.soldier.health - l_Damage
 end
 
-function BRPlayer:SendState()
-    local l_Data = {}
-
-    -- team state
+-- Alias for `BRTeam:RemovePlayer()`
+function BRPlayer:LeaveTeam(p_Forced)
     if self.m_Team ~= nil then
-        l_Data.Team = self.m_Team:AsTable()
-    end
-end
-
-function BRPlayer:AsTable(p_Simple)
-    -- state used for squad members
-    if p_Simple then
-        local l_State = BRPlayerState.Dead
-        if self.m_Player ~= nil and self.m_Player.alive and self.m_Player.soldier ~= nil then
-            if self.m_Player.soldier.isAlive then
-                l_State = BRPlayerState.Alive
-            elseif self.m_Player.soldier.isInteractiveManDown then
-                l_State = BRPlayerState.Down
-            end
-        end
-
-        return {Name = self:GetName(), State = l_State}
+        return self.m_Team:RemovePlayer(self, p_Forced)
     end
 
-    -- state used for local player
-    return {Armor = self.m_Armor:AsTable(), Kill = self.m_Kills, Score = self.m_Score}
-end
-
--- Removes a player from his current team and moves him to a newly created one
--- @param p_IgnoreNewTeam
-function BRPlayer:LeaveTeam(p_IgnoreNewTeam)
-    -- remove player from old team
-    if self.m_Team ~= nil then
-        self.m_Team:RemovePlayer(self)
-        self.m_Team = nil
-    end
-
-    -- Request TM to create a team and put this player in it
-    if not p_IgnoreNewTeam then
-        Events:DispatchLocal("TM:PutOnATeam", self)
-    end
+    return false
 end
 
 -- Checks if the player and `p_OtherBrPlayer` are on the same team
@@ -124,6 +84,34 @@ function BRPlayer:Kill(p_Forced)
     else
         l_Soldier:Kill()
     end
+end
+
+function BRPlayer:SendState()
+    local l_Data = {}
+
+    -- team state
+    if self.m_Team ~= nil then
+        l_Data.Team = self.m_Team:AsTable()
+    end
+end
+
+function BRPlayer:AsTable(p_Simple)
+    -- state used for squad members
+    if p_Simple then
+        local l_State = BRPlayerState.Dead
+        if self.m_Player ~= nil and self.m_Player.alive and self.m_Player.soldier ~= nil then
+            if self.m_Player.soldier.isAlive then
+                l_State = BRPlayerState.Alive
+            elseif self.m_Player.soldier.isInteractiveManDown then
+                l_State = BRPlayerState.Down
+            end
+        end
+
+        return {Name = self:GetName(), State = l_State}
+    end
+
+    -- state used for local player
+    return {Armor = self.m_Armor:AsTable(), Kill = self.m_Kills, Score = self.m_Score}
 end
 
 --
