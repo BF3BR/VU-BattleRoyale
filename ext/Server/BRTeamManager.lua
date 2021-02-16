@@ -22,8 +22,8 @@ function BRTeamManager:RegisterEvents()
     Events:Subscribe("Player:Destroyed", self, self.OnVanillaPlayerDestroyed)
     Events:Subscribe("TM:PutOnATeam", self, self.OnPutOnATeam)
     Events:Subscribe("TM:DestroyTeam", self, self.OnDestroyTeam)
-    NetEvent:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
-    NetEvent:Subscribe(TeamManagerNetEvents.TeamLeave, self, self.OnLeaveTeam)
+    NetEvents:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
+    NetEvents:Subscribe(TeamManagerNetEvents.TeamLeave, self, self.OnLeaveTeam)
 end
 
 -- Returns the BRPlayer instance of a player
