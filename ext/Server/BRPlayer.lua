@@ -49,9 +49,9 @@ function BRPlayer:ApplyDamage(p_Damage, p_IgnoreArmor)
 end
 
 -- Alias for `BRTeam:RemovePlayer()`
-function BRPlayer:LeaveTeam(p_Forced)
+function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
     if self.m_Team ~= nil then
-        return self.m_Team:RemovePlayer(self, p_Forced)
+        return self.m_Team:RemovePlayer(self, p_Forced, p_IgnoreBroadcast)
     end
 
     return false

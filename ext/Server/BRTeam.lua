@@ -25,7 +25,7 @@ function BRTeam:__init(p_Id)
 end
 
 -- Adds a player to the team
-function BRTeam:AddPlayer(p_BrPlayer)
+function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
     -- check if team is full
     if self:IsFull() then
         return false
@@ -39,7 +39,7 @@ function BRTeam:AddPlayer(p_BrPlayer)
         end
 
         -- remove player from old team
-        p_BrPlayer:LeaveTeam(true)
+        p_BrPlayer:LeaveTeam(true, p_IgnoreBroadcast)
     end
 
     -- add references
@@ -47,13 +47,15 @@ function BRTeam:AddPlayer(p_BrPlayer)
     p_BrPlayer.m_Team = self
 
     -- update client state
-    self:BroadcastState()
+    if not p_IgnoreBroadcast then
+        self:BroadcastState()
+    end
 
     return true
 end
 
 -- Removes a player from the team
-function BRTeam:RemovePlayer(p_BrPlayer, p_Forced)
+function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
     -- check if player isn't a member of this team
     if p_BrPlayer.m_Team == nil or not self:Equals(p_BrPlayer.m_Team) then
         return false
@@ -69,12 +71,35 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced)
     p_BrPlayer.m_Team = nil
 
     -- update client state
-    self:BroadcastState()
+    if not p_IgnoreBroadcast then
+        self:BroadcastState()
+    end
 
     -- check if team should be destroyed
     if MapHelper:Size(self.m_Players) < 1 then
         Events:DispatchLocal(TeamManagerCustomEvents.DestroyTeam, self)
     end
+
+    return true
+end
+
+function BRTeam:Merge(p_OtherTeam)
+    -- if self:PlayersNumber() < p_OtherTeam:PlayersNumber() then
+    --     p_OtherTeam:Merge(self)
+    --     return
+    -- end
+
+    -- check if merge is possible
+    if self:PlayersNumber() + p_OtherTeam:PlayersNumber() > MAX_NUMBER_OF_PLAYERS then
+        return false
+    end
+
+    -- move all the players from the other team
+    for _, l_BrPlayer in pairs(p_OtherTeam.m_Players) do
+        self:AddPlayer(l_BrPlayer, true)
+    end
+
+    self:BroadcastState()
 
     return true
 end
@@ -98,6 +123,10 @@ end
 -- Checks if the team has any players
 function BRTeam:IsEmpty()
     return MapHelper:Empty(self.m_Players)
+end
+
+function BRTeam:PlayersNumber()
+    return MapHelper:Size(self.m_Players)
 end
 
 -- Checks if the team has any alive players

@@ -65,16 +65,68 @@ end
 
 -- Assigns a team to each player
 function BRTeamManager:AssignTeams()
+    -- make sure that every player that isn't in a custom team, is the only 
+    -- player of his team
     for _, l_BrPlayer in pairs(self.m_Players) do
         if l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
+            -- try to remove players from their teams (it will work only if the team contains
+            -- other players)
             if l_BrPlayer:LeaveTeam() then
+                -- if removed, put the player in a new team
                 self:CreateTeam():AddPlayer(l_BrPlayer)
             end
 
+            -- lock teams whose player chose to play solo
             if l_BrPlayer.m_TeamJoinStrategy == TeamJoinStrategy.NoJoin then
                 l_BrPlayer.m_Team.m_Locked = true
             end
         end
+    end
+
+    -- filter unlocked teams
+    local l_UnlockedTeams = {}
+    for _, l_BrTeam in pairs(self.m_Teams) do
+        if not l_BrTeam.m_Locked then
+            table.insert(l_UnlockedTeams, l_BrTeam)
+        end
+    end
+
+    -- sort based on the number of players per team
+    table.sort(l_UnlockedTeams, function(p_TeamA, p_TeamB)
+        return p_TeamA:PlayersNumber() < p_TeamB:PlayersNumber()
+    end)
+
+    -- merge teams
+    local l_Low = 1
+    local l_High = #l_UnlockedTeams
+    while l_Low < l_High do
+        local l_HighTeam = l_UnlockedTeams[l_High]
+        local l_LowTeam = l_UnlockedTeams[l_Low]
+
+        if l_HighTeam:Merge(l_LowTeam) then
+            l_Low = l_Low + 1
+        else
+            l_High = l_High - 1
+        end
+    end
+
+    -- finalize teams
+    local l_Index = 0
+    for _, l_BrTeam in pairs(self.m_Teams) do
+        l_BrTeam.m_Active = true
+
+        -- assign team/squad ids for each BRTeam
+        if l_BrTeam:PlayersNumber() < 2 then
+            l_BrTeam.m_TeamId = TeamId.Team1
+            l_BrTeam.m_SquadId = SquadId.SquadNone
+        else
+            l_BrTeam.m_TeamId = math.floor(l_Index / 32) + 1
+            l_BrTeam.m_SquadId = l_Index % 32 + 1
+
+            l_Index = l_Index + 1
+        end
+
+        l_BrTeam:ApplyTeamSquadIds()
     end
 end
 
