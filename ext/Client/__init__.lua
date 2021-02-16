@@ -8,6 +8,7 @@ require "Helpers/LootPointHelper"
 require "PhaseManagerClient"
 require "ClientCommands"
 require "PingClient"
+require "BRPlayer"
 
 local m_UICleanup = require "UICleanup"
 local m_Gunship = require "Gunship"
@@ -30,6 +31,8 @@ function VuBattleRoyaleClient:__init()
 
     -- The client pinging system
     self.m_Ping = PingClient()
+
+    self.m_BrPlayer = BRPlayer()
 end
 
 -- ==========

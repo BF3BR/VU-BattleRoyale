@@ -28,7 +28,7 @@ function VuBattleRoyaleServer:__init()
 
     self.m_WaitForStart = true
 
-    self.m_TeamManager = BRTeamManager()
+    self.m_TeamManager = g_BRTeamManager
 
     -- Server sided pinging system
     self.m_Ping = PingServer()
