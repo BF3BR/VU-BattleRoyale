@@ -1,8 +1,6 @@
+require "__shared/Configs/ServerConfig"
 require "__shared/Helpers/MapHelper"
 require "__shared/Enums/TeamManagerEvents"
-
--- TODO move this to config
-local MAX_NUMBER_OF_PLAYERS = 2
 
 class "BRTeam"
 
@@ -84,13 +82,8 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 end
 
 function BRTeam:Merge(p_OtherTeam)
-    -- if self:PlayersNumber() < p_OtherTeam:PlayersNumber() then
-    --     p_OtherTeam:Merge(self)
-    --     return
-    -- end
-
     -- check if merge is possible
-    if self:PlayersNumber() + p_OtherTeam:PlayersNumber() > MAX_NUMBER_OF_PLAYERS then
+    if self:PlayersNumber() + p_OtherTeam:PlayersNumber() > ServerConfig.PlayersPerTeam then
         return false
     end
 
@@ -123,7 +116,7 @@ end
 
 -- Checks if the team is full and has no space for more players
 function BRTeam:IsFull()
-    return MapHelper:Size(self.m_Players) >= MAX_NUMBER_OF_PLAYERS
+    return MapHelper:Size(self.m_Players) >= ServerConfig.PlayersPerTeam
 end
 
 -- Checks if the team has any players
@@ -160,11 +153,7 @@ function BRTeam:AsTable()
         table.insert(l_Players, l_BrPlayer:AsTable(true))
     end
 
-    return {
-        Id = self.m_Id,
-        Locked = self.m_Locked,
-        Players = l_Players
-    }
+    return {Id = self.m_Id, Locked = self.m_Locked, Players = l_Players}
 end
 
 function BRTeam:Equals(p_OtherTeam)

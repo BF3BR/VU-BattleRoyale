@@ -4,7 +4,7 @@ require "__shared/PhaseManagerShared"
 require "__shared/Utils/Timers"
 require "__shared/Circle"
 
-class ("PhaseManagerServer", PhaseManagerShared)
+class("PhaseManagerServer", PhaseManagerShared)
 
 function PhaseManagerServer:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
@@ -51,7 +51,9 @@ end
 -- Moves to the next Phase
 function PhaseManagerServer:NextPhase()
     -- check if it reached the end
-    if self.m_PhaseIndex >= #self.m_Phases then return false end
+    if self.m_PhaseIndex >= #self.m_Phases then
+        return false
+    end
 
     -- increment phase
     self.m_PhaseIndex = self.m_PhaseIndex + 1
@@ -96,7 +98,9 @@ function PhaseManagerServer:InitPhase()
         self.m_InnerCircle:Update(l_NewCenter, l_NewRadius)
 
         -- update initial outer circle center
-        if self.phaseIndex == 1 then self.m_OuterCircle.m_Center = l_NewCenter end
+        if self.phaseIndex == 1 then
+            self.m_OuterCircle.m_Center = l_NewCenter
+        end
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
         self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
         self:SetTimer("MovingCircle",
@@ -129,7 +133,9 @@ function PhaseManagerServer:BroadcastState(p_Player)
     local l_Timer = self:GetTimer("NextSubphase")
 
     -- Send remaning time to complete
-    if l_Timer ~= nil then l_Duration = l_Timer:Remaining() end
+    if l_Timer ~= nil then
+        l_Duration = l_Timer:Remaining()
+    end
 
     local l_Data = {
         PhaseIndex = self.m_PhaseIndex,
@@ -148,7 +154,9 @@ end
 
 -- Damages every player outside of the outer circle
 function PhaseManagerServer:ApplyDamage()
-    if self:IsIdle() then return end
+    if self:IsIdle() then
+        return
+    end
 
     local l_Damage = self:GetCurrentPhase().Damage
     for _, l_Player in ipairs(PlayerManager:GetPlayers()) do
@@ -163,7 +171,9 @@ end
 
 -- Starts the PhaseManager from the chat
 function PhaseManagerServer:OnChat(player, recipientMask, message)
-    if message == "!pmstart" then self:Start() end
+    if message == "!pmstart" then
+        self:Start()
+    end
 end
 
 -- Prints a debug message about the current status of PhaseManager
