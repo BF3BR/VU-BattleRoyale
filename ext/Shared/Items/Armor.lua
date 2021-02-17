@@ -35,6 +35,11 @@ function Armor:AsTable()
     }
 end
 
+function Armor:UpdateFromTable(p_ArmorTable)
+    self.m_Type = ArmorTypes[p_ArmorTable.Type]
+    self.m_CurrentDurability = p_ArmorTable.CurrentDurability
+end
+
 function Armor.static:FromTable(p_ArmorTable)
     return Armor(ArmorTypes[p_ArmorTable.Type], p_ArmorTable.CurrentDurability)
 end

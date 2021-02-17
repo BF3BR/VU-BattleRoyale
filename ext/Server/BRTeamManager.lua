@@ -22,6 +22,7 @@ function BRTeamManager:RegisterEvents()
     Events:Subscribe("Player:Authenticated", self, self.OnVanillaPlayerCreated)
     Events:Subscribe("Player:Left", self, self.OnVanillaPlayerDestroyed)
     Events:Subscribe("Player:Killed", self, self.OnSendPlayerState)
+
     Events:Subscribe(TeamManagerCustomEvents.PutOnATeam, self, self.OnPutOnATeam)
     Events:Subscribe(TeamManagerCustomEvents.DestroyTeam, self, self.OnDestroyTeam)
 
@@ -29,6 +30,7 @@ function BRTeamManager:RegisterEvents()
     NetEvents:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
     NetEvents:Subscribe(TeamManagerNetEvents.TeamLeave, self, self.OnLeaveTeam)
     NetEvents:Subscribe(TeamManagerNetEvents.TeamToggleLock, self, self.OnLockToggle)
+    NetEvents:Subscribe(TeamManagerNetEvents.TeamJoinStrategy, self, self.OnTeamJoinStrategy)
 end
 
 -- Returns the BRPlayer instance of a player
@@ -78,7 +80,7 @@ function BRTeamManager:AssignTeams()
             -- other players)
             if l_BrPlayer:LeaveTeam() then
                 -- if removed, put the player in a new team
-                self:CreateTeam():AddPlayer(l_BrPlayer)
+                self:CreateTeamWithPlayer(l_BrPlayer)
             end
 
             -- lock teams whose player chose to play solo
@@ -161,14 +163,14 @@ function BRTeamManager:CreatePlayer(p_Player)
     end
 
     -- create player
-    local l_Player = BRPlayer(p_Player)
-    self.m_Players[l_Name] = l_Player
+    local l_BrPlayer = BRPlayer(p_Player)
+    self.m_Players[l_Name] = l_BrPlayer
 
     -- create a team and put the player in it
-    local l_Team = self:CreateTeam():AddPlayer(l_Player)
+    self:CreateTeamWithPlayer(l_BrPlayer)
 
     -- create and return the BRPlayer
-    return l_Player
+    return l_BrPlayer
 end
 
 -- Removes a BRPlayer
@@ -178,6 +180,17 @@ function BRTeamManager:RemovePlayer(p_Player)
     if l_BrPlayer ~= nil then
         self.m_Players[l_BrPlayer:GetName()] = nil
         l_BrPlayer:Destroy()
+    end
+end
+
+function BRTeamManager:CreateTeamWithPlayer(p_BrPlayer)
+    local l_Team = self:CreateTeam()
+    l_Team:AddPlayer(p_BrPlayer)
+
+    if p_BrPlayer.m_TeamJoinStrategy == TeamJoinStrategy.Custom then
+        l_Team.m_Locked = false
+    else
+        l_Team.m_Locked = true
     end
 end
 
@@ -200,6 +213,22 @@ function BRTeamManager:CreateId(p_Len)
     end
 end
 
+function BRTeamManager:EndOfRound()
+    -- put non custom team players back to their own teams
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        if l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
+            if l_BrPlayer:LeaveTeam() then
+                self:CreateTeamWithPlayer(l_BrPlayer)
+            end
+        end
+    end
+
+    -- deactivate teams
+    for _, l_BrTeam in pairs(self.m_Teams) do
+        l_BrTeam.m_Active = false
+    end
+end
+
 function BRTeamManager:OnVanillaPlayerCreated(p_Player)
     print(string.format("TM: Creating BRPlayer for '%s'", p_Player.name))
     self:CreatePlayer(p_Player)
@@ -212,7 +241,7 @@ end
 
 -- Puts the requested player to a newly created team
 function BRTeamManager:OnPutOnATeam(p_BrPlayer)
-    self:CreateTeam():AddPlayer(p_BrPlayer)
+    self:CreateTeamWithPlayer(p_BrPlayer)
 end
 
 -- Destroys and removes the specified team
@@ -237,20 +266,34 @@ end
 
 function BRTeamManager:OnLeaveTeam(p_Player)
     local l_BrPlayer = self:GetPlayer(p_Player)
-    l_BrPlayer:LeaveTeam()
+
+    if l_BrPlayer ~= nil then
+        l_BrPlayer:LeaveTeam()
+    end
 end
 
 function BRTeamManager:OnLockToggle(p_Player)
     local l_BrPlayer = self:GetPlayer(p_Player)
 
-    if l_BrPlayer.m_Team ~= nil then
+    if l_BrPlayer ~= nil and l_BrPlayer.m_Team ~= nil then
         l_BrPlayer.m_Team:ToggleLock()
     end
 end
 
 function BRTeamManager:OnSendPlayerState(p_Player)
     local l_BrPlayer = self:GetPlayer(p_Player)
-    l_BrPlayer:SendState()
+
+    if l_BrPlayer ~= nil then
+        l_BrPlayer:SendState()
+    end
+end
+
+function BRTeamManager:OnTeamJoinStrategy(p_Player, p_Strategy)
+    local l_BrPlayer = self:GetPlayer(p_Player)
+
+    if l_BrPlayer ~= nil then
+        l_BrPlayer:SetTeamJoinStrategy(p_Strategy)
+    end
 end
 
 g_BRTeamManager = BRTeamManager()

@@ -26,8 +26,8 @@ end
 
 -- Adds a player to the team
 function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
-    -- check if team is full
-    if self:IsFull() then
+    -- check if team is full or in game
+    if self:IsFull() or self.m_Active then
         return false
     end
 
@@ -171,14 +171,16 @@ function BRTeam:Equals(p_OtherTeam)
     return p_OtherTeam ~= nil and self.m_Id == p_OtherTeam.m_Id
 end
 
+-- `==` metamethod
 function BRTeam:__eq(p_OtherTeam)
     return self:Equals(p_OtherTeam)
 end
 
+-- Destroys the `BRTeam` instance
 function BRTeam:Destroy()
     -- force remove all players from the team
     for l_Name, l_BrPlayer in pairs(self.m_Players) do
-        l_BrPlayer:LeaveTeam()
+        l_BrPlayer:LeaveTeam(true)
         self.m_Players[l_Name] = nil
 
         -- move removed player to another team
@@ -188,6 +190,7 @@ function BRTeam:Destroy()
     self.m_Players = {}
 end
 
+-- garbage collector metamethod
 function BRTeam:__gc()
     self:Destroy()
 end

@@ -29,6 +29,21 @@ function BRPlayer:SetArmor(p_Armor)
     NetEvents:SendToLocal(BRPlayerNetEvents.ArmorState, self.m_Player, self.m_Armor:AsTable())
 end
 
+function BRPlayer:SetTeamJoinStrategy(p_Strategy)
+    self.m_TeamJoinStrategy = p_Strategy
+
+    if p_Strategy ~= TeamJoinStrategy.Custom then
+        self.m_Locked = true
+        if self:LeaveTeam() then
+            Events:DispatchLocal(TeamManagerCustomEvents.PutOnATeam, self)
+        end
+    else
+        self.m_Locked = false
+    end
+
+    self:SendState()
+end
+
 -- Updates the vanilla player team/squad Ids
 function BRPlayer:ApplyTeamSquadIds()
     -- ensure that the player is dead

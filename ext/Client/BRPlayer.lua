@@ -17,9 +17,9 @@ function BRPlayer:__init()
 end
 
 function BRPlayer:RegisterEvents()
-    NetEvents:Subscribe(TeamManagerNetEvents.PlayerState, self, self.OnPlayerState)
-    NetEvents:Subscribe(TeamManagerNetEvents.PlayerArmorState, self, self.OnPlayerState)
-    NetEvents:Subscribe(TeamManagerNetEvents.PlayerTeamState, self, self.OnPlayerState)
+    NetEvents:Subscribe(TeamManagerNetEvents.PlayerState, self, self.OnReceivePlayerState)
+    NetEvents:Subscribe(TeamManagerNetEvents.PlayerArmorState, self, self.OnReceivePlayerState)
+    NetEvents:Subscribe(TeamManagerNetEvents.PlayerTeamState, self, self.OnReceivePlayerState)
 end
 
 function BRPlayer:JoinTeam(p_Id)
@@ -39,13 +39,13 @@ function BRPlayer:ToggleLock()
     NetEvents:Send(TeamManagerNetEvents.TeamToggleLock)
 end
 
-function BRPlayer:OnPlayerState(p_State)
+function BRPlayer:OnReceivePlayerState(p_State)
     if p_State.Team ~= nil then
-        self.m_Team = BRTeam:FromTable(p_State.Team)
+        self.m_Team:UpdateFromTable(p_State.Team)
     end
 
     if p_State.Armor ~= nil then
-        self.m_Armor = Armor:FromTable(p_State.Armor)
+        self.m_Armor:UpdateFromTable(p_State.Armor)
     end
 
     if p_State.Data ~= nil then
@@ -53,7 +53,4 @@ function BRPlayer:OnPlayerState(p_State)
         self.m_Kills = p_State.Data.Kills
         self.m_Score = p_State.Data.Score
     end
-
-    print("RECEIVED STATE")
-    print(p_State)
 end
