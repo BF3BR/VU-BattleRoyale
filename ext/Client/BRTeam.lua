@@ -27,7 +27,7 @@ function BRTeam:UpdateFromTable(p_BrTeamTable)
 
     self.m_Players = {}
     for _, p_TeammateTable in ipairs(p_BrTeamTable.Players) do
-        table.insert(l_Team.m_Players, Teammate:FromTable(p_TeammateTable))
+        table.insert(self.m_Players, Teammate:FromTable(p_TeammateTable))
     end
 end
 
@@ -40,4 +40,3 @@ function BRTeam.static:FromTable(p_BrTeamTable)
 
     return l_Team
 end
-

@@ -1,7 +1,10 @@
+require "__shared/Configs/MapsConfig"
 require "__shared/Enums/PhaseManagerEvents"
 require "__shared/Enums/SubphaseTypes"
-require "__shared/PhaseManagerShared"
+require "__shared/Helpers/MathHelper"
+require "__shared/Helpers/LevelNameHelper"
 require "__shared/Utils/Timers"
+require "__shared/PhaseManagerShared"
 require "__shared/Circle"
 
 class("PhaseManagerServer", PhaseManagerShared)
@@ -9,9 +12,8 @@ class("PhaseManagerServer", PhaseManagerShared)
 function PhaseManagerServer:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
 
-    -- TODO
-    self.m_InnerCircle = Circle(Vec3(148, 0, -864), 400)
-    self.m_OuterCircle = Circle(Vec3(148, 0, -864), 3000)
+    self.m_InnerCircle = Circle(Vec3(0, 0, 0), 4000)
+    self.m_OuterCircle = Circle(Vec3(0, 0, 0), 4000)
 end
 
 function PhaseManagerServer:RegisterEvents()
@@ -88,7 +90,8 @@ function PhaseManagerServer:InitPhase()
 
         -- pick a random circle center
         if self.phaseIndex == 1 then
-            l_NewCenter = Vec3(148, 0, -864) -- TODO pick random point from polygon, this is a fixed initial center for Kiasar
+            l_NewRadius = MapsConfig[LevelNameHelper:GetLevelName()].InitialCircle.Radius
+            l_NewCenter = self:GetRandomInitialCenter()
         else
             self.m_OuterCircle = self.m_InnerCircle:Clone()
             l_NewCenter = self.m_InnerCircle:RandomInnerPoint(self.m_InnerCircle.m_Radius - l_NewRadius)
@@ -167,6 +170,25 @@ function PhaseManagerServer:ApplyDamage()
             end
         end
     end
+end
+
+function PhaseManagerServer:GetRandomInitialCenter()
+    local l_LevelName = LevelNameHelper:GetLevelName()
+
+    -- pick triangle index
+    local l_Rnd = MathUtils:GetRandom(0, 1)
+    local l_Index = 0
+    for l_CurrentIndex, l_Value in ipairs(MapsConfig[l_LevelName].InitialCircle.CumulativeDistribution) do
+        if l_Index < 1 and l_Value > l_Rnd then
+            l_Index = l_CurrentIndex
+        end
+    end
+
+    -- get random point from the triangle
+    local l_Triangle = MapsConfig[l_LevelName].InitialCircle.Triangles[l_Index]
+    local l_Center2 = MathHelper:RandomTrianglePoint(l_Triangle)
+
+    return Vec3(l_Center2.x, 0, l_Center2.y)
 end
 
 -- Starts the PhaseManager from the chat
