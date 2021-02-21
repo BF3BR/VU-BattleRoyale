@@ -28,6 +28,10 @@ function Armor:ApplyDamage(p_Damage)
     return l_DamagePassed
 end
 
+function Armor:GetPercentage()
+    return self.m_CurrentDurability / sefl.m_Type.Durability
+end
+
 function Armor:AsTable()
     return {
         Type = self.m_Type.Name,

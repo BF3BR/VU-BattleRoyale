@@ -185,13 +185,14 @@ end
 
 function BRTeamManager:CreateTeamWithPlayer(p_BrPlayer)
     local l_Team = self:CreateTeam()
-    l_Team:AddPlayer(p_BrPlayer)
 
     if p_BrPlayer.m_TeamJoinStrategy == TeamJoinStrategy.Custom then
         l_Team.m_Locked = false
     else
         l_Team.m_Locked = true
     end
+
+    l_Team:AddPlayer(p_BrPlayer)
 end
 
 -- Kills every player
