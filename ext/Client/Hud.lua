@@ -256,10 +256,9 @@ function VuBattleRoyaleHud:PushLocalPlayerTeam()
     self.m_HudOnUpdateTeamSize:Update(ServerConfig.PlayersPerTeam);
 
     if self.m_BrPlayer.m_Team ~= nil then
-        print(self.m_BrPlayer.m_Team.m_Locked)
         self.m_HudOnUpdateTeamId:Update(self.m_BrPlayer.m_Team.m_Id);
         self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked);
-        self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team.m_Players))
+        self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
     end
 end
 

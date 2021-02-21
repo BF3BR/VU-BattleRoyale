@@ -9,6 +9,13 @@ function Teammate:FromTable(p_TeammateTable)
     return Teammate(p_TeammateTable.Name, p_TeammateTable.State)
 end
 
+function Teammate:AsTable()
+    return {
+        Name = self.m_Name,
+        State = self.m_State
+    }
+end
+
 class "BRTeam"
 
 function BRTeam:__init(p_Id)
@@ -25,6 +32,8 @@ end
 function BRTeam:UpdateFromTable(p_BrTeamTable)
     self.m_Id = p_BrTeamTable.Id
 
+    self.m_Locked = p_BrTeamTable.Locked
+
     self.m_Players = {}
     for _, p_TeammateTable in ipairs(p_BrTeamTable.Players) do
         table.insert(self.m_Players, Teammate:FromTable(p_TeammateTable))
@@ -34,9 +43,20 @@ end
 function BRTeam.static:FromTable(p_BrTeamTable)
     local l_Team = BRTeam(p_BrTeamTable.Id)
 
+    l_Team.m_Locked = p_BrTeamTable.Locked
+
     for _, p_TeammateTable in ipairs(p_BrTeamTable.Players) do
         table.insert(l_Team.m_Players, Teammate:FromTable(p_TeammateTable))
     end
 
     return l_Team
+end
+
+function BRTeam:PlayersTable()
+    local l_PlayersData = {}
+    for _, p_Teammate in ipairs(self.m_Players) do
+        table.insert(l_PlayersData, p_Teammate:AsTable())
+    end
+
+    return l_PlayersData
 end
