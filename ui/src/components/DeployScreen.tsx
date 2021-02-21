@@ -1,34 +1,53 @@
 import React, { useState } from "react";
-import BrSelect from "./BrSelect";
+import { sendToLua } from "../Helpers";
+import Player from "../helpers/Player";
 
-import circle from "../assets/img/circle.svg";
+import arrow from "../assets/img/arrow.svg";
 
 import "./DeployScreen.scss";
 
 const AppearanceArray = [
-    {
-        value: 0,
-        label: "RU Woodland",
-    },
-    {
-        value: 1,
-        label: "US Woodland",
-    },
-    {
-        value: 2,
-        label: "RU Urban",
-    },
-    {
-        value: 3,
-        label: "US Urban",
-    }
+    "RU Woodland",
+    "US Woodland",
+    "RU Urban",
+    "US Urban",
 ];
 
-const DeployScreen: React.FC = () => {
+interface Props {
+    setDeployScreen: (bool: boolean) => void;
+    squad: Player[];
+    squadSize: number;
+}
+
+const DeployScreen: React.FC<Props> = ({ setDeployScreen, squad, squadSize }) => {
     const [selectedAppearance, setSelectedAppearance] = useState<number>(0);
 
-    const OnSelectAppearanceChange = (selected: string) => {
-        setSelectedAppearance(parseInt(selected));
+    const OnAppearanceRight = () => {
+        if (selectedAppearance === AppearanceArray.length - 1) {
+            setSelectedAppearance(0);
+        } else {
+            setSelectedAppearance(prevState => prevState + 1);
+        }
+    }
+
+    const OnAppearanceLeft = () => {
+        if (selectedAppearance === 0) {
+            setSelectedAppearance(Object.keys(AppearanceArray).length - 1);
+        } else {
+            setSelectedAppearance(prevState => prevState - 1);
+        }
+    }
+
+    const OnDeploy = () => {
+        sendToLua('WebUI:Deploy');
+        setDeployScreen(false);
+    }
+
+    const items = []
+    for (let index = 0; index < (squadSize - squad.length); index++) {
+        items.push(
+            <div className="SquadPlayer empty">No player...</div>
+        )
     }
 
     return (
@@ -44,23 +63,13 @@ const DeployScreen: React.FC = () => {
                     </div>
                     <div className="card-content">
                         <div className="SquadPlayers">
-                            <div className="SquadPlayer white">
-                                <div className="circle"></div>
-                                <span>KVN</span>
-                            </div>
-                            <div className="SquadPlayer red">
-                                <div className="circle"></div>
-                                <span>Gaben</span>
-                            </div>
-                            <div className="SquadPlayer blue">
-                                <div className="circle"></div>
-                                <span>Hideo Kojima</span>
-                            </div>
-                            <div className="SquadPlayer green">
-                                <div className="circle"></div>
-                                <span>Snoop Dogg</span>
-                            </div>
-                            <div className="SquadPlayer empty">No player...</div>
+                            {squad.map((player: Player, index: number) => (
+                                <div className={"SquadPlayer " + player.color.toString()} key={index}>
+                                    <div className="circle"></div>
+                                    <span>{player.name??''}</span>
+                                </div>
+                            ))}
+                            {items??''}
                         </div>
                     </div>
                 </div>
@@ -81,23 +90,18 @@ const DeployScreen: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="card AppearanceBox">
+                <div className="card AppearanceBox SquadBox">
                     <div className="card-header">
                         <h1>Appearance</h1>
                     </div>
                     <div className="card-content">
-                        <BrSelect 
-                            options={AppearanceArray} 
-                            onChangeSelected={(selected: string) => OnSelectAppearanceChange(selected)}
-                            selectValue={{
-                                value: AppearanceArray[selectedAppearance].value,
-                                label: AppearanceArray[selectedAppearance].label,
-                            }}
-                        />
+                        <button onClick={OnAppearanceLeft}><img src={arrow} className="left" /></button>
+                        <div className="AppearanceText">{AppearanceArray[selectedAppearance]}</div>
+                        <button onClick={OnAppearanceRight}><img src={arrow} className="right" /></button>
                     </div>
                 </div>
 
-                <button className="btn btn-full-width Deploy">
+                <button className="btn btn-full-width Deploy" onClick={OnDeploy}>
                     Ready
                 </button>
             </div>

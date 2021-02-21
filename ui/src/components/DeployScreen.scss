@@ -6,6 +6,7 @@
     width: 100vw;
     padding: 0;
     font-size: 0.8vw;
+    background: rgba(93, 152, 201, 0.15);
 
     .Title {
         position: relative;
@@ -144,12 +145,59 @@
                         margin-right: .5vw;
                         color: #d5dde5;
                 
+                        &:hover,
                         &:focus,
                         &:active {
                             border-color: #d5dde5;
                             outline: none;
                         }
                     }
+                }
+            }
+        }
+
+        &.AppearanceBox {
+            .card-content {
+                display: grid;
+                grid-template-columns: 15% 1fr 15%;
+                grid-gap: 0.15vw;
+
+                button {
+                    border-radius: 0;
+                    border: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    color: #fff;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    &:hover {
+                        background: rgba(0, 0, 0, 0.35);
+                    }
+
+                    &:hover,
+                    &:focus,
+                    &:active {
+                        outline: none;
+                    }
+
+                    img {
+                        width: 1.5vw;
+
+                        &.left {
+                            transform: rotate(180deg);
+                        }
+                    }
+                }
+
+                div {
+                    background: rgba(0, 0, 0, 0.5);
+                    color: #fff;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 3vw;
+                    font-size: 1vw;
                 }
             }
         }

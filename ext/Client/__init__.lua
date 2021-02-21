@@ -14,6 +14,7 @@ local m_UICleanup = require "UICleanup"
 local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
 local m_SpectatorCamera = require "SpectatorCamera"
+local m_Showroom = require "Showroom"
 
 function VuBattleRoyaleClient:__init()
     -- Extension events
@@ -116,6 +117,11 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_PlayersPitchAndYawEvent = NetEvents:Subscribe("VuBattleRoyale:PlayersPitchAndYaw", self, self.OnPlayersPitchAndYaw)
 
     self.m_ConfirmPlayerKillEvent = NetEvents:Subscribe("ConfirmPlayerKill", self, self.OnConfirmPlayerKill)
+
+    -- ==========
+    -- WebUI events
+    -- ==========
+    self.m_WebUIDeploy = Events:Subscribe('WebUI:Deploy', self, self.OnWebUIDeploy)
 end
 
 function VuBattleRoyaleClient:RegisterHooks()
@@ -149,6 +155,7 @@ end
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)
     m_SpectatorCamera:OnEngineUpdate(p_DeltaTime)
+    m_Showroom:EnableCamera()
 end
 
 function VuBattleRoyaleClient:OnUIDrawHud()
@@ -262,6 +269,10 @@ function VuBattleRoyaleClient:OnConfirmPlayerKill(p_Giver, p_PlayerName)
     end
 
     m_SpectatorCamera:OnPlayerKilled(s_Player, self.m_GameState)
+end
+
+function VuBattleRoyaleClient:OnWebUIDeploy()
+    NetEvents:Send("VuBattleRoyale:PlayerDeploy")
 end
 
 function VuBattleRoyaleClient:OnClientUpdateInput()

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 /* Helpers */
 import Vec3 from "./helpers/Vec3";
 import Circle from "./helpers/Circle";
-import Player from "./helpers/Player";
+import Player, { Color } from "./helpers/Player";
 
 /* Components */
 import ParaDropDistance from "./components/ParaDropDistance";
@@ -83,6 +83,7 @@ const App: React.FC = () => {
             name: 'KVN',
             kill: 15,
             alive: true,
+            color: Color.White,
         });
     }
 
@@ -210,7 +211,9 @@ const App: React.FC = () => {
     /*
     * Deploy screen
     */
-   const [deployScreen, setDeployScreen] = useState<boolean>(false);
+    const [deployScreen, setDeployScreen] = useState<boolean>(true);
+    const [squad, setSquad] = useState<Player[]>([]);
+    const [squadSize, setSquadSize] = useState<number>(4);
 
     return (
         <>
@@ -271,7 +274,11 @@ const App: React.FC = () => {
             <div id="VUBattleRoyale">
                 {deployScreen 
                 ?
-                    <DeployScreen />
+                    <DeployScreen
+                        setDeployScreen={setDeployScreen}
+                        squad={squad}
+                        squadSize={squadSize}
+                    />
                 :
                     <>
                         <KillAndAliveInfo
