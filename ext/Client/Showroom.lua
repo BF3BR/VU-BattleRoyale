@@ -43,7 +43,6 @@ function Showroom:EnableCamera()
         if s_CameraEntity.data.instanceGuid == Guid("528655FC-2653-4D5B-B55D-E6CBF997FC19") then
             s_CameraEntity = Entity(s_CameraEntity)
             s_CameraEntity:FireEvent("TakeControl")
-            self:SpawnCharacter()
             self.m_CameraEnabled = true
             return
         end
