@@ -29,7 +29,7 @@ function Armor:ApplyDamage(p_Damage)
 end
 
 function Armor:GetPercentage()
-    return self.m_CurrentDurability / sefl.m_Type.Durability
+    return self.m_CurrentDurability / self.m_Type.Durability
 end
 
 function Armor:AsTable()
