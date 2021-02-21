@@ -257,6 +257,7 @@ function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
     -- check if team/player not found
     if l_Team == nil or l_BrPlayer == nil then
         NetEvents:SendToLocal(TeamManagerNetEvents.TeamJoinDenied, p_Player, TeamManagerErrors.InvalidTeamId)
+        return
     end
 
     -- add player to the team

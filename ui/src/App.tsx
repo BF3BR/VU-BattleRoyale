@@ -90,7 +90,8 @@ const App: React.FC = () => {
     const [alertString, setAlertString] = useState<string | null>(null);
     const [alertPlaySound, setAlertPlaySound] = useState<boolean>(false);
 
-    const [playerHealth, setPlayerHealth] = useState<number>(45);
+    const [playerHealth, setPlayerHealth] = useState<number>(0);
+    const [playerArmor, setPlayerArmor] = useState<number>(0);
     const [playerPrimaryAmmo, setPlayerPrimaryAmmo] = useState<number>(0);
     const [playerSecondaryAmmo, setPlayerSecondaryAmmo] = useState<number>(0);
     const [playerCurrentWeapon, setPlayerCurrentWeapon] = useState<string>('');
@@ -98,6 +99,10 @@ const App: React.FC = () => {
 
     window.OnPlayerHealth = (data: number) => {
         setPlayerHealth(data);
+    }
+
+    window.OnPlayerArmor = (data: number) => {
+        setPlayerArmor(data);
     }
 
     window.OnPlayerPrimaryAmmo = (data: number) => {
@@ -212,8 +217,31 @@ const App: React.FC = () => {
     * Deploy screen
     */
     const [deployScreen, setDeployScreen] = useState<boolean>(true);
-    const [squad, setSquad] = useState<Player[]>([]);
-    const [squadSize, setSquadSize] = useState<number>(4);
+    window.ToggleDeployMenu = () => {
+        setDeployScreen(prevState => !prevState);
+    }
+
+
+
+    const [team, setTeam] = useState<Player[]>([]);
+    window.OnUpdateTeamPlayers = (p_Team: any) => {
+        console.log(p_Team);
+    }
+
+    const [teamId, setTeamId] = useState<string>('-');
+    window.OnUpdateTeamId = (p_Id: string) => {
+        setTeamId(p_Id);
+    }
+
+    const [teamSize, setTeamSize] = useState<number>(4);
+    window.OnUpdateTeamSize = (p_Size: number) => {
+        setTeamSize(p_Size);
+    }
+
+    const [teamLocked, setTeamLocked] = useState<boolean>(false);
+    window.OnUpdateTeamLocked = (p_Locked: boolean) => {
+        setTeamLocked(p_Locked);
+    }
 
     return (
         <>
@@ -276,8 +304,11 @@ const App: React.FC = () => {
                 ?
                     <DeployScreen
                         setDeployScreen={setDeployScreen}
-                        squad={squad}
-                        squadSize={squadSize}
+                        squad={team}
+                        squadSize={teamSize}
+                        squadOpen={teamLocked}
+                        isSquadLeader={true} //TODO: Wire to lua
+                        squadCode={teamId??'-'}
                     />
                 :
                     <>
@@ -312,6 +343,7 @@ const App: React.FC = () => {
                             <>
                                 <AmmoAndHealthCounter
                                     playerHealth={playerHealth}
+                                    playerArmor={playerArmor}
                                     playerPrimaryAmmo={playerPrimaryAmmo}
                                     playerSecondaryAmmo={playerSecondaryAmmo}
                                     playerCurrentWeapon={playerCurrentWeapon}
@@ -363,21 +395,33 @@ declare global {
     interface Window {
         OnPlayerPos: (p_DataJson: any) => void;
         OnPlayerYaw: (p_YawRad: number) => void;
+
         OnMapSizeChange: () => void;
         OnMapShow: (show: boolean) => void;
         OnUpdateCircles: (data: any) => void;
         OnGameState: (state: string) => void;
         OnUpdateTimer: (time: number) => void;
+
         OnPlayersInfo: (data: any) => void;
         OnLocalPlayerInfo: (data: any) => void;
         OnMinPlayersToStart: (minPlayersToStart: number) => void;
+
         OnPlayerHealth: (data: number) => void;
+        OnPlayerArmor: (data: number) => void;
         OnPlayerPrimaryAmmo: (data: number) => void;
         OnPlayerSecondaryAmmo: (data: number) => void;
         OnPlayerCurrentWeapon: (data: string) => void;
         OnPlayerWeapons: (data: any) => void;
         OnPlayerIsInPlane: (isInPlane: boolean) => void;
+
         SpectatorTarget: (p_TargetName: string) => void;
         SpectatorEnabled: (p_Enabled: boolean) => void;
+
+        OnUpdateTeamId: (p_Id: string) => void;
+        OnUpdateTeamSize: (p_Size: number) => void;
+        OnUpdateTeamLocked: (p_Locked: boolean) => void;
+        OnUpdateTeamPlayers: (p_Team: any) => void;
+
+        ToggleDeployMenu: () => void;
     }
 }

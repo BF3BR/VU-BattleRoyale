@@ -7,12 +7,13 @@ import "./AmmoAndHealthCounter.scss";
 
 interface Props {
     playerHealth: number;
+    playerArmor: number;
     playerPrimaryAmmo: number;
     playerSecondaryAmmo: number;
     playerCurrentWeapon: string;
 }
 
-const AmmoAndHealthCounter: React.FC<Props> = ({ playerHealth, playerPrimaryAmmo, playerSecondaryAmmo, playerCurrentWeapon }) => {
+const AmmoAndHealthCounter: React.FC<Props> = ({ playerHealth, playerArmor, playerPrimaryAmmo, playerSecondaryAmmo, playerCurrentWeapon }) => {
     const [visible, setVisible] = useState<boolean>(false);
 
     const padLeadingZeros = (num: number, playerCurrentWeapon: string) => {
@@ -70,8 +71,8 @@ const AmmoAndHealthCounter: React.FC<Props> = ({ playerHealth, playerPrimaryAmmo
                         <span className="type">AUTO</span>
                     </div>
                 </div>
-                <PercentageCounter type="Armor" value={35} />
-                <PercentageCounter type="Health" value={playerHealth} />
+                <PercentageCounter type="Armor" value={playerArmor??0} />
+                <PercentageCounter type="Health" value={playerHealth??0} />
             </div>
             
         </>

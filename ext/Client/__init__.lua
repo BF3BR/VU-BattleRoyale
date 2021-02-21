@@ -112,16 +112,17 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_JumpOutOfGunshipNetEvent = NetEvents:Subscribe("JumpOutOfGunship", self, self.OnJumpOutOfGunship)
     self.m_GunshipPositionNetEvent = NetEvents:Subscribe("GunshipPosition", self, self.OnGunshipPosition)
     self.m_GunshipYawNetEvent = NetEvents:Subscribe("GunshipYaw", self, self.OnGunshipYaw)
-    
-
     self.m_PlayersPitchAndYawEvent = NetEvents:Subscribe("VuBattleRoyale:PlayersPitchAndYaw", self, self.OnPlayersPitchAndYaw)
 
-    self.m_ConfirmPlayerKillEvent = NetEvents:Subscribe("ConfirmPlayerKill", self, self.OnConfirmPlayerKill)
+    self.m_ConfirmPlayerKillEvent = NetEvents:Subscribe("ConfirmPlayerKill", self, self.OnConfirmPlayerKill) -- TODO: we might not need this
 
     -- ==========
     -- WebUI events
     -- ==========
     self.m_WebUIDeploy = Events:Subscribe('WebUI:Deploy', self, self.OnWebUIDeploy)
+    self.m_WebUISetTeamJoinStrategy = Events:Subscribe('WebUI:SetTeamJoinStrategy', self, self.OnWebUISetTeamJoinStrategy)
+    self.m_WebUIToggleLock = Events:Subscribe('WebUI:ToggleLock', self, self.OnWebUIToggleLock)
+    self.m_WebUIJoinTeam = Events:Subscribe('WebUI:JoinTeam', self, self.OnWebUIJoinTeam)
 end
 
 function VuBattleRoyaleClient:RegisterHooks()
@@ -159,7 +160,7 @@ function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUIDrawHud()
-    m_Hud:OnUIDrawHud()
+    m_Hud:OnUIDrawHud(self.m_BrPlayer)
 end
 
 function VuBattleRoyaleClient:OnExtensionUnloading()
@@ -275,9 +276,43 @@ function VuBattleRoyaleClient:OnWebUIDeploy()
     NetEvents:Send("VuBattleRoyale:PlayerDeploy")
 end
 
+function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)
+    if self.m_BrPlayer == nil then
+        return
+    end
+
+    print('OnWebUISetTeamJoinStrategy')
+    print(p_Strategy)
+
+    self.m_BrPlayer:SetTeamJoinStrategy(p_Strategy)
+end
+
+function VuBattleRoyaleClient:OnWebUIToggleLock()
+    if self.m_BrPlayer == nil then
+        return
+    end
+
+    print('OnWebUIToggleLock')
+
+    self.m_BrPlayer:ToggleLock()
+end
+
+
+function VuBattleRoyaleClient:OnWebUIJoinTeam(p_Id)
+    if self.m_BrPlayer == nil or p_Id == nil or p_Id == "" then
+        return
+    end
+
+    print('OnWebUIJoinTeam')
+    print(p_Id)
+
+    self.m_BrPlayer:JoinTeam(p_Id)
+end
+
 function VuBattleRoyaleClient:OnClientUpdateInput()
     m_Gunship:OnClientUpdateInput()
     m_SpectatorCamera:OnClientUpdateInput()
+    m_Hud:OnClientUpdateInput()
 end
 
 function VuBattleRoyaleClient:OnPhaseManagerUpdate(p_Data)

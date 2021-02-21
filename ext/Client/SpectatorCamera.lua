@@ -82,7 +82,7 @@ function SpectatorCamera:OnPlayerDeleted(p_Player)
 	end
 end
 
-function SpectatorCamera:OnClientUpdateInput(p_DeltaTime)
+function SpectatorCamera:OnClientUpdateInput()
     if self:IsEnabled() then
         if InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight) then
             self:SpectateNextPlayer()

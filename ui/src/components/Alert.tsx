@@ -31,9 +31,10 @@ const Alert: React.FC<Props> = ({ alert, afterInterval, playSound }) => {
             } else {
                 objectiveAudio.play();
             }
+            
             const interval = setInterval(() => {
                 afterInterval();
-            }, 888000);
+            }, 8000);
 
             return () => {
                 alertAudio.currentTime = 0.0;

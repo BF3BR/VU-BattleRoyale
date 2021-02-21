@@ -8,22 +8,6 @@
     font-size: 0.8vw;
     background: rgba(93, 152, 201, 0.15);
 
-    .Title {
-        position: relative;
-        font-size: 2.5vw;
-        margin-bottom: 3vw;
-
-        &::after {
-            content: "";
-            position: absolute;
-            bottom: -1vw;
-            left: 0;
-            width: 25%;
-            height: 0.15vw;
-            background: #fff;
-        }
-    }
-
     .DeployBox {
         position: absolute;
         top: 50%;
@@ -41,6 +25,19 @@
             background-color: rgba(7, 7, 7, 0.6);
             text-transform: uppercase;
             font-size: 2vw;
+            text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.35);
+        }
+
+        .TeamType {
+            position: relative;
+            display: inline-block;
+            line-height: .8;
+            margin: 0 0 1vw 1vw;
+            padding: .5vw .5vw .7vw;
+            color: #fff;
+            background-color: rgba(255, 153, 0, 0.6);
+            text-transform: uppercase;
+            font-size: .8vw;
             text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.35);
         }
     }
@@ -200,6 +197,10 @@
                     font-size: 1vw;
                 }
             }
+        }
+        
+        &.TeamTypeBox {
+            margin-bottom: 1vw;
         }
     }
 

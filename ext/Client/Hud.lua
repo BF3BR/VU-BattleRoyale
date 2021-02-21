@@ -20,16 +20,27 @@ function VuBattleRoyaleHud:__init()
     self.m_HudOnMinPlayersToStart = CachedJsExecutor("OnMinPlayersToStart(%s)", nil)
 
     self.m_HudOnPlayerHealth = CachedJsExecutor("OnPlayerHealth(%s)", 0)
+    self.m_HudOnPlayerArmor = CachedJsExecutor("OnPlayerArmor(%s)", 0)
     self.m_HudOnPlayerPrimaryAmmo = CachedJsExecutor("OnPlayerPrimaryAmmo(%s)", 0)
     self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
     self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", '')
     self.m_HudOnPlayerWeapons = CachedJsExecutor("OnPlayerWeapons(%s)", nil)
+
+    -- Syncs up BrTeam if needed
+    self.m_HudOnUpdateTeamPlayers = CachedJsExecutor("OnUpdateTeamPlayers(%s)", nil)
+    self.m_HudOnUpdateTeamLocked = CachedJsExecutor("OnUpdateTeamLocked(%s)", false)
+    self.m_HudOnUpdateTeamId = CachedJsExecutor("OnUpdateTeamId('%s')", '-')
+    self.m_HudOnUpdateTeamSize = CachedJsExecutor("OnUpdateTeamSize(%s)", 0)
 
     self.m_IsPlayerOnPlane = false
     self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
     self.m_HudOnPlanePosition = CachedJsExecutor("OnPlanePosition(%s)", nil)
 
     self.m_Ticks = 0.0
+
+    self.m_BrPlayer = nil
+
+    self.m_HudLoaded = false
 end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
@@ -39,14 +50,28 @@ end
 
 function VuBattleRoyaleHud:OnLevelFinalized(p_LevelName, p_GameMode)
     WebUI:Show()
+    self.m_HudLoaded = true
 end
 
 function VuBattleRoyaleHud:OnLevelDestroy()
     WebUI:Hide()
 end
 
+function VuBattleRoyaleHud:OnClientUpdateInput()
+    if not self.m_HudLoaded then
+        return
+    end
+
+    if InputManager:IsKeyDown(InputDeviceKeys.IDK_F10) then
+        WebUI:ExecuteJS("ToggleDeployMenu();")
+    end
+end
 
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
+    if not self.m_HudLoaded then
+        return
+    end
+
     if self.m_Ticks >= ServerConfig.HudUpdateTime then
         self.m_HudOnMinPlayersToStart:Update(ServerConfig.MinPlayersToStart)
         self:PushUpdatePlayersInfo()
@@ -67,10 +92,23 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
     self.m_HudOnGameState:Update(GameStatesStrings[p_GameState])
 end
 
-function VuBattleRoyaleHud:OnUIDrawHud()
+function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
+    if not self.m_HudLoaded then
+        return
+    end
+
+    if self.m_BrPlayer == nil then
+        if p_BrPlayer == nil then
+            return
+        end
+
+        self.m_BrPlayer = p_BrPlayer
+    end
+
     self:PushLocalPlayerPos()
     self:PushLocalPlayerYaw()
-    self:PushLocalPlayerAmmoAndHealth()
+    self:PushLocalPlayerAmmoArmorAndHealth()
+    self:PushLocalPlayerTeam()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
@@ -174,7 +212,11 @@ function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
     self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
 end
 
-function VuBattleRoyaleHud:PushLocalPlayerAmmoAndHealth()
+function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
+    if self.m_BrPlayer == nil then
+        return
+    end
+
     local s_LocalPlayer = PlayerManager:GetLocalPlayer()
     if s_LocalPlayer == nil then
         return
@@ -197,12 +239,28 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoAndHealth()
     end
 
     self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
+    self.m_HudOnPlayerArmor:Update(self.m_BrPlayer.m_Armor:GetPercentage())
     self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
     self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
     self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
     self.m_HudOnPlayerWeapons:Update(json.encode(s_Inventory))
     --self.m_HudOnPlayerCurrentSlot:Update(s_LocalSoldier.weaponsComponent.currentWeaponSlot)
     return
+end
+
+function VuBattleRoyaleHud:PushLocalPlayerTeam()
+    if self.m_BrPlayer == nil then
+        return
+    end
+
+    self.m_HudOnUpdateTeamSize:Update(ServerConfig.PlayersPerTeam);
+
+    if self.m_BrPlayer.m_Team ~= nil then
+        print(self.m_BrPlayer.m_Team.m_Locked)
+        self.m_HudOnUpdateTeamId:Update(self.m_BrPlayer.m_Team.m_Id);
+        self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked);
+        self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team.m_Players))
+    end
 end
 
 function VuBattleRoyaleHud:OnGunShipCamera()
