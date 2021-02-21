@@ -20,9 +20,7 @@ end
 
 function Showroom:OnShowRoomBlueprint(p_Instance)
     local s_Instance = ReferenceObjectData(p_Instance)
-    --print(s_Instance.blueprintTransform)
 end
-
 
 function Showroom:OnShowRoomCamera(p_Instance)
     local s_Instance = CameraEntityData(p_Instance)

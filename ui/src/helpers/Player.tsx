@@ -6,7 +6,6 @@ export enum Color {
 }
 
 export interface Player {
-    id?: number,
     name: string;
     kill: number;
     alive: boolean;

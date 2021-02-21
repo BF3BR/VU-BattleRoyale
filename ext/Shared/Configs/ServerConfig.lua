@@ -1,7 +1,7 @@
 ServerConfig = 
 {
     -- Minimum ammounts of players to start the warmup and then the match
-    MinPlayersToStart = 2,
+    MinPlayersToStart = 6,
 
     -- Number of player per team
     PlayersPerTeam = 2,

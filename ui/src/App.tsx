@@ -79,7 +79,6 @@ const App: React.FC = () => {
 
     const SetDummyLocalPlayer = () => {
         setLocalPlayer({
-            id: 1,
             name: 'KVN',
             kill: 15,
             alive: true,
@@ -225,7 +224,18 @@ const App: React.FC = () => {
 
     const [team, setTeam] = useState<Player[]>([]);
     window.OnUpdateTeamPlayers = (p_Team: any) => {
-        console.log(p_Team);
+        let tempTeam: Player[] = [];
+        if (p_Team !== undefined && p_Team.length > 0) {
+            p_Team.map((teamPlayer: any) =>
+                tempTeam.push({
+                    name: teamPlayer.Name,
+                    alive: (teamPlayer.State === 3),
+                    kill: 0,
+                    color: Color.White,
+                })
+            );
+        }
+        setTeam(tempTeam);
     }
 
     const [teamId, setTeamId] = useState<string>('-');
@@ -304,11 +314,11 @@ const App: React.FC = () => {
                 ?
                     <DeployScreen
                         setDeployScreen={setDeployScreen}
-                        squad={team}
-                        squadSize={teamSize}
-                        squadOpen={teamLocked}
-                        isSquadLeader={true} //TODO: Wire to lua
-                        squadCode={teamId??'-'}
+                        team={team}
+                        teamSize={teamSize}
+                        teamOpen={teamLocked}
+                        isTeamLeader={true} //TODO: Wire to lua
+                        teamCode={teamId??'-'}
                     />
                 :
                     <>

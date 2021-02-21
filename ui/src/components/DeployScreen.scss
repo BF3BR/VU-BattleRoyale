@@ -43,14 +43,40 @@
     }
 
     .card {
-        &.SquadBox {
+        &.TeamBox {
+            #TeamOpenClose {
+                margin: 0 1vw 0 0;
+                float: right;
+                color: #ff9f80;
+                text-shadow: 0 0 .5vw rgba(255, 159, 128, 0.4);
+
+                &.isOpen {
+                    color: rgb(158, 197, 85);
+                    text-shadow: 0 0 .5vw rgba(158, 197, 85, 0.4);
+                }
+
+                input {
+                    visibility: hidden;
+                    margin: 0;
+                    padding: 0;
+                    height: 1px;
+                    width: 1px;
+                    opacity: 0;
+                }
+
+                img {
+                    width: .65vw;
+                    margin: 0 0.15vw 0 0;
+                }
+            }
+
             .card-content {
                 margin-bottom: 1vw;
                 background: transparent;
                 padding: 0;
 
-                .SquadPlayers {
-                    .SquadPlayer {
+                .TeamPlayers {
+                    .TeamPlayer {
                         width: auto;
                         height: 3vw;
                         padding: 0 1.25vw;
@@ -124,11 +150,10 @@
                     }
                 }
         
-                .SquadForm {
+                .TeamForm {
                     width: auto;
                     display: flex;
-                    background-color: rgba(7, 7, 7, 0.5);
-                    padding: .75vw 1vw;
+                    padding: 0;
         
                     input {
                         box-sizing: border-box;
@@ -148,7 +173,26 @@
                             border-color: #d5dde5;
                             outline: none;
                         }
+
+                        &.isError {
+                            border-color: rgb(199, 34, 34);
+                            color: rgb(199, 34, 34);
+                        }
                     }
+                }
+            }
+        }
+
+        &.TeamJoinBox {
+            .card-content {
+                background-color: rgba(7, 7, 7, 0.5);
+                padding: .75vw 1vw;
+
+                .JoinCodeError {
+                    display: flex;
+                    margin: .35vw 0 0;
+                    font-size: .75vw;
+                    color: rgb(199, 34, 34);
                 }
             }
         }
@@ -157,7 +201,7 @@
             .card-content {
                 display: grid;
                 grid-template-columns: 15% 1fr 15%;
-                grid-gap: 0.15vw;
+                grid-gap: 0.1vw;
 
                 button {
                     border-radius: 0;

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { sendToLua } from "../Helpers";
 import Player from "../helpers/Player";
+import BrSelect from "./BrSelect";
 
 import arrow from "../assets/img/arrow.svg";
+import lock from "../assets/img/lock.svg";
+import lockOpen from "../assets/img/lock-open.svg";
 
 import "./DeployScreen.scss";
-import BrSelect from "./BrSelect";
 
 const AppearanceArray = [
     "RU Woodland",
@@ -31,14 +33,14 @@ const TeamType = [
 
 interface Props {
     setDeployScreen: (bool: boolean) => void;
-    squad: Player[];
-    squadSize: number;
-    squadOpen: boolean;
-    isSquadLeader: boolean;
-    squadCode: string|null;
+    team: Player[];
+    teamSize: number;
+    teamOpen: boolean;
+    isTeamLeader: boolean;
+    teamCode: string|null;
 }
 
-const DeployScreen: React.FC<Props> = ({ setDeployScreen, squad, squadSize, squadOpen, isSquadLeader, squadCode }) => {
+const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOpen, isTeamLeader, teamCode }) => {
     const [selectedAppearance, setSelectedAppearance] = useState<number>(0);
     const [selectedTeamType, setSelectedTeamType] = useState<number>(0);
 
@@ -63,7 +65,7 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, squad, squadSize, squa
         setDeployScreen(false);
     }
 
-    const OnSquadOpenClose = () => {
+    const OnTeamOpenClose = () => {
         sendToLua('WebUI:ToggleLock'); // synced
     }
 
@@ -73,9 +75,10 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, squad, squadSize, squa
     }
 
     const [joinCode, setJoinCode] = useState<string>('');
+    const [joinCodeError, setJoinCodeError] = useState<boolean>(false);
 
     const handleJoinCodeChange = (event: any) => {
-        console.log(event);
+        setJoinCodeError(false);
         setJoinCode(event.target.value);
     }
 
@@ -97,9 +100,9 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, squad, squadSize, squa
     }
 
     const items = []
-    for (let index = 0; index < (squadSize - squad.length); index++) {
+    for (let index = 0; index < (teamSize - team.length); index++) {
         items.push(
-            <div className="SquadPlayer empty" key={index}>No player...</div>
+            <div className="TeamPlayer empty" key={index}>No player...</div>
         )
     }
 
@@ -126,9 +129,9 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, squad, squadSize, squa
             <div className="DeployBox">
                 <h1 className="PageTitle">Battle Royale</h1>
 
-                <h3 className="TeamType">Squad size: {squadSize??1}</h3>
+                <h3 className="TeamType">Team size: {teamSize??1}</h3>
 
-                {squadSize > 1 && 
+                {teamSize > 1 && 
                     <div className="card TeamTypeBox">
                         <div className="card-header">
                             <h1>Team type</h1>
@@ -148,27 +151,40 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, squad, squadSize, squa
 
                 {selectedTeamType === 2 && // Custom
                     <>
-                        <div className="card SquadBox">
+                        <div className="card TeamBox">
                             <div className="card-header">
                                 <h1>
-                                    Your Squad
-                                    <label>
+                                    Your Team                                    
+                                    <span>Code: <b>{teamCode??''}</b></span>
+                                    <label id="TeamOpenClose" className={teamOpen ? "isOpen" : "isClose"}>
+                                        {teamOpen ?
+                                            <img src={lockOpen} alt="Open" />
+                                        :
+                                            <img src={lock} alt="Locked" />
+                                        }
                                         <input
-                                            name="squadOpen"
+                                            name="teamOpen"
                                             type="checkbox"
-                                            disabled={!isSquadLeader}
-                                            checked={squadOpen}
-                                            onChange={OnSquadOpenClose}
+                                            disabled={!isTeamLeader}
+                                            checked={teamOpen}
+                                            onChange={OnTeamOpenClose}
                                         />
+                                        {teamOpen ?
+                                            <>
+                                                Open
+                                            </>
+                                        :
+                                            <>
+                                                Closed
+                                            </>
+                                        }
                                     </label>
-                                    Open
-                                    <span>Code: <b>{squadCode??''}</b></span>
                                 </h1>
                             </div>
                             <div className="card-content">
-                                <div className="SquadPlayers">
-                                    {squad.map((player: Player, index: number) => (
-                                        <div className={"SquadPlayer " + player.color.toString()} key={index}>
+                                <div className="TeamPlayers">
+                                    {team.map((player: Player, index: number) => (
+                                        <div className={"TeamPlayer " + player.color.toString()} key={index}>
                                             <div className="circle"></div>
                                             <span>{player.name??''}</span>
                                         </div>
@@ -178,31 +194,35 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, squad, squadSize, squa
                             </div>
                         </div>
 
-                        <div className="card SquadBox">
+                        <div className="card TeamBox TeamJoinBox">
                             <div className="card-header">
                                 <h1>
-                                    Join a squad
+                                    Join a team
                                 </h1>
                             </div>
                             <div className="card-content">
-                                <div className="SquadForm">
+                                <div className="TeamForm">
                                     <input 
                                         type="text" 
-                                        placeholder="Enter a Code to join a squad..." 
+                                        placeholder="Enter a Code to join a team..." 
                                         value={joinCode} 
                                         onChange={handleJoinCodeChange} 
                                         onFocus={handleFocus}
+                                        className={joinCodeError ? 'isError' : ''}
                                     />
                                     <button className="btn btn-primary btn-small" onClick={OnJoinTeam}>
                                         Join
                                     </button>
                                 </div>
+                                {joinCodeError &&
+                                    <span className="JoinCodeError">No team found with this code...</span>
+                                }
                             </div>
                         </div>
                     </>
                 }
 
-                <div className="card AppearanceBox SquadBox">
+                <div className="card AppearanceBox TeamBox">
                     <div className="card-header">
                         <h1>Appearance</h1>
                     </div>

@@ -281,9 +281,6 @@ function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)
         return
     end
 
-    print('OnWebUISetTeamJoinStrategy')
-    print(p_Strategy)
-
     self.m_BrPlayer:SetTeamJoinStrategy(p_Strategy)
 end
 
@@ -291,8 +288,6 @@ function VuBattleRoyaleClient:OnWebUIToggleLock()
     if self.m_BrPlayer == nil then
         return
     end
-
-    print('OnWebUIToggleLock')
 
     self.m_BrPlayer:ToggleLock()
 end
@@ -302,10 +297,7 @@ function VuBattleRoyaleClient:OnWebUIJoinTeam(p_Id)
     if self.m_BrPlayer == nil or p_Id == nil or p_Id == "" then
         return
     end
-
-    print('OnWebUIJoinTeam')
-    print(p_Id)
-
+    
     self.m_BrPlayer:JoinTeam(p_Id)
 end
 
