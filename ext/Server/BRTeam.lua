@@ -1,8 +1,6 @@
+require "__shared/Configs/ServerConfig"
 require "__shared/Helpers/MapHelper"
 require "__shared/Enums/TeamManagerEvents"
-
--- TODO move this to config
-local MAX_NUMBER_OF_PLAYERS = 2
 
 class "BRTeam"
 
@@ -26,8 +24,8 @@ end
 
 -- Adds a player to the team
 function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
-    -- check if team is full
-    if self:IsFull() then
+    -- check if team is full or in game
+    if self:IsFull() or self.m_Active then
         return false
     end
 
@@ -84,13 +82,8 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 end
 
 function BRTeam:Merge(p_OtherTeam)
-    -- if self:PlayersNumber() < p_OtherTeam:PlayersNumber() then
-    --     p_OtherTeam:Merge(self)
-    --     return
-    -- end
-
     -- check if merge is possible
-    if self:PlayersNumber() + p_OtherTeam:PlayersNumber() > MAX_NUMBER_OF_PLAYERS then
+    if self:PlayersNumber() + p_OtherTeam:PlayersNumber() > ServerConfig.PlayersPerTeam then
         return false
     end
 
@@ -102,6 +95,12 @@ function BRTeam:Merge(p_OtherTeam)
     self:BroadcastState()
 
     return true
+end
+
+function BRTeam:ToggleLock()
+    -- TODO maybe add a check for squad leader only
+    self.m_Locked = not self.m_Locked
+    self:BroadcastState()
 end
 
 -- Applies team/squad ids to each player of the team
@@ -117,7 +116,7 @@ end
 
 -- Checks if the team is full and has no space for more players
 function BRTeam:IsFull()
-    return MapHelper:Size(self.m_Players) >= MAX_NUMBER_OF_PLAYERS
+    return MapHelper:Size(self.m_Players) >= ServerConfig.PlayersPerTeam
 end
 
 -- Checks if the team has any players
@@ -142,27 +141,35 @@ function BRTeam:HasAlivePlayers(p_PlayerToIgnore)
 end
 
 function BRTeam:BroadcastState()
+    local l_TeamData = self:AsTable()
     for _, l_BrPlayer in pairs(self.m_Players) do
-        l_BrPlayer:SendState()
+        l_BrPlayer:SendState(false, l_TeamData)
     end
 end
 
 function BRTeam:AsTable()
-    -- TODO
+    local l_Players = {}
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        table.insert(l_Players, l_BrPlayer:AsTable(true))
+    end
+
+    return {Id = self.m_Id, Locked = self.m_Locked, Players = l_Players}
 end
 
 function BRTeam:Equals(p_OtherTeam)
     return p_OtherTeam ~= nil and self.m_Id == p_OtherTeam.m_Id
 end
 
+-- `==` metamethod
 function BRTeam:__eq(p_OtherTeam)
     return self:Equals(p_OtherTeam)
 end
 
+-- Destroys the `BRTeam` instance
 function BRTeam:Destroy()
     -- force remove all players from the team
     for l_Name, l_BrPlayer in pairs(self.m_Players) do
-        l_BrPlayer:LeaveTeam()
+        l_BrPlayer:LeaveTeam(true)
         self.m_Players[l_Name] = nil
 
         -- move removed player to another team
@@ -172,6 +179,7 @@ function BRTeam:Destroy()
     self.m_Players = {}
 end
 
+-- garbage collector metamethod
 function BRTeam:__gc()
     self:Destroy()
 end

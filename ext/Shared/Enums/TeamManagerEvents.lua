@@ -5,7 +5,11 @@ TeamManagerNetEvents = {
     RequestTeamJoin = "TM:RTJ",
     TeamJoinDenied = "TM:TJD",
     TeamLeave = "TM:TL",
-    TeamJoinStrategy = "TM:TJS"
+    TeamJoinStrategy = "TM:TJS",
+    TeamToggleLock = "TM:TTL",
+    PlayerState = "TM:PS",
+    PlayerArmorState = "TM:PAS",
+    PlayerTeamState = "TM:PTS"
 }
 
 TeamManagerCustomEvents = {
