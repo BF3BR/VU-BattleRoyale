@@ -74,10 +74,6 @@ function VuBattleRoyaleServer:UnregisterEvents()
 end
 
 function VuBattleRoyaleServer:RegisterHooks()
-    -- Team and Squad management
-    self.m_PlayerFindBestSquadHook = Hooks:Install("Player:FindBestSquad", 1, self, self.OnPlayerFindBestSquad)
-    self.m_PlayerSelectTeamHook = Hooks:Install("Player:SelectTeam", 1, self, self.OnPlayerSelectTeam)
-    
     -- Damage hook
     -- self.m_SoldierDamageHook = Hooks:Install("Soldier:Damage", 1, self, self.OnSoldierDamage)
 end
@@ -116,16 +112,6 @@ end
 function VuBattleRoyaleServer:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
     -- Update the match
     self.m_Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
-end
-
-function VuBattleRoyaleServer:OnPlayerFindBestSquad(p_Hook, p_Player)
-    -- TODO
-end
-
-function VuBattleRoyaleServer:OnPlayerSelectTeam(p_Hook, p_Player, p_Team)
-    -- TODO
-    -- p_Team is R/W
-    -- p_Player is RO
 end
 
 function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_GiverInfo)

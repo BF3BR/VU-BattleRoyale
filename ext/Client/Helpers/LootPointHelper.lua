@@ -1,9 +1,9 @@
 class 'LootPointHelper'
 
-require ("__shared/Helpers/LevelNameHelper")
-
-require ("__shared/Configs/MapsConfig")
-require ("__shared/Configs/ServerConfig")
+require "__shared/Helpers/LevelNameHelper"
+require "__shared/Utils/EventRouter"
+require "__shared/Configs/MapsConfig"
+require "__shared/Configs/ServerConfig"
 
 function LootPointHelper:__init()
     self.m_Points = {}
@@ -15,7 +15,7 @@ function LootPointHelper:__init()
 
     if ServerConfig["Debug"]["EnableLootPointSpheres"] then
         self.m_LevelLoadedEvent = Events:Subscribe('Level:Loaded', self, self.OnLevelLoaded)
-        self.m_UIDrawHudEvent = Events:Subscribe('UI:DrawHud', self, self.OnUIDrawHud)
+        self.m_UIDrawHudEvent = Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUIDrawHud)
         self.m_PlayerUpdateInputEvent = Events:Subscribe('Player:UpdateInput', self, self.OnPlayerUpdateInput)
         self.m_UpdateManagerUpdateEvent = Events:Subscribe('UpdateManager:Update', self, self.OnUpdateManagerUpdate)
     end

@@ -4,6 +4,7 @@ require "__shared/Helpers/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/PhaseManagerEvents"
+require "__shared/Utils/EventRouter"
 require "Helpers/LootPointHelper"
 require "PhaseManagerClient"
 require "ClientCommands"
@@ -91,7 +92,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_ClientUpdateInputEvent = Events:Subscribe("Client:UpdateInput", self, self.OnClientUpdateInput)
 
     -- UI Events
-    self.m_UIDrawHudEvent = Events:Subscribe("UI:DrawHud", self, self.OnUIDrawHud)
+    self.m_UIDrawHudEvent = Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUIDrawHud)
 
     self.m_ExtensionUnloadingEvent = Events:Subscribe('Extension:Unloading', self, self.OnExtensionUnloading)
 

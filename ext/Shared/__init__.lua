@@ -4,6 +4,7 @@ require "__shared/Helpers/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
 require "__shared/DropWeapons"
 require "__shared/RemoveVehicles"
+require "__shared/Utils/EventRouter"
 -- require "__shared/InteractiveManDown"
 
 function VuBattleRoyaleShared:__init()

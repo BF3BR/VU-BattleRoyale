@@ -1,6 +1,7 @@
 require "__shared/Configs/CircleConfig"
 require "__shared/Enums/PhaseManagerEvents"
 require "__shared/Utils/Timers"
+require "__shared/Utils/EventRouter"
 require "__shared/PhaseManagerShared"
 require "__shared/Circle"
 require "Visuals/IOCVision"
@@ -28,8 +29,8 @@ function PhaseManagerClient:RegisterEvents()
     PhaseManagerShared.RegisterEvents(self)
 
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
-    Events:Subscribe("UpdateManager:Update", self, self.OnPreSim)
-    Events:Subscribe("UI:DrawHud", self, self.OnRender)
+    Events:Subscribe("UpdatePass_PreSim", self, self.OnPreSim)
+    Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnRender)
     NetEvents:Subscribe(PhaseManagerNetEvents.UpdateState, self, self.OnUpdateState)
 end
 
@@ -74,8 +75,8 @@ function PhaseManagerClient:OnUpdateState(p_State)
 end
 
 -- 
-function PhaseManagerClient:OnPreSim(p_DeltaTime, p_UpdatePass)
-    if p_UpdatePass ~= UpdatePass.UpdatePass_PreSim or self:IsIdle() then
+function PhaseManagerClient:OnPreSim(p_DeltaTime)
+    if self:IsIdle() then
         return
     end
 

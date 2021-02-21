@@ -1,6 +1,7 @@
 class "PingClient"
 
 require "__shared/Enums/PingEvents"
+require "__shared/Utils/EventRouter"
 
 function PingClient:__init()
     self.m_LastPing = Vec3(0, 0, 0)
@@ -22,7 +23,7 @@ function PingClient:__init()
     -- Events
     self.m_PingNotifyEvent = NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
     self.m_PingUpdateConfigEvent = NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig)
-    self.m_UiDrawHudEvent = Events:Subscribe("UI:DrawHud", self, self.OnUiDrawHud)
+    self.m_UiDrawHudEvent = Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUiDrawHud)
     self.m_EngineUpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
     self.m_UpdateManagerUpdateEvent = Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
