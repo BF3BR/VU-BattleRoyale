@@ -1,65 +1,36 @@
-/*@font-face {
-    font-family: 'Blinker';
-    src: url('./assets/font/Blinker-ExtraLight.woff2') format('woff2');
-    font-weight: 200;
+@font-face {
+    font-family: 'Purista';
+    src: url('./assets/font/Purista-Medium.woff2') format('woff2');
+    font-weight: 500;
     font-style: normal;
-    font-display: swap;
 }
 
 @font-face {
-    font-family: 'Blinker';
-    src: url('./assets/font/Blinker-Bold.woff2') format('woff2');
+    font-family: 'Purista';
+    src: url('./assets/font/Purista-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Purista';
+    src: url('./assets/font/Purista-Bold.woff2') format('woff2');
     font-weight: bold;
     font-style: normal;
-    font-display: swap;
 }
 
 @font-face {
-    font-family: 'Blinker';
-    src: url('./assets/font/Blinker-ExtraBold.woff2') format('woff2');
-    font-weight: 800;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Blinker';
-    src: url('./assets/font/Blinker-Black.woff2') format('woff2');
-    font-weight: 900;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Blinker';
-    src: url('./assets/font/Blinker-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Blinker';
-    src: url('./assets/font/Blinker-SemiBold.woff2') format('woff2');
+    font-family: 'Purista';
+    src: url('./assets/font/Purista-SemiBold.woff2') format('woff2');
     font-weight: 600;
     font-style: normal;
-    font-display: swap;
 }
 
 @font-face {
-    font-family: 'Blinker';
-    src: url('./assets/font/Blinker-Thin.woff2') format('woff2');
+    font-family: 'Purista';
+    src: url('./assets/font/Purista-Thin.woff2') format('woff2');
     font-weight: 100;
     font-style: normal;
-    font-display: swap;
-}*/
-
-@font-face {
-    font-family: "bffont";
-    src: url("./assets/font/bffont.woff") format("woff");
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
 }
 
 * {
@@ -69,7 +40,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    font-family: "bffont";
+    font-family: "Purista";
 }
 
 :root {
@@ -84,7 +55,7 @@ body {
     padding: 0;
     margin: 0;
     color: #fff;
-    font-family: "bffont";
+    font-family: "Purista";
     font-weight: 500;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;

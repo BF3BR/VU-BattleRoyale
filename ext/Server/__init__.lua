@@ -56,6 +56,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     -- Custom player connected event, we could send out UI related stuff to the client here
     self.m_PlayerConnectedEvent = NetEvents:Subscribe("VuBattleRoyale:PlayerConnected", self, self.OnPlayerConnected)
+    self.m_PlayerDeployEvent = NetEvents:Subscribe("VuBattleRoyale:PlayerDeploy", self, self.OnPlayerDeploy)
 
     -- Level events
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
@@ -217,6 +218,21 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
     NetEvents:SendTo("VuBattleRoyale:GameStateChanged", p_Player, GameStates.None, self.m_GameState)
 
     -- TODO: Send out the timer if its mid round
+
+    p_Player:Fade(1.0, false)
+
+    -- Spawn player if the current gamestate is warmup
+    --[[
+    if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
+        self.m_Match:SpawnWarmupPlayer(p_Player)
+    end
+    ]]
+end
+
+function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
+    if p_Player == nil then
+        return
+    end
 
     -- Spawn player if the current gamestate is warmup
     if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
