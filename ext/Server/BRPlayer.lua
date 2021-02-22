@@ -12,6 +12,9 @@ function BRPlayer:__init(p_Player)
     -- the BRTeam that the player is part of
     self.m_Team = nil
 
+    -- indicates if the player is the leader of the team
+    self.m_IsTeamLeader = false
+
     self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
     self.m_Armor = Armor:NoArmor()
     self.m_Kills = 0
@@ -30,15 +33,20 @@ function BRPlayer:SetArmor(p_Armor)
 end
 
 function BRPlayer:SetTeamJoinStrategy(p_Strategy)
+    if self.m_TeamJoinStrategy == p_Strategy then
+        return
+    end
+
     self.m_TeamJoinStrategy = p_Strategy
 
     if p_Strategy ~= TeamJoinStrategy.Custom then
-        self.m_Locked = true
         if self:LeaveTeam() then
             Events:DispatchLocal(TeamManagerCustomEvents.PutOnATeam, self)
+        else
+            self.m_Team:SetLock(self, true)
         end
     else
-        self.m_Locked = false
+        self.m_Team:SetLock(self, false)
     end
 
     self:SendState()
@@ -119,7 +127,7 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
             end
         end
 
-        return {Name = self:GetName(), State = l_State}
+        return {Name = self:GetName(), IsTeamLeader = self.m_IsTeamLeader, State = l_State}
     end
 
     -- get team data
@@ -132,7 +140,12 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
     return {
         Team = l_Team,
         Armor = self.m_Armor:AsTable(),
-        Data = {TeamJoinStrategy = self.m_TeamJoinStrategy, Kill = self.m_Kills, Score = self.m_Score}
+        Data = {
+            TeamJoinStrategy = self.m_TeamJoinStrategy,
+            IsTeamLeader = self.m_IsTeamLeader,
+            Kill = self.m_Kills,
+            Score = self.m_Score
+        }
     }
 end
 

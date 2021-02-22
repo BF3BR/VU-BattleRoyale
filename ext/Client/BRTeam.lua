@@ -1,18 +1,20 @@
 class "Teammate"
 
-function Teammate:__init(p_Name, p_State)
+function Teammate:__init(p_Name, p_State, p_IsTeamLeader)
     self.m_Name = p_Name
     self.m_State = p_State or BRPlayerState.Alive
+    self.m_IsTeamLeader = p_IsTeamLeader or false
 end
 
 function Teammate:FromTable(p_TeammateTable)
-    return Teammate(p_TeammateTable.Name, p_TeammateTable.State)
+    return Teammate(p_TeammateTable.Name, p_TeammateTable.State, p_TeammateTable.IsTeamLeader)
 end
 
 function Teammate:AsTable()
     return {
         Name = self.m_Name,
-        State = self.m_State
+        State = self.m_State,
+        IsTeamLeader = self.m_IsTeamLeader,
     }
 end
 

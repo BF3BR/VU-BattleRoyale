@@ -57,3 +57,13 @@ function MapHelper:RemoveByValue(p_Map, p_Value)
 
     return nil
 end
+
+-- Returns an item of the Map if it's not empty, otherwise nil
+function MapHelper:Item(p_Map)
+    local l_Key = next(p_Map)
+    if l_Key ~= nil then
+        return p_Map[l_Key]
+    end
+
+    return nil
+end

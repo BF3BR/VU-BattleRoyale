@@ -255,7 +255,7 @@ function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
     local l_Team = self:GetTeam(p_Id)
 
     -- check if team/player not found
-    if l_Team == nil or l_BrPlayer == nil then
+    if l_BrPlayer == nil or l_Team == nil or (not l_Team:CanBeJoinedById()) then
         NetEvents:SendToLocal(TeamManagerNetEvents.TeamJoinDenied, p_Player, TeamManagerErrors.InvalidTeamId)
         return
     end
@@ -278,7 +278,7 @@ function BRTeamManager:OnLockToggle(p_Player)
     local l_BrPlayer = self:GetPlayer(p_Player)
 
     if l_BrPlayer ~= nil and l_BrPlayer.m_Team ~= nil then
-        l_BrPlayer.m_Team:ToggleLock()
+        l_BrPlayer.m_Team:ToggleLock(l_BrPlayer)
     end
 end
 

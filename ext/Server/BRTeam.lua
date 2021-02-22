@@ -1,6 +1,7 @@
 require "__shared/Configs/ServerConfig"
 require "__shared/Helpers/MapHelper"
 require "__shared/Enums/TeamManagerEvents"
+require "__shared/Enums/TeamJoinStrategy"
 
 class "BRTeam"
 
@@ -44,6 +45,9 @@ function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
     self.m_Players[p_BrPlayer:GetName()] = p_BrPlayer
     p_BrPlayer.m_Team = self
 
+    -- assign thew player as team leader if needed
+    self:AssignLeader()
+
     -- update client state
     if not p_IgnoreBroadcast then
         self:BroadcastState()
@@ -67,6 +71,10 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
     -- remove references
     self.m_Players[p_BrPlayer:GetName()] = nil
     p_BrPlayer.m_Team = nil
+    p_BrPlayer.m_IsTeamLeader = false
+
+    -- assign new team leader if needed
+    self:AssignLeader()
 
     -- update client state
     if not p_IgnoreBroadcast then
@@ -97,10 +105,15 @@ function BRTeam:Merge(p_OtherTeam)
     return true
 end
 
-function BRTeam:ToggleLock()
-    -- TODO maybe add a check for squad leader only
-    self.m_Locked = not self.m_Locked
-    self:BroadcastState()
+function BRTeam:ToggleLock(p_BrPlayer)
+    self:SetLock(p_BrPlayer, not self.m_Locked)
+end
+
+function BRTeam:SetLock(p_BrPlayer, p_Value)
+    if self:Equals(p_BrPlayer.m_Team) and p_BrPlayer.m_IsTeamLeader then
+        self.m_Locked = p_Value
+        self:BroadcastState()
+    end
 end
 
 -- Applies team/squad ids to each player of the team
@@ -138,6 +151,42 @@ function BRTeam:HasAlivePlayers(p_PlayerToIgnore)
     end
 
     return false
+end
+
+function BRTeam:AssignLeader()
+    if self:GetTeamLeader() == nil then
+        local l_Key = next(self.m_Players)
+        if l_Key ~= nil then
+            local l_BrPlayer = self.m_Players[l_Key]
+            l_BrPlayer.m_IsTeamLeader = true
+
+            return l_BrPlayer
+        end
+    end
+
+    return nil
+end
+
+function BRTeam:GetTeamLeader()
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        if l_BrPlayer.m_IsTeamLeader then
+            return l_BrPlayer
+        end
+    end
+
+    return nil
+end
+
+-- Check if the team has only one player with no Custom team join strategy selected
+function BRTeam:CanBeJoinedById()
+    if MapHelper:Size(self.m_Players) == 1 then
+        local l_BrPlayer = MapHelper:Item(self.m_Players)
+        if l_BrPlayer ~= nil and l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
+            return false
+        end
+    end
+
+    return true
 end
 
 function BRTeam:BroadcastState()

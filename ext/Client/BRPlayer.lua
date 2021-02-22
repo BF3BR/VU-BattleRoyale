@@ -9,6 +9,7 @@ class "BRPlayer"
 function BRPlayer:__init()
     self.m_Team = BRTeam()
     self.m_Armor = Armor:NoArmor()
+    self.m_IsTeamLeader = false
     self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
     self.m_Kills = 0
     self.m_Score = 0
@@ -49,6 +50,7 @@ function BRPlayer:OnReceivePlayerState(p_State)
     end
 
     if p_State.Data ~= nil then
+        self.m_IsTeamLeader = p_State.Data.IsTeamLeader
         self.m_TeamJoinStrategy = p_State.Data.TeamJoinStrategy
         self.m_Kills = p_State.Data.Kills
         self.m_Score = p_State.Data.Score
