@@ -255,6 +255,11 @@ const App: React.FC = () => {
         setTeamLocked(p_Locked);
     }
 
+    const [teamJoinError, setTeamJoinError] = useState<number|null>(null);
+    window.OnTeamJoinError = (p_Error: number) => {
+        setTeamJoinError(p_Error);
+    }
+
     return (
         <>
             {debugMode &&
@@ -332,6 +337,8 @@ const App: React.FC = () => {
                         teamOpen={!teamLocked}
                         isTeamLeader={localPlayer?.isTeamLeader??false}
                         teamCode={teamId??'-'}
+                        teamJoinError={teamJoinError}
+                        setTeamJoinError={setTeamJoinError}
                     />
                 :
                     <>
@@ -434,6 +441,7 @@ declare global {
         OnUpdateTeamSize: (p_Size: number) => void;
         OnUpdateTeamLocked: (p_Locked: boolean) => void;
         OnUpdateTeamPlayers: (p_Team: any) => void;
+        OnTeamJoinError: (p_Error: number) => void;
 
         ToggleDeployMenu: () => void;
     }

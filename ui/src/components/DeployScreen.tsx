@@ -39,9 +39,11 @@ interface Props {
     teamOpen: boolean;
     isTeamLeader: boolean;
     teamCode: string|null;
+    teamJoinError: number|null;
+    setTeamJoinError: (p_Error: number|null) => void;
 }
 
-const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOpen, isTeamLeader, teamCode }) => {
+const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOpen, isTeamLeader, teamCode, teamJoinError, setTeamJoinError }) => {
     const [selectedAppearance, setSelectedAppearance] = useState<number>(0);
     const [selectedTeamType, setSelectedTeamType] = useState<number>(1);
 
@@ -76,10 +78,9 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOp
     }
 
     const [joinCode, setJoinCode] = useState<string>('');
-    const [joinCodeError, setJoinCodeError] = useState<boolean>(false);
 
     const handleJoinCodeChange = (event: any) => {
-        setJoinCodeError(false);
+        setTeamJoinError(null);
         setJoinCode(event.target.value);
     }
 
@@ -210,18 +211,28 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOp
                                 <div className="TeamForm">
                                     <input 
                                         type="text" 
-                                        placeholder="Enter a Code to join a team..." 
+                                        placeholder="Enter a code to join a team..." 
                                         value={joinCode} 
                                         onChange={handleJoinCodeChange} 
                                         onFocus={handleFocus}
-                                        className={joinCodeError ? 'isError' : ''}
+                                        className={teamJoinError ? 'isError' : ''}
                                     />
                                     <button className="btn btn-primary btn-small" onClick={OnJoinTeam}>
                                         Join
                                     </button>
                                 </div>
-                                {joinCodeError &&
-                                    <span className="JoinCodeError">No team found with this code...</span>
+                                {teamJoinError &&
+                                    <span className="JoinCodeError">
+                                        {teamJoinError === 2 ?
+                                            <>
+                                                The team is full.
+                                            </>
+                                        :
+                                            <>
+                                                Invalid team code.
+                                            </>
+                                        }
+                                    </span>
                                 }
                             </div>
                         </div>

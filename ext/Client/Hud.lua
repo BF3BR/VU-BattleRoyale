@@ -26,11 +26,11 @@ function VuBattleRoyaleHud:__init()
     self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", '')
     self.m_HudOnPlayerWeapons = CachedJsExecutor("OnPlayerWeapons(%s)", nil)
 
-    -- Syncs up BrTeam if needed
     self.m_HudOnUpdateTeamPlayers = CachedJsExecutor("OnUpdateTeamPlayers(%s)", nil)
     self.m_HudOnUpdateTeamLocked = CachedJsExecutor("OnUpdateTeamLocked(%s)", false)
     self.m_HudOnUpdateTeamId = CachedJsExecutor("OnUpdateTeamId('%s')", '-')
     self.m_HudOnUpdateTeamSize = CachedJsExecutor("OnUpdateTeamSize(%s)", 0)
+    self.m_HudOnTeamJoinError = CachedJsExecutor("OnTeamJoinError(%s)", nil)
 
     self.m_IsPlayerOnPlane = false
     self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
@@ -266,6 +266,14 @@ function VuBattleRoyaleHud:PushLocalPlayerTeam()
         self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked);
         self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
     end
+end
+
+function VuBattleRoyaleHud:OnTeamJoinDenied(p_Error)
+    if p_Error == nil then
+        return
+    end
+
+    self.m_HudOnTeamJoinError:ForceUpdate(p_Error);
 end
 
 function VuBattleRoyaleHud:OnGunShipCamera()

@@ -4,6 +4,7 @@ require "__shared/Helpers/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/PhaseManagerEvents"
+require "__shared/Enums/TeamManagerEvents"
 require "__shared/Utils/EventRouter"
 require "Helpers/LootPointHelper"
 require "PhaseManagerClient"
@@ -116,6 +117,8 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_PlayersPitchAndYawEvent = NetEvents:Subscribe("VuBattleRoyale:PlayersPitchAndYaw", self, self.OnPlayersPitchAndYaw)
 
     self.m_ConfirmPlayerKillEvent = NetEvents:Subscribe("ConfirmPlayerKill", self, self.OnConfirmPlayerKill) -- TODO: we might not need this
+
+    self.m_TeamJoinDeniedEvent = NetEvents:Subscribe(TeamManagerNetEvents.TeamJoinDenied, self, self.OnTeamJoinDenied)
 
     -- ==========
     -- WebUI events
@@ -271,6 +274,14 @@ function VuBattleRoyaleClient:OnConfirmPlayerKill(p_Giver, p_PlayerName)
     end
 
     m_SpectatorCamera:OnPlayerKilled(s_Player, self.m_GameState)
+end
+
+function VuBattleRoyaleClient:OnTeamJoinDenied(p_Error)
+    if p_Error == nil then
+        return
+    end
+
+    m_Hud:OnTeamJoinDenied(p_Error)
 end
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
