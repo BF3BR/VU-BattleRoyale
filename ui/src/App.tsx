@@ -316,7 +316,7 @@ const App: React.FC = () => {
                         setDeployScreen={setDeployScreen}
                         team={team}
                         teamSize={teamSize}
-                        teamOpen={teamLocked}
+                        teamOpen={!teamLocked}
                         isTeamLeader={true} //TODO: Wire to lua
                         teamCode={teamId??'-'}
                     />
