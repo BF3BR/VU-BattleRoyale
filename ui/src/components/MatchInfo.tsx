@@ -14,9 +14,10 @@ interface Props {
     minPlayersToStart: number|null;
     subPhaseIndex: number;
     spectating: boolean;
+    deployScreen: boolean;
 }
 
-const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToStart, subPhaseIndex, spectating }) => {
+const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToStart, subPhaseIndex, spectating, deployScreen }) => {
 
     const getStateString = (state: string, subPhaseIndex: number) => {
         switch (state) {
@@ -44,7 +45,7 @@ const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToS
 
     return (
         <>
-            <div id="MatchInfo" className={"card " + ((noMap || spectating) ? 'noMap' : '')}>
+            <div id="MatchInfo" className={"card" + ((noMap || spectating) ? ' noMap' : '') + (deployScreen ? ' deployScreen': '')}>
                 <div className="card-header">
                     <h1>
                         {getStateString(state, subPhaseIndex)}

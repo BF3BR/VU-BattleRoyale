@@ -83,6 +83,7 @@ const App: React.FC = () => {
             kill: 15,
             alive: true,
             color: Color.White,
+            isTeamLeader: true,
         });
     }
 
@@ -226,14 +227,15 @@ const App: React.FC = () => {
     window.OnUpdateTeamPlayers = (p_Team: any) => {
         let tempTeam: Player[] = [];
         if (p_Team !== undefined && p_Team.length > 0) {
-            p_Team.map((teamPlayer: any) =>
+            p_Team.map((teamPlayer: any) => {
                 tempTeam.push({
                     name: teamPlayer.Name,
                     alive: (teamPlayer.State === 3),
                     kill: 0,
                     color: Color.White,
+                    isTeamLeader: teamPlayer.IsTeamLeader,
                 })
-            );
+            });
         }
         setTeam(tempTeam);
     }
@@ -310,6 +312,17 @@ const App: React.FC = () => {
             </div>
 
             <div id="VUBattleRoyale">
+                <MatchInfo
+                    state={gameState}
+                    time={time}
+                    noMap={!showMinimap || openMap}
+                    players={players}
+                    minPlayersToStart={minPlayersToStart}
+                    subPhaseIndex={subPhaseIndex}
+                    spectating={spectating}
+                    deployScreen={deployScreen}
+                />
+
                 {deployScreen 
                 ?
                     <DeployScreen
@@ -317,7 +330,7 @@ const App: React.FC = () => {
                         team={team}
                         teamSize={teamSize}
                         teamOpen={!teamLocked}
-                        isTeamLeader={true} //TODO: Wire to lua
+                        isTeamLeader={localPlayer?.isTeamLeader??false}
                         teamCode={teamId??'-'}
                     />
                 :
@@ -325,16 +338,6 @@ const App: React.FC = () => {
                         <KillAndAliveInfo
                             kills={localPlayer !== null ? localPlayer.kill : 0}
                             alive={players !== null ? Object.values(players).filter(player => player.alive === true).length : 0}
-                            spectating={spectating}
-                        />
-
-                        <MatchInfo
-                            state={gameState}
-                            time={time}
-                            noMap={!showMinimap || openMap}
-                            players={players}
-                            minPlayersToStart={minPlayersToStart}
-                            subPhaseIndex={subPhaseIndex}
                             spectating={spectating}
                         />
 

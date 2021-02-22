@@ -11,7 +11,7 @@
     .DeployBox {
         position: absolute;
         top: 50%;
-        left: 4vw;
+        left: 2.5vw;
         width: 25vw;
         transform: translateY(-50%);
 
@@ -82,12 +82,19 @@
                         padding: 0 1.25vw;
                         display: flex;
                         align-items: center;
-                        justify-content: flex-start;
+                        justify-content: space-between;
                         font-size: 1.1vw;
                         margin-bottom: .1vw;
                         line-height: 1;
                         text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
                         background-color: rgba(7, 7, 7, 0.6);
+
+                        .TeamPlayerName {
+                            display: inline-flex;
+                            display: flex;
+                            align-items: center;
+                            justify-content: flex-start;
+                        }
 
                         .circle {
                             width: .5vw;
@@ -102,7 +109,14 @@
                             text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.4);
                             font-size: 1vw;
                             color:#fff;
-                            padding-bottom: 0.1vw;
+                            padding-bottom: .125vw;
+
+                            &.teamLeader {
+                                color: #ff9900;
+                                text-shadow: 0 0 0.5vw rgba(255, 153, 0, 0.4);
+                                font-weight: 600;
+                                font-size: .8vw;
+                            }
                         }
         
                         &.empty {
@@ -246,9 +260,5 @@
         &.TeamTypeBox {
             margin-bottom: 1vw;
         }
-    }
-
-    .Deploy {
-        margin-top: 1vw;
     }
 }

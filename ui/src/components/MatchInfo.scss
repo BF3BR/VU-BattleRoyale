@@ -4,6 +4,7 @@
     left: 2.5vw;
     width: 12vw;
     transition: bottom .1s ease;
+    z-index: 999;
 
     .card-header {
         h1 {
@@ -14,5 +15,11 @@
     &.noMap {
         bottom: 2.8vw;
         transition: bottom .1s ease;
+    }
+
+    &.deployScreen {
+        left: auto;
+        right: 2.5vw;
+        bottom: 2.5vw;
     }
 }

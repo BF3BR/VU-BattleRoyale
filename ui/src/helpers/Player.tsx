@@ -10,6 +10,7 @@ export interface Player {
     kill: number;
     alive: boolean;
     color: Color;
+    isTeamLeader: boolean;
 }
 
 export default Player;

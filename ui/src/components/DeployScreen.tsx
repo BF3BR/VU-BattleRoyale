@@ -6,6 +6,7 @@ import BrSelect from "./BrSelect";
 import arrow from "../assets/img/arrow.svg";
 import lock from "../assets/img/lock.svg";
 import lockOpen from "../assets/img/lock-open.svg";
+import crown from "../assets/img/crown.svg";
 
 import "./DeployScreen.scss";
 
@@ -185,8 +186,13 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOp
                                 <div className="TeamPlayers">
                                     {team.map((player: Player, index: number) => (
                                         <div className={"TeamPlayer " + player.color.toString()} key={index}>
-                                            <div className="circle"></div>
-                                            <span>{player.name??''}</span>
+                                            <div className="TeamPlayerName">
+                                                <div className="circle"></div>
+                                                <span>{player.name??''}</span>
+                                            </div>
+                                            {player.isTeamLeader &&
+                                                <span className="teamLeader">[LEADER]</span>
+                                            }
                                         </div>
                                     ))}
                                     {items??''}

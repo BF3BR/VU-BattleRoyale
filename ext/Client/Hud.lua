@@ -45,12 +45,11 @@ end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
     WebUI:Init()
-    WebUI:Hide()
 end
 
 function VuBattleRoyaleHud:OnLevelFinalized(p_LevelName, p_GameMode)
-    WebUI:Show()
     self.m_HudLoaded = true
+    WebUI:Show()
 end
 
 function VuBattleRoyaleHud:OnLevelDestroy()
@@ -69,6 +68,7 @@ end
 
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
     if not self.m_HudLoaded then
+        WebUI:Hide()
         return
     end
 
@@ -159,19 +159,25 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 		table.insert(s_PlayersObject, {
             ["id"] = l_Player.id,
             ["name"] = l_Player.name,
-            ["kill"] = l_Player.kills,
+            ["kill"] = 0, -- TODO: Add BrPlayer (not local) kills
             ["alive"] = l_Player.alive,
+            ["isTeamLeader"] = false,
         })
     end
     self.m_HudOnPlayersInfo:Update(json.encode(s_PlayersObject))
+
+    if self.m_BrPlayer == nil then
+        return
+    end
 
     local s_LocalPlayer = PlayerManager:GetLocalPlayer()
     if s_LocalPlayer ~= nil then
         local s_LocalPlayerTable = {
             ["id"] = s_LocalPlayer.id,
             ["name"] = s_LocalPlayer.name,
-            ["kill"] = s_LocalPlayer.kills,
+            ["kill"] =  (self.m_BrPlayer.m_Kills or 0),
             ["alive"] = s_LocalPlayer.alive,
+            ["isTeamLeader"] = self.m_BrPlayer.m_IsTeamLeader,
         }
         self.m_HudOnLocalPlayerInfo:Update(json.encode(s_LocalPlayerTable))
     end

@@ -172,7 +172,7 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
         end
     end
 
-    s_SoldierBlueprint.eventConnections:add(s_ManDownConnection) -- add connection that equips the m9 kit when you go mandown
+    -- s_SoldierBlueprint.eventConnections:add(s_ManDownConnection) -- add connection that equips the m9 kit when you go mandown
 
     local s_Partition = DatabasePartition((ResourceManager:FindPartitionForInstance(p_Instance)))
     s_Partition:AddInstance(s_CustomizeSoldierEntityData) -- add entitydata to the s_Partition
@@ -269,6 +269,7 @@ function InteractiveManDown:CreateManDownCustomizeSoldierData()
     s_CoopManDownSoldierData.overrideMaxHealth = -1.0
     s_CoopManDownSoldierData.overrideCriticalHealthThreshold = -1.0
 
+    --[[
     local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
     s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
                                                                 Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
@@ -276,7 +277,8 @@ function InteractiveManDown:CreateManDownCustomizeSoldierData()
     s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
 
     s_CoopManDownSoldierData.weapons:add(s_UnlockWeaponAndSlot)
-    s_CoopManDownSoldierData.activeSlot = WeaponSlot.WeaponSlot_9
+    ]]
+    s_CoopManDownSoldierData.activeSlot = WeaponSlot.WeaponSlot_NotDefined
     s_CoopManDownSoldierData.removeAllExistingWeapons = false
     s_CoopManDownSoldierData.disableDeathPickup = false
 

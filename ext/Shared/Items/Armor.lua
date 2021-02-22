@@ -29,6 +29,10 @@ function Armor:ApplyDamage(p_Damage)
 end
 
 function Armor:GetPercentage()
+    if self.m_Type.Durability then
+        return 0
+    end
+
     return self.m_CurrentDurability / self.m_Type.Durability
 end
 
