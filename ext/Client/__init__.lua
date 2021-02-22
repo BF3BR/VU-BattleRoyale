@@ -282,9 +282,6 @@ function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)
         return
     end
 
-    -- fixed team type indexing
-    p_Strategy = p_Strategy + 1
-
     self.m_BrPlayer:SetTeamJoinStrategy(p_Strategy)
 end
 

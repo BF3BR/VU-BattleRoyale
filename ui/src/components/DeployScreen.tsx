@@ -18,15 +18,15 @@ const AppearanceArray = [
 
 const TeamType = [
     {
-        value: 0,
+        value: 1,
         label: "Play as solo", // TeamJoinStrategy.NoJoin
     },
     {
-        value: 1,
+        value: 2,
         label: "Join a random team", // TeamJoinStrategy.AutoJoin
     },
     {
-        value: 2,
+        value: 3,
         label: "Custom team", // TeamJoinStrategy.Custom
     },
 ];
@@ -42,7 +42,7 @@ interface Props {
 
 const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOpen, isTeamLeader, teamCode }) => {
     const [selectedAppearance, setSelectedAppearance] = useState<number>(0);
-    const [selectedTeamType, setSelectedTeamType] = useState<number>(0);
+    const [selectedTeamType, setSelectedTeamType] = useState<number>(1);
 
     const OnAppearanceRight = () => {
         if (selectedAppearance === AppearanceArray.length - 1) {
@@ -141,15 +141,15 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOp
                                 options={TeamType} 
                                 onChangeSelected={(selected: any) => OnChangeTeamType(selected)}
                                 selectValue={{
-                                    value: TeamType[selectedTeamType].value,
-                                    label: TeamType[selectedTeamType].label,
+                                    value: TeamType[selectedTeamType - 1].value,
+                                    label: TeamType[selectedTeamType - 1].label,
                                 }}
                             />
                         </div>
                     </div>
                 }
 
-                {selectedTeamType === 2 && // Custom
+                {TeamType[selectedTeamType - 1].value === 3 && // Custom
                     <>
                         <div className="card TeamBox">
                             <div className="card-header">
