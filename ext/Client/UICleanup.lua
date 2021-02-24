@@ -36,11 +36,11 @@ function UICleanup:__init()
     -- self.m_UIInteractionCompData = ResourceManager:RegisterInstanceLoadHandler(Guid("35DF1891-EB38-11DF-9230-E11388AEEF3E"), Guid("F159BE6E-611C-C1D7-2E49-DC50AD11A42A"), self, self.OnUI3dIconCompData)
 
     self.m_ColorCorrectionComponentData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid('3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F'), 
-                                        Guid('9CDAC6C3-9D3E-48F1-B8D9-737DB28AE936'), self, self.OnBlurredBlueScreen)
+                                        Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), 
+                                        Guid("9CDAC6C3-9D3E-48F1-B8D9-737DB28AE936"), self, self.OnBlurredBlueScreen)
     self.m_DofComponentData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid('3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F'), 
-                                        Guid('52FD86B6-00BA-45FC-A87A-683F72CA6916'), self, self.OnBlurredBlueScreen)
+                                        Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), 
+                                        Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"), self, self.OnBlurredBlueScreen)
 end
 
 function UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)

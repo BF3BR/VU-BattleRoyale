@@ -5,11 +5,15 @@ require "__shared/Configs/MapsConfig"
 require "__shared/Configs/ServerConfig"
 require "__shared/Enums/GameStates"
 require "Gunship"
+require "Airdrop"
 require "PhaseManagerServer"
 
-function Match:__init(p_Server)
+function Match:__init(p_Server, p_TeamManager)
     -- Save server reference
     self.m_Server = p_Server
+
+    -- Save team manager reference
+    self.m_TeamManager = p_TeamManager
 
     -- Gamestates
     self.m_CurrentState = GameStates.None
@@ -35,10 +39,15 @@ function Match:__init(p_Server)
     self.m_UpdateTicks[GameStates.EndGame] = 0.0
 
     -- Winner
-    self.m_Winner = nil
+    self.m_WinnerTeam = nil
 
     -- Gunship
     self.m_Gunship = Gunship(self)
+
+    -- Airdrop
+    self.m_Airdrop = Airdrop(self)
+    self.m_AirdropTimer = 0.0
+    self.m_AirdropNextDrop = nil
 
     -- PhaseManagerServer
     self.m_PhaseManager = PhaseManagerServer()
@@ -55,6 +64,7 @@ end
 
 function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
     self.m_Gunship:OnEngineUpdate(p_DeltaTime)
+    self.m_Airdrop:OnEngineUpdate(p_DeltaTime)
 
     local s_Callback = self.m_UpdateStates[p_GameState]
     if s_Callback == nil then
@@ -73,9 +83,9 @@ end
 function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
     if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
         if self.m_RestartQueue then
-            print('INFO: Restart triggered.')
+            print("INFO: Restart triggered.")
 
-            local s_Result = RCON:SendCommand('mapList.restartRound')
+            local s_Result = RCON:SendCommand("mapList.restartRound")
             if #s_Result >= 1 then
                 if s_Result[1] ~= "OK" then
                     print("INFO: Command: mapList.restartRound returned: " .. s_Result[1])
@@ -119,6 +129,9 @@ function Match:OnWarmupToPlane(p_DeltaTime)
 
         -- Fade out then kill all the players
         self:UnspawnAllSoldiers()
+
+        -- Assign all players to teams
+        self.m_TeamManager:AssignTeams()
     end
 
     if self.m_UpdateTicks[GameStates.WarmupToPlane] >= ServerConfig.WarmupToPlaneTime then
@@ -141,7 +154,7 @@ function Match:OnPlane(p_DeltaTime)
 
     if self.m_UpdateTicks[GameStates.Plane] >= ServerConfig.PlaneTime then
         self.m_UpdateTicks[GameStates.Plane] = 0.0
-        NetEvents:BroadcastLocal('ForceJumpOufOfGunship')
+        NetEvents:BroadcastLocal("ForceJumpOufOfGunship")
         self.m_Server:ChangeGameState(GameStates.PlaneToFirstCircle)
         return
     end
@@ -171,8 +184,12 @@ function Match:OnMatch(p_DeltaTime)
     self:DoWeHaveAWinner()
 
     if self.m_UpdateTicks[GameStates.Match] >= ServerConfig.GunshipDespawn then
-        self.m_Gunship:Spawn(nil, false)
+        if self.m_Gunship:GetEnabled() then
+            self.m_Gunship:Spawn(nil, false)
+        end
     end
+
+    self:AirdropManager(p_DeltaTime)
     
     -- PhaseManager does the rest
 
@@ -184,11 +201,12 @@ function Match:OnEndGame(p_DeltaTime)
         -- End the Circle of Death
         self.m_PhaseManager:End()
         self.m_Gunship:Spawn(nil, false)
+        self.m_Airdrop:Spawn(nil, false)
 
-        if self.m_Winner ~= nil then
-            print('INFO: We have a winner: ' .. self.m_Winner.name)
+        if self.m_WinnerTeam ~= nil then
+            print("INFO: We have a winner team: " .. self.m_WinnerTeam)
         else
-            print('INFO: Round ended without a winner.')
+            print("INFO: Round ended without a winner.")
         end
 
         -- TODO: Set client UI to show the winners name
@@ -219,7 +237,7 @@ function Match:OnRestartRound()
     self.m_UpdateTicks[GameStates.Match] = 0.0
     self.m_UpdateTicks[GameStates.EndGame] = 0.0
     self.m_CircleIndex = 1
-    self.m_Winner = nil
+    self.m_WinnerTeam = nil
 
     self:Cleanup()
 
@@ -230,33 +248,45 @@ end
 -- Other functions
 -- ==========
 
-function Match:DoWeHaveAWinner()
-    local s_AlivePlayersCount = 0
-    local s_Winner = nil
+function Match:AirdropManager(p_DeltaTime)
+    if self.m_Airdrop:GetEnabled() then
+        self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
 
+        -- Remove the airdrop plane after 120 sec
+        if self.m_AirdropTimer >= 120.0 then
+            print("INFO: Airdrop unspawned")
+            self.m_AirdropTimer = 0.0
+            self.m_Airdrop:Spawn(nil, false, nil)
+        end
+    end
+
+    if self.m_AirdropNextDrop == nil then
+        self.m_AirdropNextDrop = MathUtils:GetRandom(30, 180)
+    end
+
+    self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
+    if self.m_AirdropTimer >= self.m_AirdropNextDrop then
+        self.m_AirdropNextDrop = nil
+        self.m_AirdropTimer = 0.0
+
+        if not self.m_Airdrop:GetEnabled() then
+            print("INFO: Airdrop spawned")
+            self.m_Airdrop:Spawn(self:GetRandomGunshipStart(), true, MathUtils:GetRandom(20, 60))
+        end
+    end
+end
+
+function Match:DoWeHaveAWinner()
     if PlayerManager:GetPlayerCount() == 0 then
         self.m_Server:ChangeGameState(GameStates.EndGame)
         return
     end
 
-    -- TODO: FIXME: This only works for solo gamemode
-    local s_Players = PlayerManager:GetPlayers()
-    for l_Index, l_Player in ipairs(s_Players) do
-        if l_Player == nil then
-            goto _on_loop_continue_
-        end
+    local s_WinningTeam = self.m_TeamManager:GetWinningTeam()
 
-        if l_Player.alive then
-            s_AlivePlayersCount = s_AlivePlayersCount + 1
-            s_Winner = l_Player
-        end
-
-        ::_on_loop_continue_::
-    end
-
-    self.m_Winner = s_Winner
-
-    if s_AlivePlayersCount <= 1 then
+    if s_WinningTeam ~= nil then
+        print(s_WinningTeam)
+        self.m_WinnerTeam = s_WinningTeam
         self.m_Server:ChangeGameState(GameStates.EndGame)
     end
 end
@@ -284,7 +314,7 @@ function Match:SpawnWarmupPlayer(p_Player)
 
     local s_SpawnTrans = self:GetRandomWarmupSpawnpoint(p_Player)
     if s_SpawnTrans == nil then
-        print('ERROR: (Warmup) Coulnd\'t spawn player: ' .. p_Player.name)
+        print("ERROR: (Warmup) Coulnd't spawn player: " .. p_Player.name)
         return
     end
 
@@ -300,18 +330,18 @@ function Match:SpawnPlayer(p_Player, p_Transform)
         return
     end
 
-    print('INFO: Spawning player: ' .. p_Player.name)
+    print("INFO: Spawning player: " .. p_Player.name)
 
     local s_SoldierAsset = nil
     local s_Appearance = nil
-    local s_SoldierBlueprint = ResourceManager:SearchForDataContainer('Characters/Soldiers/MpSoldier')
+    local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
 
     if p_Player.teamId == TeamId.Team1 then
-        s_SoldierAsset = ResourceManager:SearchForDataContainer('Gameplay/Kits/USAssault')
-        s_Appearance = ResourceManager:SearchForDataContainer('Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01')
+        s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
+        s_Appearance = ResourceManager:SearchForDataContainer("Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
     elseif p_Player.teamId == TeamId.Team2 then
-        s_SoldierAsset = ResourceManager:SearchForDataContainer('Gameplay/Kits/RUAssault')
-        s_Appearance = ResourceManager:SearchForDataContainer('Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01')
+        s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
+        s_Appearance = ResourceManager:SearchForDataContainer("Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
     end
 
     if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
@@ -338,9 +368,12 @@ function Match:CreateCustomizeSoldierData()
     s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
 
     local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
-    s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
-                                                                Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),
-                                                                Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73")))
+    s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(
+        ResourceManager:FindInstanceByGuid(
+            Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),
+            Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73")
+        )
+    )
     s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_7
     s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
 

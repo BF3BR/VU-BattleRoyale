@@ -137,8 +137,8 @@ function SpectatorCamera:Enable()
     local s_PlayerToSpectate = self:FindFirstPlayerToSpectate()
 
     if s_PlayerToSpectate ~= nil then
-        WebUI:ExecuteJS('SpectatorTarget("'.. tostring(s_PlayerToSpectate.name) .. '");')
-        WebUI:ExecuteJS('SpectatorEnabled('.. tostring(true) .. ');')
+        WebUI:ExecuteJS("SpectatorTarget('" .. tostring(s_PlayerToSpectate.name) .. "');")
+        WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
 	end
@@ -152,8 +152,8 @@ function SpectatorCamera:Disable()
 		return
     end
     
-    WebUI:ExecuteJS('SpectatorTarget("");')
-    WebUI:ExecuteJS('SpectatorEnabled('.. tostring(false) .. ');')
+    WebUI:ExecuteJS("SpectatorTarget('');")
+    WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(false) .. ");")
 
 	self.m_SpectatedPlayer = nil
 
@@ -306,7 +306,7 @@ function SpectatorCamera:SpectateNextPlayer()
 	if s_NextPlayer == nil then
 		self:Disable()
 	else
-		WebUI:ExecuteJS('SpectatorTarget("'.. tostring(s_NextPlayer.name) .. '");')
+		WebUI:ExecuteJS("SpectatorTarget('" .. tostring(s_NextPlayer.name) .. "');")
 		self:SpectatePlayer(s_NextPlayer)
 	end
 end
@@ -377,7 +377,7 @@ function SpectatorCamera:SpectatePreviousPlayer()
 	if s_NextPlayer == nil then
 		self:Disable()
 	else
-		WebUI:ExecuteJS('SpectatorTarget("'.. tostring(s_NextPlayer.name) .. '");')
+		WebUI:ExecuteJS("SpectatorTarget('" .. tostring(s_NextPlayer.name) .. "');")
 		self:SpectatePlayer(s_NextPlayer)
 	end
 end

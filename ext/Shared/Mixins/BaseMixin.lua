@@ -1,4 +1,4 @@
-class 'BaseMixin'
+class "BaseMixin"
 
 function BaseMixin:__init()
     self:RegisterVars()
@@ -10,8 +10,8 @@ function BaseMixin:RegisterVars()
 end
 
 function BaseMixin:RegisterEvents()
-    Events:Subscribe('Level:Destroy', self, self.Destroy)
-    Events:Subscribe('Extension:Unloading', self, self.Destroy)
+    Events:Subscribe("Level:Destroy", self, self.Destroy)
+    Events:Subscribe("Extension:Unloading", self, self.Destroy)
 end
 
 function BaseMixin:Destroy(p_Reset)

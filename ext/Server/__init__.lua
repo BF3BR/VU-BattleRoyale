@@ -21,14 +21,14 @@ function VuBattleRoyaleServer:__init()
     -- Holds the gamestate information
     self.m_GameState = GameStates.None
 
-    -- Create a new match
-    self.m_Match = Match(self)
-
     self.m_PlayersPitchAndYaw = { }
 
     self.m_WaitForStart = true
 
     self.m_TeamManager = g_BRTeamManager
+
+    -- Create a new match
+    self.m_Match = Match(self, self.m_TeamManager)
 
     -- Server sided pinging system
     self.m_Ping = PingServer()
@@ -142,13 +142,13 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
         return	
     end
     if p_GiverInfo.giver.teamId ~= p_Soldier.player.teamId or p_GiverInfo.giver.squadId ~= p_Soldier.player.squadId then
-        NetEvents:SendToLocal('ConfirmHit', p_GiverInfo.giver, p_Info.damage)
+        NetEvents:SendToLocal("ConfirmHit", p_GiverInfo.giver, p_Info.damage)
         if p_Soldier.health <= p_Info.damage then
-            NetEvents:SendToLocal('ConfirmPlayerKill', p_GiverInfo.giver, p_Soldier.player.name)
+            NetEvents:SendToLocal("ConfirmPlayerKill", p_GiverInfo.giver, p_Soldier.player.name)
             p_Soldier:ForceDead()
         elseif (p_Soldier.health - 100) <= p_Info.damage and p_Soldier.isInteractiveManDown == false then
             self:LeftOverDamageOnManDown(p_Soldier, p_Info.damage, p_GiverInfo)
-            NetEvents:SendToLocal('ConfirmPlayerDown', p_GiverInfo.giver, p_Soldier.player.name)
+            NetEvents:SendToLocal("ConfirmPlayerDown", p_GiverInfo.giver, p_Soldier.player.name)
         end
     elseif p_GiverInfo.giver ~= p_Soldier.player then
         p_Info.damage = 0.0
@@ -205,14 +205,8 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 
     -- TODO: Send out the timer if its mid round
 
+    -- Fade in the default (showroom) camera
     p_Player:Fade(1.0, false)
-
-    -- Spawn player if the current gamestate is warmup
-    --[[
-    if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
-        self.m_Match:SpawnWarmupPlayer(p_Player)
-    end
-    ]]
 end
 
 function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
@@ -249,7 +243,7 @@ function VuBattleRoyaleServer:DisablePreRound()
 	while ticketCounterEntity do
 
 		ticketCounterEntity = Entity(ticketCounterEntity)
-		ticketCounterEntity:FireEvent('StartRound')
+		ticketCounterEntity:FireEvent("StartRound")
 		ticketCounterEntity = ticketCounterIterator:Next()
 	end
 	
@@ -260,7 +254,7 @@ function VuBattleRoyaleServer:DisablePreRound()
 	while lifeCounterEntity do
 
 		lifeCounterEntity = Entity(lifeCounterEntity)
-		lifeCounterEntity:FireEvent('StartRound')
+		lifeCounterEntity:FireEvent("StartRound")
 		lifeCounterEntity = lifeCounterIterator:Next()
 	end
 	
@@ -271,7 +265,7 @@ function VuBattleRoyaleServer:DisablePreRound()
 	while killCounterEntity do
 
 		killCounterEntity = Entity(killCounterEntity)
-		killCounterEntity:FireEvent('StartRound')
+		killCounterEntity:FireEvent("StartRound")
 		killCounterEntity = killCounterIterator:Next()
 	end
 	
@@ -282,7 +276,7 @@ function VuBattleRoyaleServer:DisablePreRound()
 	while inputRestrictionEntity do
 
 		inputRestrictionEntity = Entity(inputRestrictionEntity)
-		inputRestrictionEntity:FireEvent('Disable')
+		inputRestrictionEntity:FireEvent("Disable")
 		
 		inputRestrictionEntity = inputRestrictionIterator:Next()
 	end
@@ -294,20 +288,20 @@ function VuBattleRoyaleServer:DisablePreRound()
 	while roundOverEntity do
 
 		roundOverEntity = Entity(roundOverEntity)
-		roundOverEntity:FireEvent('RoundStarted')
+		roundOverEntity:FireEvent("RoundStarted")
 		
 		roundOverEntity = roundOverIterator:Next()
 	end
 	
-	-- This EventGate needs to be closed otherwise Attacker can't win in Rush 
+	-- This EventGate needs to be closed otherwise Attacker can"t win in Rush 
 	local eventGateIterator = EntityManager:GetIterator("EventGateEntity")
 	
 	local eventGateEntity = eventGateIterator:Next()
 	while eventGateEntity do
 
 		eventGateEntity = Entity(eventGateEntity)
-		if eventGateEntity.data.instanceGuid == Guid('253BD7C1-920E-46D6-B112-5857D88DAF41') then
-			eventGateEntity:FireEvent('Close')
+		if eventGateEntity.data.instanceGuid == Guid("253BD7C1-920E-46D6-B112-5857D88DAF41") then
+			eventGateEntity:FireEvent("Close")
 		end
 		eventGateEntity = eventGateIterator:Next()
 	end
@@ -324,7 +318,7 @@ function VuBattleRoyaleServer:ChangeGameState(p_GameState)
         return
     end
 
-    -- Reset tickets for TDM
+    -- Reset tickets for CQL
     TicketManager:SetTicketCount(TeamId.Team1, 999)
     TicketManager:SetTicketCount(TeamId.Team2, 999)
 

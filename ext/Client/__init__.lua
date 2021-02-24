@@ -95,7 +95,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     -- UI Events
     self.m_UIDrawHudEvent = Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUIDrawHud)
 
-    self.m_ExtensionUnloadingEvent = Events:Subscribe('Extension:Unloading', self, self.OnExtensionUnloading)
+    self.m_ExtensionUnloadingEvent = Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
 
     -- ==========
     -- Custom events
@@ -123,10 +123,10 @@ function VuBattleRoyaleClient:RegisterEvents()
     -- ==========
     -- WebUI events
     -- ==========
-    self.m_WebUIDeploy = Events:Subscribe('WebUI:Deploy', self, self.OnWebUIDeploy)
-    self.m_WebUISetTeamJoinStrategy = Events:Subscribe('WebUI:SetTeamJoinStrategy', self, self.OnWebUISetTeamJoinStrategy)
-    self.m_WebUIToggleLock = Events:Subscribe('WebUI:ToggleLock', self, self.OnWebUIToggleLock)
-    self.m_WebUIJoinTeam = Events:Subscribe('WebUI:JoinTeam', self, self.OnWebUIJoinTeam)
+    self.m_WebUIDeploy = Events:Subscribe("WebUI:Deploy", self, self.OnWebUIDeploy)
+    self.m_WebUISetTeamJoinStrategy = Events:Subscribe("WebUI:SetTeamJoinStrategy", self, self.OnWebUISetTeamJoinStrategy)
+    self.m_WebUIToggleLock = Events:Subscribe("WebUI:ToggleLock", self, self.OnWebUIToggleLock)
+    self.m_WebUIJoinTeam = Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam)
 end
 
 function VuBattleRoyaleClient:RegisterHooks()
@@ -135,7 +135,7 @@ function VuBattleRoyaleClient:RegisterHooks()
     self.m_UIPushScreenHook = Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen)
     self.m_UIDrawFriendlyNametag = Hooks:Install("UI:DrawFriendlyNametag", 1, self, self.OnUIDrawFriendlyNametag)
     self.m_UIDrawEnemyNametag = Hooks:Install("UI:DrawEnemyNametag", 1, self, self.OnUIDrawEnemyNametag)
-    -- self.m_UIEnableCursorMode =  Hooks:Install('UI:EnableCursorMode', 1, self, self.OnUIEnableCursorMode)
+    -- self.m_UIEnableCursorMode =  Hooks:Install("UI:EnableCursorMode", 1, self, self.OnUIEnableCursorMode)
 end
 
 function VuBattleRoyaleClient:UnregisterEvents()

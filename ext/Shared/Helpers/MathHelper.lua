@@ -1,7 +1,7 @@
 class "MathHelper"
 
 function MathHelper:VectorAngle(p_VectorA, p_VectorB)
-    return math.atan(p_VectorB.z - p_Vectorl_A.z, p_VectorB.x - p_Vectorl_A.x)
+    return math.atan(p_VectorB.z - p_VectorA.z, p_VectorB.x - p_VectorA.x)
 end
 
 -- Returns the squared 2D distance between two points

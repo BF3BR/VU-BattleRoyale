@@ -101,6 +101,10 @@ function Gunship:Spawn(p_StartTransform, p_Enable)
     end
 end
 
+function Gunship:GetEnabled()
+    return self.m_Enabled
+end
+
 function Gunship:SetVehicleEntityTransform()
     local s_VehicleEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
     local s_VehicleEntity = s_VehicleEntityIterator:Next()

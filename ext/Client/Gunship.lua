@@ -3,8 +3,8 @@ class "Gunship"
 function Gunship:__init()
     self.m_IsInGunship = false
 
-    self.m_CameraEntityUs = ResourceManager:RegisterInstanceLoadHandler(Guid('694A231C-4439-461D-A7FF-764915FC3E7C'), Guid('6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30'), self, self.OnCameraEntityData)
-    self.m_CameraEntityRu = ResourceManager:RegisterInstanceLoadHandler(Guid('5D4B1096-3089-45A7-9E3A-422E15E0D8F6'), Guid('A4281E60-7557-4BFF-ADD4-18D7E8780873'), self, self.OnCameraEntityData)
+    self.m_CameraEntityUs = ResourceManager:RegisterInstanceLoadHandler(Guid("694A231C-4439-461D-A7FF-764915FC3E7C"), Guid("6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30"), self, self.OnCameraEntityData)
+    self.m_CameraEntityRu = ResourceManager:RegisterInstanceLoadHandler(Guid("5D4B1096-3089-45A7-9E3A-422E15E0D8F6"), Guid("A4281E60-7557-4BFF-ADD4-18D7E8780873"), self, self.OnCameraEntityData)
 end
 
 function Gunship:OnCameraEntityData(p_Instance)

@@ -8,37 +8,43 @@ function InteractiveManDown:__init()
     self.m_CoopManDownM9Guid = MathUtils:RandomGuid()
 
     self.m_LevelLoadResourcesEvent = Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
-    self.m_ResourceManagerLoadBundlesHook = Hooks:Install("ResourceManager:LoadBundles", 100, self,
-                                                          self.OnResourceManagerLoadBundles)
+    self.m_ResourceManagerLoadBundlesHook = Hooks:Install("ResourceManager:LoadBundles", 100, self, self.OnResourceManagerLoadBundles)
 
     self.m_EntityInteractionComponentDataCallback = ResourceManager:RegisterInstanceLoadHandler(
-                                                        Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
-                                                        Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE"), self,
-                                                        self.OnEntityInteractionComponentData)
-    self.m_VeniceSoldierHealthModuleDataCallback = ResourceManager:RegisterInstanceLoadHandler(
-                                                       Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
-                                                       Guid("705967EE-66D3-4440-88B9-FEEF77F53E77"), self,
-                                                       self.OnVeniceSoldierHealthModuleData)
-    self.m_SoldierEntityDataCallback = ResourceManager:RegisterInstanceLoadHandler(
-                                           Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
-                                           Guid("A9FFE6B4-257F-4FE8-A950-B323B50D2112"), self, self.OnSoldierEntityData)
-    self.m_ReviveCustomizeSoldierDataCallback = ResourceManager:RegisterInstanceLoadHandler(
-                                                    Guid("4EF77C47-6512-11E0-9AE6-EF0E747BA479"),
-                                                    Guid("B407182A-1C98-13DE-49A3-EE7F7EADFB4D"), self,
-                                                    self.OnReviveCustomizeSoldierData)
+        Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+        Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE"), 
+        self, self.OnEntityInteractionComponentData
+    )
 
-    self.m_MeleeEntityCommonDataCallback = ResourceManager:RegisterInstanceLoadHandler(
-                                               Guid("B6CDC48A-3A8C-11E0-843A-AC0656909BCB"),
-                                               Guid("F21FB5EA-D7A6-EE7E-DDA2-C776D604CD2E"), self,
-                                               self.OnMeleeEntityCommonData)
+    self.m_VeniceSoldierHealthModuleDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+        Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+        Guid("705967EE-66D3-4440-88B9-FEEF77F53E77"), 
+        self, self.OnVeniceSoldierHealthModuleData
+    )
+
+    self.m_SoldierEntityDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+        Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+        Guid("A9FFE6B4-257F-4FE8-A950-B323B50D2112"), 
+        self, self.OnSoldierEntityData
+    )
+
+    self.m_ReviveCustomizeSoldierDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+        Guid("4EF77C47-6512-11E0-9AE6-EF0E747BA479"),
+        Guid("B407182A-1C98-13DE-49A3-EE7F7EADFB4D"), 
+        self, self.OnReviveCustomizeSoldierData
+    )
+
     self.m_InputRestriction = ResourceManager:RegisterInstanceLoadHandler(
-                                               Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
-                                               Guid("8B5295FF-8770-4587-B436-1F2E71F97F35"),
-                                               self, self.OnInputRestrictionData)
+        Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+        Guid("8B5295FF-8770-4587-B436-1F2E71F97F35"),
+        self, self.OnInputRestrictionData
+    )
+
     self.m_CollisionDataCallback = ResourceManager:RegisterInstanceLoadHandler(
-                                               Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
-                                               Guid("5917C5BE-142C-498F-9EA0-CCC6211746D2"), self,
-                                               self.OnCollisionData)
+        Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+        Guid("5917C5BE-142C-498F-9EA0-CCC6211746D2"), 
+        self, self.OnCollisionData
+    )
 end
 
 function InteractiveManDown:OnLevelLoadResources()
@@ -56,18 +62,10 @@ end
 function InteractiveManDown:OnInputRestrictionData(p_Instance)
     p_Instance = InputRestrictionEntityData(p_Instance)
     p_Instance:MakeWritable()
-    p_Instance.selectWeapon9 = true
+    p_Instance.selectWeapon9 = false
     p_Instance.sprint = false
     p_Instance.changeWeapon = false
     p_Instance.zoom = false
-end
-
--- disable knife animation
-function InteractiveManDown:OnMeleeEntityCommonData(p_Instance)
-    p_Instance = MeleeEntityCommonData(p_Instance)
-    p_Instance:MakeWritable()
-    p_Instance.meleeAttackDistance = 0
-    p_Instance.maxAttackHeightDifference = 0
 end
 
 function InteractiveManDown:OnCollisionData(p_Instance)

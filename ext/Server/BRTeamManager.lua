@@ -56,6 +56,8 @@ function BRTeamManager:GetWinningTeam()
     local l_TeamsAlive = 0
 
     for _, l_Team in pairs(self.m_Teams) do
+        print(l_Team.m_Active)
+        print(l_Team:HasAlivePlayers())
         if l_Team.m_Active and l_Team:HasAlivePlayers() then
             l_Winner = l_Team
             l_TeamsAlive = l_TeamsAlive + 1
