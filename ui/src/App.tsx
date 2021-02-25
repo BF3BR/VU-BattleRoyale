@@ -216,7 +216,7 @@ const App: React.FC = () => {
     /*
     * Deploy screen
     */
-    const [deployScreen, setDeployScreen] = useState<boolean>(true);
+    const [deployScreen, setDeployScreen] = useState<boolean>(false);
     window.ToggleDeployMenu = () => {
         setDeployScreen(prevState => !prevState);
     }

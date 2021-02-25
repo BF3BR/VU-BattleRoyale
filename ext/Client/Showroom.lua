@@ -14,8 +14,6 @@ function Showroom:__init()
         self, 
         self.OnShowRoomCamera
     )
-
-    self.m_CameraEnabled = false
 end
 
 function Showroom:OnShowRoomBlueprint(p_Instance)
@@ -29,19 +27,19 @@ function Showroom:OnShowRoomCamera(p_Instance)
     s_Instance.priority = 1
 end
 
-function Showroom:EnableCamera()
-    if self.m_CameraEnabled then
-        return
-    end
-
+function Showroom:SetCamera(p_Enable)
     local s_CameraEntityIterator = EntityManager:GetIterator("ClientCameraEntity")
     local s_CameraEntity = s_CameraEntityIterator:Next()
 
     while s_CameraEntity do
         if s_CameraEntity.data.instanceGuid == Guid("528655FC-2653-4D5B-B55D-E6CBF997FC19") then
             s_CameraEntity = Entity(s_CameraEntity)
-            s_CameraEntity:FireEvent("TakeControl")
-            self.m_CameraEnabled = true
+
+            if p_Enable then
+                s_CameraEntity:FireEvent("TakeControl")
+            else
+                s_CameraEntity:FireEvent("ReleaseControl")
+            end
             return
         end
 

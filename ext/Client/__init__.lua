@@ -36,6 +36,8 @@ function VuBattleRoyaleClient:__init()
     self.m_Ping = PingClient()
 
     self.m_BrPlayer = BRPlayer()
+
+    m_Hud:SetShowroom(m_Showroom)
 end
 
 -- ==========
@@ -149,7 +151,8 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLevelLoaded()
-
+    m_Showroom:SetCamera(true)
+    WebUI:ExecuteJS("ToggleDeployMenu();")
 end
 
 function VuBattleRoyaleClient:OnLevelFinalized(p_LevelName, p_GameMode)
@@ -160,7 +163,6 @@ end
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)
     m_SpectatorCamera:OnEngineUpdate(p_DeltaTime)
-    m_Showroom:EnableCamera()
 end
 
 function VuBattleRoyaleClient:OnUIDrawHud()
@@ -285,6 +287,7 @@ function VuBattleRoyaleClient:OnTeamJoinDenied(p_Error)
 end
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
+    m_Showroom:SetCamera(false)
     NetEvents:Send("VuBattleRoyale:PlayerDeploy")
 end
 
