@@ -153,20 +153,7 @@ function BRTeam:HasAlivePlayers(p_PlayerToIgnore)
     return false
 end
 
-function BRTeam:AssignLeader()
-    if self:GetTeamLeader() == nil then
-        local l_Key = next(self.m_Players)
-        if l_Key ~= nil then
-            local l_BrPlayer = self.m_Players[l_Key]
-            l_BrPlayer.m_IsTeamLeader = true
-
-            return l_BrPlayer
-        end
-    end
-
-    return nil
-end
-
+-- Returns the team leader
 function BRTeam:GetTeamLeader()
     for _, l_BrPlayer in pairs(self.m_Players) do
         if l_BrPlayer.m_IsTeamLeader then
@@ -177,7 +164,24 @@ function BRTeam:GetTeamLeader()
     return nil
 end
 
--- Check if the team has only one player with no Custom team join strategy selected
+-- Assigns a new team leader if the team doesn't already have one
+function BRTeam:AssignLeader()
+    -- check if there's a team leader already
+    if self:GetTeamLeader() == nil then
+        return
+    end
+
+    -- pick a player to assign as team leader
+    local l_BrPlayer = MapHelper:Item(self.m_Players)
+    if l_BrPlayer ~= nil then
+        l_BrPlayer.m_IsTeamLeader = true
+        return l_BrPlayer
+    end
+
+    return nil
+end
+
+-- Checks if the team has only one player with no Custom team join strategy selected
 function BRTeam:CanBeJoinedById()
     if MapHelper:Size(self.m_Players) == 1 then
         local l_BrPlayer = MapHelper:Item(self.m_Players)
