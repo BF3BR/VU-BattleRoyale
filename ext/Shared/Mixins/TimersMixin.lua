@@ -15,6 +15,11 @@ function TimersMixin:GetTimer(p_Key)
     return self.m__Timers[p_Key]
 end
 
+-- Checks if a timer exists
+function TimersMixin:TimerExists(p_Key)
+    return self.m__Timers[p_Key] ~= nil
+end
+
 -- Destroys and nils a timer
 function TimersMixin:RemoveTimer(p_Key)
     if self.m__Timers[p_Key] ~= nil then

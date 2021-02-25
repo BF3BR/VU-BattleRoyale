@@ -204,7 +204,7 @@ function Match:OnEndGame(p_DeltaTime)
         self.m_Airdrop:Spawn(nil, false)
 
         if self.m_WinnerTeam ~= nil then
-            print("INFO: We have a winner team: " .. self.m_WinnerTeam)
+            print("INFO: We have a winner team: " .. self.m_WinnerTeam.m_Id)
         else
             print("INFO: Round ended without a winner.")
         end
@@ -285,7 +285,7 @@ function Match:DoWeHaveAWinner()
     local s_WinningTeam = self.m_TeamManager:GetWinningTeam()
 
     if s_WinningTeam ~= nil then
-        print(s_WinningTeam)
+        print(s_WinningTeam.m_Id)
         self.m_WinnerTeam = s_WinningTeam
         self.m_Server:ChangeGameState(GameStates.EndGame)
     end

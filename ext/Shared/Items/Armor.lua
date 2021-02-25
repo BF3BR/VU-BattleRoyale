@@ -33,7 +33,7 @@ function Armor:GetPercentage()
         return 0
     end
 
-    return self.m_CurrentDurability / self.m_Type.Durability
+    return math.floor((self.m_CurrentDurability / self.m_Type.Durability) * 100)
 end
 
 function Armor:AsTable()

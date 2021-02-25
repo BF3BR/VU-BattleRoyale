@@ -85,7 +85,7 @@ function BRTeamManager:AssignTeams()
                 self:CreateTeamWithPlayer(l_BrPlayer)
             end
 
-            -- lock teams whose player chose to play solo
+            -- lock teams whose only player chose to play as solo
             if l_BrPlayer.m_TeamJoinStrategy == TeamJoinStrategy.NoJoin then
                 l_BrPlayer.m_Team.m_Locked = true
             end

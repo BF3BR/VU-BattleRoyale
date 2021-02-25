@@ -118,8 +118,8 @@ end
 
 -- Applies team/squad ids to each player of the team
 function BRTeam:ApplyTeamSquadIds(p_TeamId, p_SquadId)
-    self.m_TeamId = (p_TeamId ~= nil and p_TeamId) or self.m_TeamId
-    self.m_SquadId = (p_SquadId ~= nil and p_SquadId) or self.m_SquadId
+    self.m_TeamId = p_TeamId or self.m_TeamId
+    self.m_SquadId = p_SquadId or self.m_SquadId
 
     -- update team/squad ids for each player
     for _, l_BrPlayer in pairs(self.m_Players) do
@@ -167,7 +167,7 @@ end
 -- Assigns a new team leader if the team doesn't already have one
 function BRTeam:AssignLeader()
     -- check if there's a team leader already
-    if self:GetTeamLeader() == nil then
+    if self:GetTeamLeader() ~= nil then
         return
     end
 
