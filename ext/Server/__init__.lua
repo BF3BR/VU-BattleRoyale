@@ -120,7 +120,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
     end
 
     -- If we are in warmup we should disable all damages
-    if self.m_GameState ~= GameStates.Match then
+    if self.m_GameState <= GameStates.WarmupToPlane or self.m_GameState >= GameStates.EndGame then
         if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
             return
         end
