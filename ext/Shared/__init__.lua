@@ -2,10 +2,12 @@ class "VuBattleRoyaleShared"
 
 require "__shared/Helpers/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
+require "__shared/Configs/PickupsConfig"
 require "__shared/DropWeapons"
 require "__shared/RemoveVehicles"
 require "__shared/Utils/EventRouter"
 -- require "__shared/InteractiveManDown"
+require "__shared/LootCreation"
 
 function VuBattleRoyaleShared:__init()
     -- Extension events
@@ -31,10 +33,16 @@ function VuBattleRoyaleShared:OnExtensionUnloaded()
 end
 
 function VuBattleRoyaleShared:RegisterEvents()
-    self.m_WorldPartData = ResourceManager:RegisterInstanceLoadHandler(
+    --[[ self.m_WorldPartData = ResourceManager:RegisterInstanceLoadHandler(
         Guid("B6BD6848-37DF-463A-81C5-33A5B3D6F623"),
         Guid("A048FCDD-2F98-432A-A5B7-5CC49F2AB21E"),
         self, self.OnWorldPartData
+    ) ]]
+
+    self.m_WorldPartData = ResourceManager:RegisterInstanceLoadHandler(
+        Guid("6C0D021C-80D8-4BDE-85F7-CDF6231F95D5"),
+        Guid("DA506D40-69C7-4670-BB8B-25EDC9F1A526"),
+        self, self.OnWorldPartLoaded
     )
 
     self.m_PreRoundEntityData = ResourceManager:RegisterInstanceLoadHandler(
@@ -67,6 +75,21 @@ end
 
 function VuBattleRoyaleShared:UnregisterHooks()
 
+end
+
+function VuBattleRoyaleShared:OnWorldPartLoaded(p_Instance)
+    local s_CustomWorldPartData = WorldPartData()
+
+    local s_WorldPartReferenceObjectData = WorldPartReferenceObjectData(p_Instance)
+    s_WorldPartReferenceObjectData:MakeWritable()
+    s_WorldPartReferenceObjectData.blueprint = s_CustomWorldPartData
+
+    local s_Registry = RegistryContainer()
+    s_Registry.blueprintRegistry:add(s_CustomWorldPartData)
+
+    LootCreation:OnWorldPartData(s_CustomWorldPartData, s_Registry)
+
+    ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end
 
 function VuBattleRoyaleShared:OnWorldPartData(p_Instance)
