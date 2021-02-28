@@ -102,7 +102,7 @@ function PhaseManagerServer:InitPhase()
 
         -- update initial outer circle center
         if self.m_PhaseIndex == 1 then
-            self.m_OuterCircle:Update(l_NewCenter, l_NewRadius * 1.5)
+            self.m_OuterCircle:Update(l_NewCenter, l_NewRadius * 3)
         end
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
         self.m_PrevOuterCircle = self.m_OuterCircle:Clone()

@@ -1,5 +1,6 @@
 require "__shared/Enums/TeamManagerEvents"
 require "__shared/Enums/PhaseManagerEvents"
+require "__shared/Enums/DamageEvents"
 require "BRTeam"
 require "BRPlayer"
 
@@ -268,8 +269,8 @@ function BRTeamManager:OnIncrementKill(p_Victim, p_Giver)
         end
 
         -- send finish message to p_Giver 
-        if p_Giver ~= nil and not p_Victim:Equals(l_Killer) then
-            -- TODO send finish message to p_Giver 
+        if p_Giver ~= nil and not p_Giver:Equals(l_Killer) then
+            NetEvent:SendToLocal(DamageEvents.ConfirmPlayerFinish, p_Giver.m_Player, p_Victim:GetName())
         end
 
         p_Victim.m_KillerName = nil
