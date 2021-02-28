@@ -31,6 +31,7 @@ ServerConfig =
             "voteban_flash",
             "Bree",
             "Janssent",
+            "[HCM]Janssent",
             "KVN",
             "breaknix",
             "kiwidog",
