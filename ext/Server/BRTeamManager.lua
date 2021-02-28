@@ -27,6 +27,7 @@ function BRTeamManager:RegisterEvents()
 
     Events:Subscribe(TeamManagerCustomEvents.PutOnATeam, self, self.OnPutOnATeam)
     Events:Subscribe(TeamManagerCustomEvents.DestroyTeam, self, self.OnDestroyTeam)
+    Events:Subscribe(TeamManagerCustomEvents.IncrementKill, self, self.OnIncrementKill)
 
     NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.OnSendPlayerState)
     NetEvents:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
@@ -253,6 +254,26 @@ end
 -- Destroys and removes the specified team
 function BRTeamManager:OnDestroyTeam(p_Team)
     self:RemoveTeam(p_Team)
+end
+
+-- Resolve who should count the kill for
+function BRTeamManager:OnIncrementKill(p_Victim, p_Giver)
+    if p_Victim.m_KillerName == nil and p_Giver ~= nil then
+        p_Giver:IncrementKills(p_Victim:GetName())
+    else
+        -- increment killer's counter
+        local l_Killer = self:GetPlayer(p_Victim.m_KillerName)
+        if l_Killer ~= nil then
+            l_Killer:IncrementKills(p_Victim:GetName())
+        end
+
+        -- send finish message to p_Giver 
+        if p_Giver ~= nil and not p_Victim:Equals(l_Killer) then
+            -- TODO send finish message to p_Giver 
+        end
+
+        p_Victim.m_KillerName = nil
+    end
 end
 
 function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
