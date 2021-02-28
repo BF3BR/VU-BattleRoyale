@@ -135,8 +135,10 @@ function VuBattleRoyaleClient:RegisterHooks()
     self.m_InputConceptEventHook = Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent)
 
     self.m_UIPushScreenHook = Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen)
-    self.m_UIDrawFriendlyNametag = Hooks:Install("UI:DrawFriendlyNametag", 1, self, self.OnUIDrawFriendlyNametag)
-    self.m_UIDrawEnemyNametag = Hooks:Install("UI:DrawEnemyNametag", 1, self, self.OnUIDrawEnemyNametag)
+    self.m_UICreateKillMessage = Hooks:Install('UI:CreateKillMessage', 999, self, self.OnUICreateKillMessage)
+    self.m_UIDrawFriendlyNametag = Hooks:Install("UI:DrawFriendlyNametag", 999, self, self.OnUIDrawFriendlyNametag)
+    self.m_UIDrawEnemyNametag = Hooks:Install("UI:DrawEnemyNametag", 999, self, self.OnUIDrawEnemyNametag)
+    self.m_UIDrawMoreNametags = Hooks:Install('UI:DrawMoreNametags', 999, self, self.OnUIDrawMoreNametags)
     -- self.m_UIEnableCursorMode =  Hooks:Install("UI:EnableCursorMode", 1, self, self.OnUIEnableCursorMode)
 end
 
@@ -368,11 +370,19 @@ function VuBattleRoyaleClient:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, 
 end
 
 function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_Hook)
-    m_UICleanup:OnUIDrawFriendlyNametag(p_Hook)
+    p_Hook:Return(nil)
+end
+
+function VuBattleRoyaleClient:OnUICreateKillMessage(p_Hook)
+    p_Hook:Return(nil)
 end
 
 function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_Hook)
-    m_UICleanup:OnUIDrawEnemyNametag(p_Hook)
+    p_Hook:Return(nil)
+end
+
+function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_Hook)
+    p_Hook:Return(nil)
 end
 
 function VuBattleRoyaleClient:OnUIEnableCursorMode(p_Hook, p_Enable, p_Cursor)

@@ -97,20 +97,6 @@ function UICleanup:OnBlurredBlueScreen(instance)
 	instance.excluded = true
 end
 
-function UICleanup:OnUIDrawFriendlyNametag(p_Hook)
-    -- TOOD: Fix this:
-    -- requires build 17490 
-    -- as soon as we get a new vext version we should require it (in the mod.json), otherwise players with an older build would still see the nametags
-    p_Hook:Return()
-end
-
-function UICleanup:OnUIDrawEnemyNametag(p_Hook)
-    -- TOOD: Fix this:
-    -- requires build 17490 
-    -- as soon as we get a new vext version we should require it (in the mod.json), otherwise players with an older build would still see the nametags
-    p_Hook:Return()
-end
-
 function UICleanup:OnUIEnableCursorMode(p_Hook, p_Enable, p_Cursor)
     p_Hook:Pass(false, 0)
 end
