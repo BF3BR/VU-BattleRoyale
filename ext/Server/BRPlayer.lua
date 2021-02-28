@@ -181,6 +181,15 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
     }
 end
 
+-- Resets the state of a player
+function BRPlayer:Reset()
+    self.m_Armor = Armor:BasicArmor()
+    self.m_Kills = 0
+    self.m_Score = 0
+
+    self:SendState()
+end
+
 --
 function BRPlayer:Equals(p_OtherBrPlayer)
     return p_OtherBrPlayer ~= nil and self.m_Player.name == BRPlayer:GetPlayerName(p_OtherBrPlayer)

@@ -230,6 +230,10 @@ function BRTeamManager:EndOfRound()
     for _, l_BrTeam in pairs(self.m_Teams) do
         l_BrTeam.m_Active = false
     end
+
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        l_BrPlayer:Reset()
+    end
 end
 
 function BRTeamManager:OnVanillaPlayerCreated(p_Player)

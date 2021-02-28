@@ -91,7 +91,8 @@ function PhaseManagerServer:InitPhase()
         -- pick a random circle center
         if self.phaseIndex == 1 then
             l_NewRadius = MapsConfig[LevelNameHelper:GetLevelName()].InitialCircle.Radius
-            l_NewCenter = self:GetRandomInitialCenter()
+            -- l_NewCenter = self:GetRandomInitialCenter()
+            l_NewCenter = Vec3(148, 0, -864)
         else
             self.m_OuterCircle = self.m_InnerCircle:Clone()
             l_NewCenter = self.m_InnerCircle:RandomInnerPoint(self.m_InnerCircle.m_Radius - l_NewRadius)
