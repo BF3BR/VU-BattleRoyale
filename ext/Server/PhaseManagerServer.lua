@@ -89,10 +89,9 @@ function PhaseManagerServer:InitPhase()
         local l_NewCenter = nil
 
         -- pick a random circle center
-        if self.phaseIndex == 1 then
+        if self.m_PhaseIndex == 1 then
             l_NewRadius = MapsConfig[LevelNameHelper:GetLevelName()].InitialCircle.Radius
-            -- l_NewCenter = self:GetRandomInitialCenter()
-            l_NewCenter = Vec3(148, 0, -864)
+            l_NewCenter = self:GetRandomInitialCenter()
         else
             self.m_OuterCircle = self.m_InnerCircle:Clone()
             l_NewCenter = self.m_InnerCircle:RandomInnerPoint(self.m_InnerCircle.m_Radius - l_NewRadius)
@@ -102,8 +101,8 @@ function PhaseManagerServer:InitPhase()
         self.m_InnerCircle:Update(l_NewCenter, l_NewRadius)
 
         -- update initial outer circle center
-        if self.phaseIndex == 1 then
-            self.m_OuterCircle.m_Center = l_NewCenter
+        if self.m_PhaseIndex == 1 then
+            self.m_OuterCircle:Update(l_NewCenter, l_NewRadius * 1.5)
         end
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
         self.m_PrevOuterCircle = self.m_OuterCircle:Clone()

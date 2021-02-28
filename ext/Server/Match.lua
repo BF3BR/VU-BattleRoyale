@@ -282,7 +282,10 @@ function Match:DoWeHaveAWinner()
         return
     end
 
-    local s_WinningTeam = self.m_TeamManager:GetWinningTeam()
+    local s_WinningTeam = nil
+    if ServerConfig.Debug.EnableWinningCheck then
+        s_WinningTeam = self.m_TeamManager:GetWinningTeam()
+    end
 
     if s_WinningTeam ~= nil then
         print(s_WinningTeam.m_Id)
