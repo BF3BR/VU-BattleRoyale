@@ -19,6 +19,8 @@ function BRTeamManager:RegisterVars()
 end
 
 function BRTeamManager:RegisterEvents()
+    Events:Subscribe("Level:Destroy", self, self.OnEndOfRound)
+
     Events:Subscribe("Player:Authenticated", self, self.OnVanillaPlayerCreated)
     Events:Subscribe("Player:Left", self, self.OnVanillaPlayerDestroyed)
     Events:Subscribe("Player:Killed", self, self.OnSendPlayerState)
@@ -216,7 +218,7 @@ function BRTeamManager:CreateId(p_Len)
     end
 end
 
-function BRTeamManager:EndOfRound()
+function BRTeamManager:OnEndOfRound()
     -- put non custom team players back to their own teams
     for _, l_BrPlayer in pairs(self.m_Players) do
         if l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
@@ -224,14 +226,11 @@ function BRTeamManager:EndOfRound()
                 self:CreateTeamWithPlayer(l_BrPlayer)
             end
         end
-    end
 
-    -- deactivate teams
-    for _, l_BrTeam in pairs(self.m_Teams) do
-        l_BrTeam.m_Active = false
-    end
+        -- deactivate team
+        l_BrPlayer.m_Team.m_Active = false
 
-    for _, l_BrPlayer in pairs(self.m_Players) do
+        -- reset BrPlayer state
         l_BrPlayer:Reset()
     end
 end
