@@ -37,6 +37,7 @@ ServerConfig =
             "kiwidoggie",
             "keku645",
             "DankBoi21",
+            "FoolHen",
         },
     }
 }
