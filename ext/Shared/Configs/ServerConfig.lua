@@ -1,13 +1,13 @@
 ServerConfig = 
 {
     -- Minimum ammounts of players to start the warmup and then the match
-    MinPlayersToStart = 4,
+    MinPlayersToStart = 2,
 
     -- Number of player per team
     PlayersPerTeam = 2,
 
     -- Warmup time
-    WarmupTime = 20.0,
+    WarmupTime = 60.0,
 
     -- WarmupToPlane transition time
     WarmupToPlaneTime = 5.0,
