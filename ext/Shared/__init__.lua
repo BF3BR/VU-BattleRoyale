@@ -7,7 +7,7 @@ require "__shared/DropWeapons"
 require "__shared/RemoveVehicles"
 require "__shared/Utils/EventRouter"
 -- require "__shared/InteractiveManDown"
-require "__shared/LootCreation"
+local m_LootCreation = require "__shared/LootCreation"
 
 function VuBattleRoyaleShared:__init()
     -- Extension events
@@ -87,7 +87,7 @@ function VuBattleRoyaleShared:OnWorldPartLoaded(p_Instance)
     local s_Registry = RegistryContainer()
     s_Registry.blueprintRegistry:add(s_CustomWorldPartData)
 
-    LootCreation:OnWorldPartData(s_CustomWorldPartData, s_Registry)
+    m_LootCreation:OnWorldPartData(s_CustomWorldPartData, s_Registry)
 
     ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end
