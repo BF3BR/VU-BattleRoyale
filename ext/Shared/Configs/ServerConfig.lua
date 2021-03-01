@@ -27,6 +27,8 @@ ServerConfig =
     Debug = {
         EnableLootPointSpheres = true,
 
+        EnableWinningCheck = true,
+
         Whitelist = {
             "voteban_flash",
             "Bree",

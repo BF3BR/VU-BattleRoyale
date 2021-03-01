@@ -14,7 +14,8 @@ TeamManagerNetEvents = {
 
 TeamManagerCustomEvents = {
     DestroyTeam = "TM:DestroyTeam",
-    PutOnATeam = "TM:PutOnATeam"
+    PutOnATeam = "TM:PutOnATeam",
+    IncrementKill = "TM:IncrementKill"
 }
 
 TeamManagerErrors = {

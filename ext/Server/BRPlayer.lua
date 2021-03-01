@@ -16,6 +16,9 @@ function BRPlayer:__init(p_Player)
     -- indicates if the player is the leader of the team
     self.m_IsTeamLeader = false
 
+    -- the name of the player who killed this BRPlayer
+    self.m_KillerName = nil
+
     self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
     self.m_Armor = Armor:BasicArmor()
     self.m_Kills = 0
@@ -82,7 +85,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
     local health = l_Soldier.health
     if l_Soldier.isInteractiveManDown and p_Damage >= health then
         self:Kill(true)
-        NetEvents:SendToLocal(DamageEvents.ConfirmPlayerKill, p_Giver.m_Player, self:GetName())
+        Events:DispatchLocal(TeamManagerCustomEvents.IncrementKill, self, p_Giver)
 
         return health
     elseif not l_Soldier.isInteractiveManDown then
@@ -92,8 +95,10 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
         if p_Damage > health then
             -- kill instantly if no teammates left
             if self:HasAliveTeammates() then
+                self.m_KillerName = p_Giver:GetName()
                 NetEvents:SendToLocal(DamageEvents.ConfirmPlayerDown, p_Giver.m_Player, self:GetName())
             else
+                p_Giver:IncrementKills(self:GetName())
                 self:Kill(true)
             end
 
@@ -111,6 +116,13 @@ function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
     end
 
     return false
+end
+
+-- Increments the kill counter of the player
+function BRPlayer:IncrementKills(p_VictimName)
+    self.m_Kills = self.m_Kills + 1
+    NetEvents:SendToLocal(DamageEvents.ConfirmPlayerKill, p_Giver.m_Player, p_VictimName)
+    self:SendState()
 end
 
 -- Checks if the player and `p_OtherBrPlayer` are on the same team
@@ -202,6 +214,7 @@ end
 function BRPlayer:Destroy()
     self:LeaveTeam(true)
 
+    self.m_KillerName = nil
     self.m_Player = nil
     self.m_Team = nil
     self.m_Armor = nil
