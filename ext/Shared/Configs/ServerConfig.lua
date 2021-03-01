@@ -7,7 +7,7 @@ ServerConfig =
     PlayersPerTeam = 2,
 
     -- Warmup time
-    WarmupTime = 20.0,
+    WarmupTime = 60.0,
 
     -- WarmupToPlane transition time
     WarmupToPlaneTime = 5.0,
@@ -27,6 +27,8 @@ ServerConfig =
     Debug = {
         EnableLootPointSpheres = true,
 
+        EnableWinningCheck = true,
+
         Whitelist = {
             "voteban_flash",
             "Bree",
@@ -38,6 +40,7 @@ ServerConfig =
             "kiwidoggie",
             "keku645",
             "DankBoi21",
+            "FoolHen",
         },
     }
 }

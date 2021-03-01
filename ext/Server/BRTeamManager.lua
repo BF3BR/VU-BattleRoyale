@@ -19,12 +19,15 @@ function BRTeamManager:RegisterVars()
 end
 
 function BRTeamManager:RegisterEvents()
+    Events:Subscribe("Level:Destroy", self, self.OnEndOfRound)
+
     Events:Subscribe("Player:Authenticated", self, self.OnVanillaPlayerCreated)
     Events:Subscribe("Player:Left", self, self.OnVanillaPlayerDestroyed)
     Events:Subscribe("Player:Killed", self, self.OnSendPlayerState)
 
     Events:Subscribe(TeamManagerCustomEvents.PutOnATeam, self, self.OnPutOnATeam)
     Events:Subscribe(TeamManagerCustomEvents.DestroyTeam, self, self.OnDestroyTeam)
+    Events:Subscribe(TeamManagerCustomEvents.IncrementKill, self, self.OnIncrementKill)
 
     NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.OnSendPlayerState)
     NetEvents:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
@@ -56,8 +59,6 @@ function BRTeamManager:GetWinningTeam()
     local l_TeamsAlive = 0
 
     for _, l_Team in pairs(self.m_Teams) do
-        print(l_Team.m_Active)
-        print(l_Team:HasAlivePlayers())
         if l_Team.m_Active and l_Team:HasAlivePlayers() then
             l_Winner = l_Team
             l_TeamsAlive = l_TeamsAlive + 1
@@ -85,9 +86,11 @@ function BRTeamManager:AssignTeams()
                 self:CreateTeamWithPlayer(l_BrPlayer)
             end
 
-            -- lock teams whose player chose to play solo
+            -- lock teams whose only player chose to play as solo
             if l_BrPlayer.m_TeamJoinStrategy == TeamJoinStrategy.NoJoin then
                 l_BrPlayer.m_Team.m_Locked = true
+            elseif l_BrPlayer.m_TeamJoinStrategy == TeamJoinStrategy.AutoJoin then
+                l_BrPlayer.m_Team.m_Locked = false
             end
         end
     end
@@ -216,7 +219,7 @@ function BRTeamManager:CreateId(p_Len)
     end
 end
 
-function BRTeamManager:EndOfRound()
+function BRTeamManager:OnEndOfRound()
     -- put non custom team players back to their own teams
     for _, l_BrPlayer in pairs(self.m_Players) do
         if l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
@@ -224,11 +227,12 @@ function BRTeamManager:EndOfRound()
                 self:CreateTeamWithPlayer(l_BrPlayer)
             end
         end
-    end
 
-    -- deactivate teams
-    for _, l_BrTeam in pairs(self.m_Teams) do
-        l_BrTeam.m_Active = false
+        -- deactivate team
+        l_BrPlayer.m_Team.m_Active = false
+
+        -- reset BrPlayer state
+        l_BrPlayer:Reset()
     end
 end
 
@@ -250,6 +254,26 @@ end
 -- Destroys and removes the specified team
 function BRTeamManager:OnDestroyTeam(p_Team)
     self:RemoveTeam(p_Team)
+end
+
+-- Resolve who should count the kill for
+function BRTeamManager:OnIncrementKill(p_Victim, p_Giver)
+    if p_Victim.m_KillerName == nil and p_Giver ~= nil then
+        p_Giver:IncrementKills(p_Victim:GetName())
+    else
+        -- increment killer's counter
+        local l_Killer = self:GetPlayer(p_Victim.m_KillerName)
+        if l_Killer ~= nil then
+            l_Killer:IncrementKills(p_Victim:GetName())
+        end
+
+        -- send finish message to p_Giver 
+        if p_Giver ~= nil and not p_Victim:Equals(l_Killer) then
+            -- TODO send finish message to p_Giver 
+        end
+
+        p_Victim.m_KillerName = nil
+    end
 end
 
 function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)

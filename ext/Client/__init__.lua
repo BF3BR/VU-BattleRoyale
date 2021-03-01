@@ -36,6 +36,8 @@ function VuBattleRoyaleClient:__init()
     self.m_Ping = PingClient()
 
     self.m_BrPlayer = BRPlayer()
+
+    m_Hud:SetShowroom(m_Showroom)
 end
 
 -- ==========
@@ -105,6 +107,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 
     self.m_GameStateChangedEvent = NetEvents:Subscribe("VuBattleRoyale:GameStateChanged", self, self.OnGameStateChanged)
     self.m_OnUpdateTimerEvent = NetEvents:Subscribe("VuBattleRoyale:UpdateTimer", self, self.OnUpdateTimer)
+    self.m_NotifyInflictorAboutAKillEvent = NetEvents:Subscribe("VuBattleRoyale:NotifyInflictorAboutAKill", self, self.OnNotifyInflictorAboutAKill)
 
     -- TODO: We might not even need this beacuse of the round restarts
     self.m_CleanupEntitiesEvent = NetEvents:Subscribe("VuBattleRoyale:Cleanup", self, self.OnCleanupEntities)
@@ -115,8 +118,6 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_GunshipPositionNetEvent = NetEvents:Subscribe("GunshipPosition", self, self.OnGunshipPosition)
     self.m_GunshipYawNetEvent = NetEvents:Subscribe("GunshipYaw", self, self.OnGunshipYaw)
     self.m_PlayersPitchAndYawEvent = NetEvents:Subscribe("VuBattleRoyale:PlayersPitchAndYaw", self, self.OnPlayersPitchAndYaw)
-
-    self.m_ConfirmPlayerKillEvent = NetEvents:Subscribe("ConfirmPlayerKill", self, self.OnConfirmPlayerKill) -- TODO: we might not need this
 
     self.m_TeamJoinDeniedEvent = NetEvents:Subscribe(TeamManagerNetEvents.TeamJoinDenied, self, self.OnTeamJoinDenied)
 
@@ -133,8 +134,10 @@ function VuBattleRoyaleClient:RegisterHooks()
     self.m_InputConceptEventHook = Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent)
 
     self.m_UIPushScreenHook = Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen)
-    self.m_UIDrawFriendlyNametag = Hooks:Install("UI:DrawFriendlyNametag", 1, self, self.OnUIDrawFriendlyNametag)
-    self.m_UIDrawEnemyNametag = Hooks:Install("UI:DrawEnemyNametag", 1, self, self.OnUIDrawEnemyNametag)
+    self.m_UICreateKillMessage = Hooks:Install('UI:CreateKillMessage', 999, self, self.OnUICreateKillMessage)
+    self.m_UIDrawFriendlyNametag = Hooks:Install("UI:DrawFriendlyNametag", 999, self, self.OnUIDrawFriendlyNametag)
+    self.m_UIDrawEnemyNametag = Hooks:Install("UI:DrawEnemyNametag", 999, self, self.OnUIDrawEnemyNametag)
+    self.m_UIDrawMoreNametags = Hooks:Install('UI:DrawMoreNametags', 999, self, self.OnUIDrawMoreNametags)
     -- self.m_UIEnableCursorMode =  Hooks:Install("UI:EnableCursorMode", 1, self, self.OnUIEnableCursorMode)
 end
 
@@ -149,7 +152,8 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLevelLoaded()
-
+    m_Showroom:SetCamera(true)
+    WebUI:ExecuteJS("ToggleDeployMenu();")
 end
 
 function VuBattleRoyaleClient:OnLevelFinalized(p_LevelName, p_GameMode)
@@ -160,7 +164,6 @@ end
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)
     m_SpectatorCamera:OnEngineUpdate(p_DeltaTime)
-    m_Showroom:EnableCamera()
 end
 
 function VuBattleRoyaleClient:OnUIDrawHud()
@@ -206,6 +209,14 @@ function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
     print("INFO: Set timer to: " .. p_Time)
 
     m_Hud:OnUpdateTimer(p_Time)
+end
+
+function VuBattleRoyaleClient:OnNotifyInflictorAboutAKill(p_PlayerName)
+    if p_PlayerName == nil then
+        return
+    end
+
+    m_Hud:OnNotifyInflictorAboutKillOrKnock(p_PlayerName, true)
 end
 
 function VuBattleRoyaleClient:OnCleanupEntities(p_EntityType)
@@ -260,22 +271,6 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Player)
     m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
 end
 
-function VuBattleRoyaleClient:OnConfirmPlayerKill(p_Giver, p_PlayerName)
-    print("INFO: OnConfirmPlayerKill: " .. p_PlayerName)
-
-    if p_PlayerName == nil then
-        return
-    end
-
-    local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
-
-    if s_Player == nil then
-        return
-    end
-
-    m_SpectatorCamera:OnPlayerKilled(s_Player, self.m_GameState)
-end
-
 function VuBattleRoyaleClient:OnTeamJoinDenied(p_Error)
     if p_Error == nil then
         return
@@ -285,6 +280,7 @@ function VuBattleRoyaleClient:OnTeamJoinDenied(p_Error)
 end
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
+    m_Showroom:SetCamera(false)
     NetEvents:Send("VuBattleRoyale:PlayerDeploy")
 end
 
@@ -365,11 +361,19 @@ function VuBattleRoyaleClient:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, 
 end
 
 function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_Hook)
-    m_UICleanup:OnUIDrawFriendlyNametag(p_Hook)
+    p_Hook:Return(nil)
+end
+
+function VuBattleRoyaleClient:OnUICreateKillMessage(p_Hook)
+    p_Hook:Return(nil)
 end
 
 function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_Hook)
-    m_UICleanup:OnUIDrawEnemyNametag(p_Hook)
+    p_Hook:Return(nil)
+end
+
+function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_Hook)
+    p_Hook:Return(nil)
 end
 
 function VuBattleRoyaleClient:OnUIEnableCursorMode(p_Hook, p_Enable, p_Cursor)

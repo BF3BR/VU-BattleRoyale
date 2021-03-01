@@ -1,6 +1,7 @@
 require "__shared/Enums/TeamManagerEvents"
 require "__shared/Enums/TeamJoinStrategy"
 require "__shared/Enums/BRPlayerState"
+require "__shared/Enums/DamageEvents"
 require "__shared/Items/Armor"
 
 class "BRPlayer"
@@ -15,8 +16,11 @@ function BRPlayer:__init(p_Player)
     -- indicates if the player is the leader of the team
     self.m_IsTeamLeader = false
 
+    -- the name of the player who killed this BRPlayer
+    self.m_KillerName = nil
+
     self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
-    self.m_Armor = Armor:NoArmor()
+    self.m_Armor = Armor:BasicArmor()
     self.m_Kills = 0
     self.m_Score = 0
 end
@@ -24,6 +28,10 @@ end
 -- Returns the username of the player
 function BRPlayer:GetName()
     return (self.m_Player ~= nil and self.m_Player.name) or nil
+end
+
+function BRPlayer:GetSoldier()
+    return self.m_Player ~= nil and self.m_Player.soldier
 end
 
 -- 
@@ -56,20 +64,49 @@ end
 function BRPlayer:ApplyTeamSquadIds()
     -- ensure that the player is dead
     if self.m_Player ~= nil and not self.m_Player.alive then
-        self.m_Player.TeamId = (self.m_Team ~= nil and self.m_Team.m_TeamId) or TeamId.Team1
-        self.m_Player.SquadId = (self.m_Team ~= nil and self.m_Team.m_SquadId) or SquadId.SquadNone
+        self.m_Player.teamId = (self.m_Team ~= nil and self.m_Team.m_TeamId) or TeamId.Team1
+        self.m_Player.squadId = (self.m_Team ~= nil and self.m_Team.m_SquadId) or SquadId.SquadNone
     end
 end
 
 -- 
-function BRPlayer:ApplyDamage(p_Damage, p_IgnoreArmor)
-    -- TODO add a lot...
-    local l_Damage = p_Damage
-    if not p_IgnoreArmor then
-        l_Damage = self.m_Armor:ApplyDamage(p_Damage)
+function BRPlayer:OnDamaged(p_Damage, p_Giver)
+    if self:IsTeammate(p_Giver) and not self:Equals(p_Giver) then
+        return 0
     end
 
-    self.m_Player.soldier.health = self.m_Player.soldier.health - l_Damage
+    NetEvents:SendToLocal(DamageEvents.ConfirmHit, p_Giver.m_Player, p_Damage)
+
+    local l_Soldier = self:GetSoldier()
+    if l_Soldier == nil then
+        return p_Damage
+    end
+
+    local health = l_Soldier.health
+    if l_Soldier.isInteractiveManDown and p_Damage >= health then
+        self:Kill(true)
+        Events:DispatchLocal(TeamManagerCustomEvents.IncrementKill, self, p_Giver)
+
+        return health
+    elseif not l_Soldier.isInteractiveManDown then
+        health = health - 100
+        p_Damage = self.m_Armor:ApplyDamage(p_Damage)
+
+        if p_Damage > health then
+            -- kill instantly if no teammates left
+            if self:HasAliveTeammates() then
+                self.m_KillerName = p_Giver:GetName()
+                NetEvents:SendToLocal(DamageEvents.ConfirmPlayerDown, p_Giver.m_Player, self:GetName())
+            else
+                p_Giver:IncrementKills(self:GetName())
+                self:Kill(true)
+            end
+
+            return health
+        end
+    end
+
+    return p_Damage
 end
 
 -- Alias for `BRTeam:RemovePlayer()`
@@ -79,6 +116,13 @@ function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
     end
 
     return false
+end
+
+-- Increments the kill counter of the player
+function BRPlayer:IncrementKills(p_VictimName)
+    self.m_Kills = self.m_Kills + 1
+    NetEvents:SendToLocal(DamageEvents.ConfirmPlayerKill, p_Giver.m_Player, p_VictimName)
+    self:SendState()
 end
 
 -- Checks if the player and `p_OtherBrPlayer` are on the same team
@@ -149,6 +193,15 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
     }
 end
 
+-- Resets the state of a player
+function BRPlayer:Reset()
+    self.m_Armor = Armor:BasicArmor()
+    self.m_Kills = 0
+    self.m_Score = 0
+
+    self:SendState()
+end
+
 --
 function BRPlayer:Equals(p_OtherBrPlayer)
     return p_OtherBrPlayer ~= nil and self.m_Player.name == BRPlayer:GetPlayerName(p_OtherBrPlayer)
@@ -161,6 +214,7 @@ end
 function BRPlayer:Destroy()
     self:LeaveTeam(true)
 
+    self.m_KillerName = nil
     self.m_Player = nil
     self.m_Team = nil
     self.m_Armor = nil

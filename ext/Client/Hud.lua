@@ -4,7 +4,7 @@ require "__shared/Configs/ServerConfig"
 require "__shared/Enums/GameStates"
 require "CachedJsExecutor"
 
-function VuBattleRoyaleHud:__init()
+function VuBattleRoyaleHud:__init(p_Showroom)
     self.m_HudOnPlayerYaw = CachedJsExecutor("OnPlayerYaw(%s)", 0)
     self.m_HudOnPlayerPos = CachedJsExecutor("OnPlayerPos(%s)", nil)
     self.m_HudOnUpdateCircles = CachedJsExecutor("OnUpdateCircles(%s)", nil)
@@ -36,11 +36,19 @@ function VuBattleRoyaleHud:__init()
     self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
     self.m_HudOnPlanePosition = CachedJsExecutor("OnPlanePosition(%s)", nil)
 
+    self.m_HudOnNotifyInflictorAboutKillOrKnock = CachedJsExecutor("OnNotifyInflictorAboutKillOrKnock(%s)", nil)
+
     self.m_Ticks = 0.0
 
     self.m_BrPlayer = nil
 
     self.m_HudLoaded = false
+
+    self.m_Showroom = nil
+end
+
+function VuBattleRoyaleHud:SetShowroom(p_Showroom)
+    self.m_Showroom = p_Showroom
 end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
@@ -62,6 +70,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
     end
 
     if InputManager:IsKeyDown(InputDeviceKeys.IDK_F10) then
+        self.m_Showroom:SetCamera(true)
         WebUI:ExecuteJS("ToggleDeployMenu();")
     end
 end
@@ -216,6 +225,22 @@ end
 
 function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
     self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
+end
+
+function VuBattleRoyaleHud:OnNotifyInflictorAboutKillOrKnock(p_PlayerName, p_IsKill)
+    if self.m_BrPlayer == nil then
+        return
+    end
+
+    if p_PlayerName == nil or p_IsKill == nil then
+        return
+    end
+
+    self.m_HudOnNotifyInflictorAboutKillOrKnock:ForceUpdate(json.encode({
+        ["name"] = p_PlayerName, 
+        ["kills"] = (self.m_BrPlayer.m_Kills or 0),
+        ["isKill"] = p_IsKill,
+    }))
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()

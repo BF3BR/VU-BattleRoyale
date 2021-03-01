@@ -23,6 +23,7 @@ function IOCVision:FixedVisionUpdates()
     -- update fog
     local l_Fog = FogData(l_State.fog)
     l_Fog.start = 0
+    l_Fog.endValue = 2700
     l_Fog.curve = Vec4(0.7, -0.72, 1.75, -0.65)
 
     VisualEnvironmentManager:SetDirty(true)
@@ -33,7 +34,7 @@ function IOCVision:UpdateFog(p_Diameter)
 
     -- update fog
     local l_Fog = FogData(l_State.fog)
-    l_Fog.endValue = p_Diameter * 3.2
+    l_Fog.endValue = math.min(p_Diameter * 3.2, 2700)
 
     VisualEnvironmentManager:SetDirty(true)
 end

@@ -89,7 +89,8 @@ MapsConfig = {
             }
         },
         InitialCircle = {
-            Radius = 500,
+            Radius = 450,
+
             Triangles = {
                 {
                     Vec2(-179.95001220703, -968.591796875), Vec2(-316.51806640625, -815.22882080078),
