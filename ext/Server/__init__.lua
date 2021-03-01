@@ -67,6 +67,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     -- InteractiveManDown revived event
     self.m_ManDownRevivedEvent = Events:Subscribe("Player:ManDownRevived", self, self.OnManDownRevived)
+    self.m_PlayerKilledEvent = Events:Subscribe('Player:Killed', self, self.OnPlayerKilled)
 end
 
 function VuBattleRoyaleServer:UnregisterEvents()
@@ -187,6 +188,11 @@ function VuBattleRoyaleServer:OnManDownRevived(p_Player, p_Reviver, p_IsAdrenali
     else
         p_Player.soldier.health = 0.0001
     end
+end
+
+
+function VuBattleRoyaleServer:OnPlayerKilled(p_Player, p_Inflictor, p_Pos, p_Weapon, p_IsRoadKill, p_IsHeadShot, p_WasVictimInReviveState, p_Info)    
+    NetEvents:SendTo("VuBattleRoyale:NotifyInflictorAboutAKill", p_Inflictor, p_Player.name)
 end
 
 function VuBattleRoyaleServer:OnPartitionLoaded(p_Partition)

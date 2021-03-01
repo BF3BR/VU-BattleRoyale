@@ -107,6 +107,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 
     self.m_GameStateChangedEvent = NetEvents:Subscribe("VuBattleRoyale:GameStateChanged", self, self.OnGameStateChanged)
     self.m_OnUpdateTimerEvent = NetEvents:Subscribe("VuBattleRoyale:UpdateTimer", self, self.OnUpdateTimer)
+    self.m_NotifyInflictorAboutAKillEvent = NetEvents:Subscribe("VuBattleRoyale:NotifyInflictorAboutAKill", self, self.OnNotifyInflictorAboutAKill)
 
     -- TODO: We might not even need this beacuse of the round restarts
     self.m_CleanupEntitiesEvent = NetEvents:Subscribe("VuBattleRoyale:Cleanup", self, self.OnCleanupEntities)
@@ -117,8 +118,6 @@ function VuBattleRoyaleClient:RegisterEvents()
     self.m_GunshipPositionNetEvent = NetEvents:Subscribe("GunshipPosition", self, self.OnGunshipPosition)
     self.m_GunshipYawNetEvent = NetEvents:Subscribe("GunshipYaw", self, self.OnGunshipYaw)
     self.m_PlayersPitchAndYawEvent = NetEvents:Subscribe("VuBattleRoyale:PlayersPitchAndYaw", self, self.OnPlayersPitchAndYaw)
-
-    self.m_ConfirmPlayerKillEvent = NetEvents:Subscribe("ConfirmPlayerKill", self, self.OnConfirmPlayerKill) -- TODO: we might not need this
 
     self.m_TeamJoinDeniedEvent = NetEvents:Subscribe(TeamManagerNetEvents.TeamJoinDenied, self, self.OnTeamJoinDenied)
 
@@ -212,6 +211,14 @@ function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
     m_Hud:OnUpdateTimer(p_Time)
 end
 
+function VuBattleRoyaleClient:OnNotifyInflictorAboutAKill(p_PlayerName)
+    if p_PlayerName == nil then
+        return
+    end
+
+    m_Hud:OnNotifyInflictorAboutKillOrKnock(p_PlayerName, true)
+end
+
 function VuBattleRoyaleClient:OnCleanupEntities(p_EntityType)
     if p_EntityType == nil then
         return
@@ -262,22 +269,6 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Player)
     print("INFO: OnPlayerKilled: " .. p_Player.name)
 
     m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
-end
-
-function VuBattleRoyaleClient:OnConfirmPlayerKill(p_Giver, p_PlayerName)
-    print("INFO: OnConfirmPlayerKill: " .. p_PlayerName)
-
-    if p_PlayerName == nil then
-        return
-    end
-
-    local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
-
-    if s_Player == nil then
-        return
-    end
-
-    m_SpectatorCamera:OnPlayerKilled(s_Player, self.m_GameState)
 end
 
 function VuBattleRoyaleClient:OnTeamJoinDenied(p_Error)

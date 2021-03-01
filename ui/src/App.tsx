@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 /* Helpers */
 import Vec3 from "./helpers/Vec3";
@@ -10,7 +10,7 @@ import ParaDropDistance from "./components/ParaDropDistance";
 import MiniMap from "./components/MiniMap";
 import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
-import PlaneMessage from "./components/PlaneMessage";
+import InteractMessage from "./components/InteractMessage";
 import KillAndAliveInfo from "./components/KillAndAliveInfo";
 import Alert from "./components/Alert";
 import SpactatorInfo from "./components/SpactatorInfo";
@@ -20,6 +20,7 @@ import Inventory from "./components/Inventory";
 
 /* Style */
 import './App.scss';
+import KillMessage from "./components/KillMessage";
 
 const App: React.FC = () => {
     /*
@@ -121,6 +122,14 @@ const App: React.FC = () => {
         console.log(data);
     }
 
+    const [interactiveMessage, setInteractiveMessage] = useState<string|null>(null);
+    const [interactiveKey, setInteractiveKey] = useState<string|null>(null);
+
+    const setInteractiveMessageAndKey = (msg: string|null, key: string|null) => {
+        setInteractiveMessage(msg);
+        setInteractiveKey(key);
+    }
+
 
     /*
     * Spectator
@@ -145,6 +154,12 @@ const App: React.FC = () => {
 
     window.OnPlayerIsInPlane = (isInPlane: boolean) => {
         setPlayerIsInPlane(isInPlane);
+
+        if (isInPlane) {
+            setInteractiveMessageAndKey('Jump out of the plane', 'E');
+        } else {
+            setInteractiveMessageAndKey(null, null);
+        }
     }
 
 
@@ -221,8 +236,6 @@ const App: React.FC = () => {
         setDeployScreen(prevState => !prevState);
     }
 
-
-
     const [team, setTeam] = useState<Player[]>([]);
     window.OnUpdateTeamPlayers = (p_Team: any) => {
         let tempTeam: Player[] = [];
@@ -259,6 +272,24 @@ const App: React.FC = () => {
     window.OnTeamJoinError = (p_Error: number) => {
         setTeamJoinError(p_Error);
     }
+
+    const [killedMessageKilled, setKilledMessageKilled] = useState<boolean|null>(null);
+    const [killedMessageKills, setKilledMessageKills] = useState<number|null>(null);
+    const [killedMessageEnemyName, setKilledMessageEnemyName] = useState<string|null>(null);
+
+    const SetKilledMessage = (killed: boolean, enemyName: string, kills: number) => {
+        setKilledMessageKilled(killed);
+        setKilledMessageEnemyName(enemyName);
+        setKilledMessageKills(kills);
+    }
+
+
+    window.OnNotifyInflictorAboutKillOrKnock = (data: any) => {
+        if (data !== undefined && data !== null) {
+            SetKilledMessage(data.isKill, data.name, data.kills);
+        }
+    }
+    
 
     return (
         <>
@@ -314,6 +345,7 @@ const App: React.FC = () => {
                         radius: 450,
                     });
                 }}>setRandomCircle</button>
+                <button onClick={() => SetKilledMessage(false, 'TestUser', 3)}>SetKillMsg</button>
             </div>
 
             <div id="VUBattleRoyale">
@@ -369,8 +401,16 @@ const App: React.FC = () => {
                                     playerCurrentWeapon={playerCurrentWeapon}
                                 />
 
-                                <PlaneMessage
-                                    playerIsInPlane={playerIsInPlane}
+                                <InteractMessage
+                                    message={interactiveMessage}
+                                    keyboard={interactiveKey}
+                                />
+
+                                <KillMessage
+                                    killed={killedMessageKilled}
+                                    enemyName={killedMessageEnemyName}
+                                    kills={killedMessageKills}
+                                    resetMessage={() => SetKilledMessage(null, null, null)}
                                 />
 
                                 <Alert
@@ -396,10 +436,10 @@ const App: React.FC = () => {
                                     />
                                 }
 
-                                <Inventory
+                                {/*<Inventory
                                     mapOpen={openMap}
                                     playerInventory={playerInventory}
-                                />
+                                />*/}
                             </>
                         }
                     </>
@@ -444,5 +484,7 @@ declare global {
         OnTeamJoinError: (p_Error: number) => void;
 
         ToggleDeployMenu: () => void;
+
+        OnNotifyInflictorAboutKillOrKnock: (data: any) => void;
     }
 }

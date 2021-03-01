@@ -46,7 +46,7 @@ const Alert: React.FC<Props> = ({ alert, afterInterval, playSound }) => {
                 clearInterval(interval);
             }
         }
-    }, [alert, alertAudio]);
+    }, [alert]);
 
     return (
         <>
