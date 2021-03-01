@@ -36,6 +36,8 @@ function VuBattleRoyaleHud:__init(p_Showroom)
     self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
     self.m_HudOnPlanePosition = CachedJsExecutor("OnPlanePosition(%s)", nil)
 
+    self.m_HudOnNotifyInflictorAboutKillOrKnock = CachedJsExecutor("OnNotifyInflictorAboutKillOrKnock(%s)", nil)
+
     self.m_Ticks = 0.0
 
     self.m_BrPlayer = nil
@@ -223,6 +225,22 @@ end
 
 function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
     self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
+end
+
+function VuBattleRoyaleHud:OnNotifyInflictorAboutKillOrKnock(p_PlayerName, p_IsKill)
+    if self.m_BrPlayer == nil then
+        return
+    end
+
+    if p_PlayerName == nil or p_IsKill == nil then
+        return
+    end
+
+    self.m_HudOnNotifyInflictorAboutKillOrKnock:ForceUpdate(json.encode({
+        ["name"] = p_PlayerName, 
+        ["kills"] = (self.m_BrPlayer.m_Kills or 0),
+        ["isKill"] = p_IsKill,
+    }))
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()

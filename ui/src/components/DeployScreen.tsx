@@ -6,7 +6,6 @@ import BrSelect from "./BrSelect";
 import arrow from "../assets/img/arrow.svg";
 import lock from "../assets/img/lock.svg";
 import lockOpen from "../assets/img/lock-open.svg";
-import crown from "../assets/img/crown.svg";
 
 import "./DeployScreen.scss";
 
@@ -244,9 +243,9 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOp
                         <h1>Appearance</h1>
                     </div>
                     <div className="card-content">
-                        <button onClick={OnAppearanceLeft}><img src={arrow} className="left" /></button>
+                        <button onClick={OnAppearanceLeft}><img src={arrow} className="left" alt="Left" /></button>
                         <div className="AppearanceText">{AppearanceArray[selectedAppearance]}</div>
-                        <button onClick={OnAppearanceRight}><img src={arrow} className="right" /></button>
+                        <button onClick={OnAppearanceRight}><img src={arrow} className="right" alt="Right" /></button>
                     </div>
                 </div>
 

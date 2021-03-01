@@ -24,7 +24,7 @@ const Gameover: React.FC<Props> = ({ localPlayer }) => {
                 alertAudio.pause();
             }
         }
-    }, [localPlayer, alertAudio]);
+    }, [localPlayer]);
 
     return (
         <>
