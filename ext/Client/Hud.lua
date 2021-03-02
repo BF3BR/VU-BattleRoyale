@@ -37,6 +37,7 @@ function VuBattleRoyaleHud:__init(p_Showroom)
     self.m_HudOnPlanePosition = CachedJsExecutor("OnPlanePosition(%s)", nil)
 
     self.m_HudOnNotifyInflictorAboutKillOrKnock = CachedJsExecutor("OnNotifyInflictorAboutKillOrKnock(%s)", nil)
+    self.m_HudOnInteractiveMessageAndKey = CachedJsExecutor("OnInteractiveMessageAndKey(%s)", nil)
 
     self.m_Ticks = 0.0
 
@@ -69,9 +70,25 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
         return
     end
 
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == nil then
+        return
+    end
+
+    if s_LocalPlayer.soldier == nil then
+        return
+    end
+
     if InputManager:IsKeyDown(InputDeviceKeys.IDK_F10) then
-        self.m_Showroom:SetCamera(true)
-        WebUI:ExecuteJS("ToggleDeployMenu();")
+        if self.m_GameState == GameStates.Match or self.m_GameState == GameStates.Plane or self.m_GameState == GameStates.PlaneToFirstCircle then
+            if not s_LocalPlayer.soldier.alive then
+                self.m_Showroom:SetCamera(true)
+                WebUI:ExecuteJS("ToggleDeployMenu();")
+            end
+        else
+            self.m_Showroom:SetCamera(true)
+            WebUI:ExecuteJS("ToggleDeployMenu();")
+        end
     end
 end
 
@@ -97,6 +114,22 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
     end
 
     self.m_GameState = p_GameState
+
+    if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
+        self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+            ["msg"] = "Open team lobby",
+            ["key"] = "F10",
+        }))
+    end
+
+    if self.m_GameState == GameStates.WarmupToPlane then
+        self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+            ["msg"] = nil,
+            ["key"] = nil,
+        }))
+
+        WebUI:ExecuteJS("ToggleDeployMenu(false);")
+    end
 
     self.m_HudOnGameState:Update(GameStatesStrings[p_GameState])
 end

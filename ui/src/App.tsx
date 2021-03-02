@@ -130,7 +130,12 @@ const App: React.FC = () => {
         setInteractiveKey(key);
     }
 
-
+    window.OnInteractiveMessageAndKey = (data: any) => {
+        if (data !== undefined && data !== null) {
+            setInteractiveMessage(data.msg);
+            setInteractiveKey(data.key);
+        }
+    }
     /*
     * Spectator
     */
@@ -232,8 +237,12 @@ const App: React.FC = () => {
     * Deploy screen
     */
     const [deployScreen, setDeployScreen] = useState<boolean>(false);
-    window.ToggleDeployMenu = () => {
-        setDeployScreen(prevState => !prevState);
+    window.ToggleDeployMenu = (p_Toggle?: boolean) => {
+        if (p_Toggle !== undefined) {
+            setDeployScreen(p_Toggle);
+        } else {
+            setDeployScreen(prevState => !prevState);
+        }
     }
 
     const [team, setTeam] = useState<Player[]>([]);
@@ -483,8 +492,9 @@ declare global {
         OnUpdateTeamPlayers: (p_Team: any) => void;
         OnTeamJoinError: (p_Error: number) => void;
 
-        ToggleDeployMenu: () => void;
+        ToggleDeployMenu: (p_Toggle?: boolean) => void;
 
         OnNotifyInflictorAboutKillOrKnock: (data: any) => void;
+        OnInteractiveMessageAndKey: (data: any) => void;
     }
 }
