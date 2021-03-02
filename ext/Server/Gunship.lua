@@ -1,5 +1,7 @@
 local Gunship = class "Gunship"
 
+require "__shared/Enums/CustomEvents"
+
 function Gunship:__init(p_Match)
     -- Save match reference
 	self.m_Match = p_Match
@@ -8,7 +10,8 @@ function Gunship:__init(p_Match)
 
 	self.m_SpeedMultiplier = 1.5
 
-    self.m_JumpOutOfGunshipEvent = NetEvents:Subscribe("JumpOutOfGunship", self, self.OnJumpOutOfGunship)
+    -- TODO: Fix this (?)
+    NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
 
     self.m_SetFlyPath = false
     self.m_CumulatedTime = 0
@@ -38,15 +41,14 @@ function Gunship:OnJumpOutOfGunship(p_Player)
     end
 
     self.m_Match:SpawnPlayer(p_Player, s_Transform)
-    p_Player.soldier.health = 200.0
-    NetEvents:SendToLocal("JumpOutOfGunship", p_Player)
+    NetEvents:SendToLocal(GunshipEvents.JumpOut, p_Player)
 end
 
 function Gunship:OnEngineUpdate(p_DeltaTime)
     if not self.m_SetFlyPath then
         if self.m_VehicleEntity ~= nil then
-            NetEvents:BroadcastLocal("GunshipPosition", self.m_VehicleEntity.transform)
-            NetEvents:BroadcastLocal("GunshipYaw", self.m_StartTransform)
+            NetEvents:BroadcastLocal(GunshipEvents.Position, self.m_VehicleEntity.transform)
+            NetEvents:BroadcastLocal(GunshipEvents.Yaw, self.m_StartTransform)
         end
 
         return
@@ -63,7 +65,7 @@ function Gunship:OnEngineUpdate(p_DeltaTime)
         self.m_CumulatedTime = 0
         self:SetLocatorEntityTransform()
         self:SetVehicleEntityTransform()
-        NetEvents:BroadcastLocal("GunshipCamera")
+        NetEvents:BroadcastLocal(GunshipEvents.Camera)
     end
 end
 

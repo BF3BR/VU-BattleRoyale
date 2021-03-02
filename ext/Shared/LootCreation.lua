@@ -8,7 +8,7 @@ function LootCreation:OnWorldPartData(p_WorldPartData, p_Registry)
     self.m_PickupBlueprints = {} 
     self:CreateAndRegisterPickupBlueprints(p_Registry)
 
-    for i, l_Transform in pairs(MapsConfig.XP5_003.LootSpawnPoints) do
+    for _, l_Transform in pairs(MapsConfig.XP5_003.LootSpawnPoints) do
         local s_PickupReferenceObjectData = ReferenceObjectData()
         s_PickupReferenceObjectData.blueprint = self.m_PickupBlueprints[MathUtils:GetRandomInt(1,3)]
         s_PickupReferenceObjectData.blueprintTransform = l_Transform
@@ -17,8 +17,6 @@ function LootCreation:OnWorldPartData(p_WorldPartData, p_Registry)
 
         p_Registry.referenceObjectRegistry:add(s_PickupReferenceObjectData)
     end
-
-    print("created loot spawns")
 end
 
 function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)

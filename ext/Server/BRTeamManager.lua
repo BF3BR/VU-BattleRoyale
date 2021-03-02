@@ -1,6 +1,6 @@
-require "__shared/Enums/TeamManagerEvents"
-require "__shared/Enums/PhaseManagerEvents"
-require "__shared/Enums/DamageEvents"
+require "__shared/Enums/TeamManagerErrors"
+require "__shared/Enums/CustomEvents"
+
 require "BRTeam"
 require "BRPlayer"
 

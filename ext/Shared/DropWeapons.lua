@@ -3,10 +3,14 @@ class "DropWeapons"
 function DropWeapons:__init()
     self.m_CenterOffset = 1.2
     self.m_HeightOffset = -0.5
+end
 
-    self.m_SubWorldDataLoaded = ResourceManager:RegisterInstanceLoadHandler(
-                                    Guid("4D59552D-787F-402E-8FED-7B360186BD8A"),
-                                    Guid("ED72C0EE-BAB1-4588-82AA-0BA8394EEEFB"), self, self.OnSubworldDataLoaded)
+function DropWeapons:RegisterCallbacks()
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("4D59552D-787F-402E-8FED-7B360186BD8A"),
+        Guid("ED72C0EE-BAB1-4588-82AA-0BA8394EEEFB"), 
+        self, self.OnSubworldDataLoaded
+    )
 end
 
 -- Wait for the gamemode subworld to load
@@ -124,26 +128,22 @@ end
 -- Clones l_Connections to and/or from the s_DropWeaponComponent and creates a similar one for our custom s_DropWeaponComponents
 function DropWeapons:CloneConnections(p_Blueprint, p_OriginalData, p_CustomData)
     for _, l_Connection in pairs(p_Blueprint.eventConnections) do
-
         if l_Connection.source == p_OriginalData then
-
             local s_Clone = EventConnection(l_Connection:Clone())
             s_Clone.source = p_CustomData
-
             p_Blueprint.eventConnections:add(s_Clone)
-
         end
 
         if l_Connection.target == p_OriginalData then
-
             local s_Clone = EventConnection(l_Connection:Clone())
             s_Clone.target = p_CustomData
-
             p_Blueprint.eventConnections:add(s_Clone)
-
         end
-
     end
 end
 
-g_DropWeapons = DropWeapons()
+if g_DropWeapons == nil then
+	g_DropWeapons = DropWeapons()
+end
+
+return g_DropWeapons

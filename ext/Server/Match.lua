@@ -1,9 +1,13 @@
 local Match = class("Match")
 
-require "__shared/Helpers/LevelNameHelper"
+require "__shared/Utils/LevelNameHelper"
+
 require "__shared/Configs/MapsConfig"
 require "__shared/Configs/ServerConfig"
+
 require "__shared/Enums/GameStates"
+require "__shared/Enums/CustomEvents"
+
 require "Gunship"
 require "Airdrop"
 require "PhaseManagerServer"
@@ -57,11 +61,6 @@ function Match:__init(p_Server, p_TeamManager)
     self.m_IsFadeOutSet = false
 end
 
-
--- ==========
--- Logic Update Callbacks
--- ==========
-
 function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
     self.m_Gunship:OnEngineUpdate(p_DeltaTime)
     self.m_Airdrop:OnEngineUpdate(p_DeltaTime)
@@ -97,9 +96,10 @@ function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
     end
 end
 
--- ==========
+
+-- =============================================
 -- Match Logic
--- ==========
+-- =============================================
 
 function Match:OnWarmup(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.Warmup] == 0.0 then
@@ -154,7 +154,7 @@ function Match:OnPlane(p_DeltaTime)
 
     if self.m_UpdateTicks[GameStates.Plane] >= ServerConfig.PlaneTime then
         self.m_UpdateTicks[GameStates.Plane] = 0.0
-        NetEvents:BroadcastLocal("ForceJumpOufOfGunship")
+        NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
         self.m_Server:ChangeGameState(GameStates.PlaneToFirstCircle)
         return
     end
@@ -239,60 +239,13 @@ function Match:OnRestartRound()
     self.m_CircleIndex = 1
     self.m_WinnerTeam = nil
 
-    self:Cleanup()
-
     self.m_Server:ChangeGameState(GameStates.None)
 end
 
--- ==========
+
+-- =============================================
 -- Other functions
--- ==========
-
-function Match:AirdropManager(p_DeltaTime)
-    if self.m_Airdrop:GetEnabled() then
-        self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
-
-        -- Remove the airdrop plane after 120 sec
-        if self.m_AirdropTimer >= 120.0 then
-            print("INFO: Airdrop unspawned")
-            self.m_AirdropTimer = 0.0
-            self.m_Airdrop:Spawn(nil, false, nil)
-        end
-    end
-
-    if self.m_AirdropNextDrop == nil then
-        self.m_AirdropNextDrop = MathUtils:GetRandom(30, 180)
-    end
-
-    self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
-    if self.m_AirdropTimer >= self.m_AirdropNextDrop then
-        self.m_AirdropNextDrop = nil
-        self.m_AirdropTimer = 0.0
-
-        if not self.m_Airdrop:GetEnabled() then
-            print("INFO: Airdrop spawned")
-            self.m_Airdrop:Spawn(self:GetRandomGunshipStart(), true, MathUtils:GetRandom(20, 60))
-        end
-    end
-end
-
-function Match:DoWeHaveAWinner()
-    if PlayerManager:GetPlayerCount() == 0 then
-        self.m_Server:ChangeGameState(GameStates.EndGame)
-        return
-    end
-
-    local s_WinningTeam = nil
-    if ServerConfig.Debug.EnableWinningCheck then
-        s_WinningTeam = self.m_TeamManager:GetWinningTeam()
-    end
-
-    if s_WinningTeam ~= nil then
-        print(s_WinningTeam.m_Id)
-        self.m_WinnerTeam = s_WinningTeam
-        self.m_Server:ChangeGameState(GameStates.EndGame)
-    end
-end
+-- =============================================
 
 function Match:SpawnWarmupAllPlayers()
     self:UnspawnAllSoldiers()
@@ -412,49 +365,6 @@ function Match:GetRandomWarmupSpawnpoint(p_Player)
     return s_SpawnTrans
 end
 
-function Match:Cleanup()
-    -- TODO: We might not even need this beacuse of the round restarts
-    self:CleanupSpecificEntity("ServerPickupEntity")
-    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientPickupEntity")
-
-    self:CleanupSpecificEntity("ServerMedicBagEntity")
-    self:CleanupSpecificEntity("ServerMedicBagHealingSphereEntity")
-    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientMedicBagEntity")
-    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientMedicBagHealingSphereEntity")
-
-    self:CleanupSpecificEntity("ServerSupplySphereEntity")
-    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientSupplySphereEntity")
-
-    self:CleanupSpecificEntity("ServerExplosionEntity")
-    self:CleanupSpecificEntity("ServerExplosionPackEntity")
-    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientExplosionEntity")
-    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientExplosionPackEntity")
-
-    self:CleanupSpecificEntity("ServerGrenadeEntity")
-    NetEvents:Broadcast("VuBattleRoyale:Cleanup", "ClientGrenadeEntity")
-end
-
-function Match:CleanupSpecificEntity(p_EntityType)
-    if p_EntityType == nil then
-        return
-    end
-
-    local s_Entities = {}
-
-    local s_Iterator = EntityManager:GetIterator(p_EntityType)
-    local s_Entity = s_Iterator:Next()
-    while s_Entity do
-        s_Entities[#s_Entities+1] = Entity(s_Entity)
-        s_Entity = s_Iterator:Next()
-    end
-
-    for _, l_Entity in pairs(s_Entities) do
-        if l_Entity ~= nil then
-            l_Entity:Destroy()
-        end
-    end
-end
-
 function Match:UnspawnAllSoldiers()
     local s_HumanPlayerEntityIterator = EntityManager:GetIterator("ServerHumanPlayerEntity")
     local s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
@@ -491,16 +401,61 @@ function Match:GetRandomGunshipStart()
     return s_Return
 end
 
-
 function Match:SetClientTimer(p_Time, p_Player)
     if p_Time == nil then
         return
     end
 
     if p_Player ~= nil then
-        NetEvents:SendTo("VuBattleRoyale:UpdateTimer", p_Player, p_Time)
+        NetEvents:SendTo(PlayerEvents.UpdateTimer, p_Player, p_Time)
     else
-        NetEvents:Broadcast("VuBattleRoyale:UpdateTimer", p_Time)
+        NetEvents:Broadcast(PlayerEvents.UpdateTimer, p_Time)
+    end
+end
+
+function Match:AirdropManager(p_DeltaTime)
+    if self.m_Airdrop:GetEnabled() then
+        self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
+
+        -- Remove the airdrop plane after 120 sec
+        if self.m_AirdropTimer >= 120.0 then
+            print("INFO: Airdrop unspawned")
+            self.m_AirdropTimer = 0.0
+            self.m_Airdrop:Spawn(nil, false, nil)
+        end
+    end
+
+    if self.m_AirdropNextDrop == nil then
+        self.m_AirdropNextDrop = MathUtils:GetRandom(30, 180)
+    end
+
+    self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
+    if self.m_AirdropTimer >= self.m_AirdropNextDrop then
+        self.m_AirdropNextDrop = nil
+        self.m_AirdropTimer = 0.0
+
+        if not self.m_Airdrop:GetEnabled() then
+            print("INFO: Airdrop spawned")
+            self.m_Airdrop:Spawn(self:GetRandomGunshipStart(), true, MathUtils:GetRandom(20, 60))
+        end
+    end
+end
+
+function Match:DoWeHaveAWinner()
+    if PlayerManager:GetPlayerCount() == 0 then
+        self.m_Server:ChangeGameState(GameStates.EndGame)
+        return
+    end
+
+    local s_WinningTeam = nil
+    if ServerConfig.Debug.EnableWinningCheck then
+        s_WinningTeam = self.m_TeamManager:GetWinningTeam()
+    end
+
+    if s_WinningTeam ~= nil then
+        print(s_WinningTeam.m_Id)
+        self.m_WinnerTeam = s_WinningTeam
+        self.m_Server:ChangeGameState(GameStates.EndGame)
     end
 end
 

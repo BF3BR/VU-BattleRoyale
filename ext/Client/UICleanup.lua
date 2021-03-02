@@ -1,46 +1,90 @@
-require "__shared/Helpers/ArrayHelper"
+require "__shared/Utils/ArrayHelper"
 
 class "UICleanup"
 
-function UICleanup:__init()
-    self.m_HudScreen = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("D05E6145-8816-11DF-AA1B-BA7094D44A63"),
-                                        Guid("E63B81E3-67FA-F6C3-2980-D899055DAB0C"), self, self.OnHudScreen)
-    self.m_HudMpScreen = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("3343E3E3-F3C4-11DF-90D5-D8126D045289"),
-                                        Guid("241F5AE9-2027-508E-98D1-506928AA1E3A"), self, self.OnHudMpScreen)
-    self.m_HudConquestScreen = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("0C14516A-02F0-4A81-B88B-6010A6A6DDC6"),
-                                        Guid("2A2B8447-C938-407A-951A-C3BA099F0374"), self, self.OnHudConquestScreen)
-    -- need healing/ repair/ ammo indicators
-    self.m_UITrackingtagCompData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("EEA59917-3FF2-11E0-B6B0-A41634C402A3"),
-                                        Guid("70998786-14D8-2E5A-CB44-F4C2DA29EE29"), self, self.OnUITrackingtagCompData)
-    -- Grenade Indicator
-    self.m_UIAlerttagCompData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("F9331953-F3F2-11DF-BAF2-BDEFE75B56CA"),
-                                        Guid("08FB6671-269A-2006-B8E1-AD901370C589"), self, self.OnUI3dIconCompData)
-    -- Just to have it complete
-    self.m_UICapturepointtagCompData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("37281D8D-BB5A-11DF-B69D-B42F116347F5"),
-                                        Guid("DD387B90-E2E8-1408-A934-9ADEC54F54B1"), self, self.OnUI3dIconCompData)
-    self.m_UI3dLaserTagCompData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("60FAA143-B12F-11E0-99F6-E16488F9EB8F"),
-                                        Guid("6866048A-4072-0257-D6D1-21785F9E8C10"), self, self.OnUI3dIconCompData)
-    self.m_UIMapmarkertagCompData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("5D9E85C0-CBC1-11DF-97A3-94A49B4BAE71"),
-                                        Guid("6F016F11-321C-EDD4-6D66-8F65485808E7"), self, self.OnUI3dIconCompData)
-    self.m_UITeamSupportTagCompData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("4EA75D30-765F-11E0-A82A-C41FAD23BE85"),
-                                        Guid("97C619F1-A2E3-DC55-02F2-BA61BA3CD36B"), self, self.OnUI3dIconCompData)
-    -- self.m_UIInteractionCompData = ResourceManager:RegisterInstanceLoadHandler(Guid("35DF1891-EB38-11DF-9230-E11388AEEF3E"), Guid("F159BE6E-611C-C1D7-2E49-DC50AD11A42A"), self, self.OnUI3dIconCompData)
+function UICleanup:RegisterCallbacks()
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("D05E6145-8816-11DF-AA1B-BA7094D44A63"),
+        Guid("E63B81E3-67FA-F6C3-2980-D899055DAB0C"), 
+        self, self.OnHudScreen
+    )
 
-    self.m_ColorCorrectionComponentData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), 
-                                        Guid("9CDAC6C3-9D3E-48F1-B8D9-737DB28AE936"), self, self.OnBlurredBlueScreen)
-    self.m_DofComponentData = ResourceManager:RegisterInstanceLoadHandler(
-                                        Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), 
-                                        Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"), self, self.OnBlurredBlueScreen)
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("3343E3E3-F3C4-11DF-90D5-D8126D045289"),
+        Guid("241F5AE9-2027-508E-98D1-506928AA1E3A"), 
+        self, self.OnHudMpScreen
+    )
+    
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("0C14516A-02F0-4A81-B88B-6010A6A6DDC6"),
+        Guid("2A2B8447-C938-407A-951A-C3BA099F0374"), 
+        self, self.OnHudConquestScreen
+    )
+
+    -- Need healing / repair / ammo indicators
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("EEA59917-3FF2-11E0-B6B0-A41634C402A3"),
+        Guid("70998786-14D8-2E5A-CB44-F4C2DA29EE29"), 
+        self, self.OnUITrackingtagCompData
+    )
+
+    -- Grenade indicator
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("F9331953-F3F2-11DF-BAF2-BDEFE75B56CA"),
+        Guid("08FB6671-269A-2006-B8E1-AD901370C589"), 
+        self, self.OnUI3dIconCompData
+    )
+
+    -- CapturepointtagCompData 
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("37281D8D-BB5A-11DF-B69D-B42F116347F5"),
+        Guid("DD387B90-E2E8-1408-A934-9ADEC54F54B1"), 
+        self, self.OnUI3dIconCompData
+    )
+
+    -- 3dLaserTagCompData
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("60FAA143-B12F-11E0-99F6-E16488F9EB8F"),
+        Guid("6866048A-4072-0257-D6D1-21785F9E8C10"), 
+        self, self.OnUI3dIconCompData
+    )
+
+    -- MapmarkertagCompData
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("5D9E85C0-CBC1-11DF-97A3-94A49B4BAE71"),
+        Guid("6F016F11-321C-EDD4-6D66-8F65485808E7"), 
+        self, self.OnUI3dIconCompData
+    )
+
+    -- TeamSupportTagCompData 
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("4EA75D30-765F-11E0-A82A-C41FAD23BE85"),
+        Guid("97C619F1-A2E3-DC55-02F2-BA61BA3CD36B"), 
+        self, self.OnUI3dIconCompData
+    )
+
+    --[[
+    -- InteractionCompData
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("35DF1891-EB38-11DF-9230-E11388AEEF3E"), 
+        Guid("F159BE6E-611C-C1D7-2E49-DC50AD11A42A"), 
+        self, self.OnUI3dIconCompData
+    )
+    ]]
+
+    -- ColorCorrectionComponentData
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), 
+        Guid("9CDAC6C3-9D3E-48F1-B8D9-737DB28AE936"), 
+        self, self.OnBlurredBlueScreen
+    )
+
+    -- DofComponentData 
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), 
+        Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"), 
+        self, self.OnBlurredBlueScreen
+    )
 end
 
 function UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
@@ -95,10 +139,6 @@ function UICleanup:OnBlurredBlueScreen(instance)
 	instance = ComponentData(instance)
 	instance:MakeWritable()
 	instance.excluded = true
-end
-
-function UICleanup:OnUIEnableCursorMode(p_Hook, p_Enable, p_Cursor)
-    p_Hook:Pass(false, 0)
 end
 
 -- Edit selected UIScreenAsset's nodes

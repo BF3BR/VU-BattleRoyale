@@ -1,7 +1,7 @@
+require "__shared/Utils/MathHelper"
+require "__shared/Utils/RaycastHelper"
 require "__shared/Configs/CircleConfig"
-require "__shared/Helpers/MathHelper"
 require "__shared/Circle"
-require "Helpers/RaycastHelper"
 
 local s_TwoPi = 2 * math.pi
 
@@ -22,7 +22,6 @@ function RenderableCircle:__init(p_Center, p_Radius)
     self.m_ShouldDrawPoints = false
 end
 
--- 
 function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex)
     Circle.Update(self, p_Center, p_Radius)
 

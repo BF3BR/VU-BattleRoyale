@@ -1,55 +1,45 @@
 class "VuBattleRoyaleHud"
 
+require "__shared/Utils/CachedJsExecutor"
 require "__shared/Configs/ServerConfig"
 require "__shared/Enums/GameStates"
-require "CachedJsExecutor"
 
-function VuBattleRoyaleHud:__init(p_Showroom)
+local m_Showroom = require "Showroom"
+
+function VuBattleRoyaleHud:__init()
+    self.m_GameState = GameStates.None
+    self.m_Ticks = 0.0
+    self.m_BrPlayer = nil
+    self.m_HudLoaded = false
+    self.m_IsPlayerOnPlane = false
+
+    self:RegisterVars()
+end
+
+function VuBattleRoyaleHud:RegisterVars()
     self.m_HudOnPlayerYaw = CachedJsExecutor("OnPlayerYaw(%s)", 0)
     self.m_HudOnPlayerPos = CachedJsExecutor("OnPlayerPos(%s)", nil)
     self.m_HudOnUpdateCircles = CachedJsExecutor("OnUpdateCircles(%s)", nil)
-
     self.m_HudOnGameState = CachedJsExecutor("OnGameState('%s')", GameStates.None)
-    self.m_GameState = GameStates.None
-
     self.m_HudOnPlayersInfo = CachedJsExecutor("OnPlayersInfo(%s)", nil)
     self.m_HudOnLocalPlayerInfo = CachedJsExecutor("OnLocalPlayerInfo(%s)", nil)
-
     self.m_HudOnUpdateTimer = CachedJsExecutor("OnUpdateTimer(%s)", nil)
-
     self.m_HudOnMinPlayersToStart = CachedJsExecutor("OnMinPlayersToStart(%s)", nil)
-
     self.m_HudOnPlayerHealth = CachedJsExecutor("OnPlayerHealth(%s)", 0)
     self.m_HudOnPlayerArmor = CachedJsExecutor("OnPlayerArmor(%s)", 0)
     self.m_HudOnPlayerPrimaryAmmo = CachedJsExecutor("OnPlayerPrimaryAmmo(%s)", 0)
     self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
     self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", "")
     self.m_HudOnPlayerWeapons = CachedJsExecutor("OnPlayerWeapons(%s)", nil)
-
     self.m_HudOnUpdateTeamPlayers = CachedJsExecutor("OnUpdateTeamPlayers(%s)", nil)
     self.m_HudOnUpdateTeamLocked = CachedJsExecutor("OnUpdateTeamLocked(%s)", false)
     self.m_HudOnUpdateTeamId = CachedJsExecutor("OnUpdateTeamId('%s')", "-")
     self.m_HudOnUpdateTeamSize = CachedJsExecutor("OnUpdateTeamSize(%s)", 0)
     self.m_HudOnTeamJoinError = CachedJsExecutor("OnTeamJoinError(%s)", nil)
-
-    self.m_IsPlayerOnPlane = false
     self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
     self.m_HudOnPlanePosition = CachedJsExecutor("OnPlanePosition(%s)", nil)
-
     self.m_HudOnNotifyInflictorAboutKillOrKnock = CachedJsExecutor("OnNotifyInflictorAboutKillOrKnock(%s)", nil)
     self.m_HudOnInteractiveMessageAndKey = CachedJsExecutor("OnInteractiveMessageAndKey(%s)", nil)
-
-    self.m_Ticks = 0.0
-
-    self.m_BrPlayer = nil
-
-    self.m_HudLoaded = false
-
-    self.m_Showroom = nil
-end
-
-function VuBattleRoyaleHud:SetShowroom(p_Showroom)
-    self.m_Showroom = p_Showroom
 end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
@@ -80,14 +70,15 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
     end
 
     if InputManager:IsKeyDown(InputDeviceKeys.IDK_F10) then
-        if self.m_GameState == GameStates.Match or self.m_GameState == GameStates.Plane or self.m_GameState == GameStates.PlaneToFirstCircle then
+        print("F10")
+        -- TODO: Fix this mess...
+        if (self.m_GameState ~= GameStates.Match and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle)
+         or not s_LocalPlayer.soldier.alive then
+            print("I dont event... wtf")
             if not s_LocalPlayer.soldier.alive then
-                self.m_Showroom:SetCamera(true)
+                m_Showroom:SetCamera(true)
                 WebUI:ExecuteJS("ToggleDeployMenu();")
             end
-        else
-            self.m_Showroom:SetCamera(true)
-            WebUI:ExecuteJS("ToggleDeployMenu();")
         end
     end
 end
@@ -98,7 +89,7 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
         return
     end
 
-    if self.m_Ticks >= ServerConfig.HudUpdateTime then
+    if self.m_Ticks >= ServerConfig.HudUpdateRate then
         self.m_HudOnMinPlayersToStart:Update(ServerConfig.MinPlayersToStart)
         self:PushUpdatePlayersInfo()
 

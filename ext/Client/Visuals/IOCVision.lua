@@ -1,4 +1,4 @@
-require "__shared/Enums/PhaseManagerEvents"
+require "__shared/Enums/CustomEvents"
 require "__shared/Configs/CircleConfig"
 
 class "IOCVision"

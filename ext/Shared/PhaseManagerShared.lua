@@ -1,4 +1,4 @@
-require "__shared/Enums/PhaseManagerEvents"
+require "__shared/Enums/CustomEvents"
 require "__shared/Enums/SubphaseTypes"
 require "__shared/Mixins/TimersMixin"
 
@@ -16,7 +16,7 @@ function PhaseManagerShared:RegisterVars()
     self.m_OuterCircle = Circle()
     self.m_PrevOuterCircle = Circle()
 
-    -- TODO
+    -- TODO: Fix map related stuff
     self.m_Phases = MapsConfig.XP5_003.Phases
     self.m_InitialDelay = MapsConfig.XP5_003.BeforeFirstCircleDelay
 

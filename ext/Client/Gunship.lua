@@ -1,10 +1,25 @@
 class "Gunship"
 
+require "__shared/Enums/CustomEvents"
+
 function Gunship:__init()
     self.m_IsInGunship = false
+end
 
-    self.m_CameraEntityUs = ResourceManager:RegisterInstanceLoadHandler(Guid("694A231C-4439-461D-A7FF-764915FC3E7C"), Guid("6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30"), self, self.OnCameraEntityData)
-    self.m_CameraEntityRu = ResourceManager:RegisterInstanceLoadHandler(Guid("5D4B1096-3089-45A7-9E3A-422E15E0D8F6"), Guid("A4281E60-7557-4BFF-ADD4-18D7E8780873"), self, self.OnCameraEntityData)
+function Gunship:RegisterCallbacks()
+    -- CameraEntityUs
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("694A231C-4439-461D-A7FF-764915FC3E7C"), 
+        Guid("6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30"), 
+        self, self.OnCameraEntityData
+    )
+
+    -- CameraEntityRu
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("5D4B1096-3089-45A7-9E3A-422E15E0D8F6"), 
+        Guid("A4281E60-7557-4BFF-ADD4-18D7E8780873"), 
+        self, self.OnCameraEntityData
+    )
 end
 
 function Gunship:OnCameraEntityData(p_Instance)
@@ -19,7 +34,7 @@ end
 
 function Gunship:OnForceJumpOufOfGunship()
     if self.m_IsInGunship then
-        NetEvents:SendLocal("JumpOutOfGunship")
+        NetEvents:SendLocal(GunshipEvents.JumpOut)
         self:EnableCamera(false)
     end
 end
@@ -32,13 +47,12 @@ function Gunship:OnClientUpdateInput()
     if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) then
         self.m_IsInGunship = false
 
-        NetEvents:SendLocal("JumpOutOfGunship")
+        NetEvents:SendLocal(GunshipEvents.JumpOut)
         self:EnableCamera(false)
     end
 end
 
 function Gunship:EnableCamera(p_Enable)
-
     local s_CameraEntityIterator = EntityManager:GetIterator("ClientCameraEntity")
     local s_CameraEntity = s_CameraEntityIterator:Next()
 

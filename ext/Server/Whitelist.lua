@@ -2,10 +2,6 @@ class "Whitelist"
 
 require "__shared/Configs/ServerConfig"
 
-function Whitelist:__init()
-    Hooks:Install("Player:RequestJoin", 100, self, self.OnPlayerRequestJoin)
-end
-
 function Whitelist:OnPlayerRequestJoin(p_Hook, p_JoinMode, p_AccountGuid, p_PlayerGuid, p_PlayerName)
     if #ServerConfig.Debug.Whitelist > 0 then
         for _, l_Name in ipairs(ServerConfig.Debug.Whitelist) do
@@ -17,4 +13,8 @@ function Whitelist:OnPlayerRequestJoin(p_Hook, p_JoinMode, p_AccountGuid, p_Play
     end
 end
 
-g_Whitelist = Whitelist()
+if g_Whitelist == nil then
+	g_Whitelist = Whitelist()
+end
+
+return g_Whitelist

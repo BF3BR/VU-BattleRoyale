@@ -1,6 +1,6 @@
 class "PingClient"
 
-require "__shared/Enums/PingEvents"
+require "__shared/Enums/CustomEvents"
 require "__shared/Utils/EventRouter"
 
 function PingClient:__init()

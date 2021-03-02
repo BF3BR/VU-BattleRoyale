@@ -1,6 +1,6 @@
 class "SpectatorCamera"
 
-require "__shared/Helpers/MathHelper"
+require "__shared/Utils/MathHelper"
 
 function SpectatorCamera:__init()
 	self.m_SpectatedPlayer = nil

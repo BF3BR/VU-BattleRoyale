@@ -19,13 +19,13 @@ ServerConfig =
     EndGameTime = 15.0,
 
     -- Time to update some of the HUD components
-    HudUpdateTime = 2.5,
+    HudUpdateRate = 2.5,
 
     GunshipDespawn = 60.0,
 
     -- DEBUG STUFF
     Debug = {
-        EnableLootPointSpheres = true,
+        EnableLootPointSpheres = false,
 
         EnableWinningCheck = true,
 

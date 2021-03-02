@@ -1,63 +1,50 @@
 class "InteractiveManDown"
 
-function InteractiveManDown:__init()
-    self.m_EventConnections = require "__shared/Utils/EventConnections"
-    self.m_LinkConnections = require "__shared/Utils/LinkConnections"
+local m_EventConnections = require "__shared/Utils/Connections/EventConnections"
 
+function InteractiveManDown:__init()
     self.m_NewSoldierEntityDataGuid = MathUtils:RandomGuid()
     self.m_CoopManDownM9Guid = MathUtils:RandomGuid()
+end
 
-    self.m_LevelLoadResourcesEvent = Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
-    self.m_ResourceManagerLoadBundlesHook = Hooks:Install("ResourceManager:LoadBundles", 100, self, self.OnResourceManagerLoadBundles)
-
-    self.m_EntityInteractionComponentDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+function InteractiveManDown:RegisterCallbacks()
+    ResourceManager:RegisterInstanceLoadHandler(
         Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
         Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE"), 
         self, self.OnEntityInteractionComponentData
     )
 
-    self.m_VeniceSoldierHealthModuleDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+    ResourceManager:RegisterInstanceLoadHandler(
         Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
         Guid("705967EE-66D3-4440-88B9-FEEF77F53E77"), 
         self, self.OnVeniceSoldierHealthModuleData
     )
 
-    self.m_SoldierEntityDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+    ResourceManager:RegisterInstanceLoadHandler(
         Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
         Guid("A9FFE6B4-257F-4FE8-A950-B323B50D2112"), 
         self, self.OnSoldierEntityData
     )
 
-    self.m_ReviveCustomizeSoldierDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+    ResourceManager:RegisterInstanceLoadHandler(
         Guid("4EF77C47-6512-11E0-9AE6-EF0E747BA479"),
         Guid("B407182A-1C98-13DE-49A3-EE7F7EADFB4D"), 
         self, self.OnReviveCustomizeSoldierData
     )
 
-    self.m_InputRestriction = ResourceManager:RegisterInstanceLoadHandler(
+    ResourceManager:RegisterInstanceLoadHandler(
         Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
         Guid("8B5295FF-8770-4587-B436-1F2E71F97F35"),
         self, self.OnInputRestrictionData
     )
 
-    self.m_CollisionDataCallback = ResourceManager:RegisterInstanceLoadHandler(
+    ResourceManager:RegisterInstanceLoadHandler(
         Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
         Guid("5917C5BE-142C-498F-9EA0-CCC6211746D2"), 
         self, self.OnCollisionData
     )
 end
 
-function InteractiveManDown:OnLevelLoadResources()
-    ResourceManager:MountSuperBundle("spchunks")
-    ResourceManager:MountSuperBundle("levels/coop_010/coop_010")
-end
-
-function InteractiveManDown:OnResourceManagerLoadBundles(p_HookCtx, p_Bundles, p_Compartment)
-    if #p_Bundles == 1 and p_Bundles[1] == SharedUtils:GetLevelName() then
-        p_Bundles = {"levels/coop_010/coop_010", p_Bundles[1]}
-        p_HookCtx:Pass(p_Bundles, p_Compartment)
-    end
-end
 
 function InteractiveManDown:OnInputRestrictionData(p_Instance)
     p_Instance = InputRestrictionEntityData(p_Instance)
@@ -124,7 +111,7 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
     -- changing Max Health to 300hp
     p_Instance.maxHealth = 300
 
-    local s_ManDownConnection = self.m_EventConnections:Create(p_Instance, s_CustomizeSoldierEntityData, -563307660,
+    local s_ManDownConnection = m_EventConnections:Create(p_Instance, s_CustomizeSoldierEntityData, -563307660,
                                                                206074481, 3)
 
     -- Region add all created to the MPSoldier and Registry of the game
@@ -192,18 +179,18 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
                                               Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
                                               Guid("9C158C06-AFDA-4CE5-8323-F41D356B2971")))
 
-    local onSoldierInteractionFinishedConnection = self.m_EventConnections:Create(s_EntityInteractionComponentData,
+    local onSoldierInteractionFinishedConnection = m_EventConnections:Create(s_EntityInteractionComponentData,
                                                                                   s_InterfaceDescriptorData,
                                                                                   -1956653754, -1956653754, 3)
-    local onSoldierInteractionStarted = self.m_EventConnections:Create(s_EntityInteractionComponentData,
+    local onSoldierInteractionStarted = m_EventConnections:Create(s_EntityInteractionComponentData,
                                                                        s_InterfaceDescriptorData, 1783953429,
                                                                        1783953429, 3)
-    local onSoldierInteractionCancelled = self.m_EventConnections:Create(s_EntityInteractionComponentData,
+    local onSoldierInteractionCancelled = m_EventConnections:Create(s_EntityInteractionComponentData,
                                                                          s_InterfaceDescriptorData, -1947428449,
                                                                          -1947428449, 3)
-    local onInteractionStopped = self.m_EventConnections:Create(s_EntityInteractionComponentData,
+    local onInteractionStopped = m_EventConnections:Create(s_EntityInteractionComponentData,
                                                                 s_InterfaceDescriptorData, 1565407255, 1565407255, 3)
-    local onInteractionStarted = self.m_EventConnections:Create(s_EntityInteractionComponentData,
+    local onInteractionStarted = m_EventConnections:Create(s_EntityInteractionComponentData,
                                                                 s_InterfaceDescriptorData, 1572599007, 1572599007, 3)
     s_SoldierBlueprint.eventConnections:add(onSoldierInteractionFinishedConnection)
     s_SoldierBlueprint.eventConnections:add(onSoldierInteractionStarted)
@@ -227,13 +214,13 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
 
     -- Add connections between SoldierEntityData and InterfaceDescriptionData
     -- OnBeingInteractedStarted, -Cancelled, -Finished
-    local onBeingInteractedStarted = self.m_EventConnections:Create(p_Instance, s_InterfaceDescriptorData, -1741104687,
+    local onBeingInteractedStarted = m_EventConnections:Create(p_Instance, s_InterfaceDescriptorData, -1741104687,
                                                                     -1741104687, 3)
-    local onBeingInteractedCancelled = self.m_EventConnections:Create(p_Instance, s_InterfaceDescriptorData,
+    local onBeingInteractedCancelled = m_EventConnections:Create(p_Instance, s_InterfaceDescriptorData,
                                                                       -1025749669, -1025749669, 3)
-    local onBeingInteractedFinished = self.m_EventConnections:Create(p_Instance, s_InterfaceDescriptorData, 1957374978,
+    local onBeingInteractedFinished = m_EventConnections:Create(p_Instance, s_InterfaceDescriptorData, 1957374978,
                                                                      1957374978, 3)
-    local onBeingInteractedFinishedToReviveConnection = self.m_EventConnections:Create(p_Instance, p_Instance,
+    local onBeingInteractedFinishedToReviveConnection = m_EventConnections:Create(p_Instance, p_Instance,
                                                                                        1957374978, -1001523010, 3)
 
     dynamicEvent.id = -1741104687
@@ -250,7 +237,7 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
     -- EventSpec(s_SoldierBlueprint.eventConnections[213].targetEvent).id = 2089008817
     EventSpec(s_SoldierBlueprint.eventConnections[3].targetEvent).id = 2008897511
     -- add onRevived eventconnection between SoldierEntityData and InterfaceDescriptionData
-    local onRevived = self.m_EventConnections:Create(p_Instance, s_InterfaceDescriptorData, 901651067, 901651067, 3)
+    local onRevived = m_EventConnections:Create(p_Instance, s_InterfaceDescriptorData, 901651067, 901651067, 3)
 
     dynamicEvent.id = 901651067
     s_InterfaceDescriptorData.outputEvents:add(dynamicEvent)
@@ -293,4 +280,8 @@ function InteractiveManDown:CreateManDownCustomizeSoldierEntityData(p_CustomizeS
     return s_CoopManDownSoldierEntityData
 end
 
-g_InteractiveManDown = InteractiveManDown()
+if g_InteractiveManDown == nil then
+    g_InteractiveManDown = InteractiveManDown()
+end
+
+return g_InteractiveManDown

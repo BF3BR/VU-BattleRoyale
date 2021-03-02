@@ -1,6 +1,6 @@
 class "PingServer"
 
-require "__shared/Enums/PingEvents"
+require "__shared/Enums/CustomEvents"
 
 function PingServer:__init()
     -- Subscribe to the netevent for a player ping
@@ -199,4 +199,8 @@ function PingServer:AssignPingIds()
     end
 end
 
-return PingServer
+if g_PingServer == nil then
+	g_PingServer = PingServer()
+end
+
+return g_PingServer
