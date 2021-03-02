@@ -1,5 +1,6 @@
 DamageEvents = {
-    ConfirmHit = 'DMG:CH',
-    ConfirmPlayerDown = 'DMG:CPD',
-    ConfirmPlayerKill = 'DMG:CPK',
+    ConfirmHit = "DMG:CH",
+    ConfirmPlayerDown = "DMG:CPD",
+    ConfirmPlayerKill = "DMG:CPK",
+    ConfirmPlayerFinish = "DMG:CPF"
 }
