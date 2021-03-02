@@ -8,8 +8,8 @@ function LootManagerServer:OnLevelLoadResources(p_WorldPartData, p_Registry)
     local s_WeightTable = {}
     local s_AccumulatedWeight = PickupsConfig.NoPickupWeight
     for l_Tier, l_TierConfig in pairs(PickupsConfig.Tiers) do
-        s_WeightTable[s_AccumulatedWeight] = l_Tier
         s_AccumulatedWeight = s_AccumulatedWeight + l_TierConfig.Weight
+        s_WeightTable[s_AccumulatedWeight] = l_Tier
     end
 
     self.m_RandomSpawnTransforms = {}
@@ -17,11 +17,10 @@ function LootManagerServer:OnLevelLoadResources(p_WorldPartData, p_Registry)
     for i, l_Transform in pairs(MapsConfig.XP5_003.LootSpawnPoints) do
         local s_Tier
         local s_Random = MathUtils:GetRandom(0, 1) * s_AccumulatedWeight
-     
+
         for l_Weight, l_Tier in pairs(s_WeightTable) do
             if s_Random >= l_Weight then
                 s_Tier = l_Tier
-                break
             end
         end
 

@@ -12,104 +12,135 @@ PickupsConfig = {
     NoPickupWeight = 50,
     Tiers = {
         [1] = {
+            Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER I",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier1,
             Weight = 50,
             Weapons = {
                 {
-                    Name = "Weapons/PP2000/U_PP2000",
+                    Type = g_Weapons.PP2000,
                     Ammo = 100,
                 },{
-                    Name = "Weapons/XP1_PP-19/U_PP-19",
+                    Type = g_Weapons.PP_19,
                     Ammo = 100,
                 },{
-                    Name = "Weapons/Remington870/U_870",
+                    Type = g_Weapons.Remington870,
                     Ammo = 100,
                 },{
-                    Name = "Weapons/M9/U_M9",
+                    Type = g_Weapons.M9,
                     Ammo = 100,
                 },{
-                    Name = "Weapons/MP443/U_MP443_Silenced",
+                    Type = g_Weapons.MP443_Silenced,
                     Ammo = 100,
                 }
             }
         },
         [2] = {
+            Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER II",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier2,
             Weight = 25,
             Weapons = {
                 {
-                    Name = "Weapons/M249/U_M249",
+                    Type = g_Weapons.M249,
                     Ammo = 100,
                     Attachments = {
-                        "Weapons/M249/U_M249_Foregrip",
-                        "Weapons/M249/U_M249_M145",
+                        g_Attachments.Foregrip,
+                        g_Attachments.M145
                     }
                 },{
-                    Name = "Weapons/M4A1/U_M4A1",
+                    Type = g_Weapons.M4A1,
                     Ammo = 100,
                     Attachments = {
-                        "Weapons/M4A1/U_M4A1_Eotech",
-                        "Weapons/M4A1/U_M4A1_M145",
-                        "Weapons/M4A1/U_M4A1_TargetPointer",
-                        "Weapons/M4A1/U_M4A1_RX01"
+                        g_Attachments.EOTech,
+                        g_Attachments.M145,
+                        g_Attachments.TargetPointer,
+                        g_Attachments.RX01
                     }
                 },{
-                    Name = "Weapons/SCAR-H/U_SCAR-H",
+                    Type = g_Weapons.SCAR_H,
                     Ammo = 100,
                     Attachments = {
-                        "Weapons/SCAR-H/U_SCAR-H_Eotech",
-                        "Weapons/SCAR-H/U_SCAR-H_M145",
-                        "Weapons/SCAR-H/U_SCAR-H_TargetPointer",
-                        "Weapons/SCAR-H/U_SCAR-H_RX01"
+                        g_Attachments.EOTech,
+                        g_Attachments.M145,
+                        g_Attachments.TargetPointer,
+                        g_Attachments.RX01
                     }
                 },{
-                    Name = "Weapons/SG553LB/U_SG553LB",
+                    Type = g_Weapons.SG553LB,
                     Ammo = 100,
                     Attachments = {
-                        "Weapons/SG553LB/U_SG553LB_EOTech",
-                        "Weapons/SG553LB/U_SG553LB_Foregrip",
+                        g_Attachments.EOTech,
+                        g_Attachments.Foregrip,
                     }
                 },{
-                    Name = "Weapons/SKS/U_SKS",
+                    Type = g_Weapons.SKS,
                     Ammo = 100,
                     Attachments = {
-                        "Weapons/SKS/U_SKS_Eotech",
-                        "Weapons/SKS/U_SKS_M145",
-                        "Weapons/SKS/U_SKS_RX01"
+                        g_Attachments.EOTech,
+                        g_Attachments.M145,
+                        g_Attachments.RX01
                     }
                 }
             }
         },
         [3] = {
+            Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER III",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier3,
             Weight = 10,
             Weapons = {
                 {
-                    Name = "Weapons/Model98B/U_M98B",
+                    Type = g_Weapons.M98B,
                     Ammo = 100,
                     Attachments = {
-                        "Weapons/Model98B/U_M98B_EOTech",
+                        g_Attachments.RX01
                     }
                 },{
-                    Name = "Weapons/XP2_ACR/U_ACR",
+                    Type = g_Weapons.ACR,
                     Ammo = 100,
                     Attachments = {
-                        "Weapons/XP2_ACR/U_ACR_RX01",
-                        "Weapons/XP2_ACR/U_ACR_TargetPointer",
+                        g_Attachments.RX01,
+                        g_Attachments.TargetPointer,
                     }
                 },{
-                    Name = "Weapons/XP1_L85A2/U_L85A2",
+                    Type = g_Weapons.L85A2,
                     Ammo = 100,
                     Attachments = {
-                        "Weapons/XP1_L85A2/U_L85A2_Eotech",
-                        "Weapons/XP1_L85A2/U_L85A2_M145",
-                        "Weapons/XP1_L85A2/U_L85A2_TargetPointer",
-                        "Weapons/XP1_L85A2/U_L85A2_RX01"
+                        g_Attachments.EOTech,
+                        g_Attachments.M145,
+                        g_Attachments.TargetPointer,
+                        g_Attachments.RX01
                     }
                 },
+            }
+        },
+        [4] = {
+            Slots = { WeaponSlot.WeaponSlot_2, WeaponSlot.WeaponSlot_5 },
+            Message = "HEALTH",
+            HudIcon = UIHudIcon.UIHudIcon_MedicBag,
+            Mesh = FrostbiteDC{ partitionGuid = Guid('6519E1BF-BB39-8B7F-47D9-1B4C365318D9'), instanceGuid = Guid('BC6154A0-CDFC-D402-ECCA-444811062765') },
+            MeshTransform = LinearTransform(),
+            Weight = 10,
+            Weapons = {
+                {
+                    Type = g_Gadgets.Medkit,
+                    Ammo = 1,
+                },
+            }
+        },
+        [5] = {
+            Slots = { WeaponSlot.WeaponSlot_2, WeaponSlot.WeaponSlot_5 },
+            Message = "AMMO",
+            HudIcon = UIHudIcon.UIHudIcon_AmmoCrate,
+            Mesh = FrostbiteDC{ partitionGuid = Guid('50BB59D3-DFAB-C286-EBAC-B5CF4BAB7AC0'), instanceGuid = Guid('6412D2CA-7AF5-A459-E048-688143B6E35B') },
+            MeshTransform = LinearTransform(),
+            Weight = 10,
+            Weapons = {
+                {
+                    Type = g_Gadgets.Ammobag,
+                    Ammo = 1,
+                }
             }
         }
     }   

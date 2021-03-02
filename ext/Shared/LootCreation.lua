@@ -41,9 +41,13 @@ end
 
 function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
     for l_Tier, l_TierConfig in pairs(PickupsConfig.Tiers) do
+        local s_UseWeaponMesh = l_TierConfig.Mesh == nil
+
         local s_PickupEntityData = WeaponUnlockPickupEntityData()
-        s_PickupEntityData.transform = PickupsConfig.WeaponTransform
+        s_PickupEntityData.transform = l_TierConfig.MeshTransform or PickupsConfig.WeaponTransform
         s_PickupEntityData.interactionRadius = PickupsConfig.InteractionRadius
+        s_PickupEntityData.useWeaponMesh = s_UseWeaponMesh
+        s_PickupEntityData.mesh = (not s_UseWeaponMesh and l_TierConfig.Mesh:GetInstance()) or nil
         s_PickupEntityData.randomlySelectOneWeapon = true
         s_PickupEntityData.minRandomClipAmmoPercent = 0
         s_PickupEntityData.maxRandomClipAmmoPercent = 0
@@ -54,8 +58,7 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
         s_PickupEntityData.unspawnOnPickup = false
         s_PickupEntityData.forceWeaponSlotSelection = true
         s_PickupEntityData.hasAutomaticAmmoPickup = false
-        s_PickupEntityData.unspawnOnAmmoPickup = false
-        s_PickupEntityData.useWeaponMesh = true
+        s_PickupEntityData.unspawnOnAmmoPickup = false  
         s_PickupEntityData.allowPickup = true
         s_PickupEntityData.contentIsStatic = false
         s_PickupEntityData.positionIsStatic = true
@@ -68,26 +71,21 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
         s_PickupEntityData.isPropertyConnectionTarget = 1
         
         for _, l_Weapon in pairs(l_TierConfig.Weapons) do
-            if l_Weapon.Attachments == nil then
+            local s_Attachments = l_Weapon.Attachments or { g_Attachments.NoOptics }
+
+            for _,l_Attachment in pairs(s_Attachments) do
                 s_PickupEntityData.weapons:add(WeaponUnlockPickupData())
-                s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:SearchForDataContainer(l_Weapon.Name))
-                s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_0
-                s_PickupEntityData.weapons[#s_PickupEntityData.weapons].altWeaponSlot = WeaponSlot.WeaponSlot_1
+                s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.weapon = l_Weapon.Type.Unlock:GetInstance()
+                s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.slot = l_TierConfig.Slots[1]
+                s_PickupEntityData.weapons[#s_PickupEntityData.weapons].altWeaponSlot = l_TierConfig.Slots[2]
                 s_PickupEntityData.weapons[#s_PickupEntityData.weapons].linkedToWeaponSlot = -1
                 s_PickupEntityData.weapons[#s_PickupEntityData.weapons].minAmmo = l_Weapon.Ammo
                 s_PickupEntityData.weapons[#s_PickupEntityData.weapons].maxAmmo = l_Weapon.Ammo
-                s_PickupEntityData.weapons[#s_PickupEntityData.weapons].defaultToFullAmmo = false
-            else
-                for _, l_Unlock in pairs(l_Weapon.Attachments) do
-                    s_PickupEntityData.weapons:add(WeaponUnlockPickupData())
-                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:SearchForDataContainer(l_Weapon.Name))
-                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_0
-                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].altWeaponSlot = WeaponSlot.WeaponSlot_1
-                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].linkedToWeaponSlot = -1
-                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].minAmmo = l_Weapon.Ammo
-                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].maxAmmo = l_Weapon.Ammo
-                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].defaultToFullAmmo = false
-                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.unlockAssets:add(UnlockAssetBase(ResourceManager:SearchForDataContainer(l_Unlock)))
+                if l_Weapon.Type.Attachments[l_Attachment] ~= nil then
+                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.unlockAssets:add(l_Weapon.Type.Attachments[l_Attachment]:GetInstance())
+                end
+                if l_Attachment.Type ~= AttachmentType.Optic and l_Weapon.Type.Attachments[g_Attachments.NoOptics] ~= nil then
+                    s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.unlockAssets:add(l_Weapon.Type.Attachments[g_Attachments.NoOptics]:GetInstance())
                 end
             end
         end
