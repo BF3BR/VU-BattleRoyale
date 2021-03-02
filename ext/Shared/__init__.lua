@@ -1,11 +1,23 @@
 class "VuBattleRoyaleShared"
 
-require "__shared/Helpers/LevelNameHelper"
+require "__shared/Enums/AttachmentTypes"
+
+require "__shared/Types/FrostbiteDC"
+
+require "__shared/Weapons/Attachments"
+require "__shared/Weapons/Weapons"
+require "__shared/Weapons/Gadgets"
+
 require "__shared/Configs/MapsConfig"
 require "__shared/Configs/PickupsConfig"
+
 require "__shared/DropWeapons"
 require "__shared/RemoveVehicles"
+
 require "__shared/Utils/EventRouter"
+require "__shared/Helpers/LevelNameHelper"
+
+
 -- require "__shared/InteractiveManDown"
 local m_LootCreation = require "__shared/LootCreation"
 
