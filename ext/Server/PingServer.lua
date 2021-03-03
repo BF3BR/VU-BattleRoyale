@@ -7,7 +7,8 @@ function PingServer:__init()
     self.m_PlayerPingEvent = NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing)
 
     -- Subscribe to the player respawn event so we can send updated configuration information
-    self.m_PlayerCreatedEvent = Events:Subscribe("Player:Respawn", self, self.OnPlayerCreated)
+    -- self.m_PlayerCreatedEvent = Events:Subscribe("Player:Respawn", self, self.OnPlayerCreated)
+    self.m_PlayerCreatedEvent = NetEvents:Subscribe("VuBattleRoyale:PlayerConnected", self, self.OnPlayerCreated)
 
     -- This is used for clearing out all existing pingids, cooldowns
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
