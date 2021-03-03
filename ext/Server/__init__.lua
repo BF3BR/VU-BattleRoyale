@@ -31,7 +31,7 @@ function VuBattleRoyaleServer:__init()
     self.m_Match = Match(self, self.m_TeamManager)
 
     -- Server sided pinging system
-    self.m_Ping = PingServer()
+    self.m_Ping = g_PingServer
 
     -- Sets the custom gamemode name
     ServerUtils:SetCustomGameModeName("Baguette")

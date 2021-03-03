@@ -14,12 +14,14 @@ function PingServer:__init()
 
     self.m_EngineUpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
 
+    self.m_AssignTeamsEvent = Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.AssignPingIds)
+
     -- Table of playerId, pingId
-    self.m_PlayerPingIds = { }
+    self.m_PlayerPingIds = {}
 
     -- Cooldown of each player for pinging
     -- This is a table of playerId, cooldown
-    self.m_PlayerCooldowns = { }
+    self.m_PlayerCooldowns = {}
 
     -- Whenever someone pings how long before they can ping again
     self.m_PingCooldownTime = 0.40
@@ -36,11 +38,12 @@ function PingServer:__gc()
     self.m_PlayerPingEvent:Unsubscribe()
     self.m_PlayerCreatedEvent:Unsubscribe()
     self.m_LevelLoadedEvent:Unsubscribe()
+    self.m_AssignTeamsEvent:Unsubscribe()
 end
 
 function PingServer:OnPlayerPing(p_Player, p_Position)
     -- TODO: Remove below once tested
-    self:AssignPingIds()
+    -- self:AssignPingIds()
 
     -- Validate our player
     if p_Player == nil then
@@ -69,7 +72,8 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
     local s_SquadId = p_Player.squadId
 
     if self.m_Debug then
-        print("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
+        print("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " ..
+                  p_Position.y .. ", " .. p_Position.z)
     end
 
     -- Update the cooldown
@@ -100,14 +104,13 @@ end
 
 function PingServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap) -- levelName, gameMode, round, roundsPerMap
     -- Clear out the player ping ids
-    self.m_PlayerPingIds = { }
+    self.m_PlayerPingIds = {}
 
     -- Clear out all of the player cooldowns
-    self.m_PlayerCooldowns = { }
+    self.m_PlayerCooldowns = {}
 end
 
 function PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
-
     for l_PlayerId, l_Cooldown in pairs(self.m_PlayerCooldowns) do
         if l_Cooldown ~= nil then
             local s_NewCooldown = l_Cooldown - p_DeltaTime
@@ -160,43 +163,39 @@ end
 
 -- This will assign all player ping ids
 -- NOTE: The teams will need to have already been assigned/sorted/locked in before calling this
-function PingServer:AssignPingIds()
+function PingServer:AssignPingIds(p_BrTeams)
     -- Clear all previous entries
-    self.m_PlayerPingIds = { }
+    self.m_PlayerPingIds = {}
 
-    -- Iterate through all squad ids
-    for l_SquadIdIndex = SquadId.SquadNone, SquadId.SquadIdCount, 1 do
-        -- Iterate through all teams
-        for l_TeamIdIndex = TeamId.TeamNeutral, TeamId.TeamIdCount, 1 do
-            -- Get all of the players in the squad
-            local l_SquadPlayers = PlayerManager:GetPlayersBySquad(l_TeamIdIndex, l_SquadIdIndex)
+    for _, l_BrTeam in pairs(p_BrTeams) do
+        -- Hold our player ping id per squad
+        local l_PlayerPingId = 1
 
-            -- Hold our player ping id per squad
-            local l_PlayerPingId = 1
+        -- Iterate all players and assign a number
+        for _, l_BrPlayer in pairs(l_BrTeam.m_Players) do
+            -- Get vanilla player
+            local l_Player = l_BrPlayer.m_Player
 
-            -- Iterate all players and assign a number
-            for _, l_Player in pairs(l_SquadPlayers) do
-                -- Validate our player
-                if l_Player == nil then
-                    goto __assign_ping_ids_cont
-                end
-
-                -- Get the player id
-                local l_PlayerId = l_Player.id
-
-                -- Assign to our table at key of the player id
-                self.m_PlayerPingIds[l_PlayerId] = l_PlayerPingId
-
-                -- Debug logging output
-                print("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
-
-                -- Increment our player ping id
-                l_PlayerPingId = l_PlayerPingId + 1
-
-                ::__assign_ping_ids_cont::
+            -- Validate our player
+            if l_Player == nil then
+                goto __assign_ping_ids_cont
             end
+
+            -- Get the player id
+            local l_PlayerId = l_Player.id
+
+            -- Assign to our table at key of the player id
+            self.m_PlayerPingIds[l_PlayerId] = l_PlayerPingId
+
+            -- Debug logging output
+            print("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
+
+            -- Increment our player ping id
+            l_PlayerPingId = l_PlayerPingId + 1
+
+            ::__assign_ping_ids_cont::
         end
     end
 end
 
-return PingServer
+g_PingServer = PingServer()
