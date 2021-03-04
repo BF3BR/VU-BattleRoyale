@@ -2,6 +2,26 @@ class "LootCreation"
 
 local m_ConnectionHelper = require("__shared/Utils/ConnectionHelper")
 
+local m_MedkitFiringData = FrostbiteDC{
+    partitionGuid = Guid('B54E9BDA-1F2E-11E0-8602-946E2AD98284'),
+    instanceGuid = Guid('F379D6B0-4592-4DC2-9186-5863D3D69C85'),
+}
+
+local m_MedkitHealingData = FrostbiteDC{
+    partitionGuid = Guid('1D6061B2-2234-11E0-92F5-C9B649EF6972'),
+    instanceGuid = Guid('A867A678-615B-3FA6-7AF5-0DEE6ED69EA0'),
+}
+
+local m_AmmobagFiringData = FrostbiteDC{
+    partitionGuid = Guid('0343F80F-06CC-11E0-8BDF-D7443366E28A'),
+    instanceGuid = Guid('5B73C5E2-127E-419B-95FB-A69D9F5CAA7B'),
+}
+
+local m_AmmobagResupplyData = FrostbiteDC{
+    partitionGuid = Guid('04CD683B-1F1B-11E0-BBD1-F7235575FD24'),
+    instanceGuid = Guid('4AE515CE-846D-6070-5F56-1285B7E8E187'),
+}
+
 function LootCreation:__init()
     self:RegisterEvents()
     self:RegisterVars()
@@ -10,6 +30,10 @@ end
 function LootCreation:RegisterEvents()
     Events:Subscribe('LMS:RLT', self, self.OnRandomLootTransforms)
     NetEvents:Subscribe('LMS:RLT', self, self.OnRandomLootTransforms)
+    m_MedkitFiringData:RegisterLoadHandler(self, self.DisableAutoReplenish)
+    m_AmmobagFiringData:RegisterLoadHandler(self, self.DisableAutoReplenish)
+    m_MedkitHealingData:RegisterLoadHandler(self, self.SetHealingCapacity)
+    m_AmmobagResupplyData:RegisterLoadHandler(self, self.SetResupplyCapacity)
 end
 
 function LootCreation:RegisterVars()
@@ -17,6 +41,28 @@ function LootCreation:RegisterVars()
     self.m_RandomLootTransforms = {}
 end
 
+-- Patching medkit and ammobag
+function LootCreation:DisableAutoReplenish(p_Instance)
+    local s_FiringData = FiringFunctionData(p_Instance)
+    s_FiringData:MakeWritable()
+    s_FiringData.ammo.autoReplenishMagazine = false
+end
+
+function LootCreation:SetHealingCapacity(p_Instance)
+    local s_HealingData = SupplySphereEntityData(p_Instance)
+    s_HealingData:MakeWritable()
+    s_HealingData.supplyData.healing.infiniteCapacity = false
+    s_HealingData.supplyData.healing.supplyPointsCapacity = PickupsConfig.MedkitCapacity
+end
+
+function LootCreation:SetResupplyCapacity(p_Instance)
+    local s_ResupplyData = SupplySphereEntityData(p_Instance)
+    s_ResupplyData:MakeWritable()
+    s_ResupplyData.supplyData.ammo.infiniteCapacity = false
+    s_ResupplyData.supplyData.ammo.supplyPointsCapacity = PickupsConfig.AmmobagCapacity
+end
+
+-- Loot Creation
 function LootCreation:OnRandomLootTransforms(p_Transforms)
     self.m_RandomLootTransforms = p_Transforms
     print("[LootCreation] Received loot transforms")
@@ -60,7 +106,7 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
         s_PickupEntityData.hasAutomaticAmmoPickup = false
         s_PickupEntityData.unspawnOnAmmoPickup = false  
         s_PickupEntityData.allowPickup = true
-        s_PickupEntityData.contentIsStatic = false
+        s_PickupEntityData.contentIsStatic = true
         s_PickupEntityData.positionIsStatic = true
         s_PickupEntityData.ignoreNullWeaponSlots = false
         s_PickupEntityData.replaceAllContent = false
