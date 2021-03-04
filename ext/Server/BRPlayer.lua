@@ -19,7 +19,7 @@ function BRPlayer:__init(p_Player)
     -- the name of the player who killed this BRPlayer
     self.m_KillerName = nil
 
-    self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
+    self.m_TeamJoinStrategy = TeamJoinStrategy.NoJoin
     self.m_Armor = Armor:BasicArmor()
     self.m_Kills = 0
     self.m_Score = 0
@@ -89,10 +89,11 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 
         return health
     elseif not l_Soldier.isInteractiveManDown then
-        health = health - 100
+        -- health = health - 100
         p_Damage = self.m_Armor:ApplyDamage(p_Damage)
+        self:SendState()
 
-        if p_Damage > health then
+        if p_Damage >= health then
             -- kill instantly if no teammates left
             if self:HasAliveTeammates() then
                 self.m_KillerName = p_Giver:GetName()
@@ -121,7 +122,7 @@ end
 -- Increments the kill counter of the player
 function BRPlayer:IncrementKills(p_VictimName)
     self.m_Kills = self.m_Kills + 1
-    NetEvents:SendToLocal(DamageEvents.ConfirmPlayerKill, p_Giver.m_Player, p_VictimName)
+    NetEvents:SendToLocal(DamageEvents.ConfirmPlayerKill, self.m_Player, p_VictimName)
     self:SendState()
 end
 
@@ -187,7 +188,7 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
         Data = {
             TeamJoinStrategy = self.m_TeamJoinStrategy,
             IsTeamLeader = self.m_IsTeamLeader,
-            Kill = self.m_Kills,
+            Kills = self.m_Kills,
             Score = self.m_Score
         }
     }
@@ -198,6 +199,7 @@ function BRPlayer:Reset()
     self.m_Armor = Armor:BasicArmor()
     self.m_Kills = 0
     self.m_Score = 0
+    self.m_KillerName = nil
 
     self:SendState()
 end

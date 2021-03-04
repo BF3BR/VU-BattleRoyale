@@ -80,7 +80,7 @@ function VuBattleRoyaleServer:RegisterHooks()
 end
 
 function VuBattleRoyaleServer:UnregisterHooks()
-    
+
 end
 
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
@@ -98,9 +98,9 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
             if l_Player == nil and l_Player.alive == false then
                 goto update_allowed_guids_continue
             end
-    
+
             s_PlayerCount = s_PlayerCount + 1
-    
+
             ::update_allowed_guids_continue::
         end
 
@@ -116,23 +116,24 @@ function VuBattleRoyaleServer:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 end
 
 function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_GiverInfo)
-    if p_Soldier == nil or p_Info == nil or p_Soldier.player == nil then
-        return
-    end
-
     -- If we are in warmup we should disable all damages
     if self.m_GameState <= GameStates.WarmupToPlane or self.m_GameState >= GameStates.EndGame then
-        if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
-            return
-        end
+        -- if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
+        --     return
+        -- end
 
         p_Info.damage = 0.0
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
         return
     end
-    
+
+    -- keep the damage as is
+    if p_Soldier == nil or p_Info == nil or p_Soldier.player == nil then
+        return
+    end
+
+    -- TODO maybe pass the damage through armor first
     if p_GiverInfo == nil or p_GiverInfo.giver == nil then
-        -- self:LeftOverDamageOnManDown(p_Soldier, p_Info.damage, p_GiverInfo)
         if p_Soldier.health <= p_Info.damage then
             p_Soldier:ForceDead()
         end
@@ -145,42 +146,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 
     p_Info.damage = l_BrPlayer:OnDamaged(p_Info.damage, l_BrGiver)
     p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
-
-    -- if p_GiverInfo.giver.teamId ~= p_Soldier.player.teamId or p_GiverInfo.giver.squadId ~= p_Soldier.player.squadId then
-    --     NetEvents:SendToLocal("ConfirmHit", p_GiverInfo.giver, p_Info.damage)
-    --     if p_Soldier.health <= p_Info.damage then
-    --         NetEvents:SendToLocal("ConfirmPlayerKill", p_GiverInfo.giver, p_Soldier.player.name)
-    --         p_Soldier:ForceDead()
-    --     elseif (p_Soldier.health - 100) <= p_Info.damage and p_Soldier.isInteractiveManDown == false then
-    --         self:LeftOverDamageOnManDown(p_Soldier, p_Info.damage, p_GiverInfo)
-    --         NetEvents:SendToLocal("ConfirmPlayerDown", p_GiverInfo.giver, p_Soldier.player.name)
-    --     end
-    -- elseif p_GiverInfo.giver ~= p_Soldier.player then
-    --     p_Info.damage = 0.0
-    --     p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
-    -- else
-    --     self:LeftOverDamageOnManDown(p_Soldier, p_Info.damage, p_GiverInfo)
-    -- end
 end
-
--- function VuBattleRoyaleServer:LeftOverDamageOnManDown(p_Soldier, p_Damage, p_GiverInfo)
---     if (p_Soldier.health - 100) <= p_Damage and p_Soldier.isInteractiveManDown == false then
---         local s_PlayerName = p_Soldier.player.name
---         local s_Damage = p_Damage - p_Soldier.health + 100
---         local s_Table = {s_PlayerName, s_Damage}
---         g_Timers:Timeout(0.1, s_Table, function(p_Table)
---             local s_Player = PlayerManager:GetPlayerByName(p_Table[1])
---             if s_Player == nil or s_Player.soldier == nil then
---                 return
---             end
---             if p_Soldier.health > p_Damage then
---                 s_Player.soldier.health = s_Player.soldier.health - p_Table[2]
---             else
---                 s_Player.soldier.health = 0
---             end
---         end)
---     end
--- end
 
 function VuBattleRoyaleServer:OnManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
     if p_Reviver ~= nil then
