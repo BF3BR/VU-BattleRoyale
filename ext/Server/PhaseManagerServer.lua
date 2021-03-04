@@ -5,7 +5,7 @@ require "__shared/Helpers/MathHelper"
 require "__shared/Helpers/LevelNameHelper"
 require "__shared/Utils/Timers"
 require "__shared/PhaseManagerShared"
-require "__shared/Circle"
+require "__shared/Types/Circle"
 
 class("PhaseManagerServer", PhaseManagerShared)
 
