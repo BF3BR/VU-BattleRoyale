@@ -6,10 +6,9 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/PhaseManagerEvents"
 require "__shared/Enums/TeamManagerEvents"
 require "__shared/Utils/EventRouter"
-require "Helpers/LootPointHelper"
+--require "Helpers/LootPointHelper"
 require "PhaseManagerClient"
 require "ClientCommands"
-require "PingClient"
 require "BRPlayer"
 
 local m_UICleanup = require "UICleanup"
@@ -17,6 +16,7 @@ local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
 local m_SpectatorCamera = require "SpectatorCamera"
 local m_Showroom = require "Showroom"
+local m_Ping = require "PingClient"
 
 function VuBattleRoyaleClient:__init()
     -- Extension events
@@ -31,9 +31,6 @@ function VuBattleRoyaleClient:__init()
     self.m_GameState = GameStates.None
 
     self.m_PhaseManager = PhaseManagerClient()
-
-    -- The client pinging system
-    self.m_Ping = PingClient()
 
     self.m_BrPlayer = BRPlayer()
 
@@ -313,6 +310,7 @@ function VuBattleRoyaleClient:OnClientUpdateInput()
     m_Gunship:OnClientUpdateInput()
     m_SpectatorCamera:OnClientUpdateInput()
     m_Hud:OnClientUpdateInput()
+    m_Ping:OnClientUpdateInput()
 end
 
 function VuBattleRoyaleClient:OnPhaseManagerUpdate(p_Data)

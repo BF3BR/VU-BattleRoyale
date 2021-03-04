@@ -9,6 +9,8 @@ require "Match"
 require "Whitelist"
 require "PingServer"
 
+local m_LootManager = require "LootManagerServer"
+
 function VuBattleRoyaleServer:__init()
     -- Extension events
     self.m_ExtensionLoadedEvent = nil
@@ -31,7 +33,7 @@ function VuBattleRoyaleServer:__init()
     self.m_Match = Match(self, self.m_TeamManager)
 
     -- Server sided pinging system
-    self.m_Ping = PingServer()
+    self.m_Ping = g_PingServer
 
     -- Sets the custom gamemode name
     ServerUtils:SetCustomGameModeName("Baguette")
@@ -67,7 +69,11 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     -- InteractiveManDown revived event
     self.m_ManDownRevivedEvent = Events:Subscribe("Player:ManDownRevived", self, self.OnManDownRevived)
+
     self.m_PlayerKilledEvent = Events:Subscribe('Player:Killed', self, self.OnPlayerKilled)
+    
+    Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
+    Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
 end
 
 function VuBattleRoyaleServer:UnregisterEvents()
@@ -228,6 +234,18 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
     if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
         self.m_Match:SpawnWarmupPlayer(p_Player)
     end
+end
+
+function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
+    if p_Player == nil then
+        return
+    end
+
+    m_LootManager:OnPlayerAuthenticated(p_Player)
+end
+
+function VuBattleRoyaleServer:OnLevelLoadResources()
+    m_LootManager:OnLevelLoadResources()
 end
 
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)

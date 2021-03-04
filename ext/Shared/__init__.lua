@@ -1,13 +1,25 @@
 class "VuBattleRoyaleShared"
 
-require "__shared/Helpers/LevelNameHelper"
+require "__shared/Enums/AttachmentTypes"
+
+require "__shared/Types/FrostbiteDC"
+
+require "__shared/Weapons/Attachments"
+require "__shared/Weapons/Weapons"
+require "__shared/Weapons/Gadgets"
+
 require "__shared/Configs/MapsConfig"
 require "__shared/Configs/PickupsConfig"
+
 require "__shared/DropWeapons"
 require "__shared/RemoveVehicles"
+
 require "__shared/Utils/EventRouter"
+require "__shared/Helpers/LevelNameHelper"
+
+
 -- require "__shared/InteractiveManDown"
-require "__shared/LootCreation"
+local m_LootCreation = require "__shared/LootCreation"
 
 function VuBattleRoyaleShared:__init()
     -- Extension events
@@ -87,7 +99,7 @@ function VuBattleRoyaleShared:OnWorldPartLoaded(p_Instance)
     local s_Registry = RegistryContainer()
     s_Registry.blueprintRegistry:add(s_CustomWorldPartData)
 
-    LootCreation:OnWorldPartData(s_CustomWorldPartData, s_Registry)
+    m_LootCreation:OnWorldPartData(s_CustomWorldPartData, s_Registry)
 
     ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end

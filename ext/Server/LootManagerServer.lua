@@ -38,6 +38,7 @@ function LootManagerServer:OnPlayerAuthenticated(p_Player)
     NetEvents:SendToLocal('LMS:RLT', p_Player, self.m_RandomSpawnTransforms)
 end
 
+<<<<<<< HEAD
 function LootManagerServer:EnableMatchPickups()
     local s_Iterator = EntityManager:GetIterator("ServerPickupEntity")
 	local s_Entity = s_Iterator:Next()
@@ -48,6 +49,8 @@ function LootManagerServer:EnableMatchPickups()
 	end
 end
 
+=======
+>>>>>>> 4d4c84fc41f073064566241e994b90ae5fc5f8fd
 if g_LootManagerServer == nil then
 	g_LootManagerServer = LootManagerServer()
 end
