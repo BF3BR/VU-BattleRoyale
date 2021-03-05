@@ -66,7 +66,7 @@ function UICleanup:OnHudMpScreen(p_Instance)
 end
 
 function UICleanup:OnHudConquestScreen(p_Instance)
-    --self:KeepNodes(p_Instance, {"Minimap"})
+    self:KeepNodes(p_Instance, {"Minimap", "MapmarkerManager"})
 end
 
 function UICleanup:OnUITrackingtagCompData(p_Instance)
