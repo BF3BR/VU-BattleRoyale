@@ -15,8 +15,11 @@ function FrostbiteDC:GetInstance()
 end
 
 function FrostbiteDC:RegisterLoadHandler(p_Ctx, p_Callback)
-    local s_Args = (p_Callback == nil) and { p_Ctx } or { p_Ctx, p_Callback }
-    ResourceManager:RegisterInstanceLoadHandler(self.partitionGuid, self.instanceGuid, table.unpack(s_Args))
+    if p_Callback == nil then
+        ResourceManager:RegisterInstanceLoadHandler(self.partitionGuid, self.instanceGuid, p_Ctx)
+    else
+        ResourceManager:RegisterInstanceLoadHandler(self.partitionGuid, self.instanceGuid, p_Ctx, p_Callback)
+    end 
 end
 
 function FrostbiteDC:CallOrRegisterLoadHandler(p_Ctx, p_Callback)

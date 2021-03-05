@@ -6,7 +6,7 @@ function LootManagerServer:__init()
     self.m_RandomSpawnTransforms = {}
 end
 
-function LootManagerServer:OnLevelLoadResources(p_WorldPartData, p_Registry)
+function LootManagerServer:OnLevelLoadResources()
     local s_WeightTable = {}
     local s_AccumulatedWeight = PickupsConfig.NoPickupWeight
     for l_Tier, l_TierConfig in pairs(PickupsConfig.Tiers) do

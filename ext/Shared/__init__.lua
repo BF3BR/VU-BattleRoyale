@@ -80,7 +80,7 @@ function VuBattleRoyaleShared:OnWorldPartLoaded(p_Instance)
     local s_Registry = RegistryContainer()
     s_Registry.blueprintRegistry:add(s_CustomWorldPartData)
 
-    m_LootCreation:OnWorldPartData(s_CustomWorldPartData, s_Registry)
+    m_LootCreation:OnWorldPartLoaded(s_CustomWorldPartData, s_Registry)
 
     ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end
