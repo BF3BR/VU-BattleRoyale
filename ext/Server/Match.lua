@@ -136,7 +136,7 @@ function Match:OnWarmupToPlane(p_DeltaTime)
         self.m_TeamManager:AssignTeams()
 
         -- Enable regular pickups
-        m_LootManager:EnableMatchPickups()
+        -- m_LootManager:EnableMatchPickups()
     end
 
     if self.m_UpdateTicks[GameStates.WarmupToPlane] >= ServerConfig.WarmupToPlaneTime then

@@ -55,3 +55,7 @@ PlayerEvents = {
     UpdateTimer = "VuBattleRoyale:UpdateTimer",
     GameStateChanged = "VuBattleRoyale:GameStateChanged",
 }
+
+LMS = {
+    RLT = "LMS:RLT",
+}

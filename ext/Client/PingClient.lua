@@ -136,7 +136,7 @@ function PingClient:OnUiDrawHud()
             DebugRenderer:DrawSphere(l_Position, self.m_DebugSize, l_Color, false, false)
 
             local l_Coordinates = ClientUtils:WorldToScreen(l_Position)
-            if l_Coordinates == nil then
+            if l_Coordinates ~= nil then
                 DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PingId), Vec4(1, 0, 0, 1), 1.1)
             end
         end

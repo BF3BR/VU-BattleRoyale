@@ -1,5 +1,7 @@
 class "LootManagerServer"
 
+require "__shared/Enums/CustomEvents"
+
 function LootManagerServer:__init()
     self.m_RandomSpawnTransforms = {}
 end
@@ -29,22 +31,22 @@ function LootManagerServer:OnLevelLoadResources(p_WorldPartData, p_Registry)
         end
     end
 
-    NetEvents:BroadcastLocal('LMS:RLT', self.m_RandomSpawnTransforms)
-    Events:DispatchLocal('LMS:RLT', self.m_RandomSpawnTransforms)
+    NetEvents:BroadcastLocal(LMS.RLT, self.m_RandomSpawnTransforms)
+    Events:DispatchLocal(LMS.RLT, self.m_RandomSpawnTransforms)
 end
 
 function LootManagerServer:OnPlayerAuthenticated(p_Player)
     print("[LootManagerServer] Sending loot transforms")
-    NetEvents:SendToLocal('LMS:RLT', p_Player, self.m_RandomSpawnTransforms)
+    NetEvents:SendToLocal(LMS.RLT, p_Player, self.m_RandomSpawnTransforms)
 end
 
 function LootManagerServer:EnableMatchPickups()
     local s_Iterator = EntityManager:GetIterator("ServerPickupEntity")
 	local s_Entity = s_Iterator:Next()
-	while s_Iterator do
-		WeaponUnlockPickupEntityData(s_Entity.data).contentIsStatic = false
-		s_Entity.bus.entities[2]:FireEvent('ShowMarker')
-		s_Entity = s_Iterator:Next()
+	while s_Entity do
+        WeaponUnlockPickupEntityData(s_Entity.data).contentIsStatic = false
+        s_Entity.bus.entities[2]:FireEvent('ShowMarker')
+        s_Entity = s_Iterator:Next()
 	end
 end
 
