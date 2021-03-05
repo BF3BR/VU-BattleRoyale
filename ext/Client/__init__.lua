@@ -12,6 +12,7 @@ require "ClientCommands"
 require "BRPlayer"
 
 local m_UICleanup = require "UICleanup"
+local m_UIManager = require "UIManager"
 local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
 local m_SpectatorCamera = require "SpectatorCamera"
