@@ -68,7 +68,7 @@ function LootCreation:OnRandomLootTransforms(p_Transforms)
     print("[LootCreation] Received loot transforms")
 end
 
-function LootCreation:OnWorldPartData(p_WorldPartData, p_Registry)
+function LootCreation:OnWorldPartLoaded(p_WorldPartData, p_Registry)
     self:CreateAndRegisterPickupBlueprints(p_Registry)
 
     for i, l_Data in pairs(self.m_RandomLootTransforms) do
