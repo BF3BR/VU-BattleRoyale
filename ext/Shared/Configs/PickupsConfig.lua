@@ -1,58 +1,145 @@
 PickupsConfig = {
     InteractionRadius = 2.5,
-    WeaponTransform = LinearTransform(),
-    MarkerTransform = Vec3(),
-    MarkerShowRadius = 100,
+    WeaponTransform = LinearTransform(
+        Vec3(0,-1, 0),
+        Vec3(1, 0, 0),
+        Vec3(0, 0, 1),
+        Vec3(0, 0.4, -0.3)
+    ),
+    MarkerTransform = Vec3(0, 0.5, 0),
+    MarkerShowRadius = 6,
     MarkerHideRadius = 1,
+    NoPickupWeight = 50,
     Tiers = {
         [1] = {
-            Message = "MOZAMBIQUE HERE",
+            Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
+            Message = "TIER I",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier1,
+            Weight = 50,
             Weapons = {
                 {
-                    Name = "Weapons/PP2000/U_PP2000",
-                    Attachments = {
-                        "Weapons/PP2000/U_PP2000_Eotech",
-                        "Weapons/PP2000/U_PP2000_Extendedmag",
-                    }
+                    Type = g_Weapons.PP2000,
+                    Ammo = 100,
+                },{
+                    Type = g_Weapons.PP_19,
+                    Ammo = 100,
+                },{
+                    Type = g_Weapons.Remington870,
+                    Ammo = 100,
+                },{
+                    Type = g_Weapons.M9,
+                    Ammo = 100,
+                },{
+                    Type = g_Weapons.MP443_Silenced,
+                    Ammo = 100,
                 }
             }
         },
         [2] = {
-            Message = "BAGUETTE",
+            Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
+            Message = "TIER II",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier2,
+            Weight = 25,
             Weapons = {
                 {
-                    Name = "Weapons/M249/U_M249",
+                    Type = g_Weapons.M249,
+                    Ammo = 100,
                     Attachments = {
-                        "Weapons/M249/U_M249_Foregrip",
-                        "Weapons/M249/U_M249_M145",
+                        g_Attachments.Foregrip,
+                        g_Attachments.M145
                     }
                 },{
-                    Name = "Weapons/SG553LB/U_SG553LB",
+                    Type = g_Weapons.M4A1,
+                    Ammo = 100,
                     Attachments = {
-                        "Weapons/SG553LB/U_SG553LB_EOTech",
-                        "Weapons/SG553LB/U_SG553LB_Foregrip",
+                        g_Attachments.EOTech,
+                        g_Attachments.M145,
+                        g_Attachments.TargetPointer,
+                        g_Attachments.RX01
+                    }
+                },{
+                    Type = g_Weapons.SCAR_H,
+                    Ammo = 100,
+                    Attachments = {
+                        g_Attachments.EOTech,
+                        g_Attachments.M145,
+                        g_Attachments.TargetPointer,
+                        g_Attachments.RX01
+                    }
+                },{
+                    Type = g_Weapons.SG553LB,
+                    Ammo = 100,
+                    Attachments = {
+                        g_Attachments.EOTech,
+                        g_Attachments.Foregrip,
+                    }
+                },{
+                    Type = g_Weapons.SKS,
+                    Ammo = 100,
+                    Attachments = {
+                        g_Attachments.EOTech,
+                        g_Attachments.M145,
+                        g_Attachments.RX01
                     }
                 }
             }
         },
         [3] = {
-            Message = "BRRRRRRRRRRT",
+            Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
+            Message = "TIER III",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier3,
+            Weight = 10,
             Weapons = {
                 {
-                    Name = "Weapons/Model98B/U_M98B",
+                    Type = g_Weapons.M98B,
+                    Ammo = 100,
                     Attachments = {
-                        "Weapons/Model98B/U_M98B_EOTech",
-                        "Weapons/Model98B/U_M98B_Kobra",
+                        g_Attachments.RX01
                     }
                 },{
-                    Name = "Weapons/XP2_ACR/U_ACR",
+                    Type = g_Weapons.ACR,
+                    Ammo = 100,
                     Attachments = {
-                        "Weapons/XP2_ACR/U_ACR_RX01",
-                        "Weapons/XP2_ACR/U_ACR_TargetPointer",
+                        g_Attachments.RX01,
+                        g_Attachments.TargetPointer,
                     }
+                },{
+                    Type = g_Weapons.L85A2,
+                    Ammo = 100,
+                    Attachments = {
+                        g_Attachments.EOTech,
+                        g_Attachments.M145,
+                        g_Attachments.TargetPointer,
+                        g_Attachments.RX01
+                    }
+                },
+            }
+        },
+        [4] = {
+            Slots = { WeaponSlot.WeaponSlot_2, WeaponSlot.WeaponSlot_5 },
+            Message = "HEALTH",
+            HudIcon = UIHudIcon.UIHudIcon_MedicBag,
+            Mesh = FrostbiteDC{ partitionGuid = Guid('6519E1BF-BB39-8B7F-47D9-1B4C365318D9'), instanceGuid = Guid('BC6154A0-CDFC-D402-ECCA-444811062765') },
+            MeshTransform = LinearTransform(),
+            Weight = 10,
+            Weapons = {
+                {
+                    Type = g_Gadgets.Medkit,
+                    Ammo = 1,
+                },
+            }
+        },
+        [5] = {
+            Slots = { WeaponSlot.WeaponSlot_2, WeaponSlot.WeaponSlot_5 },
+            Message = "AMMO",
+            HudIcon = UIHudIcon.UIHudIcon_AmmoCrate,
+            Mesh = FrostbiteDC{ partitionGuid = Guid('50BB59D3-DFAB-C286-EBAC-B5CF4BAB7AC0'), instanceGuid = Guid('6412D2CA-7AF5-A459-E048-688143B6E35B') },
+            MeshTransform = LinearTransform(),
+            Weight = 10,
+            Weapons = {
+                {
+                    Type = g_Gadgets.Ammobag,
+                    Ammo = 1,
                 }
             }
         }

@@ -8,7 +8,6 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 
 require "PhaseManagerClient"
-require "PingClient"
 require "BRPlayer"
 
 local m_UICleanup = require "UICleanup"
@@ -16,6 +15,8 @@ local m_Gunship = require "Gunship"
 local m_Showroom = require "Showroom"
 local m_Hud = require "Hud"
 local m_SpectatorCamera = require "SpectatorCamera"
+local m_Showroom = require "Showroom"
+local m_Ping = require "PingClient"
 
 
 function VuBattleRoyaleClient:__init()
@@ -26,9 +27,6 @@ function VuBattleRoyaleClient:__init()
     self.m_GameState = GameStates.None
 
     self.m_PhaseManager = PhaseManagerClient()
-
-    -- The client pinging system
-    self.m_Ping = PingClient()
 
     self.m_BrPlayer = BRPlayer()
 end
@@ -216,6 +214,7 @@ function VuBattleRoyaleClient:OnClientUpdateInput()
     m_Gunship:OnClientUpdateInput()
     m_SpectatorCamera:OnClientUpdateInput()
     m_Hud:OnClientUpdateInput()
+    m_Ping:OnClientUpdateInput()
 end
 
 function VuBattleRoyaleClient:OnPhaseManagerUpdate(p_Data)

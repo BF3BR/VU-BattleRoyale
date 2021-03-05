@@ -11,6 +11,7 @@ require "Match"
 
 local m_Whitelist = require "Whitelist"
 local m_PingServer = require "PingServer"
+local m_LootManager = require "LootManagerServer"
 
 function VuBattleRoyaleServer:__init()
     Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -26,6 +27,9 @@ function VuBattleRoyaleServer:__init()
 
     -- Create a new match
     self.m_Match = Match(self, self.m_TeamManager)
+
+    -- Server sided pinging system
+    self.m_Ping = g_PingServer
 
     -- Sets the custom gamemode name
     ServerUtils:SetCustomGameModeName("Baguette")
@@ -45,6 +49,9 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     NetEvents:Subscribe("VuBattleRoyale:PlayerConnected", self, self.OnPlayerConnected)
     NetEvents:Subscribe("VuBattleRoyale:PlayerDeploy", self, self.OnPlayerDeploy)
+
+    Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
+    Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
 end
 
 function VuBattleRoyaleServer:RegisterHooks()
@@ -71,7 +78,9 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
             if l_Player == nil and l_Player.alive == false then
                 goto update_allowed_guids_continue
             end
+
             s_PlayerCount = s_PlayerCount + 1
+
             ::update_allowed_guids_continue::
         end
 
@@ -128,6 +137,18 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 
         s_BrPlayer:Spawn(s_SpawnTrans)
     end
+end
+
+function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
+    if p_Player == nil then
+        return
+    end
+
+    m_LootManager:OnPlayerAuthenticated(p_Player)
+end
+
+function VuBattleRoyaleServer:OnLevelLoadResources()
+    m_LootManager:OnLevelLoadResources()
 end
 
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)

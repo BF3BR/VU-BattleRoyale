@@ -11,7 +11,7 @@ function PingClient:__init()
     -- This is pingId, { position, cooldownTime }
     self.m_SquadPings = { }
 
-    self.m_Opacity = 0.4
+    self.m_Opacity = 0.3
 
     self.m_PingColors = {
         Vec4(1, 0, 0, self.m_Opacity),
@@ -34,6 +34,7 @@ function PingClient:__init()
     self.m_DebugSize = 0.25
 
     self.m_RaycastLength = 2000.0
+
     -- Should we send a ping (used for sync across UpdateState's)
     self.m_ShouldPing = false
 
@@ -60,6 +61,12 @@ function PingClient:__gc()
         Console:Deregister(self.m_PingCommand)
 
         self.m_PingCommand = nil
+    end
+end
+
+function PingClient:OnClientUpdateInput()
+    if InputManager:WentKeyDown(InputDeviceKeys.IDK_Q) then
+        self:OnPing()
     end
 end
 
@@ -91,10 +98,12 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
     end
 
     -- Update the structure
-    self.m_SquadPings[p_PingId] = { p_Position, s_PingInfo[2] + self.m_CooldownTime }
+    local l_UpdatedCooldown = s_PingInfo[2] + self.m_CooldownTime
+    self.m_SquadPings[p_PingId] = { p_Position, math.max(l_UpdatedCooldown, 3 * self.m_CooldownTime) }
 end
 
 function PingClient:OnPingUpdateConfig(p_CooldownTime)
+    print('received config')
     if self.m_Debug then
         print("cooldownTime: " .. p_CooldownTime)
     end
@@ -116,7 +125,8 @@ function PingClient:OnUiDrawHud()
         --print(l_Cooldown)
 
         if l_Cooldown < 0.001 then
-            --print("invalid cooldown")
+            print("invalid cooldown")
+            self.m_SquadPings[l_PingId] = nil
             goto __on_ui_draw_hud_cont__
         end
 
@@ -124,14 +134,11 @@ function PingClient:OnUiDrawHud()
 
         if self.m_Debug then
             DebugRenderer:DrawSphere(l_Position, self.m_DebugSize, l_Color, false, false)
-            
+
             local l_Coordinates = ClientUtils:WorldToScreen(l_Position)
             if l_Coordinates == nil then
-                goto __on_ui_draw_hud_cont__
+                DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PingId), Vec4(1, 0, 0, 1), 1.1)
             end
-
-            DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PingId), Vec4(1, 0, 0, 1), 1.1)
-
         end
         ::__on_ui_draw_hud_cont__::
     end
@@ -214,4 +221,8 @@ function PingClient:GetColorByPingId(p_PingId)
     return s_Color
 end
 
-return PingClient
+if g_PingClient == nil then
+    g_PingClient = PingClient()
+end
+
+return g_PingClient

@@ -1,7 +1,7 @@
 require "__shared/Utils/MathHelper"
 require "__shared/Utils/RaycastHelper"
 require "__shared/Configs/CircleConfig"
-require "__shared/Circle"
+require "__shared/Types/Circle"
 
 local s_TwoPi = 2 * math.pi
 
