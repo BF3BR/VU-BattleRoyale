@@ -204,7 +204,19 @@ end
 -- Kills every player
 function BRTeamManager:KillAllPlayers()
     for _, l_BrPlayer in pairs(self.m_Players) do
-        l_BrPlayer:Kill(true)
+        l_BrPlayer:Kill(false)
+    end
+end
+
+-- Unspawns every soldier
+function BRTeamManager:UnspawnAllSoldiers()
+    local s_HumanPlayerEntityIterator = EntityManager:GetIterator("ServerHumanPlayerEntity")
+    local s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
+    
+    while s_HumanPlayerEntity do
+        s_HumanPlayerEntity = Entity(s_HumanPlayerEntity)	
+        s_HumanPlayerEntity:FireEvent("UnSpawnAllSoldiers")
+        s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
     end
 end
 

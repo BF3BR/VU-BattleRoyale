@@ -21,6 +21,7 @@ import Inventory from "./components/Inventory";
 /* Style */
 import './App.scss';
 import KillMessage from "./components/KillMessage";
+import { FireLogicType } from "./helpers/FireLogicType";
 
 const App: React.FC = () => {
     /*
@@ -95,6 +96,7 @@ const App: React.FC = () => {
     const [playerArmor, setPlayerArmor] = useState<number>(0);
     const [playerPrimaryAmmo, setPlayerPrimaryAmmo] = useState<number>(0);
     const [playerSecondaryAmmo, setPlayerSecondaryAmmo] = useState<number>(0);
+    const [playerFireLogic, setPlayerFireLogic] = useState<string>("AUTO");
     const [playerCurrentWeapon, setPlayerCurrentWeapon] = useState<string>('');
     const [playerInventory, setPlayerInventory] = useState<string[]>([]);
 
@@ -112,6 +114,10 @@ const App: React.FC = () => {
 
     window.OnPlayerSecondaryAmmo = (data: number) => {
         setPlayerSecondaryAmmo(data);
+    }
+
+    window.OnPlayerFireLogic = (data: number) => {
+        setPlayerFireLogic(FireLogicType[data]??"AUTO");
     }
 
     window.OnPlayerCurrentWeapon = (data: string) => {
@@ -299,6 +305,9 @@ const App: React.FC = () => {
         }
     }
     
+    window.ResetVars = () => {
+        window.location.reload();
+    }
 
     return (
         <>
@@ -355,6 +364,7 @@ const App: React.FC = () => {
                     });
                 }}>setRandomCircle</button>
                 <button onClick={() => SetKilledMessage(false, 'TestUser', 3)}>SetKillMsg</button>
+                <button onClick={() => setDeployScreen(true)}>setDeployScreen</button>
             </div>
 
             <div id="VUBattleRoyale">
@@ -407,7 +417,9 @@ const App: React.FC = () => {
                                     playerArmor={playerArmor}
                                     playerPrimaryAmmo={playerPrimaryAmmo}
                                     playerSecondaryAmmo={playerSecondaryAmmo}
+                                    playerFireLogic={playerFireLogic}
                                     playerCurrentWeapon={playerCurrentWeapon}
+                                    playerIsInPlane={playerIsInPlane}
                                 />
 
                                 <InteractMessage
@@ -479,6 +491,7 @@ declare global {
         OnPlayerArmor: (data: number) => void;
         OnPlayerPrimaryAmmo: (data: number) => void;
         OnPlayerSecondaryAmmo: (data: number) => void;
+        OnPlayerFireLogic: (data: number) => void;
         OnPlayerCurrentWeapon: (data: string) => void;
         OnPlayerWeapons: (data: any) => void;
         OnPlayerIsInPlane: (isInPlane: boolean) => void;
@@ -496,5 +509,7 @@ declare global {
 
         OnNotifyInflictorAboutKillOrKnock: (data: any) => void;
         OnInteractiveMessageAndKey: (data: any) => void;
+
+        ResetVars: () => void;
     }
 }

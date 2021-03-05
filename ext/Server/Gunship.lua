@@ -2,9 +2,10 @@ local Gunship = class "Gunship"
 
 require "__shared/Enums/CustomEvents"
 
-function Gunship:__init(p_Match)
-    -- Save match reference
+function Gunship:__init(p_Match, p_TeamManager)
+    -- Save Match and TeamManager reference
 	self.m_Match = p_Match
+    self.m_TeamManager = p_TeamManager
 	
 	self.m_StartTransform = nil
 
@@ -40,7 +41,12 @@ function Gunship:OnJumpOutOfGunship(p_Player)
         s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
     end
 
-    self.m_Match:SpawnPlayer(p_Player, s_Transform)
+    local s_BrPlayer = self.m_TeamManager:GetPlayer(p_Player)
+    if s_BrPlayer == nil then
+        return
+    end
+
+    s_BrPlayer:Spawn(s_Transform)
     NetEvents:SendToLocal(GunshipEvents.JumpOut, p_Player)
 end
 

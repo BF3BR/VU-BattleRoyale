@@ -29,6 +29,7 @@ function VuBattleRoyaleHud:RegisterVars()
     self.m_HudOnPlayerArmor = CachedJsExecutor("OnPlayerArmor(%s)", 0)
     self.m_HudOnPlayerPrimaryAmmo = CachedJsExecutor("OnPlayerPrimaryAmmo(%s)", 0)
     self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
+    self.m_HudOnPlayerFireLogic = CachedJsExecutor("OnPlayerFireLogic(%s)", 0)
     self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", "")
     self.m_HudOnPlayerWeapons = CachedJsExecutor("OnPlayerWeapons(%s)", nil)
     self.m_HudOnUpdateTeamPlayers = CachedJsExecutor("OnUpdateTeamPlayers(%s)", nil)
@@ -52,6 +53,7 @@ function VuBattleRoyaleHud:OnLevelFinalized(p_LevelName, p_GameMode)
 end
 
 function VuBattleRoyaleHud:OnLevelDestroy()
+    WebUI:ExecuteJS("ResetVars();")
     WebUI:Hide()
 end
 
@@ -70,15 +72,10 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
     end
 
     if InputManager:IsKeyDown(InputDeviceKeys.IDK_F10) then
-        print("F10")
-        -- TODO: Fix this mess...
         if (self.m_GameState ~= GameStates.Match and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle)
          or not s_LocalPlayer.soldier.alive then
-            print("I dont event... wtf")
-            if not s_LocalPlayer.soldier.alive then
-                m_Showroom:SetCamera(true)
-                WebUI:ExecuteJS("ToggleDeployMenu();")
-            end
+            m_Showroom:SetCamera(true)
+            WebUI:ExecuteJS("ToggleDeployMenu();")
         end
     end
 end
@@ -251,17 +248,17 @@ function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
     self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
 end
 
-function VuBattleRoyaleHud:OnNotifyInflictorAboutKillOrKnock(p_PlayerName, p_IsKill)
+function VuBattleRoyaleHud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
     if self.m_BrPlayer == nil then
         return
     end
 
-    if p_PlayerName == nil or p_IsKill == nil then
+    if p_VictimName == nil or p_IsKill == nil then
         return
     end
 
     self.m_HudOnNotifyInflictorAboutKillOrKnock:ForceUpdate(json.encode({
-        ["name"] = p_PlayerName, 
+        ["name"] = p_VictimName, 
         ["kills"] = (self.m_BrPlayer.m_Kills or 0),
         ["isKill"] = p_IsKill,
     }))
@@ -297,6 +294,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
     self.m_HudOnPlayerArmor:Update(self.m_BrPlayer.m_Armor:GetPercentage())
     self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
     self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
+    self.m_HudOnPlayerFireLogic:Update(s_LocalSoldier.weaponsComponent.currentWeapon.fireLogic)
     self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
     self.m_HudOnPlayerWeapons:Update(json.encode(s_Inventory))
     --self.m_HudOnPlayerCurrentSlot:Update(s_LocalSoldier.weaponsComponent.currentWeaponSlot)

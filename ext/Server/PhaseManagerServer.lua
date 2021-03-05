@@ -20,9 +20,6 @@ function PhaseManagerServer:RegisterEvents()
     PhaseManagerShared.RegisterEvents(self)
 
     NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.BroadcastState)
-
-    -- Debug
-    Events:Subscribe("Player:Chat", self, self.OnChat)
 end
 
 -- Starts the PhaseManager logic
@@ -189,13 +186,6 @@ function PhaseManagerServer:GetRandomInitialCenter()
     local l_Center2 = MathHelper:RandomTrianglePoint(l_Triangle)
 
     return Vec3(l_Center2.x, 0, l_Center2.y)
-end
-
--- Starts the PhaseManager from the chat
-function PhaseManagerServer:OnChat(player, recipientMask, message)
-    if message == "!pmstart" then
-        self:Start()
-    end
 end
 
 -- Prints a debug message about the current status of PhaseManager

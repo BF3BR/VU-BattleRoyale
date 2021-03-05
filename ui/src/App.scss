@@ -218,4 +218,9 @@ h6 {
     &.btn-full-width {
         width: 100%;
     }
+
+    &:disabled {
+        opacity: .3;
+        pointer-events: none;
+    }
 }

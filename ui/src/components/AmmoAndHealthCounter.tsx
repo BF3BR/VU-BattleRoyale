@@ -10,10 +10,20 @@ interface Props {
     playerArmor: number;
     playerPrimaryAmmo: number;
     playerSecondaryAmmo: number;
+    playerFireLogic: string;
     playerCurrentWeapon: string;
+    playerIsInPlane: boolean;
 }
 
-const AmmoAndHealthCounter: React.FC<Props> = ({ playerHealth, playerArmor, playerPrimaryAmmo, playerSecondaryAmmo, playerCurrentWeapon }) => {
+const AmmoAndHealthCounter: React.FC<Props> = ({ 
+    playerHealth, 
+    playerArmor, 
+    playerPrimaryAmmo, 
+    playerSecondaryAmmo, 
+    playerFireLogic, 
+    playerCurrentWeapon, 
+    playerIsInPlane
+}) => {
     const [visible, setVisible] = useState<boolean>(false);
 
     const padLeadingZeros = (num: number, playerCurrentWeapon: string) => {
@@ -57,22 +67,26 @@ const AmmoAndHealthCounter: React.FC<Props> = ({ playerHealth, playerArmor, play
     return (
         <>
             <div id="AmmoAndHealthCounter">
-                <div className={"WeaponName " + (visible ? 'IsVisible' : '')}>
-                    {playerCurrentWeapon !== '' &&
-                        <>
-                            {WeaponNames[playerCurrentWeapon]}
-                        </>
-                    }
-                </div>
-                <div className="AmmoCounter">
-                    <div className="current" dangerouslySetInnerHTML={padLeadingZeros(playerPrimaryAmmo, playerCurrentWeapon)}></div>
-                    <div className="left">
-                        <span className="mag" dangerouslySetInnerHTML={padLeadingZeros(playerSecondaryAmmo, playerCurrentWeapon)}></span>
-                        <span className="type">AUTO</span>
-                    </div>
-                </div>
-                <PercentageCounter type="Armor" value={playerArmor??0} />
-                <PercentageCounter type="Health" value={playerHealth??0} />
+                {(playerIsInPlane === false) &&
+                    <>
+                        <div className={"WeaponName " + (visible ? 'IsVisible' : '')}>
+                            {playerCurrentWeapon !== '' &&
+                                <>
+                                    {WeaponNames[playerCurrentWeapon]}
+                                </>
+                            }
+                        </div>
+                        <div className="AmmoCounter">
+                            <div className="current" dangerouslySetInnerHTML={padLeadingZeros(playerPrimaryAmmo, playerCurrentWeapon)}></div>
+                            <div className="left">
+                                <span className="mag" dangerouslySetInnerHTML={padLeadingZeros(playerSecondaryAmmo, playerCurrentWeapon)}></span>
+                                <span className="type">{playerFireLogic??"AUTO"}</span>
+                            </div>
+                        </div>
+                        <PercentageCounter type="Armor" value={playerArmor??0} />
+                        <PercentageCounter type="Health" value={playerHealth??0} />
+                    </>
+                }
             </div>
             
         </>

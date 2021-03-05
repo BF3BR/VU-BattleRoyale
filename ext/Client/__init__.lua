@@ -55,9 +55,9 @@ function VuBattleRoyaleClient:RegisterEvents()
     Events:Subscribe(PhaseManagerCustomEvents.Update, self, self.OnPhaseManagerUpdate)
     Events:Subscribe(PhaseManagerCustomEvents.CircleMove, self, self.OnOuterCircleMove)
 
+    NetEvents:Subscribe(DamageEvents.ConfirmPlayerKill, self, self.OnDamageConfirmPlayerKill)
     NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
     NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer)
-    NetEvents:Subscribe(PlayerEvents.KillMsg, self, self.OnNotifyInflictorAboutAKill)
     NetEvents:Subscribe(PlayerEvents.PitchAndYaw, self, self.OnPlayersPitchAndYaw)
     NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
     NetEvents:Subscribe(GunshipEvents.Camera, self, self.OnGunShipCamera)
@@ -156,12 +156,21 @@ function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
     m_Hud:OnUpdateTimer(p_Time)
 end
 
-function VuBattleRoyaleClient:OnNotifyInflictorAboutAKill(p_PlayerName)
-    if p_PlayerName == nil then
+function VuBattleRoyaleClient:OnDamageConfirmPlayerKill(p_VictimName)
+    if p_VictimName == nil then
         return
     end
 
-    m_Hud:OnNotifyInflictorAboutKillOrKnock(p_PlayerName, true)
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == nil then
+        return
+    end
+
+    if p_VictimName == s_LocalPlayer.name then
+        return
+    end
+
+    m_Hud:OnDamageConfirmPlayerKill(p_VictimName, true)
 end
 
 function VuBattleRoyaleClient:OnPlayerConnected(p_Player)

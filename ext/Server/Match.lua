@@ -46,7 +46,7 @@ function Match:__init(p_Server, p_TeamManager)
     self.m_WinnerTeam = nil
 
     -- Gunship
-    self.m_Gunship = Gunship(self)
+    self.m_Gunship = Gunship(self, self.m_TeamManager)
 
     -- Airdrop
     self.m_Airdrop = Airdrop(self)
@@ -127,8 +127,8 @@ function Match:OnWarmupToPlane(p_DeltaTime)
     if self.m_UpdateTicks[GameStates.WarmupToPlane] == 0.0 then
         self:SetClientTimer(ServerConfig.WarmupToPlaneTime)
 
-        -- Fade out then kill all the players
-        self:UnspawnAllSoldiers()
+        -- Fade out then unspawn all soldiers
+        self.m_TeamManager:UnspawnAllSoldiers()
 
         -- Assign all players to teams
         self.m_TeamManager:AssignTeams()
@@ -247,113 +247,7 @@ end
 -- Other functions
 -- =============================================
 
-function Match:SpawnWarmupAllPlayers()
-    self:UnspawnAllSoldiers()
-    
-    local s_Players = PlayerManager:GetPlayers()
-    for l_Index, l_Player in ipairs(s_Players) do
-        -- Validate our player
-        if l_Player == nil then
-            goto _spawn_all_players_continue_
-        end
-
-        self:SpawnWarmupPlayer(l_Player)
-
-        ::_spawn_all_players_continue_::
-    end
-end
-
-function Match:SpawnWarmupPlayer(p_Player)
-    if p_Player == nil then
-        return
-    end
-
-    local s_SpawnTrans = self:GetRandomWarmupSpawnpoint(p_Player)
-    if s_SpawnTrans == nil then
-        print("ERROR: (Warmup) Coulnd't spawn player: " .. p_Player.name)
-        return
-    end
-
-    self:SpawnPlayer(p_Player, s_SpawnTrans)
-end
-
-function Match:SpawnPlayer(p_Player, p_Transform)
-    if p_Player == nil or p_Transform == nil  then
-        return
-    end
-
-    if p_Player.alive then
-        return
-    end
-
-    print("INFO: Spawning player: " .. p_Player.name)
-
-    local s_SoldierAsset = nil
-    local s_Appearance = nil
-    local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
-
-    if p_Player.teamId == TeamId.Team1 then
-        s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
-        s_Appearance = ResourceManager:SearchForDataContainer("Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
-    elseif p_Player.teamId == TeamId.Team2 then
-        s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
-        s_Appearance = ResourceManager:SearchForDataContainer("Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
-    end
-
-    if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
-        return
-    end
-
-    -- Spawn the player with only a knife and a m9
-
-    p_Player:SelectUnlockAssets(s_SoldierAsset, { s_Appearance })
-
-    local s_SpawnedSoldier = p_Player:CreateSoldier(s_SoldierBlueprint, p_Transform)
-	p_Player:SpawnSoldierAt(s_SpawnedSoldier, p_Transform, CharacterPoseType.CharacterPoseType_Stand)
-	p_Player:AttachSoldier(s_SpawnedSoldier)
-    p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
-   
-    return s_SpawnedSoldier
-end
-
-function Match:CreateCustomizeSoldierData()
-    local s_CustomizeSoldierData = CustomizeSoldierData()
-    s_CustomizeSoldierData.restoreToOriginalVisualState = false
-    s_CustomizeSoldierData.clearVisualState = true
-    s_CustomizeSoldierData.overrideMaxHealth = -1.0
-    s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
-
-    local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
-    s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(
-        ResourceManager:FindInstanceByGuid(
-            Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),
-            Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73")
-        )
-    )
-    s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_7
-    s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
-
-    --[[
-    local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
-    s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
-                                                                Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
-                                                                Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
-    s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
-    s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
-    --]]
-
-    s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
-    s_CustomizeSoldierData.removeAllExistingWeapons = true
-    s_CustomizeSoldierData.disableDeathPickup = false
-
-    return s_CustomizeSoldierData
-end
-
-function Match:GetRandomWarmupSpawnpoint(p_Player)
-    if p_Player == nil then
-        return nil
-    end
-
+function Match:GetRandomWarmupSpawnpoint()
     local s_LevelName = LevelNameHelper:GetLevelName()
     if s_LevelName == nil then
         return nil
@@ -363,17 +257,6 @@ function Match:GetRandomWarmupSpawnpoint(p_Player)
     s_SpawnTrans = MapsConfig[s_LevelName]["WarmupSpawnPoints"][ math.random( #MapsConfig[s_LevelName]["WarmupSpawnPoints"] ) ]
 
     return s_SpawnTrans
-end
-
-function Match:UnspawnAllSoldiers()
-    local s_HumanPlayerEntityIterator = EntityManager:GetIterator("ServerHumanPlayerEntity")
-    local s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
-    
-    while s_HumanPlayerEntity do
-        s_HumanPlayerEntity = Entity(s_HumanPlayerEntity)	
-        s_HumanPlayerEntity:FireEvent("UnSpawnAllSoldiers")
-        s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
-    end
 end
 
 function Match:GetRandomGunshipStart()

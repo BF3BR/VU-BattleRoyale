@@ -42,6 +42,8 @@ interface Props {
     setTeamJoinError: (p_Error: number|null) => void;
 }
 
+let isFirstLoad = true;
+
 const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOpen, isTeamLeader, teamCode, teamJoinError, setTeamJoinError }) => {
     const [selectedAppearance, setSelectedAppearance] = useState<number>(0);
     const [selectedTeamType, setSelectedTeamType] = useState<number>(1);
@@ -114,16 +116,23 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOp
             }
         }
         
-        console.log('Deploy - Enable Keyboard and Mouse');
         WebUI.Call('EnableKeyboard');
         WebUI.Call('EnableMouse');
 
         return () => {
-            console.log('Deploy - Reset Keyboard and Mouse');
             WebUI.Call('ResetKeyboard');
             WebUI.Call('ResetMouse');
         }
-    }, [])
+    }, []);
+
+
+    const [btnDisabled, setBtnDisabled] = useState<boolean>(isFirstLoad);
+    useEffect(() => {
+        setTimeout(() => {
+            setBtnDisabled(false);
+            isFirstLoad = false;
+        }, 3000);
+    }, []);
 
     return (
         <div id="DeployScreen">
@@ -249,7 +258,7 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOp
                     </div>
                 </div>
 
-                <button className="btn btn-full-width Deploy" onClick={OnDeploy}>
+                <button className="btn btn-full-width Deploy" disabled={btnDisabled} onClick={OnDeploy}>
                     Ready
                 </button>
             </div>

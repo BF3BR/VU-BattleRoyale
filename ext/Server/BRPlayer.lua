@@ -153,6 +153,74 @@ function BRPlayer:Kill(p_Forced)
     end
 end
 
+-- Spawns the player
+-- @param p_Trans - where to spawn the player
+function BRPlayer:Spawn(p_Trans)
+    -- check if alive
+    if self.m_Player.alive then
+        return
+    end
+
+    local s_SoldierAsset = nil
+    local s_Appearance = nil
+    local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
+
+    -- TODO: @Janssent's appearance code gonna land here probably
+    if self.m_Player.teamId == TeamId.Team1 then
+        s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
+        s_Appearance = ResourceManager:SearchForDataContainer("Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
+    else
+        s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
+        s_Appearance = ResourceManager:SearchForDataContainer("Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
+    end
+
+    if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
+        return
+    end
+
+    self.m_Player:SelectUnlockAssets(s_SoldierAsset, { s_Appearance })
+
+    local s_SpawnedSoldier = self.m_Player:CreateSoldier(s_SoldierBlueprint, p_Trans)
+
+	self.m_Player:SpawnSoldierAt(s_SpawnedSoldier, p_Trans, CharacterPoseType.CharacterPoseType_Stand)
+	self.m_Player:AttachSoldier(s_SpawnedSoldier)
+
+    self.m_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+end
+
+function BRPlayer:CreateCustomizeSoldierData()
+    local s_CustomizeSoldierData = CustomizeSoldierData()
+    s_CustomizeSoldierData.restoreToOriginalVisualState = false
+    s_CustomizeSoldierData.clearVisualState = true
+    s_CustomizeSoldierData.overrideMaxHealth = -1.0
+    s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
+
+    local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
+    s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(
+        ResourceManager:FindInstanceByGuid(
+            Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),
+            Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73")
+        )
+    )
+    s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_7
+    s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
+
+    --[[
+    local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
+    s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+                                                                Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
+                                                                Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+    s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
+    s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
+    --]]
+
+    s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
+    s_CustomizeSoldierData.removeAllExistingWeapons = true
+    s_CustomizeSoldierData.disableDeathPickup = false
+
+    return s_CustomizeSoldierData
+end
+
 function BRPlayer:SendState(p_Simple, p_TeamData)
     local l_Data = self:AsTable(p_Simple, p_TeamData)
     NetEvents:SendToLocal(TeamManagerNetEvents.PlayerState, self.m_Player, l_Data)

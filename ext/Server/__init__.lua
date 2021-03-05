@@ -41,7 +41,6 @@ function VuBattleRoyaleServer:RegisterEvents()
     Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
     Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
     Events:Subscribe("Player:ManDownRevived", self, self.OnManDownRevived)
-    Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
     Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
 
     NetEvents:Subscribe("VuBattleRoyale:PlayerConnected", self, self.OnPlayerConnected)
@@ -94,10 +93,6 @@ function VuBattleRoyaleServer:OnManDownRevived(p_Player, p_Reviver, p_IsAdrenali
     end
 end
 
-function VuBattleRoyaleServer:OnPlayerKilled(p_Player, p_Inflictor, p_Pos, p_Weapon, p_IsRoadKill, p_IsHeadShot, p_WasVictimInReviveState, p_Info)    
-    NetEvents:SendTo(PlayerEvents.KillMsg, p_Inflictor, p_Player.name)
-end
-
 function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
     if p_Player == nil then
         return
@@ -121,8 +116,17 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 
     -- Spawn player if the current gamestate is warmup
     if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
-        -- TODO: Move spawn to BrPlayer or BrPlayerManager(?)
-        self.m_Match:SpawnWarmupPlayer(p_Player)
+        local s_BrPlayer = self.m_TeamManager:GetPlayer(p_Player)
+        if s_BrPlayer == nil then
+            return
+        end
+
+        local s_SpawnTrans = self.m_Match:GetRandomWarmupSpawnpoint()
+        if s_SpawnTrans == nil then
+            return
+        end
+
+        s_BrPlayer:Spawn(s_SpawnTrans)
     end
 end
 

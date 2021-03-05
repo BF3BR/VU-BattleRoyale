@@ -52,7 +52,6 @@ GunshipEvents = {
 
 PlayerEvents = {
     PitchAndYaw = "VuBattleRoyale:PlayersPitchAndYaw",
-    KillMsg = "VuBattleRoyale:NotifyInflictorAboutAKill",
     UpdateTimer = "VuBattleRoyale:UpdateTimer",
     GameStateChanged = "VuBattleRoyale:GameStateChanged",
 }
