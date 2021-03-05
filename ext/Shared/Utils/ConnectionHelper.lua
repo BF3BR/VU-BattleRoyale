@@ -1,6 +1,6 @@
 class "ConnectionHelper"
 
-
+-- Blueprint connections
 function ConnectionHelper:CreateEventConnection(p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type)
     local s_SourceEventSpec = EventSpec()
     s_SourceEventSpec.id = tonumber(p_SourceEvent) or MathUtils:FNVHash(p_SourceEvent)
@@ -49,6 +49,23 @@ end
 function ConnectionHelper:AddLinkConnection(p_Blueprint, p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
     p_Blueprint.linkConnections:add(self:CreateLinkConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
 end
+
+-- UI node connections
+function ConnectionHelper:CreateNodeConnection(p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop)
+	local s_UINodeConnection = UINodeConnection()
+    s_UINodeConnection.source = p_Source
+    s_UINodeConnection.target = p_Target
+    s_UINodeConnection.sourcePort = p_SourcePort
+    s_UINodeConnection.targetPort = p_TargetPort
+    s_UINodeConnection.numScreensToPop = p_ScreensToPop or 0
+
+	return s_UINodeConnection
+end
+
+function ConnectionHelper:AddNodeConnection(p_GraphAsset, p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop)
+    p_GraphAsset.connections:add(self:CreateNodeConnection(p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop))
+end
+
 
 -- TODO: Add other connection types
 function ConnectionHelper:CloneConnections(p_Blueprint, p_OriginalData, p_CustomData)
