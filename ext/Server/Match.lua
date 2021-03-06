@@ -107,12 +107,12 @@ function Match:GetCurrentState()
 end
 
 function Match:NextMatchState()
+    self:OnMatchLastTick()
+
     -- check if it reached the end of the matchstates
     if self.m_CurrentState ~= GameStates.None and self.m_CurrentState >= GameStates.EndGame then
         return false
     end
-
-    self:OnMatchLastTick()
 
     -- increment gamestate
     self.m_Server:ChangeGameState(self.m_CurrentState + 1)
@@ -121,13 +121,10 @@ function Match:NextMatchState()
 end
 
 function Match:OnMatchEveryTick()
-    local l_CurrentTimer = self:GetTimer("NextMatchState")
-    if l_CurrentTimer == nil then
-        return
-    end
-
     if self.m_CurrentState == GameStates.Warmup then
-        if l_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
+        local l_CurrentTimer = self:GetTimer("NextMatchState")
+
+        if l_CurrentTimer == nil and l_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
             self.m_IsFadeOutSet = true
             PlayerManager:FadeOutAll(2.0)
         end
@@ -281,7 +278,6 @@ function Match:DoWeHaveAWinner()
     end
 
     if s_WinningTeam ~= nil then
-        print(s_WinningTeam.m_Id)
         self.m_WinnerTeam = s_WinningTeam
         self.m_Server:ChangeGameState(GameStates.EndGame)
     end
