@@ -22,6 +22,7 @@ import Inventory from "./components/Inventory";
 import './App.scss';
 import KillMessage from "./components/KillMessage";
 import { FireLogicType } from "./helpers/FireLogicType";
+import { Sounds } from "./helpers/Sounds";
 
 const App: React.FC = () => {
     /*
@@ -49,7 +50,7 @@ const App: React.FC = () => {
         setGameState(state);
 
         if (state === "Warmup") {
-            setAlertPlaySound(false);
+            setAlertPlaySound(Sounds.Notification);
             setAlertString("The round is starting soon");
         }
     }
@@ -57,6 +58,11 @@ const App: React.FC = () => {
     const [time, setTime] = useState<number | null>(null);
     window.OnUpdateTimer = (time: number) => {
         setTime(time);
+
+        if (time <= 5 && time > 0 && gameState === "Warmup") {
+            setAlertPlaySound(Sounds.CountDown);
+            setAlertString("The round is starting in: " + time);
+        }
     }
 
     const [gameOverScreen, setGameOverScreen] = useState<boolean>(false);
@@ -90,7 +96,7 @@ const App: React.FC = () => {
     }
 
     const [alertString, setAlertString] = useState<string | null>(null);
-    const [alertPlaySound, setAlertPlaySound] = useState<boolean>(false);
+    const [alertPlaySound, setAlertPlaySound] = useState<Sounds>(Sounds.None);
 
     const [playerHealth, setPlayerHealth] = useState<number>(0);
     const [playerArmor, setPlayerArmor] = useState<number>(0);
@@ -233,7 +239,7 @@ const App: React.FC = () => {
             setSubPhaseIndex(data.SubphaseIndex);
 
             if (data.SubphaseIndex === 3) {
-                setAlertPlaySound(true);
+                setAlertPlaySound(Sounds.Alert);
                 setAlertString("Heads up, the Circle is moving");
             }
         }
@@ -339,9 +345,8 @@ const App: React.FC = () => {
                 <button onClick={() => setOpenMap(prevState => !prevState)}>Open Map</button>
                 <button onClick={() => window.OnPlayerPos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Player Pos</button>
                 <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
-                <button onClick={() => window.OnUpdateTimer(Math.random() * 60)}>Random Timer</button>
+                <button onClick={() => window.OnUpdateTimer(3)}>Random Timer</button>
                 <button onClick={() => setAlertString("Heads up, the Circle is moving")}>Set alert</button>
-                <button onClick={() => setAlertPlaySound(prevState => !prevState)}>Set alert sounds</button>
                 <button onClick={() => setSpectating(prevState => !prevState)}>Set Spectator</button>
                 <button onClick={() => setGameOverScreen(prevState => !prevState)}>Set Gameover Screen</button>
                 <button onClick={() => SetDummyLocalPlayer()}>SetDummyLocalPlayer</button>
