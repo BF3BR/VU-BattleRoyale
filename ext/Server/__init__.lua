@@ -283,6 +283,9 @@ function VuBattleRoyaleServer:ChangeGameState(p_GameState)
     local s_OldGameState = self.m_GameState
     self.m_GameState = p_GameState
 
+    self.m_Match.m_CurrentState = self.m_GameState
+    self.m_Match:InitMatch()
+
     -- Broadcast the gamestate changes to the clients 
     NetEvents:Broadcast(PlayerEvents.GameStateChanged, s_OldGameState, p_GameState)
 end

@@ -1,19 +1,23 @@
-class "Match"
-
 require "__shared/Configs/MapsConfig"
 require "__shared/Configs/ServerConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/Timers"
 require "__shared/Utils/LevelNameHelper"
+require "__shared/Mixins/TimersMixin"
 
 require "Gunship"
 require "Airdrop"
 require "PhaseManagerServer"
 
+class("Match", TimersMixin)
+
 local m_LootManager = require("LootManagerServer")
 
 function Match:__init(p_Server, p_TeamManager)
+    -- call TimersMixin's constructor
+    TimersMixin.__init(self)
+
     -- Save server reference
     self.m_Server = p_Server
 
@@ -42,7 +46,6 @@ function Match:__init(p_Server, p_TeamManager)
 
     self.m_IsFadeOutSet = false
 
-    self.m_CurrentTimer = nil
     self:InitMatch()
 end
 
@@ -56,7 +59,7 @@ function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
 
     self.m_CurrentState = p_GameState
 
-    if self.m_CurrentState == Gamestates.Match then
+    if self.m_CurrentState == GameStates.Match then
         self:AirdropManager(p_DeltaTime)
     end
 end
@@ -88,8 +91,6 @@ function Match:InitMatch()
     self:RemoveTimer("NextMatchState")
     self:RemoveTimer("RemoveGunship")
 
-    self.m_CurrentTimer = nil
-
     self:SetTimer("WhileMatchState", g_Timers:Interval(1, self, self.OnMatchEveryTick))
 
     self:OnMatchFirstTick()
@@ -97,8 +98,12 @@ function Match:InitMatch()
     -- start the timer for the next match state
     local s_Delay = ServerConfig.MatchStateTimes[self.m_CurrentState]
     if s_Delay ~= nil then
-        self.m_CurrentTimer = self:SetTimer("NextMatchState", g_Timers:Timeout(s_Delay, self, self.NextMatchState))
+        self:SetTimer("NextMatchState", g_Timers:Timeout(s_Delay, self, self.NextMatchState))
     end
+end
+
+function Match:GetCurrentState()
+    return self.m_Server.m_GameState
 end
 
 function Match:NextMatchState()
@@ -111,21 +116,22 @@ function Match:NextMatchState()
 
     -- increment gamestate
     self.m_Server:ChangeGameState(self.m_CurrentState + 1)
-    self:InitMatch()
+    -- self:InitMatch()
     return true
 end
 
 function Match:OnMatchEveryTick()
-    if self.m_CurrentTimer == nil then
+    local l_CurrentTimer = self:GetTimer("NextMatchState")
+    if l_CurrentTimer == nil then
         return
     end
 
     if self.m_CurrentState == GameStates.Warmup then
-        if self.m_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
+        if l_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
             self.m_IsFadeOutSet = true
             PlayerManager:FadeOutAll(2.0)
         end
-    elseif self.m_CurrentState == Gamestates.Match then
+    elseif self.m_CurrentState == GameStates.Match then
         self:DoWeHaveAWinner()
     end
 end
@@ -147,10 +153,10 @@ function Match:OnMatchFirstTick()
         -- Fade in all the players
         PlayerManager:FadeInAll(2.0)
         self.m_IsFadeOutSet = false
-    elseif self.m_CurrentState == Gamestates.Match then
+    elseif self.m_CurrentState == GameStates.Match then
         -- Remove gunship after a short delay
         self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
-    elseif self.m_CurrentState == Gamestates.EndGame then
+    elseif self.m_CurrentState == GameStates.EndGame then
         self.m_PhaseManager:End()
         self.m_Gunship:Spawn(nil, false)
         self.m_Airdrop:Spawn(nil, false)
@@ -164,11 +170,11 @@ function Match:OnMatchFirstTick()
 end
 
 function Match:OnMatchLastTick()
-    if self.m_CurrentState == Gamestates.Plane then
+    if self.m_CurrentState == GameStates.Plane then
         NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
-    elseif self.m_CurrentState == Gamestates.PlaneToFirstCircle then
+    elseif self.m_CurrentState == GameStates.PlaneToFirstCircle then
         self.m_PhaseManager:Start()
-    elseif self.m_CurrentState == Gamestates.EndGame then
+    elseif self.m_CurrentState == GameStates.EndGame then
         self.m_RestartQueue = true
     end
 end

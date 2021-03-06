@@ -339,4 +339,9 @@ function BRTeamManager:OnTeamJoinStrategy(p_Player, p_Strategy)
     end
 end
 
-g_BRTeamManager = BRTeamManager()
+-- define global
+if g_BRTeamManager == nil then
+    g_BRTeamManager = BRTeamManager()
+end
+
+return g_BRTeamManager
