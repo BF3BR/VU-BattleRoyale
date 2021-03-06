@@ -4,12 +4,12 @@ require "__shared/Enums/CustomEvents"
 
 function Gunship:__init(p_Match, p_TeamManager)
     -- Save Match and TeamManager reference
-	self.m_Match = p_Match
+    self.m_Match = p_Match
     self.m_TeamManager = p_TeamManager
-	
-	self.m_StartTransform = nil
 
-	self.m_SpeedMultiplier = 1.5
+    self.m_StartTransform = nil
+
+    self.m_SpeedMultiplier = 1.5
 
     -- TODO: Fix this (?)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
@@ -63,9 +63,9 @@ function Gunship:OnEngineUpdate(p_DeltaTime)
     if self.m_StartTransform == nil then
         return
     end
-	
+    
     self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
-	
+    
     if self.m_CumulatedTime >= 0.1 then
         self.m_SetFlyPath = false
         self.m_CumulatedTime = 0
@@ -123,8 +123,8 @@ function Gunship:SetVehicleEntityTransform()
             s_VehicleEntity.transform = self.m_StartTransform
             self.m_VehicleEntity = s_VehicleEntity
             break
-		end
-		
+        end
+        
         s_VehicleEntity = s_VehicleEntityIterator:Next()
     end
 end
@@ -134,8 +134,8 @@ function Gunship:SetLocatorEntityTransform()
     local s_LocatorEntity = s_LocatorEntityIterator:Next()
 
     while s_LocatorEntity do
-		s_LocatorEntity = SpatialEntity(s_LocatorEntity)
-		
+        s_LocatorEntity = SpatialEntity(s_LocatorEntity)
+        
         local s_DirectionTransform = self.m_StartTransform
         
         local s_SpeedMultiplier = self.m_SpeedMultiplier

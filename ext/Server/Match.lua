@@ -287,8 +287,9 @@ function Match:DoWeHaveAWinner()
     end
 end
 
-if g_Match == nil then
-	g_Match = Match()
-end
+-- causes issues cause it needs params + its instantiated again in server init
+-- if g_Match == nil then
+-- 	g_Match = Match()
+-- end
 
-return g_Match
+-- return g_Match

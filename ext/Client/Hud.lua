@@ -15,7 +15,7 @@ function VuBattleRoyaleHud:__init()
     self.m_IsPlayerOnPlane = false
     self.m_StateTimer = nil
 
-    g_Timers:Interval(0.1, self, self.OnPingWebUITimer)
+    g_Timers:Interval(0.2, self, self.OnPingWebUITimer)
 
     self:RegisterVars()
 end
@@ -259,7 +259,7 @@ end
 
 function VuBattleRoyaleHud:OnPingWebUITimer()
     if self.m_StateTimer ~= nil then
-        self.m_HudOnUpdateTimer:ForceUpdate(self.m_StateTimer:Remaining())
+        self.m_HudOnUpdateTimer:Update(self.m_StateTimer:Remaining())
     end
 end
 
