@@ -2,6 +2,7 @@ class "VuBattleRoyaleHud"
 
 require "__shared/Utils/CachedJsExecutor"
 require "__shared/Configs/ServerConfig"
+require "__shared/Utils/Timers"
 require "__shared/Enums/GameStates"
 
 local m_Showroom = require "Showroom"
@@ -12,6 +13,9 @@ function VuBattleRoyaleHud:__init()
     self.m_BrPlayer = nil
     self.m_HudLoaded = false
     self.m_IsPlayerOnPlane = false
+    self.m_StateTimer = nil
+
+    g_Timers:Interval(0.1, self, self.OnPingWebUITimer)
 
     self:RegisterVars()
 end
@@ -245,7 +249,18 @@ function VuBattleRoyaleHud:OnOuterCircleMove(p_OuterCircle)
 end
 
 function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
+    if self.m_StateTimer ~= nil then
+        self.m_StateTimer:Destroy()
+    end
+
+    self.m_StateTimer = g_Timers:Timeout(p_Time)
     self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
+end
+
+function VuBattleRoyaleHud:OnPingWebUITimer()
+    if self.m_StateTimer ~= nil then
+        self.m_HudOnUpdateTimer:ForceUpdate(self.m_StateTimer:Remaining())
+    end
 end
 
 function VuBattleRoyaleHud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)

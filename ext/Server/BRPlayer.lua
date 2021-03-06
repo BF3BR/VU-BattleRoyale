@@ -143,9 +143,13 @@ function BRPlayer:Kill(p_Forced)
         return
     end
 
-    -- get soldier entity
     p_Forced = not (not p_Forced)
-    local l_Soldier = self.m_Player.soldier or self.m_Player.corpse
+
+    -- get soldier entity
+    local l_Soldier = self:GetSoldier()
+    if l_Soldier == nil then
+        return
+    end
 
     if p_Forced then
         l_Soldier:ForceDead()
