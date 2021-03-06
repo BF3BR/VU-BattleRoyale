@@ -16,7 +16,7 @@ function PhaseManagerShared:RegisterVars()
     self.m_OuterCircle = Circle()
     self.m_PrevOuterCircle = Circle()
 
-    -- TODO: Fix map related stuff
+    -- TODO: Fix map realted issue
     self.m_Phases = MapsConfig.XP5_003.Phases
     self.m_InitialDelay = MapsConfig.XP5_003.BeforeFirstCircleDelay
 

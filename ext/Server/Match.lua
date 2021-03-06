@@ -1,12 +1,11 @@
-local Match = class("Match")
-
-require "__shared/Utils/LevelNameHelper"
+class "Match"
 
 require "__shared/Configs/MapsConfig"
 require "__shared/Configs/ServerConfig"
-
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
+require "__shared/Utils/Timers"
+require "__shared/Utils/LevelNameHelper"
 
 require "Gunship"
 require "Airdrop"
@@ -25,25 +24,6 @@ function Match:__init(p_Server, p_TeamManager)
     self.m_CurrentState = GameStates.None
     self.m_LastState = GameStates.None
 
-    -- State callbacks
-    self.m_UpdateStates = { }
-    self.m_UpdateStates[GameStates.Warmup] = self.OnWarmup
-    self.m_UpdateStates[GameStates.WarmupToPlane] = self.OnWarmupToPlane
-    self.m_UpdateStates[GameStates.Plane] = self.OnPlane
-    self.m_UpdateStates[GameStates.PlaneToFirstCircle] = self.OnPlaneToFirstCircle
-    self.m_UpdateStates[GameStates.Match] = self.OnMatch
-    self.m_UpdateStates[GameStates.EndGame] = self.OnEndGame
-
-    -- State ticks
-    self.m_UpdateTicks = { }
-    self.m_UpdateTicks[GameStates.None] = 0.0
-    self.m_UpdateTicks[GameStates.Warmup] = 0.0
-    self.m_UpdateTicks[GameStates.WarmupToPlane] = 0.0
-    self.m_UpdateTicks[GameStates.Plane] = 0.0
-    self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
-    self.m_UpdateTicks[GameStates.Match] = 0.0
-    self.m_UpdateTicks[GameStates.EndGame] = 0.0
-
     -- Winner
     self.m_WinnerTeam = nil
 
@@ -61,16 +41,14 @@ function Match:__init(p_Server, p_TeamManager)
     self.m_RestartQueue = false
 
     self.m_IsFadeOutSet = false
+
+    self.m_CurrentTimer = nil
+    self:InitMatch()
 end
 
 function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
     self.m_Gunship:OnEngineUpdate(p_DeltaTime)
     self.m_Airdrop:OnEngineUpdate(p_DeltaTime)
-
-    local s_Callback = self.m_UpdateStates[p_GameState]
-    if s_Callback == nil then
-        return
-    end
 
     if self.m_CurrentState ~= p_GameState then
         self.m_LastState = self.m_CurrentState
@@ -78,7 +56,9 @@ function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
 
     self.m_CurrentState = p_GameState
 
-    s_Callback(self, p_DeltaTime)
+    if self.m_CurrentState == Gamestates.Match then
+        self:AirdropManager(p_DeltaTime)
+    end
 end
 
 function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
@@ -103,32 +83,55 @@ end
 -- Match Logic
 -- =============================================
 
-function Match:OnWarmup(p_DeltaTime)
-    if self.m_UpdateTicks[GameStates.Warmup] == 0.0 then
-        self:SetClientTimer(ServerConfig.WarmupTime)
+function Match:InitMatch()
+    self:RemoveTimer("WhileMatchState")
+    self:RemoveTimer("NextMatchState")
+    self:RemoveTimer("RemoveGunship")
+
+    self.m_CurrentTimer = nil
+
+    self:SetTimer("WhileMatchState", g_Timers:Interval(1, self, self.OnMatchEveryTick))
+
+    self:OnMatchFirstTick()
+
+    -- start the timer for the next match state
+    local s_Delay = ServerConfig.MatchStateTimes[self.m_CurrentState]
+    if s_Delay ~= nil then
+        self.m_CurrentTimer = self:SetTimer("NextMatchState", g_Timers:Timeout(s_Delay, self, self.NextMatchState))
+    end
+end
+
+function Match:NextMatchState()
+    -- check if it reached the end of the matchstates
+    if self.m_CurrentState ~= GameStates.None and self.m_CurrentState >= GameStates.EndGame then
+        return false
     end
 
-    
-    if self.m_UpdateTicks[GameStates.Warmup] >= ServerConfig.WarmupTime - 2.0 and not self.m_IsFadeOutSet then
-        self.m_IsFadeOutSet = true
-        PlayerManager:FadeOutAll(2.0)
-    end
+    self:OnMatchLastTick()
 
-    if self.m_UpdateTicks[GameStates.Warmup] >= ServerConfig.WarmupTime then
-        self.m_UpdateTicks[GameStates.Warmup] = 0.0
+    -- increment gamestate
+    self.m_Server:ChangeGameState(self.m_CurrentState + 1)
+    self:InitMatch()
+    return true
+end
 
-        -- If the warmup timer is over we should transition to WarmupToPlane state
-        self.m_Server:ChangeGameState(GameStates.WarmupToPlane)
+function Match:OnMatchEveryTick()
+    if self.m_CurrentTimer == nil then
         return
     end
 
-    self.m_UpdateTicks[GameStates.Warmup] = self.m_UpdateTicks[GameStates.Warmup] + p_DeltaTime
+    if self.m_CurrentState == GameStates.Warmup then
+        if self.m_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
+            self.m_IsFadeOutSet = true
+            PlayerManager:FadeOutAll(2.0)
+        end
+    elseif self.m_CurrentState == Gamestates.Match then
+        self:DoWeHaveAWinner()
+    end
 end
 
-function Match:OnWarmupToPlane(p_DeltaTime)
-    if self.m_UpdateTicks[GameStates.WarmupToPlane] == 0.0 then
-        self:SetClientTimer(ServerConfig.WarmupToPlaneTime)
-
+function Match:OnMatchFirstTick()
+    if self.m_CurrentState == GameStates.WarmupToPlane then
         -- Fade out then unspawn all soldiers
         self.m_TeamManager:UnspawnAllSoldiers()
 
@@ -136,74 +139,18 @@ function Match:OnWarmupToPlane(p_DeltaTime)
         self.m_TeamManager:AssignTeams()
 
         -- Enable regular pickups
-        -- m_LootManager:EnableMatchPickups()
-    end
-
-    if self.m_UpdateTicks[GameStates.WarmupToPlane] >= ServerConfig.WarmupToPlaneTime then
-        self.m_UpdateTicks[GameStates.WarmupToPlane] = 0.0
-        self.m_Server:ChangeGameState(GameStates.Plane)
-        return
-    end
-
-    self.m_UpdateTicks[GameStates.WarmupToPlane] = self.m_UpdateTicks[GameStates.WarmupToPlane] + p_DeltaTime
-end
-
-function Match:OnPlane(p_DeltaTime)
-    if self.m_UpdateTicks[GameStates.Plane] == 0.0 then
-        self:SetClientTimer(ServerConfig.PlaneTime)
-
+        m_LootManager:EnableMatchPickups()
+    elseif self.m_CurrentState == GameStates.Plane then
+        -- Spawn the gunship and set its course
         self.m_Gunship:Spawn(self:GetRandomGunshipStart(), true)
+
+        -- Fade in all the players
         PlayerManager:FadeInAll(2.0)
         self.m_IsFadeOutSet = false
-    end
-
-    if self.m_UpdateTicks[GameStates.Plane] >= ServerConfig.PlaneTime then
-        self.m_UpdateTicks[GameStates.Plane] = 0.0
-        NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
-        self.m_Server:ChangeGameState(GameStates.PlaneToFirstCircle)
-        return
-    end
-
-    self.m_UpdateTicks[GameStates.Plane] = self.m_UpdateTicks[GameStates.Plane] + p_DeltaTime
-end
-
-function Match:OnPlaneToFirstCircle(p_DeltaTime)
-    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] == 0.0 then
-        self:SetClientTimer(5.0)
-    end
-
-    -- No delay needed, PhaseManager solves all of our problems
-    if self.m_UpdateTicks[GameStates.PlaneToFirstCircle] >= 5.0 then
-        self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
-        self.m_Server:ChangeGameState(GameStates.Match)
-
-        -- Start the Circle of Death
-        self.m_PhaseManager:Start()
-        return
-    end
-
-    self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = self.m_UpdateTicks[GameStates.PlaneToFirstCircle] + p_DeltaTime
-end
-
-function Match:OnMatch(p_DeltaTime)
-    self:DoWeHaveAWinner()
-
-    if self.m_UpdateTicks[GameStates.Match] >= ServerConfig.GunshipDespawn then
-        if self.m_Gunship:GetEnabled() then
-            self.m_Gunship:Spawn(nil, false)
-        end
-    end
-
-    self:AirdropManager(p_DeltaTime)
-    
-    -- PhaseManager does the rest
-
-    self.m_UpdateTicks[GameStates.Match] = self.m_UpdateTicks[GameStates.Match] + p_DeltaTime
-end
-
-function Match:OnEndGame(p_DeltaTime)
-    if self.m_UpdateTicks[GameStates.EndGame] == 0.0 then
-        -- End the Circle of Death
+    elseif self.m_CurrentState == Gamestates.Match then
+        -- Remove gunship after a short delay
+        self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
+    elseif self.m_CurrentState == Gamestates.EndGame then
         self.m_PhaseManager:End()
         self.m_Gunship:Spawn(nil, false)
         self.m_Airdrop:Spawn(nil, false)
@@ -213,37 +160,28 @@ function Match:OnEndGame(p_DeltaTime)
         else
             print("INFO: Round ended without a winner.")
         end
-
-        -- TODO: Set client UI to show the winners name
-
-        self:SetClientTimer(ServerConfig.EndGameTime)
     end
+end
 
-    if self.m_UpdateTicks[GameStates.EndGame] >= ServerConfig.EndGameTime then
-        self.m_UpdateTicks[GameStates.EndGame] = 0.0
-
-        -- Queue round reset
+function Match:OnMatchLastTick()
+    if self.m_CurrentState == Gamestates.Plane then
+        NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
+    elseif self.m_CurrentState == Gamestates.PlaneToFirstCircle then
+        self.m_PhaseManager:Start()
+    elseif self.m_CurrentState == Gamestates.EndGame then
         self.m_RestartQueue = true
-
-        return
     end
+end
 
-    self.m_UpdateTicks[GameStates.EndGame] = self.m_UpdateTicks[GameStates.EndGame] + p_DeltaTime
+function Match:OnRemoveGunship()
+    if self.m_Gunship:GetEnabled() then
+        self.m_Gunship:Spawn(nil, false)
+    end
 end
 
 function Match:OnRestartRound()
     self.m_RestartQueue = false
-
-    self.m_UpdateTicks[GameStates.None] = 0.0
-    self.m_UpdateTicks[GameStates.Warmup] = 0.0
-    self.m_UpdateTicks[GameStates.WarmupToPlane] = 0.0
-    self.m_UpdateTicks[GameStates.Plane] = 0.0
-    self.m_UpdateTicks[GameStates.PlaneToFirstCircle] = 0.0
-    self.m_UpdateTicks[GameStates.Match] = 0.0
-    self.m_UpdateTicks[GameStates.EndGame] = 0.0
-    self.m_CircleIndex = 1
     self.m_WinnerTeam = nil
-
     self.m_Server:ChangeGameState(GameStates.None)
 end
 
@@ -289,16 +227,12 @@ function Match:GetRandomGunshipStart()
     return s_Return
 end
 
-function Match:SetClientTimer(p_Time, p_Player)
+function Match:SetClientTimer(p_Time)
     if p_Time == nil then
         return
     end
 
-    if p_Player ~= nil then
-        NetEvents:SendTo(PlayerEvents.UpdateTimer, p_Player, p_Time)
-    else
-        NetEvents:Broadcast(PlayerEvents.UpdateTimer, p_Time)
-    end
+    NetEvents:Broadcast(PlayerEvents.UpdateTimer, p_Time)
 end
 
 function Match:AirdropManager(p_DeltaTime)
@@ -347,4 +281,8 @@ function Match:DoWeHaveAWinner()
     end
 end
 
-return Match
+if g_Match == nil then
+	g_Match = Match()
+end
+
+return g_Match

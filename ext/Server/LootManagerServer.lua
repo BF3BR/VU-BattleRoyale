@@ -16,6 +16,7 @@ function LootManagerServer:OnLevelLoadResources()
 
     self.m_RandomSpawnTransforms = {}
 
+    -- TODO: Fix map realted issue
     for i, l_Transform in pairs(MapsConfig.XP5_003.LootSpawnPoints) do
         local s_Tier
         local s_Random = MathUtils:GetRandom(0, 1) * s_AccumulatedWeight
@@ -45,7 +46,7 @@ function LootManagerServer:EnableMatchPickups()
 	local s_Entity = s_Iterator:Next()
 	while s_Entity do
         WeaponUnlockPickupEntityData(s_Entity.data).contentIsStatic = false
-        s_Entity.bus.entities[2]:FireEvent('ShowMarker')
+        s_Entity.bus.entities[2]:FireEvent("ShowMarker")
         s_Entity = s_Iterator:Next()
 	end
 end

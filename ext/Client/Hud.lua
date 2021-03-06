@@ -237,7 +237,7 @@ end
 
 function VuBattleRoyaleHud:OnPhaseManagerUpdate(p_Data)
     self.m_HudOnUpdateCircles:Update(json.encode(p_Data))
-    self:OnUpdateTimer(p_Data.Duration)
+    -- self:OnUpdateTimer(p_Data.Duration)
 end
 
 function VuBattleRoyaleHud:OnOuterCircleMove(p_OuterCircle)
@@ -245,7 +245,7 @@ function VuBattleRoyaleHud:OnOuterCircleMove(p_OuterCircle)
 end
 
 function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
-    self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
+    self.m_HudOnUpdateTimer:Update(p_Time)
 end
 
 function VuBattleRoyaleHud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)

@@ -150,8 +150,6 @@ function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
         return
     end
 
-    print("INFO: Set timer to: " .. p_Time)
-
     m_Hud:OnUpdateTimer(p_Time)
 end
 

@@ -1,3 +1,5 @@
+require "__shared/Enums/GameStates"
+
 ServerConfig = 
 {
     -- Minimum ammounts of players to start the warmup and then the match
@@ -6,22 +8,20 @@ ServerConfig =
     -- Number of player per team
     PlayersPerTeam = 2,
 
-    -- Warmup time
-    WarmupTime = 60.0,
-
-    -- WarmupToPlane transition time
-    WarmupToPlaneTime = 5.0,
-
-    -- Plane travel time
-    PlaneTime = 35.0,
-
-    -- Time to wait after the round ends
-    EndGameTime = 15.0,
-
     -- Time to update some of the HUD components
     HudUpdateRate = 2.5,
 
     GunshipDespawn = 60.0,
+
+    MatchStateTimes = {
+        [GameStates.None] = nil,
+        [GameStates.Warmup] = 60.0,
+        [GameStates.WarmupToPlane] = 5.0,
+        [GameStates.Plane] = 35.0,
+        [GameStates.PlaneToFirstCircle] = 5.0,
+        [GameStates.Match] = nil,
+        [GameStates.EndGame] = 15.0,
+    },
 
     -- DEBUG STUFF
     Debug = {
@@ -41,6 +41,7 @@ ServerConfig =
             "keku645",
             "DankBoi21",
             "FoolHen",
+            "beogath",
         },
     }
 }

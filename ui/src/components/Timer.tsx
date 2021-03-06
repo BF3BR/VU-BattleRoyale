@@ -1,36 +1,26 @@
-import React, { useEffect } from "react";
-import { useTimer } from "react-compound-timer/build/hook/useTimer";
+import React from "react";
 
 interface Props {
     time: number|null;
 }
 
 const Timer: React.FC<Props> = ({ time }) => {
-    const { value, controls: { setTime, start, stop }} = useTimer({ initialTime: 0, direction: "backward", startImmediately: false, timeToUpdate: 100 });
 
-    useEffect(() => {
-        if (time && time !== null) {
-            setTime(1000 * time);
-            start();
-        }
+    const fancyTimeFormat = () => {  
+        var mins = ~~((time % 3600) / 60);
+        var secs = ~~time % 60;
 
-        return () => {
-            setTime(0);
-            stop();
-        }
-    }, [time, setTime, start, stop]);
+        var ret = "";
+
+        ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+        ret += "" + secs;
+        return ret;
+    }
 
     return (
         <span className="Timer">
-            {(value !== null)
-            ?
-                <>
-                    {(value.m < 10 ? `0${value.m}` : value.m)}:{(value.s < 10 ? `0${value.s}` : value.s)}
-                </>
-            :
-                <>
-                    00:00
-                </>
+            {(time !== null) &&
+                fancyTimeFormat()
             }
         </span>
     );
