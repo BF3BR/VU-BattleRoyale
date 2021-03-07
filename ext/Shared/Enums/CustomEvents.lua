@@ -59,3 +59,7 @@ PlayerEvents = {
 LMS = {
     RLT = "LMS:RLT",
 }
+
+SpectatorEvents = {
+    ChangedPlayer = "SpectatorEvents:ChangedPlayer"
+}

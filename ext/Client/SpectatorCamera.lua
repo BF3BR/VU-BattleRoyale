@@ -237,6 +237,9 @@ function SpectatorCamera:SpectatePlayer(p_Player)
 
 	print("INFO: Spectating player: " .. p_Player.name)
 
+	-- Dispatch a local event so phasemanager can toggle the OOC visuals
+	Events:DispatchLocal(SpectatorEvents.ChangedPlayer, p_Player)
+
 	self.m_SpectatedPlayer = p_Player
 end
 
