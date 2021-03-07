@@ -89,7 +89,7 @@ MapsConfig = {
             }
         },
         InitialCircle = {
-            Radius = 450,
+            Radius = 420,
 
             Triangles = {
                 {

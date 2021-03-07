@@ -1,5 +1,6 @@
 require "__shared/Enums/CustomEvents"
 require "__shared/Enums/SubphaseTypes"
+require "__shared/Utils/LevelNameHelper"
 require "__shared/Mixins/TimersMixin"
 
 class ("PhaseManagerShared", TimersMixin)
@@ -16,9 +17,8 @@ function PhaseManagerShared:RegisterVars()
     self.m_OuterCircle = Circle()
     self.m_PrevOuterCircle = Circle()
 
-    -- TODO: Fix map realted issue
-    self.m_Phases = MapsConfig.XP5_003.Phases
-    self.m_InitialDelay = MapsConfig.XP5_003.BeforeFirstCircleDelay
+    self.m_InitialDelay = 0
+    self.m_Phases = {}
 
     self.m_PhaseIndex = 1
     self.m_SubphaseIndex = SubphaseType.InitialDelay
@@ -26,8 +26,14 @@ function PhaseManagerShared:RegisterVars()
 end
 
 function PhaseManagerShared:RegisterEvents()
+    Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
     Events:Subscribe("Level:Destroy", self, self.Destroy)
     Events:Subscribe("Extension:Unloading", self, self.Destroy)
+end
+
+function PhaseManagerShared:OnLevelLoaded()
+    self.m_Phases = MapsConfig[LevelNameHelper:GetLevelName()].Phases
+    self.m_InitialDelay = MapsConfig[LevelNameHelper:GetLevelName()].BeforeFirstCircleDelay
 end
 
 -- 
