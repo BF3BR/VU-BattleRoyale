@@ -24,10 +24,6 @@ function Match:__init(p_Server, p_TeamManager)
     -- Save team manager reference
     self.m_TeamManager = p_TeamManager
 
-    -- Gamestates
-    self.m_CurrentState = GameStates.None
-    self.m_LastState = GameStates.None
-
     -- Winner
     self.m_WinnerTeam = nil
 
@@ -53,13 +49,7 @@ function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
     self.m_Gunship:OnEngineUpdate(p_DeltaTime)
     self.m_Airdrop:OnEngineUpdate(p_DeltaTime)
 
-    if self.m_CurrentState ~= p_GameState then
-        self.m_LastState = self.m_CurrentState
-    end
-
-    self.m_CurrentState = p_GameState
-
-    if self.m_CurrentState == GameStates.Match then
+    if self:GetCurrentState() == GameStates.Match then
         self:AirdropManager(p_DeltaTime)
     end
 end
@@ -96,7 +86,7 @@ function Match:InitMatch()
     self:OnMatchFirstTick()
 
     -- start the timer for the next match state
-    local s_Delay = ServerConfig.MatchStateTimes[self.m_CurrentState]
+    local s_Delay = ServerConfig.MatchStateTimes[self:GetCurrentState()]
     if s_Delay ~= nil then
         self:SetTimer("NextMatchState", g_Timers:Timeout(s_Delay, self, self.NextMatchState))
     end
@@ -110,31 +100,31 @@ function Match:NextMatchState()
     self:OnMatchLastTick()
 
     -- check if it reached the end of the matchstates
-    if self.m_CurrentState ~= GameStates.None and self.m_CurrentState >= GameStates.EndGame then
+    if self:GetCurrentState() ~= GameStates.None and self:GetCurrentState() >= GameStates.EndGame then
         return false
     end
 
     -- increment gamestate
-    self.m_Server:ChangeGameState(self.m_CurrentState + 1)
+    self.m_Server:ChangeGameState(self:GetCurrentState() + 1)
     -- self:InitMatch()
     return true
 end
 
 function Match:OnMatchEveryTick()
-    if self.m_CurrentState == GameStates.Warmup then
+    if self:GetCurrentState() == GameStates.Warmup then
         local l_CurrentTimer = self:GetTimer("NextMatchState")
 
-        if l_CurrentTimer == nil and l_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
+        if l_CurrentTimer ~= nil and l_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
             self.m_IsFadeOutSet = true
             PlayerManager:FadeOutAll(2.0)
         end
-    elseif self.m_CurrentState == GameStates.Match then
+    elseif self:GetCurrentState() == GameStates.Match then
         self:DoWeHaveAWinner()
     end
 end
 
 function Match:OnMatchFirstTick()
-    if self.m_CurrentState == GameStates.WarmupToPlane then
+    if self:GetCurrentState() == GameStates.WarmupToPlane then
         -- Fade out then unspawn all soldiers
         self.m_TeamManager:UnspawnAllSoldiers()
 
@@ -143,17 +133,17 @@ function Match:OnMatchFirstTick()
 
         -- Enable regular pickups
         m_LootManager:EnableMatchPickups()
-    elseif self.m_CurrentState == GameStates.Plane then
+    elseif self:GetCurrentState() == GameStates.Plane then
         -- Spawn the gunship and set its course
         self.m_Gunship:Spawn(self:GetRandomGunshipStart(), true)
 
         -- Fade in all the players
         PlayerManager:FadeInAll(2.0)
         self.m_IsFadeOutSet = false
-    elseif self.m_CurrentState == GameStates.Match then
+    elseif self:GetCurrentState() == GameStates.Match then
         -- Remove gunship after a short delay
         self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
-    elseif self.m_CurrentState == GameStates.EndGame then
+    elseif self:GetCurrentState() == GameStates.EndGame then
         self.m_PhaseManager:End()
         self.m_Gunship:Spawn(nil, false)
         self.m_Airdrop:Spawn(nil, false)
@@ -167,11 +157,11 @@ function Match:OnMatchFirstTick()
 end
 
 function Match:OnMatchLastTick()
-    if self.m_CurrentState == GameStates.Plane then
+    if self:GetCurrentState() == GameStates.Plane then
         NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
-    elseif self.m_CurrentState == GameStates.PlaneToFirstCircle then
+    elseif self:GetCurrentState() == GameStates.PlaneToFirstCircle then
         self.m_PhaseManager:Start()
-    elseif self.m_CurrentState == GameStates.EndGame then
+    elseif self:GetCurrentState() == GameStates.EndGame then
         self.m_RestartQueue = true
     end
 end
