@@ -13,6 +13,7 @@ interface Props {
     alert: string|null;
     playSound: Sounds;
     afterInterval: () => void;
+    length: number;
 };
 
 const alertAudio = new Audio(alert);
@@ -30,8 +31,13 @@ countdownAudio.volume = 0.3;
 countdownAudio.autoplay = false;
 countdownAudio.loop = false;
 
-const Alert: React.FC<Props> = ({ alert, afterInterval, playSound }) => {
+const Alert: React.FC<Props> = ({ alert, afterInterval, playSound, length }) => {
     useEffect(() => {
+        let intLength = length;
+        if (intLength === undefined || intLength === null) {
+            intLength = 4000;
+        }
+
         if (alert !== null) {
             switch (playSound) {
                 case Sounds.Alert:
@@ -50,7 +56,7 @@ const Alert: React.FC<Props> = ({ alert, afterInterval, playSound }) => {
             
             const interval = setInterval(() => {
                 afterInterval();
-            }, 8000);
+            }, intLength * 1000);
 
             return () => {
                 alertAudio.currentTime = 0.0;
@@ -65,7 +71,7 @@ const Alert: React.FC<Props> = ({ alert, afterInterval, playSound }) => {
                 clearInterval(interval);
             }
         }
-    }, [alert]);
+    }, [alert, length]);
 
     return (
         <>

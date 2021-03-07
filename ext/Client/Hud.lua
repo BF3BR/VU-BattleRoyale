@@ -15,8 +15,6 @@ function VuBattleRoyaleHud:__init()
     self.m_IsPlayerOnPlane = false
     self.m_StateTimer = nil
 
-    g_Timers:Interval(0.2, self, self.OnPingWebUITimer)
-
     self:RegisterVars()
 end
 
@@ -249,18 +247,12 @@ function VuBattleRoyaleHud:OnOuterCircleMove(p_OuterCircle)
 end
 
 function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
-    if self.m_StateTimer ~= nil then
+    --[[if self.m_StateTimer ~= nil then
         self.m_StateTimer:Destroy()
     end
 
-    self.m_StateTimer = g_Timers:Timeout(p_Time)
-    self.m_HudOnUpdateTimer:ForceUpdate(p_Time)
-end
-
-function VuBattleRoyaleHud:OnPingWebUITimer()
-    if self.m_StateTimer ~= nil then
-        self.m_HudOnUpdateTimer:Update(self.m_StateTimer:Remaining())
-    end
+    self.m_StateTimer = g_Timers:Timeout(p_Time)]]
+    self.m_HudOnUpdateTimer:Update(math.floor(p_Time))
 end
 
 function VuBattleRoyaleHud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)

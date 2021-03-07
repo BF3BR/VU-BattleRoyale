@@ -51,6 +51,7 @@ const App: React.FC = () => {
 
         if (state === "Warmup") {
             setAlertPlaySound(Sounds.Notification);
+            setAlertLength(6);
             setAlertString("The round is starting soon");
         }
     }
@@ -59,9 +60,10 @@ const App: React.FC = () => {
     window.OnUpdateTimer = (time: number) => {
         setTime(time);
 
-        if (time <= 5 && time > 0 && gameState === "Warmup") {
+        if (Math.floor(time) <= 5 && Math.floor(time) > 0 && gameState === "Warmup") {
             setAlertPlaySound(Sounds.CountDown);
-            setAlertString("The round is starting in: " + time);
+            setAlertLength(1);
+            setAlertString("The round is starting in: " + Math.floor(time));
         }
     }
 
@@ -97,6 +99,7 @@ const App: React.FC = () => {
 
     const [alertString, setAlertString] = useState<string | null>(null);
     const [alertPlaySound, setAlertPlaySound] = useState<Sounds>(Sounds.None);
+    const [alertLength, setAlertLength] = useState<number>(4);
 
     const [playerHealth, setPlayerHealth] = useState<number>(0);
     const [playerArmor, setPlayerArmor] = useState<number>(0);
@@ -240,6 +243,7 @@ const App: React.FC = () => {
 
             if (data.SubphaseIndex === 3) {
                 setAlertPlaySound(Sounds.Alert);
+                setAlertLength(6);
                 setAlertString("Heads up, the Circle is moving");
             }
         }
@@ -443,6 +447,7 @@ const App: React.FC = () => {
                                     alert={alertString}
                                     afterInterval={() => setAlertString(null)}
                                     playSound={alertPlaySound}
+                                    length={alertLength}
                                 />
 
                                 {/*<ParaDropDistance 

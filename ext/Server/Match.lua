@@ -121,15 +121,18 @@ function Match:NextMatchState()
 end
 
 function Match:OnMatchEveryTick()
+    local l_CurrentTimer = self:GetTimer("NextMatchState")
     if self.m_CurrentState == GameStates.Warmup then
-        local l_CurrentTimer = self:GetTimer("NextMatchState")
-
-        if l_CurrentTimer == nil and l_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
+        if l_CurrentTimer ~= nil and l_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
             self.m_IsFadeOutSet = true
             PlayerManager:FadeOutAll(2.0)
         end
     elseif self.m_CurrentState == GameStates.Match then
         self:DoWeHaveAWinner()
+    end
+
+    if l_CurrentTimer ~= nil then
+        self:SetClientTimer(l_CurrentTimer:Remaining())
     end
 end
 

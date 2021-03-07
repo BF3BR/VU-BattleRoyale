@@ -25,6 +25,7 @@ end
 -- Starts the PhaseManager logic
 function PhaseManagerServer:Start()
     self:SetTimer("Damage", g_Timers:Interval(1, self, self.ApplyDamage))
+    self:SetTimer("ClientTimer", g_Timers:Interval(1, self, self.ClientTimer))
     self:InitPhase()
 end
 
@@ -165,6 +166,20 @@ function PhaseManagerServer:ApplyDamage()
                 local l_NewHealth = l_Player.soldier.health - l_Damage
                 l_Player.soldier.health = math.max(0, l_NewHealth)
             end
+        end
+    end
+end
+
+function PhaseManagerServer:ClientTimer()
+    local l_CurrentTimer = self:GetTimer("NextSubphase")
+    if self.m_SubphaseIndex == SubphaseType.Waiting or self.m_SubphaseIndex == SubphaseType.InitialDelay then
+        if l_CurrentTimer ~= nil then
+            NetEvents:Broadcast(PlayerEvents.UpdateTimer, l_CurrentTimer:Remaining())
+        end
+    elseif self.m_SubphaseIndex == SubphaseType.Moving then
+        l_CurrentTimer = self:GetTimer("MovingCircle")
+        if l_CurrentTimer ~= nil then
+            NetEvents:Broadcast(PlayerEvents.UpdateTimer, l_CurrentTimer:Remaining())
         end
     end
 end
