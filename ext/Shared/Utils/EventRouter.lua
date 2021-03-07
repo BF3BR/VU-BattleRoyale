@@ -1,6 +1,4 @@
-EventRouterEvents = {
-    UIDrawHudCustom = "UIDrawHudCustom"
-}
+EventRouterEvents = {UIDrawHudCustom = "UIDrawHudCustom"}
 
 local UpdateManagerMap = {
     [UpdatePass.UpdatePass_PreSim] = {"UpdatePass_PreSim"},
