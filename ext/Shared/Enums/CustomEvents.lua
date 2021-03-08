@@ -41,6 +41,9 @@ PhaseManagerCustomEvents = {
     Update = "PhaseManager:Update",
     CircleMove = "PhaseManager:CircleMove"
 }
+SpectatorEvent = {
+    PlayerChanged = "Spectator:PlayerChanged"
+}
 
 GunshipEvents = {
     Camera = "Gunship:Camera",

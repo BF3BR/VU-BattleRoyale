@@ -29,7 +29,7 @@ end
 function PhaseManagerClient:RegisterEvents()
     PhaseManagerShared.RegisterEvents(self)
 
-    Events:Subscribe("Spectator:PlayerChanged", self, self.OnSpectatingPlayer)
+    Events:Subscribe(SpectatorEvent.PlayerChanged, self, self.OnSpectatingPlayer)
 
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
     Events:Subscribe("UpdatePass_PreSim", self, self.OnPreSim)
@@ -79,7 +79,9 @@ end
 
 -- Update spectating player's object
 function PhaseManagerClient:OnSpectatingPlayer(p_Player)
+    print('received player')
     if p_Player ~= nil then
+        print(p_Player.name)
         self.m_SpectatedPlayer = p_Player
     end
 end
@@ -88,7 +90,7 @@ end
 function PhaseManagerClient:GetActivePlayerPosition()
     -- pick local or spectated player
     local l_Player = PlayerManager:GetLocalPlayer()
-    if self.m_SpectatedPlayer ~= nil then
+    if not l_Player.alive and self.m_SpectatedPlayer ~= nil then
         l_Player = self.m_SpectatedPlayer
     end
 
@@ -98,7 +100,7 @@ function PhaseManagerClient:GetActivePlayerPosition()
     end
 
     -- return the position
-    return l_Player.soldier.position.transform.trans
+    return l_Player.soldier.transform.trans
 end
 
 -- 

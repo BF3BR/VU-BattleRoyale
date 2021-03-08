@@ -1,5 +1,6 @@
 class "SpectatorCamera"
 
+require "__shared/Enums/CustomEvents"
 require "__shared/Utils/MathHelper"
 
 function SpectatorCamera:__init()
@@ -236,7 +237,7 @@ function SpectatorCamera:SpectatePlayer(p_Player)
 	end
 
 	print("INFO: Spectating player: " .. p_Player.name)
-
+	Events:DispatchLocal(SpectatorEvent.PlayerChanged, p_Player)
 	self.m_SpectatedPlayer = p_Player
 end
 
