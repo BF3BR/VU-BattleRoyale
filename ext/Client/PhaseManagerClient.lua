@@ -20,6 +20,7 @@ function PhaseManagerClient:RegisterVars()
     self.m_IOCVision = g_IOCVision
     self.m_OOCVision = g_OOCVision
     self.m_RenderInnerCircle = CircleConfig.RenderInnerCircle
+    self.m_SpectatedPlayer = nil
 
     -- events/hooks
     self.m_LevelLoadedEvent = nil
@@ -27,6 +28,8 @@ end
 
 function PhaseManagerClient:RegisterEvents()
     PhaseManagerShared.RegisterEvents(self)
+
+    Events:Subscribe(SpectatorEvent.PlayerChanged, self, self.OnSpectatingPlayer)
 
     self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
     Events:Subscribe("UpdatePass_PreSim", self, self.OnPreSim)
@@ -74,18 +77,41 @@ function PhaseManagerClient:OnUpdateState(p_State)
     Events:DispatchLocal(PhaseManagerCustomEvents.Update, p_State)
 end
 
+-- Update spectating player's object
+function PhaseManagerClient:OnSpectatingPlayer(p_Player)
+    if p_Player ~= nil then
+        self.m_SpectatedPlayer = p_Player
+    end
+end
+
+-- Returns the position of the local or the spectated player
+function PhaseManagerClient:GetActivePlayerPosition()
+    -- pick local or spectated player
+    local l_Player = PlayerManager:GetLocalPlayer()
+    if not l_Player.alive and self.m_SpectatedPlayer ~= nil then
+        l_Player = self.m_SpectatedPlayer
+    end
+
+    -- ensure soldier exists
+    if l_Player == nil or l_Player.soldier == nil then
+        return nil
+    end
+
+    -- return the position
+    return l_Player.soldier.transform.trans
+end
+
 -- 
 function PhaseManagerClient:OnPreSim(p_DeltaTime)
     if self:IsIdle() then
         return
     end
 
-    -- get local player position
-    local p_Player = PlayerManager:GetLocalPlayer()
-    if p_Player == nil or p_Player.soldier == nil then
+    -- get active player position
+    local l_PlayerPos = self:GetActivePlayerPosition()
+    if l_PlayerPos == nil then
         return
     end
-    local l_PlayerPos = p_Player.soldier.transform.trans
 
     -- toggle OOB vision
     if self.m_OuterCircle:IsInnerPoint(l_PlayerPos) then
@@ -107,12 +133,11 @@ function PhaseManagerClient:OnRender()
         return
     end
 
-    -- get local player position
-    local l_Player = PlayerManager:GetLocalPlayer()
-    if l_Player == nil or l_Player.soldier == nil then
+    -- get active player position
+    local l_PlayerPos = self:GetActivePlayerPosition()
+    if l_PlayerPos == nil then
         return
     end
-    local l_PlayerPos = l_Player.soldier.transform.trans
 
     -- render circles
     self.m_OuterCircle:Render(OuterCircleRenderer, l_PlayerPos)
