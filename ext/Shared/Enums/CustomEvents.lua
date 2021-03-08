@@ -41,6 +41,7 @@ PhaseManagerCustomEvents = {
     Update = "PhaseManager:Update",
     CircleMove = "PhaseManager:CircleMove"
 }
+
 SpectatorEvent = {
     PlayerChanged = "Spectator:PlayerChanged"
 }
@@ -61,8 +62,4 @@ PlayerEvents = {
 
 LMS = {
     RLT = "LMS:RLT",
-}
-
-SpectatorEvents = {
-    ChangedPlayer = "SpectatorEvents:ChangedPlayer"
 }
