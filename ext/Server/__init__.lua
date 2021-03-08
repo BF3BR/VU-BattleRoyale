@@ -154,12 +154,11 @@ end
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
     self:DisablePreRound()
     self:SetupRconVariables()
+    self.m_Match:OnRestartRound()
     self.m_WaitForStart = false
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
-    -- Reset the match
-    self.m_Match:OnRestartRound()
     self.m_WaitForStart = true
 end
 

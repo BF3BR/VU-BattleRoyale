@@ -62,7 +62,7 @@ const App: React.FC = () => {
 
         if (Math.floor(time) <= 5 && Math.floor(time) > 0 && gameState === "Warmup") {
             setAlertPlaySound(Sounds.CountDown);
-            setAlertLength(1);
+            setAlertLength(0.85);
             setAlertString("The round is starting in: " + Math.floor(time));
         }
     }
@@ -316,7 +316,7 @@ const App: React.FC = () => {
     }
     
     window.ResetVars = () => {
-        window.location.reload();
+        // window.location.reload();
     }
 
     return (
@@ -388,6 +388,13 @@ const App: React.FC = () => {
                     deployScreen={deployScreen}
                 />
 
+                <Alert
+                    alert={alertString}
+                    afterInterval={() => setAlertString(null)}
+                    playSound={alertPlaySound}
+                    length={alertLength}
+                />
+
                 {deployScreen 
                 ?
                     <DeployScreen
@@ -443,12 +450,6 @@ const App: React.FC = () => {
                                     resetMessage={() => SetKilledMessage(null, null, null)}
                                 />
 
-                                <Alert
-                                    alert={alertString}
-                                    afterInterval={() => setAlertString(null)}
-                                    playSound={alertPlaySound}
-                                    length={alertLength}
-                                />
 
                                 {/*<ParaDropDistance 
                                     percentage={paradropPercentage}

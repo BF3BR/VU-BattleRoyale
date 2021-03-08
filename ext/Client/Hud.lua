@@ -73,11 +73,11 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
         return
     end
 
-    if InputManager:IsKeyDown(InputDeviceKeys.IDK_F10) then
+    if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10) then
         if (self.m_GameState ~= GameStates.Match and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle)
          or not s_LocalPlayer.soldier.alive then
+            WebUI:ExecuteJS("ToggleDeployMenu(true);")
             m_Showroom:SetCamera(true)
-            WebUI:ExecuteJS("ToggleDeployMenu();")
         end
     end
 end

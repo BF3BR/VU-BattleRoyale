@@ -103,7 +103,7 @@ end
 
 function VuBattleRoyaleClient:OnLevelLoaded()
     m_Showroom:SetCamera(true)
-    WebUI:ExecuteJS("ToggleDeployMenu();")
+    WebUI:ExecuteJS("ToggleDeployMenu(true);")
 end
 
 function VuBattleRoyaleClient:OnLevelFinalized(p_LevelName, p_GameMode)
