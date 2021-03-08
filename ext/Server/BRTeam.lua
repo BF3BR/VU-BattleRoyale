@@ -137,6 +137,7 @@ function BRTeam:IsEmpty()
     return MapHelper:Empty(self.m_Players)
 end
 
+-- Returns the number of players of the team
 function BRTeam:PlayersNumber()
     return MapHelper:Size(self.m_Players)
 end
