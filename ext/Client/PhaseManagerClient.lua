@@ -79,9 +79,7 @@ end
 
 -- Update spectating player's object
 function PhaseManagerClient:OnSpectatingPlayer(p_Player)
-    print('received player')
     if p_Player ~= nil then
-        print(p_Player.name)
         self.m_SpectatedPlayer = p_Player
     end
 end
