@@ -18,7 +18,10 @@ CircleConfig = {
     RenderPoints = { Min = 7, Max = 23},
 
     -- The maximum opacity of the outer circle
-    OuterCircleMaxOpacity = 0.28,
+    OuterCircleMaxOpacity = 0.16,
+
+    -- The time between each update of the outer circle position
+    ClientUpdateMs = 0.07,
 
     -- Use fog to give the player a better sense of the playable area
     UseFog = true
