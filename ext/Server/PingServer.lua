@@ -1,5 +1,6 @@
 class "PingServer"
 
+require "BRTeamManager"
 require "__shared/Enums/CustomEvents"
 
 function PingServer:__init()
@@ -43,12 +44,15 @@ function PingServer:__gc()
 end
 
 function PingServer:OnPlayerPing(p_Player, p_Position)
-    -- TODO: Remove below once tested
-    -- self:AssignPingIds()
-
     -- Validate our player
     if p_Player == nil then
         print("invalid player")
+        return
+    end
+
+    -- Ignore ping if player is solo
+    local l_BrTeam = g_BRTeamManager:GetTeamByPlayer(p_Player)
+    if l_BrTeam ~= nil and l_BrTeam:PlayersNumber() < 2 then
         return
     end
 

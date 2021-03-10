@@ -76,6 +76,12 @@ function PingClient:OnPing(p_Args)
         return
     end
 
+    -- Do not ping if player is solo
+    local l_Player = PlayerManager:GetLocalPlayer()
+    if l_Player ~= nil and l_Player.squadId == SquadId.SquadNone then
+        return
+    end
+
     -- This should not happen, but we validate anyway for stability
     if self.m_PingCommand == nil then
         print("invalid ping command")
@@ -120,9 +126,6 @@ function PingClient:OnUiDrawHud()
 
         local l_Position = l_PingInfo[1]
         local l_Cooldown = l_PingInfo[2]
-
-        --print(l_Position)
-        --print(l_Cooldown)
 
         if l_Cooldown < 0.001 then
             print("invalid cooldown")

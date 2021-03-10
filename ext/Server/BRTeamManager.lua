@@ -45,12 +45,21 @@ function BRTeamManager:GetPlayer(p_Player)
     return self.m_Players[BRPlayer:GetPlayerName(p_Player)]
 end
 
--- Returns a team by it's id
+-- Returns a BRTeam by it's id
 --
 -- @param p_Id string
 -- @return BRTeam|nil
 function BRTeamManager:GetTeam(p_Id)
     return self.m_Teams[p_Id]
+end
+
+-- Returns the BRTeam that the player is member of
+--
+-- @param p_Player Player|BRPlayer|string
+-- @return BRPlayer|nil
+function BRTeamManager:GetTeamByPlayer(p_Player)
+    local l_BrPlayer = self:GetPlayer(p_Player)
+    return (l_BrPlayer ~= nil and l_BrPlayer.m_Team) or nil
 end
 
 -- Returns the team that won the match.
