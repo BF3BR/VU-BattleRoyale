@@ -58,6 +58,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
     NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer)
     NetEvents:Subscribe(PlayerEvents.PitchAndYaw, self, self.OnPlayersPitchAndYaw)
+    NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged)
     NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
     NetEvents:Subscribe(GunshipEvents.Camera, self, self.OnGunShipCamera)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
@@ -255,6 +256,10 @@ end
 
 function VuBattleRoyaleClient:OnPlayersPitchAndYaw(p_PitchAndYaw)
     m_SpectatorCamera:OnPlayersPitchAndYaw(p_PitchAndYaw)
+end
+
+function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
+    m_Hud.m_MinPlayersToStart = p_MinPlayersToStart
 end
 
 

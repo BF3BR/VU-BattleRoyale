@@ -15,6 +15,8 @@ function VuBattleRoyaleHud:__init()
     self.m_IsPlayerOnPlane = false
     self.m_StateTimer = nil
 
+    self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
+
     self:RegisterVars()
 end
 
@@ -87,9 +89,9 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
         WebUI:Hide()
         return
     end
-
+    
     if self.m_Ticks >= ServerConfig.HudUpdateRate then
-        self.m_HudOnMinPlayersToStart:Update(ServerConfig.MinPlayersToStart)
+        self.m_HudOnMinPlayersToStart:ForceUpdate(self.m_MinPlayersToStart)
         self:PushUpdatePlayersInfo()
 
         self.m_Ticks = 0.0

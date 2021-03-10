@@ -58,6 +58,7 @@ PlayerEvents = {
     PitchAndYaw = "VuBattleRoyale:PlayersPitchAndYaw",
     UpdateTimer = "VuBattleRoyale:UpdateTimer",
     GameStateChanged = "VuBattleRoyale:GameStateChanged",
+    MinPlayersToStartChanged = "VuBattleRoyale:MinPlayersToStartChanged",
 }
 
 LMS = {

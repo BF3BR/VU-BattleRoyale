@@ -1,9 +1,14 @@
-class "SpectatorCamera"
-
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/MathHelper"
+require "__shared/Utils/Timers"
+require "__shared/Mixins/TimersMixin"
+
+class("SpectatorCamera", TimersMixin)
 
 function SpectatorCamera:__init()
+	-- call TimersMixin's constructor
+	TimersMixin.__init(self)
+
 	self.m_SpectatedPlayer = nil
 
 	self.m_Distance = 2.0
@@ -55,8 +60,6 @@ function SpectatorCamera:OnPlayerKilled(p_Player)
     if p_Player == nil then
         return
 	end
-	
-	print("INFO: Player killed: " .. p_Player.name)
 
     local s_Player = PlayerManager:GetLocalPlayer()
 
@@ -66,8 +69,10 @@ function SpectatorCamera:OnPlayerKilled(p_Player)
 
     if s_Player.id == p_Player.id then
         self:Enable()
-    -- Handle death of player being spectated.
-    elseif p_Player == self.m_SpectatedPlayer then
+	-- Handle death of player being spectated.
+	elseif self.m_SpectatedPlayer == nil then
+		self:SpectateNextPlayer()
+    elseif p_Player.id == self.m_SpectatedPlayer.id then
         self:SpectateNextPlayer()
     end
 end
@@ -125,6 +130,8 @@ function SpectatorCamera:Enable()
 		return
 	end
 
+	self:RemoveTimer("NoPlayerFoundTimer")
+
 	-- If we're alive we don't allow spectating.
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
@@ -143,6 +150,8 @@ function SpectatorCamera:Enable()
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
 	end
+
+	self:SetTimer("NoPlayerFoundTimer", g_Timers:Interval(4, self, self.Enable))
 
 	-- If we found no player to spectate we just disable the spectator mode
 	self:Disable()
@@ -235,8 +244,6 @@ function SpectatorCamera:SpectatePlayer(p_Player)
 	if s_LocalPlayer == p_Player then
 		return
 	end
-
-	print("INFO: Spectating player: " .. p_Player.name)
 
 	-- Dispatch a local event so phasemanager can toggle the OOC visuals
 	Events:DispatchLocal(SpectatorEvent.PlayerChanged, p_Player)

@@ -30,6 +30,8 @@ function VuBattleRoyaleServer:__init()
 
     -- Server sided pinging system
     self.m_Ping = g_PingServer
+    
+    self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
 
     -- Sets the custom gamemode name
     ServerUtils:SetCustomGameModeName("Baguette")
@@ -38,6 +40,7 @@ end
 function VuBattleRoyaleServer:OnExtensionLoaded()
     self:RegisterEvents()
     self:RegisterHooks()
+    self:RegisterRconCommands()
 end
 
 function VuBattleRoyaleServer:RegisterEvents()
@@ -57,6 +60,12 @@ end
 function VuBattleRoyaleServer:RegisterHooks()
     Hooks:Install("Soldier:Damage", 1, self, self.OnSoldierDamage)
     Hooks:Install("Player:RequestJoin", 100, self, self.OnPlayerRequestJoin)
+end
+
+function VuBattleRoyaleServer:RegisterRconCommands()
+    RCON:RegisterCommand('forceWarmup', RemoteCommandFlag.RequiresLogin, self, self.OnForceWarmupCommand)
+    RCON:RegisterCommand('forceEnd', RemoteCommandFlag.RequiresLogin, self, self.OnForceEndgameCommand)
+    RCON:RegisterCommand('setMinPlayers', RemoteCommandFlag.RequiresLogin, self, self.OnMinPlayersCommand)
 end
 
 
@@ -84,7 +93,7 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
             ::update_allowed_guids_continue::
         end
 
-        if self.m_GameState == GameStates.None and s_PlayerCount >= ServerConfig.MinPlayersToStart then
+        if self.m_GameState == GameStates.None and s_PlayerCount >= self.m_MinPlayersToStart then
             self:ChangeGameState(GameStates.Warmup)
         end
     end
@@ -107,12 +116,8 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
         return
     end
 
-    -- TODO: Update the connected clients UI
-
     -- Send out gamestate information if he connects or reconnects
     NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, self.m_GameState)
-
-    -- TODO: Send out the timer if its mid round
 
     -- Fade in the default (showroom) camera
     p_Player:Fade(1.0, false)
@@ -200,6 +205,55 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 
     p_Info.damage = l_BrPlayer:OnDamaged(p_Info.damage, l_BrGiver)
     p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+end
+
+
+-- =============================================
+-- RCON Commands
+-- =============================================
+
+function VuBattleRoyaleServer:OnForceWarmupCommand(p_Command, p_Args, p_LoggedIn)
+	self:ChangeGameState(GameStates.Warmup)
+
+	return { 
+        'OK',
+        'Warmup started!'
+    }
+end
+
+function VuBattleRoyaleServer:OnForceEndgameCommand(p_Command, p_Args, p_LoggedIn)
+	self:ChangeGameState(GameStates.EndGame)
+
+	return { 
+        'OK',
+        'Game ended!'
+    }
+end
+
+function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
+    if p_Args[1] == nil then
+        return { 
+            'ERROR',
+            'You need to specify the min players count!'
+        }
+    end
+
+    local s_MinNum = tonumber(p_Args[1])
+
+    if s_MinNum <= 0 or s_MinNum > 99 then
+        return { 
+            'ERROR',
+            'You can only set the min players count between 0 and 99!'
+        }
+    end
+
+    self.m_MinPlayersToStart = s_MinNum
+    NetEvents:BroadcastLocal(PlayerEvents.MinPlayersToStartChanged, s_MinNum)
+
+	return { 
+        'OK',
+        'Min players count set!'
+    }
 end
 
 
