@@ -1,3 +1,4 @@
+require "__shared/Configs/MapsConfig"
 require "__shared/Enums/CustomEvents"
 require "__shared/Enums/SubphaseTypes"
 require "__shared/Utils/LevelNameHelper"
@@ -32,8 +33,15 @@ function PhaseManagerShared:RegisterEvents()
 end
 
 function PhaseManagerShared:OnLevelLoaded()
-    self.m_Phases = MapsConfig[LevelNameHelper:GetLevelName()].Phases
-    self.m_InitialDelay = MapsConfig[LevelNameHelper:GetLevelName()].BeforeFirstCircleDelay
+    -- get and check config for the current map
+    local l_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
+    if l_MapConfig == nil then
+        error("PM: Invalid map")
+        return
+    end
+
+    self.m_Phases = l_MapConfig.Phases
+    self.m_InitialDelay = l_MapConfig.BeforeFirstCircleDelay
 end
 
 -- 
@@ -82,4 +90,8 @@ end
 function PhaseManagerShared:Destroy()
     self:RemoveTimers()
     self:RegisterVars()
+end
+
+function PhaseManagerShared:__gc()
+    self:Destroy()
 end

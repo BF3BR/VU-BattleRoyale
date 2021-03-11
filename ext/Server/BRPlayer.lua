@@ -106,7 +106,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
         end
     end
 
-    return p_Damage
+    return math.max(0.001, p_Damage)
 end
 
 -- Alias for `BRTeam:RemovePlayer()`
