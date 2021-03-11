@@ -443,7 +443,13 @@ function SpectatorCamera:OnEngineUpdate(p_DeltaTime)
 	self.m_LookAtPos = s_Player.soldier.transform.trans:Clone()
 	self.m_LookAtPos.x = self.m_LookAtPos.x + s_Player.soldier.transform.left.x * 0.5
 	self.m_LookAtPos.z = self.m_LookAtPos.z + s_Player.soldier.transform.left.z * 0.5
-	self.m_LookAtPos.y = self.m_LookAtPos.y + self.m_Height
+	local s_HeadTransform = s_Player.soldier.ragdollComponent:GetActiveWorldTransform(46)
+	if s_HeadTransform ~= nil then
+		s_HeadTransform = s_HeadTransform:ToLinearTransform()
+		self.m_LookAtPos.y = s_HeadTransform.trans.y
+	else
+		self.m_LookAtPos.y = self.m_LookAtPos.y + self.m_Height
+	end
 
 	-- Calculate where our camera has to be base on the angles.
 	local s_Cosfi = math.cos(s_Yaw)
