@@ -177,9 +177,14 @@ function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
         return
     end
 
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == nil then
+        return
+    end
+
     if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
         NetEvents:Send("VuBattleRoyale:PlayerConnected")
-    else
+    elseif p_Player.name == s_LocalPlayer.name then
         m_SpectatorCamera:Enable()
     end
 end
