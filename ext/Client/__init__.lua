@@ -89,6 +89,7 @@ function VuBattleRoyaleClient:RegisterHooks()
     Hooks:Install("UI:DrawFriendlyNametag", 999, self, self.OnUIDrawFriendlyNametag)
     Hooks:Install("UI:DrawEnemyNametag", 999, self, self.OnUIDrawEnemyNametag)
     Hooks:Install("UI:DrawMoreNametags", 999, self, self.OnUIDrawMoreNametags)
+    Hooks:Install("UI:RenderMinimap", 999, self, self.OnUIRenderMinimap)
 end
 
 
@@ -323,6 +324,10 @@ function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_Hook)
 end
 
 function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_Hook)
+    p_Hook:Return(nil)
+end
+
+function VuBattleRoyaleClient:OnUIRenderMinimap(p_Hook)
     p_Hook:Return(nil)
 end
 
