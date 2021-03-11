@@ -58,6 +58,37 @@ function VuBattleRoyaleShared:RegisterCallbacks()
        self, self.OnVehiclesWorldPartData
     )
 
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"),
+        Guid("584D7B54-FBFE-4755-8AD4-89065EEB45C3"),
+       self, self.OnInAirStateData
+    )
+
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"),
+        Guid("6F1DD196-9B9C-4538-B128-71BC14835652"),
+       self, self.OnFreeFallCharacterStatePoseInfo
+    )
+
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"),
+        Guid("CC8C3596-EEC5-4959-A644-8E5D5677CE15"),
+       self, self.OnFreeFallCharacterStatePoseInfo
+    )
+
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"),
+        Guid("64357471-E246-4FCD-B0EF-6F693FA98D71"),
+       self, self.OnFreeFallCharacterStatePoseInfo
+    )
+
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"),
+        Guid("A10FF2AA-F3CF-416B-A79B-E8C5416A9EBC"),
+       self, self.OnCharacterPhysicsData
+    )
+    
+    
     -- m_InteractiveManDown:RegisterCallbacks()
     m_DropWeapons:RegisterCallbacks()
 end
@@ -99,6 +130,28 @@ function VuBattleRoyaleShared:OnVehiclesWorldPartData(p_Instance)
             end
         end
     end
+end
+
+function VuBattleRoyaleShared:OnInAirStateData(p_Instance)
+    -- Change the free fall velocity so free fall state kicks in earlier
+    p_Instance = InAirStateData(p_Instance)
+    p_Instance:MakeWritable()
+    p_Instance.freeFallVelocity = 14.0
+end
+
+function VuBattleRoyaleShared:OnFreeFallCharacterStatePoseInfo(p_Instance)
+    -- Modify the free fall velocity
+    p_Instance = CharacterStatePoseInfo(p_Instance)
+    p_Instance:MakeWritable()
+    p_Instance.velocity = 40.0
+    p_Instance.accelerationGain = 0.35
+end
+
+function VuBattleRoyaleShared:OnCharacterPhysicsData(p_Instance)
+    -- Modify the max ascend angle
+    p_Instance = CharacterPhysicsData(p_Instance)
+    p_Instance:MakeWritable()
+    p_Instance.maxAscendAngle = 75.0
 end
 
 function VuBattleRoyaleShared:OnPreRoundEntityData(p_Instance)
