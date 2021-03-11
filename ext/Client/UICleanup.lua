@@ -102,7 +102,7 @@ function UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGra
 end
 
 function UICleanup:OnHudScreen(p_Instance)
-    self:KeepNodes(p_Instance, {"InteractionManager"})
+    self:KeepNodes(p_Instance, {"InteractionManager", "DamageIndicator"})
 end
 
 function UICleanup:OnHudMpScreen(p_Instance)
