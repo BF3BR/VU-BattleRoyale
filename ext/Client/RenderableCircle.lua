@@ -27,7 +27,7 @@ function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex)
 
     -- reduce max arc length based on current phase index
     if p_PhaseIndex ~= nil then
-        self.m_MaxArcLength = (0.9 ^ p_PhaseIndex) * CircleConfig.ArcLen.Max
+        self.m_MaxArcLength = (0.94 ^ p_PhaseIndex) * CircleConfig.ArcLen.Max
     end
 
     -- update step length

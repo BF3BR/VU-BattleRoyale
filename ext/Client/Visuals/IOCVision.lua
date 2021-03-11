@@ -47,4 +47,9 @@ function IOCVision:OnCircleMove(p_OuterCircle)
     self:UpdateFog(p_OuterCircle.Radius * 2)
 end
 
-g_IOCVision = IOCVision()
+-- define global
+if g_IOCVision == nil then
+    g_IOCVision = IOCVision()
+end
+
+return g_IOCVision
