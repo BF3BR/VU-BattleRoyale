@@ -105,6 +105,35 @@ function SpectatorCamera:FindFirstPlayerToSpectate()
 	local s_Players = PlayerManager:GetPlayers()
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
+	if s_LocalPlayer.squadId == SquadId.SquadNone then
+		goto skip_squad
+	end
+
+	local s_SquadMates = PlayerManager:GetPlayersBySquad(s_LocalPlayer.teamId, s_LocalPlayer.squadId)
+
+	for _, l_SquadMate in pairs(s_SquadMates) do
+		-- We don't want to spectate the local player.
+		if l_SquadMate == s_LocalPlayer then
+			goto squad_continue_enable
+		end
+
+		-- We don't want to spectate dead players
+		if l_SquadMate.soldier == nil then
+			goto squad_continue_enable
+		end
+		
+		s_PlayerToSpectate = l_SquadMate
+		break
+
+		::squad_continue_enable::
+	end
+
+	if s_PlayerToSpectate ~= nil then
+		return s_PlayerToSpectate
+	end
+
+	::skip_squad::
+
 	for _, l_Player in pairs(s_Players) do
 		-- We don't want to spectate the local player.
 		if l_Player == s_LocalPlayer then
