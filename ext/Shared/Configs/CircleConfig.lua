@@ -6,19 +6,19 @@ CircleConfig = {
     UseRaycasts = true,
 
     -- The distance from which the circle will be visible
-    DrawDistance = 150,
+    DrawDistance = 80,
 
     -- The height of the circle
     Height = 200,
 
     -- The length of each arc that is used to draw the circles
-    ArcLen = { Min = 1.6, Max = 15},
+    ArcLen = { Min = 1.6, Max = 9},
 
     -- The number of points used to draw the circles
     RenderPoints = { Min = 7, Max = 23},
 
     -- The maximum opacity of the outer circle
-    OuterCircleMaxOpacity = 0.16,
+    OuterCircleMaxOpacity = 0.12,
 
     -- The time between each update of the outer circle position
     ClientUpdateMs = 0.07,

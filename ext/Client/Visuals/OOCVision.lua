@@ -48,11 +48,11 @@ function OOCVision:CreateVisuals()
     veData.visibility = 1
     veData.priority = 999999
 
-	local original = ResourceManager:SearchForInstanceByGuid(MapsConfig[LevelNameHelper:GetLevelName()].SkyComponentDataGuid)
-	if original == nil then
-		print("Could not find original SkyComponentData")
-		return nil
-	end
+    local original = ResourceManager:SearchForInstanceByGuid(MapsConfig[LevelNameHelper:GetLevelName()].SkyComponentDataGuid)
+    if original == nil then
+        print("Could not find original SkyComponentData")
+        return nil
+    end
 
     local skyComponent = SkyComponentData(original:Clone())
     skyComponent.enable = true
@@ -173,4 +173,9 @@ function OOCVision:Destroy()
     end
 end
 
-g_OOCVision = OOCVision()
+-- define global
+if g_OOCVision == nil then
+    g_OOCVision = OOCVision()
+end
+
+return g_OOCVision
