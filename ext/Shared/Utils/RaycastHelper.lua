@@ -11,8 +11,11 @@ end
 
 -- Returns the ground height (Y) value of a certain position
 function RaycastHelper:GetY(p_Pos)
-    local l_X = math.floor(p_Pos.x)
-    local l_Z = math.floor(p_Pos.z)
+    -- used math.floor to reduce raycasts number
+    -- local l_X = math.floor(p_Pos.x)
+    -- local l_Z = math.floor(p_Pos.z)
+    local l_X = p_Pos.x
+    local l_Z = p_Pos.z
     local l_Key = string.format("%.2f:%.2f", l_X, l_Z)
 
     -- check for cache hit

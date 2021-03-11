@@ -3,6 +3,8 @@ require "__shared/Configs/CircleConfig"
 local s_EasingFunctions = require "__shared/Libs/easing"
 local s_WhiteColor = Vec3(1, 1, 1)
 local s_BlueColor = Vec3(0.1, 0.3, 1)
+local s_OrangeColor = Vec3(1, 0.45, 0)
+local s_OuterCircleColor = s_OrangeColor
 
 function EasedValue(t)
     return s_EasingFunctions.inOutQuad(t, 0, 1, 1)
@@ -36,11 +38,12 @@ end
 -- 
 function OuterCircleRenderer(p_From, p_To, p_DoubleDist, p_DoubleDrawDistance)
     local l_Opacity = CircleConfig.OuterCircleMaxOpacity
-    if p_DoubleDist > p_DoubleDrawDistance * 0.12 then
-        l_Opacity = MathUtils:Lerp(0.04, l_Opacity, 1 - EasedValue(math.min(1.0, (p_DoubleDist / p_DoubleDrawDistance) * 1.4)))
+    if p_DoubleDist > p_DoubleDrawDistance * 0.10 then
+        l_Opacity = MathUtils:Lerp(0.02, l_Opacity, 1 - EasedValue(math.min(1.0, (p_DoubleDist / p_DoubleDrawDistance) * 1.4)))
     end
 
-    local l_Up = Vec3(0, 0.1, 0)
-    DrawRect(p_From + l_Up, p_To + l_Up, CircleConfig.Height, l_Opacity, s_BlueColor)
-    DrawRect(p_From, p_To, 0.1, l_Opacity * 1.6, s_BlueColor)
+    local l_Height = 0.1
+    local l_Up = Vec3(0, l_Height, 0)
+    DrawRect(p_From + l_Up, p_To + l_Up, CircleConfig.Height, l_Opacity, s_OuterCircleColor)
+    DrawRect(p_From, p_To, l_Height, l_Opacity * 1.6, s_OuterCircleColor)
 end

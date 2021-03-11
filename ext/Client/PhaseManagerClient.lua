@@ -61,10 +61,11 @@ function PhaseManagerClient:OnUpdateState(p_State)
         self.m_Completed = true
     elseif self.m_SubphaseIndex == SubphaseType.Moving then
         -- start moving the outer circle
-        local l_RenderDelay = 0.3
         self.m_PrevOuterCircle = Circle(self.m_OuterCircle.m_Center, self.m_OuterCircle.m_Radius)
-        self:SetTimer("MovingCircle", g_Timers:Sequence(l_RenderDelay, math.floor(p_State.Duration / l_RenderDelay) + 1,
-                                                        self, self.MoveOuterCircle))
+        self:SetTimer("MovingCircle",
+                      g_Timers:Sequence(CircleConfig.ClientUpdateMs,
+                                        math.floor(p_State.Duration / CircleConfig.ClientUpdateMs) + 1, self,
+                                        self.MoveOuterCircle))
     end
 
     -- update inner circle data
