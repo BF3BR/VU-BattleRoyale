@@ -1,9 +1,9 @@
-class "BRTeam"
-
 require "__shared/Utils/MapHelper"
 require "__shared/Configs/ServerConfig"
 require "__shared/Enums/CustomEvents"
 require "__shared/Enums/TeamJoinStrategy"
+
+class "BRTeam"
 
 function BRTeam:__init(p_Id)
     -- the unique id of the team
@@ -233,7 +233,7 @@ function BRTeam:Destroy()
     self.m_Players = {}
 end
 
--- garbage collector metamethod
+-- Garbage collector metamethod
 function BRTeam:__gc()
     self:Destroy()
 end

@@ -43,16 +43,16 @@ end
 
 function LootManagerServer:EnableMatchPickups()
     local s_Iterator = EntityManager:GetIterator("ServerPickupEntity")
-	local s_Entity = s_Iterator:Next()
-	while s_Entity do
+    local s_Entity = s_Iterator:Next()
+    while s_Entity do
         WeaponUnlockPickupEntityData(s_Entity.data).contentIsStatic = false
         s_Entity.bus.entities[2]:FireEvent("ShowMarker")
         s_Entity = s_Iterator:Next()
-	end
+    end
 end
 
 if g_LootManagerServer == nil then
-	g_LootManagerServer = LootManagerServer()
+    g_LootManagerServer = LootManagerServer()
 end
 
 return g_LootManagerServer

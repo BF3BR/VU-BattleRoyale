@@ -1,8 +1,7 @@
 require "__shared/Enums/TeamManagerErrors"
 require "__shared/Enums/CustomEvents"
-
-require "BRTeam"
-require "BRPlayer"
+require "Types/BRTeam"
+require "Types/BRPlayer"
 
 class "BRTeamManager"
 

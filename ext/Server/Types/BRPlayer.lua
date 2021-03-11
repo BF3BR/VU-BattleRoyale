@@ -275,11 +275,12 @@ function BRPlayer:Reset()
     self:SendState()
 end
 
---
+-- Compare two BRPlayer instances for equality
 function BRPlayer:Equals(p_OtherBrPlayer)
-    return p_OtherBrPlayer ~= nil and self.m_Player.name == BRPlayer:GetPlayerName(p_OtherBrPlayer)
+    return p_OtherBrPlayer ~= nil and self:GetName() == p_OtherBrPlayer:GetName()
 end
 
+-- `==` metamethod
 function BRPlayer:__eq(p_OtherBrPlayer)
     return self:Equals(p_OtherBrPlayer)
 end
@@ -293,6 +294,7 @@ function BRPlayer:Destroy()
     self.m_Armor = nil
 end
 
+-- Garbage collector metamethod
 function BRPlayer:__gc()
     self:Destroy()
 end

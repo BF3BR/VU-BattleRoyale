@@ -59,13 +59,13 @@ function Gunship:OnEngineUpdate(p_DeltaTime)
 
         return
     end
-    
+
     if self.m_StartTransform == nil then
         return
     end
     
     self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
-    
+
     if self.m_CumulatedTime >= 0.1 then
         self.m_SetFlyPath = false
         self.m_CumulatedTime = 0
@@ -124,7 +124,7 @@ function Gunship:SetVehicleEntityTransform()
             self.m_VehicleEntity = s_VehicleEntity
             break
         end
-        
+
         s_VehicleEntity = s_VehicleEntityIterator:Next()
     end
 end
@@ -135,9 +135,9 @@ function Gunship:SetLocatorEntityTransform()
 
     while s_LocatorEntity do
         s_LocatorEntity = SpatialEntity(s_LocatorEntity)
-        
+
         local s_DirectionTransform = self.m_StartTransform
-        
+
         local s_SpeedMultiplier = self.m_SpeedMultiplier
         local s_TickRate = SharedUtils:GetTickrate()
         if s_TickRate == 120.0 then

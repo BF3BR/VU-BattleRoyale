@@ -14,7 +14,7 @@ function Whitelist:OnPlayerRequestJoin(p_Hook, p_JoinMode, p_AccountGuid, p_Play
 end
 
 if g_Whitelist == nil then
-	g_Whitelist = Whitelist()
+    g_Whitelist = Whitelist()
 end
 
 return g_Whitelist

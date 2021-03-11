@@ -2,11 +2,11 @@ local Airdrop = class "Airdrop"
 
 function Airdrop:__init(p_Match)
     -- Save match reference
-	self.m_Match = p_Match
-	
-	self.m_StartTransform = nil
+    self.m_Match = p_Match
 
-	self.m_SpeedMultiplier = 1.5
+    self.m_StartTransform = nil
+
+    self.m_SpeedMultiplier = 1.5
 
     self.m_SetFlyPath = false
     self.m_CumulatedTime = 0
@@ -35,13 +35,13 @@ function Airdrop:OnEngineUpdate(p_DeltaTime)
     if not self.m_SetFlyPath then
         return
     end
-    
+
     if self.m_StartTransform == nil then
         return
     end
-	
+
     self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
-	
+
     if self.m_CumulatedTime >= 0.1 then
         self.m_SetFlyPath = false
         self.m_CumulatedTime = 0
@@ -75,7 +75,7 @@ function Airdrop:Spawn(p_StartTransform, p_Enable, p_TimeToDrop)
                 print("INFO: Time to drop: " .. p_TimeToDrop)
             else
                 s_VehicleSpawnEntity:FireEvent("Unspawn")
-                
+
                 self.m_VehicleEntity = nil
                 self.m_Enabled = false
                 self.m_TimeToDrop = nil
@@ -101,8 +101,8 @@ function Airdrop:SetVehicleEntityTransform()
             s_VehicleEntity.transform = self.m_StartTransform
             self.m_VehicleEntity = s_VehicleEntity
             break
-		end
-		
+        end
+
         s_VehicleEntity = s_VehicleEntityIterator:Next()
     end
 end
@@ -112,10 +112,10 @@ function Airdrop:SetLocatorEntityTransform()
     local s_LocatorEntity = s_LocatorEntityIterator:Next()
 
     while s_LocatorEntity do
-		s_LocatorEntity = SpatialEntity(s_LocatorEntity)
-		
+        s_LocatorEntity = SpatialEntity(s_LocatorEntity)
+
         local s_DirectionTransform = self.m_StartTransform
-        
+
         local s_SpeedMultiplier = self.m_SpeedMultiplier
         local s_TickRate = SharedUtils:GetTickrate()
         if s_TickRate == 120.0 then

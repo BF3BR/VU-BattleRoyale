@@ -6,12 +6,12 @@ require "__shared/Configs/ServerConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 
-require "BRTeamManager"
 require "Match"
 
 local m_Whitelist = require "Whitelist"
 local m_PingServer = require "PingServer"
 local m_LootManager = require "LootManagerServer"
+local m_TeamManager = require "BRTeamManager"
 
 function VuBattleRoyaleServer:__init()
     Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -23,14 +23,9 @@ function VuBattleRoyaleServer:__init()
 
     self.m_WaitForStart = true
 
-    self.m_TeamManager = g_BRTeamManager
-
     -- Create a new match
-    self.m_Match = Match(self, self.m_TeamManager)
+    self.m_Match = Match(self, m_TeamManager)
 
-    -- Server sided pinging system
-    self.m_Ping = g_PingServer
-    
     self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
 
     -- Sets the custom gamemode name
@@ -130,7 +125,7 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 
     -- Spawn player if the current gamestate is warmup
     if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
-        local s_BrPlayer = self.m_TeamManager:GetPlayer(p_Player)
+        local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
         if s_BrPlayer == nil then
             return
         end
@@ -200,8 +195,8 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
         return
     end
 
-    local l_BrPlayer = self.m_TeamManager:GetPlayer(p_Soldier.player)
-    local l_BrGiver = self.m_TeamManager:GetPlayer(p_GiverInfo.giver)
+    local l_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
+    local l_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
 
     p_Info.damage = l_BrPlayer:OnDamaged(p_Info.damage, l_BrGiver)
     p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
