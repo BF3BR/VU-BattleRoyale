@@ -48,7 +48,6 @@ function VuBattleRoyaleClient:RegisterEvents()
     Events:Subscribe("Player:Connected", self, self.OnPlayerConnected)
     Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn)
     Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted)
-    Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
     Events:Subscribe("Client:UpdateInput", self, self.OnClientUpdateInput)
     Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUIDrawHud)
     Events:Subscribe(PhaseManagerCustomEvents.Update, self, self.OnPhaseManagerUpdate)
@@ -65,6 +64,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(GunshipEvents.Position, self, self.OnGunshipPosition)
     NetEvents:Subscribe(GunshipEvents.Yaw, self, self.OnGunshipYaw)
     NetEvents:Subscribe(TeamManagerNetEvents.TeamJoinDenied, self, self.OnTeamJoinDenied)
+    NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
 
     self:RegisterWebUIEvents()
 end
@@ -198,14 +198,16 @@ function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
     m_SpectatorCamera:OnPlayerDeleted(p_Player)
 end
 
-function VuBattleRoyaleClient:OnPlayerKilled(p_Player)
-    if p_Player == nil then
+function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
+    local s_Player = PlayerManager:GetPlayerById(p_Table[1])
+    if s_Player == nil then
         return
     end
+    local s_InflictorId = p_Table[2]
 
-    print("INFO: OnPlayerKilled: " .. p_Player.name)
+    print("INFO: OnPlayerKilled: " .. s_Player.name)
 
-    m_SpectatorCamera:OnPlayerKilled(p_Player, self.m_GameState)
+    m_SpectatorCamera:OnPlayerKilled(s_Player.id, s_InflictorId)
 end
 
 function VuBattleRoyaleClient:OnTeamJoinDenied(p_Error)
