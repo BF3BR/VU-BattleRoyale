@@ -37,10 +37,10 @@ end
 
 function PingServer:__gc()
     -- Clean up our events
-    self.m_PlayerPingEvent:Unsubscribe()
-    self.m_PlayerCreatedEvent:Unsubscribe()
-    self.m_LevelLoadedEvent:Unsubscribe()
-    self.m_AssignTeamsEvent:Unsubscribe()
+    -- self.m_PlayerPingEvent:Unsubscribe()
+    -- self.m_PlayerCreatedEvent:Unsubscribe()
+    -- self.m_LevelLoadedEvent:Unsubscribe()
+    -- self.m_AssignTeamsEvent:Unsubscribe()
 end
 
 function PingServer:OnPlayerPing(p_Player, p_Position)
