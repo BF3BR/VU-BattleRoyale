@@ -25,6 +25,8 @@ function BRTeamManager:RegisterEvents()
     Events:Subscribe("Player:Authenticated", self, self.OnVanillaPlayerCreated)
     Events:Subscribe("Player:Left", self, self.OnVanillaPlayerDestroyed)
     Events:Subscribe("Player:Killed", self, self.OnSendPlayerState)
+    -- for bots
+    Events:Subscribe("Player:Created", self, self.OnVanillaPlayerCreated)
 
     Events:Subscribe(TeamManagerCustomEvents.PutOnATeam, self, self.OnPutOnATeam)
     Events:Subscribe(TeamManagerCustomEvents.DestroyTeam, self, self.OnDestroyTeam)
