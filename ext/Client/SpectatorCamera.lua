@@ -341,11 +341,6 @@ function SpectatorCamera:GetNextPlayer(p_OnlySquadMates)
             s_NextPlayer = l_Player
             break
         end
-
-        if l_Player.soldier ~= nil then
-            s_NextPlayer = l_Player
-            break
-        end
     end
 
     return s_NextPlayer
@@ -429,11 +424,6 @@ function SpectatorCamera:GetPreviousPlayer(p_OnlySquadMates)
         local l_Player = s_Players[l_PlayerIndex]
 
         if l_Player.soldier ~= nil and l_Player ~= s_LocalPlayer then
-            s_PreviousPlayer = l_Player
-            break
-        end
-
-        if l_Player.soldier ~= nil then
             s_PreviousPlayer = l_Player
             break
         end
