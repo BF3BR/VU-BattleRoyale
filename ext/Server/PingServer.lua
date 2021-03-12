@@ -51,10 +51,10 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
     end
 
     -- Ignore ping if player is solo
-    local l_BrTeam = g_BRTeamManager:GetTeamByPlayer(p_Player)
-    if l_BrTeam ~= nil and l_BrTeam:PlayersNumber() < 2 then
-        return
-    end
+    -- local l_BrTeam = g_BRTeamManager:GetTeamByPlayer(p_Player)
+    -- if l_BrTeam ~= nil and l_BrTeam:PlayersNumber() < 2 then
+    --     return
+    -- end
 
     -- Get the player id
     local s_PlayerId = p_Player.id
@@ -83,6 +83,12 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 
     -- Update the cooldown
     self:AddPlayerCooldown(s_PlayerId, self.m_PingCooldownTime)
+
+    -- send only to solo player that created the ping
+    if s_SquadId == SquadId.SquadNone then
+        NetEvents:SendToLocal("Ping:Notify", p_Player, s_PingId, p_Position)
+        return
+    end
 
     -- Get all players in the same squad and send the notification
     local s_SquadPlayers = PlayerManager:GetPlayersBySquad(s_TeamId, s_SquadId)

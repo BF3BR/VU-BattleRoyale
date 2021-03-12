@@ -9,15 +9,13 @@ function PingClient:__init()
 
     -- Pings for squadmates
     -- This is pingId, { position, cooldownTime }
-    self.m_SquadPings = { }
+    self.m_SquadPings = {}
 
     self.m_Opacity = 0.3
 
     self.m_PingColors = {
-        Vec4(1, 0, 0, self.m_Opacity),
-        Vec4(0, 1, 0, self.m_Opacity),
-        Vec4(0, 0, 1, self.m_Opacity),
-        Vec4(0.5, 0.5, 0.5, self.m_Opacity),
+        Vec4(1, 0, 0, self.m_Opacity), Vec4(0, 1, 0, self.m_Opacity), Vec4(0, 0, 1, self.m_Opacity),
+        Vec4(0.5, 0.5, 0.5, self.m_Opacity)
     }
 
     -- Events
@@ -77,10 +75,10 @@ function PingClient:OnPing(p_Args)
     end
 
     -- Do not ping if player is solo
-    local l_Player = PlayerManager:GetLocalPlayer()
-    if l_Player ~= nil and l_Player.squadId == SquadId.SquadNone then
-        return
-    end
+    -- local l_Player = PlayerManager:GetLocalPlayer()
+    -- if l_Player ~= nil and l_Player.squadId == SquadId.SquadNone then
+    --     return
+    -- end
 
     -- This should not happen, but we validate anyway for stability
     if self.m_PingCommand == nil then
@@ -99,17 +97,17 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
     local s_PingInfo = self.m_SquadPings[p_PingId]
     if s_PingInfo == nil then
         -- No information currently exists
-        self.m_SquadPings[p_PingId] = { p_Position, self.m_CooldownTime }
+        self.m_SquadPings[p_PingId] = {p_Position, self.m_CooldownTime}
         return
     end
 
     -- Update the structure
     local l_UpdatedCooldown = s_PingInfo[2] + self.m_CooldownTime
-    self.m_SquadPings[p_PingId] = { p_Position, math.max(l_UpdatedCooldown, 3 * self.m_CooldownTime) }
+    self.m_SquadPings[p_PingId] = {p_Position, math.max(l_UpdatedCooldown, 3 * self.m_CooldownTime)}
 end
 
 function PingClient:OnPingUpdateConfig(p_CooldownTime)
-    print('received config')
+    print("received config")
     if self.m_Debug then
         print("cooldownTime: " .. p_CooldownTime)
     end
@@ -185,15 +183,14 @@ function PingClient:OnUpdateManagerUpdate(p_DeltaTime, p_Pass)
     end
 
     local s_Direction = Vec3(-s_Transform.forward.x, -s_Transform.forward.y, -s_Transform.forward.z)
-    
-    local s_RayStart = s_Transform.trans
-    local s_RayEnd = Vec3(
-        s_Transform.trans.x + (s_Direction.x * self.m_RaycastLength),
-        s_Transform.trans.y + (s_Direction.y * self.m_RaycastLength),
-        s_Transform.trans.z + (s_Direction.z * self.m_RaycastLength)
-    )
 
-    local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
+    local s_RayStart = s_Transform.trans
+    local s_RayEnd = Vec3(s_Transform.trans.x + (s_Direction.x * self.m_RaycastLength),
+                          s_Transform.trans.y + (s_Direction.y * self.m_RaycastLength),
+                          s_Transform.trans.z + (s_Direction.z * self.m_RaycastLength))
+
+    local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater |
+                                                    RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
     if s_RaycastHit == nil then
         print("no raycast")
         return
@@ -206,7 +203,7 @@ function PingClient:OnUpdateManagerUpdate(p_DeltaTime, p_Pass)
 end
 
 function PingClient:OnLevelLoaded(p_LevelName, p_GameMode)
-    self.m_SquadPings = { }
+    self.m_SquadPings = {}
     self.m_ShouldPing = false
 end
 
