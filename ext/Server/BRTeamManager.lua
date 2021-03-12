@@ -333,12 +333,18 @@ function BRTeamManager:OnLockToggle(p_Player)
     end
 end
 
-function BRTeamManager:OnSendPlayerState(p_Player)
+function BRTeamManager:OnSendPlayerState(p_Player, p_Inflictor)
     local l_BrPlayer = self:GetPlayer(p_Player)
 
     if l_BrPlayer ~= nil then
         l_BrPlayer:SendState()
     end
+    
+    local s_Table = {p_Player.id, nil}
+    if p_Inflictor ~= nil then
+        s_Table = {p_Player.id, p_Inflictor.id}
+    end
+    NetEvents:BroadcastLocal("ServerPlayer:Killed", s_Table)
 end
 
 function BRTeamManager:OnTeamJoinStrategy(p_Player, p_Strategy)
