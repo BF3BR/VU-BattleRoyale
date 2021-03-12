@@ -12,8 +12,8 @@ function IOCVision:RegisterEvents()
         -- should move to initial data mod
         Events:Subscribe("Player:Respawn", self, self.FixedVisionUpdates)
 
-        Events:Subscribe(PhaseManagerCustomEvents.Update, self, self.OnUpdate)
-        Events:Subscribe(PhaseManagerCustomEvents.CircleMove, self, self.OnCircleMove)
+        Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseUpdate)
+        Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnCircleMove)
     end
 end
 
@@ -39,7 +39,7 @@ function IOCVision:UpdateFog(p_Diameter)
     VisualEnvironmentManager:SetDirty(true)
 end
 
-function IOCVision:OnUpdate(p_State)
+function IOCVision:OnPhaseUpdate(p_State)
     self:UpdateFog(p_State.OuterCircle.Radius * 2)
 end
 

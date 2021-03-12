@@ -18,26 +18,26 @@ function BRPlayer:__init()
 end
 
 function BRPlayer:RegisterEvents()
-    NetEvents:Subscribe(TeamManagerNetEvents.PlayerState, self, self.OnReceivePlayerState)
-    NetEvents:Subscribe(TeamManagerNetEvents.PlayerArmorState, self, self.OnReceivePlayerState)
-    NetEvents:Subscribe(TeamManagerNetEvents.PlayerTeamState, self, self.OnReceivePlayerState)
+    NetEvents:Subscribe(TeamManagerNetEvent.PlayerState, self, self.OnReceivePlayerState)
+    NetEvents:Subscribe(TeamManagerNetEvent.PlayerArmorState, self, self.OnReceivePlayerState)
+    NetEvents:Subscribe(TeamManagerNetEvent.PlayerTeamState, self, self.OnReceivePlayerState)
 end
 
 function BRPlayer:JoinTeam(p_Id)
-    NetEvents:Send(TeamManagerNetEvents.RequestTeamJoin, p_Id)
+    NetEvents:Send(TeamManagerNetEvent.RequestTeamJoin, p_Id)
 end
 
 function BRPlayer:LeaveTeam()
-    NetEvents:Send(TeamManagerNetEvents.TeamLeave)
+    NetEvents:Send(TeamManagerNetEvent.TeamLeave)
 end
 
 function BRPlayer:SetTeamJoinStrategy(p_Strategy)
     self.m_TeamJoinStrategy = p_Strategy
-    NetEvents:Send(TeamManagerNetEvents.TeamJoinStrategy, p_Strategy)
+    NetEvents:Send(TeamManagerNetEvent.TeamJoinStrategy, p_Strategy)
 end
 
 function BRPlayer:ToggleLock()
-    NetEvents:Send(TeamManagerNetEvents.TeamToggleLock)
+    NetEvents:Send(TeamManagerNetEvent.TeamToggleLock)
 end
 
 function BRPlayer:OnReceivePlayerState(p_State)

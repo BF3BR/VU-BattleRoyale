@@ -36,7 +36,7 @@ function PhaseManagerShared:OnLevelLoaded()
     -- get and check config for the current map
     local l_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
     if l_MapConfig == nil then
-        error("PM: Invalid map")
+        print("[PhaseManagerShared] ERROR, invalid level name")
         return
     end
 

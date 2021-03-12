@@ -21,21 +21,21 @@ end
 function BRTeamManager:RegisterEvents()
     Events:Subscribe("Level:Destroy", self, self.OnEndOfRound)
 
+    Events:Subscribe("Player:Created", self, self.OnVanillaPlayerCreated)
     Events:Subscribe("Player:Authenticated", self, self.OnVanillaPlayerCreated)
     Events:Subscribe("Player:Left", self, self.OnVanillaPlayerDestroyed)
     Events:Subscribe("Player:Killed", self, self.OnSendPlayerState)
-    -- for bots
-    Events:Subscribe("Player:Created", self, self.OnVanillaPlayerCreated)
 
-    Events:Subscribe(TeamManagerCustomEvents.PutOnATeam, self, self.OnPutOnATeam)
-    Events:Subscribe(TeamManagerCustomEvents.DestroyTeam, self, self.OnDestroyTeam)
-    Events:Subscribe(TeamManagerCustomEvents.IncrementKill, self, self.OnIncrementKill)
+    NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnSendPlayerState)
 
-    NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.OnSendPlayerState)
-    NetEvents:Subscribe(TeamManagerNetEvents.RequestTeamJoin, self, self.OnRequestTeamJoin)
-    NetEvents:Subscribe(TeamManagerNetEvents.TeamLeave, self, self.OnLeaveTeam)
-    NetEvents:Subscribe(TeamManagerNetEvents.TeamToggleLock, self, self.OnLockToggle)
-    NetEvents:Subscribe(TeamManagerNetEvents.TeamJoinStrategy, self, self.OnTeamJoinStrategy)
+    Events:Subscribe(TeamManagerEvent.PutOnATeam, self, self.OnPutOnATeam)
+    Events:Subscribe(TeamManagerEvent.DestroyTeam, self, self.OnDestroyTeam)
+    Events:Subscribe(TeamManagerEvent.IncrementKill, self, self.OnIncrementKill)
+
+    NetEvents:Subscribe(TeamManagerNetEvent.RequestTeamJoin, self, self.OnRequestTeamJoin)
+    NetEvents:Subscribe(TeamManagerNetEvent.TeamLeave, self, self.OnLeaveTeam)
+    NetEvents:Subscribe(TeamManagerNetEvent.TeamToggleLock, self, self.OnLockToggle)
+    NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinStrategy, self, self.OnTeamJoinStrategy)
 end
 
 -- Returns the BRPlayer instance of a player
@@ -173,6 +173,11 @@ end
 
 -- Creates a BRPlayer instance for the specified player
 function BRTeamManager:CreatePlayer(p_Player)
+    if p_Player == nil then
+        print("[BRTeamManager] ERROR, could not create BRPlayer")
+        return nil
+    end
+
     local l_Name = p_Player.name
 
     -- check if BRPlayer already exists
@@ -307,13 +312,13 @@ function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
 
     -- check if team/player not found
     if l_BrPlayer == nil or l_Team == nil or (not l_Team:CanBeJoinedById()) then
-        NetEvents:SendToLocal(TeamManagerNetEvents.TeamJoinDenied, p_Player, TeamManagerErrors.InvalidTeamId)
+        NetEvents:SendToLocal(TeamManagerNetEvent.TeamJoinDenied, p_Player, TeamManagerErrors.InvalidTeamId)
         return
     end
 
     -- add player to the team
     if not l_Team:AddPlayer(l_BrPlayer) then
-        NetEvents:SendToLocal(TeamManagerNetEvents.TeamJoinDenied, p_Player, TeamManagerErrors.TeamIsFull)
+        NetEvents:SendToLocal(TeamManagerNetEvent.TeamJoinDenied, p_Player, TeamManagerErrors.TeamIsFull)
     end
 end
 

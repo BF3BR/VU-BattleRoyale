@@ -2,7 +2,7 @@ BRPlayerNetEvents = {
     ArmorState = "TM:AS",
 }
 
-TeamManagerNetEvents = {
+TeamManagerNetEvent = {
     RequestTeamJoin = "TM:RTJ",
     TeamJoinDenied = "TM:TJD",
     TeamLeave = "TM:TL",
@@ -13,7 +13,7 @@ TeamManagerNetEvents = {
     PlayerTeamState = "TM:PTS"
 }
 
-TeamManagerCustomEvents = {
+TeamManagerEvent = {
     DestroyTeam = "TM:DestroyTeam",
     PutOnATeam = "TM:PutOnATeam",
     IncrementKill = "TM:IncrementKill"
@@ -33,12 +33,12 @@ PingEvents = {
     UpdateConfig = "Ping:UpdateConfig"
 }
 
-PhaseManagerNetEvents = {
+PhaseManagerNetEvent = {
     InitialState = "PM:InitialState",
     UpdateState = "PM:UpdateState"
 }
 
-PhaseManagerCustomEvents = {
+PhaseManagerEvent = {
     Update = "PhaseManager:Update",
     CircleMove = "PhaseManager:CircleMove"
 }

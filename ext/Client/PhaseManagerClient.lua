@@ -2,14 +2,15 @@ require "__shared/Configs/CircleConfig"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/Timers"
 require "__shared/Utils/EventRouter"
-require "__shared/PhaseManagerShared"
 require "__shared/Types/Circle"
-require "Visuals/IOCVision"
-require "Visuals/OOCVision"
+require "__shared/PhaseManagerShared"
 require "Visuals/CircleRenderers"
 require "RenderableCircle"
 
 class("PhaseManagerClient", PhaseManagerShared)
+
+local m_IOCVision = require "Visuals/IOCVision"
+local m_OOCVision = require "Visuals/OOCVision"
 
 function PhaseManagerClient:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
@@ -17,8 +18,6 @@ function PhaseManagerClient:RegisterVars()
     self.m_InnerCircle = RenderableCircle()
     self.m_OuterCircle = RenderableCircle()
 
-    self.m_IOCVision = g_IOCVision
-    self.m_OOCVision = g_OOCVision
     self.m_RenderInnerCircle = CircleConfig.RenderInnerCircle
     self.m_SpectatedPlayer = nil
 
@@ -29,17 +28,19 @@ end
 function PhaseManagerClient:RegisterEvents()
     PhaseManagerShared.RegisterEvents(self)
 
-    Events:Subscribe(SpectatorEvent.PlayerChanged, self, self.OnSpectatingPlayer)
+    if self.m_LevelLoadedEvent == nil then
+        self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
+    end
 
-    self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
     Events:Subscribe("UpdatePass_PreSim", self, self.OnPreSim)
+    Events:Subscribe(SpectatorEvent.PlayerChanged, self, self.OnSpectatingPlayer)
     Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnRender)
-    NetEvents:Subscribe(PhaseManagerNetEvents.UpdateState, self, self.OnUpdateState)
+    NetEvents:Subscribe(PhaseManagerNetEvent.UpdateState, self, self.OnUpdateState)
 end
 
 -- Requests initial state update
 function PhaseManagerClient:RequestInitialState()
-    NetEvents:SendLocal(PhaseManagerNetEvents.InitialState)
+    NetEvents:SendLocal(PhaseManagerNetEvent.InitialState)
 
     if self.m_LevelLoadedEvent then
         self.m_LevelLoadedEvent:Unsubscribe()
@@ -75,7 +76,7 @@ function PhaseManagerClient:OnUpdateState(p_State)
     self.m_OuterCircle:Update(p_State.OuterCircle.Center, p_State.OuterCircle.Radius, self.m_PhaseIndex)
 
     -- custom event to inform the rest of the client scripts about the state update
-    Events:DispatchLocal(PhaseManagerCustomEvents.Update, p_State)
+    Events:DispatchLocal(PhaseManagerEvent.Update, p_State)
 end
 
 -- Update spectating player's object
@@ -116,9 +117,9 @@ function PhaseManagerClient:OnPreSim(p_DeltaTime)
 
     -- toggle OOB vision
     if self.m_OuterCircle:IsInnerPoint(l_PlayerPos) then
-        self.m_OOCVision:Disable()
+        m_OOCVision:Disable()
     else
-        self.m_OOCVision:Enable()
+        m_OOCVision:Enable()
     end
 
     -- calculate render points for both circles
@@ -150,5 +151,5 @@ end
 -- Moves the outer circle (danger zone)
 function PhaseManagerClient:MoveOuterCircle(p_Timer)
     PhaseManagerShared.MoveOuterCircle(self, p_Timer)
-    Events:DispatchLocal(PhaseManagerCustomEvents.CircleMove, self.m_OuterCircle:AsTable())
+    Events:DispatchLocal(PhaseManagerEvent.CircleMove, self.m_OuterCircle:AsTable())
 end

@@ -83,7 +83,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 
     -- check if team should be destroyed
     if MapHelper:Size(self.m_Players) < 1 then
-        Events:DispatchLocal(TeamManagerCustomEvents.DestroyTeam, self)
+        Events:DispatchLocal(TeamManagerEvent.DestroyTeam, self)
     end
 
     return true
@@ -227,7 +227,7 @@ function BRTeam:Destroy()
         self.m_Players[l_Name] = nil
 
         -- move removed player to another team
-        Events:SendLocal(TeamManagerCustomEvents.PutOnATeam, l_BrPlayer)
+        Events:SendLocal(TeamManagerEvent.PutOnATeam, l_BrPlayer)
     end
 
     self.m_Players = {}

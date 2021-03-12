@@ -19,7 +19,7 @@ end
 function PhaseManagerServer:RegisterEvents()
     PhaseManagerShared.RegisterEvents(self)
 
-    NetEvents:Subscribe(PhaseManagerNetEvents.InitialState, self, self.BroadcastState)
+    NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.BroadcastState)
 end
 
 -- Starts the PhaseManager logic
@@ -147,9 +147,9 @@ function PhaseManagerServer:BroadcastState(p_Player)
     }
 
     if p_Player ~= nil then
-        NetEvents:SendToLocal(PhaseManagerNetEvents.UpdateState, p_Player, l_Data)
+        NetEvents:SendToLocal(PhaseManagerNetEvent.UpdateState, p_Player, l_Data)
     else
-        NetEvents:BroadcastLocal(PhaseManagerNetEvents.UpdateState, l_Data)
+        NetEvents:BroadcastLocal(PhaseManagerNetEvent.UpdateState, l_Data)
     end
 end
 
