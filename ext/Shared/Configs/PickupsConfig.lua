@@ -96,7 +96,7 @@ PickupsConfig = {
                     Type = g_Weapons.M98B,
                     Ammo = 100,
                     Attachments = {
-                        g_Attachments.RX01
+                        g_Attachments.RifleScope
                     }
                 },{
                     Type = g_Weapons.ACR,
