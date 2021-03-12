@@ -50,11 +50,11 @@ end
 
 function PingClient:__gc()
     -- Unsubscribe from events
-    self.m_PingNotifyEvent:Unsubscribe()
-    self.m_PingUpdateConfigEvent:Unsubscribe()
-    self.m_UiDrawHudEvent:Unsubscribe()
-    self.m_EngineUpdateEvent:Unsubscribe()
-    self.m_UpdateManagerUpdateEvent:Unsubscribe()
+    -- self.m_PingNotifyEvent:Unsubscribe()
+    -- self.m_PingUpdateConfigEvent:Unsubscribe()
+    -- self.m_UiDrawHudEvent:Unsubscribe()
+    -- self.m_EngineUpdateEvent:Unsubscribe()
+    -- self.m_UpdateManagerUpdateEvent:Unsubscribe()
 
     if self.m_Debug then
         -- Remove the console commands
