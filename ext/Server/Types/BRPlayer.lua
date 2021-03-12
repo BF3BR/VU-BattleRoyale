@@ -74,7 +74,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
         return 0
     end
 
-    NetEvents:SendToLocal(DamageEvents.ConfirmHit, p_Giver.m_Player, p_Damage)
+    NetEvents:SendToLocal(DamageEvent.Hit, p_Giver.m_Player, p_Damage)
 
     local l_Soldier = self:GetSoldier()
     if l_Soldier == nil then
@@ -96,9 +96,9 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
             -- kill instantly if no teammates left
             if self:HasAliveTeammates() then
                 self.m_KillerName = p_Giver:GetName()
-                NetEvents:SendToLocal(DamageEvents.ConfirmPlayerDown, p_Giver.m_Player, self:GetName())
+                NetEvents:SendToLocal(DamageEvent.PlayerDown, p_Giver.m_Player, self:GetName())
             else
-                p_Giver:IncrementKills(self:GetName())
+                p_Giver:IncrementKills(self)
                 self:Kill(true)
             end
 
@@ -119,9 +119,13 @@ function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
 end
 
 -- Increments the kill counter of the player
-function BRPlayer:IncrementKills(p_VictimName)
+function BRPlayer:IncrementKills(p_Victim)
     self.m_Kills = self.m_Kills + 1
-    NetEvents:SendToLocal(DamageEvents.ConfirmPlayerKill, self.m_Player, p_VictimName)
+
+    -- send related net events
+    NetEvents:SendToLocal(DamageEvent.PlayerKill, self.m_Player, p_Victim:GetName())
+    NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self.m_Player:GetName())
+
     self:SendState()
 end
 

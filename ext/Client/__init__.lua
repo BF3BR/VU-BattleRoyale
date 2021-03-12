@@ -54,7 +54,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     Events:Subscribe(PhaseManagerCustomEvents.Update, self, self.OnPhaseManagerUpdate)
     Events:Subscribe(PhaseManagerCustomEvents.CircleMove, self, self.OnOuterCircleMove)
 
-    NetEvents:Subscribe(DamageEvents.ConfirmPlayerKill, self, self.OnDamageConfirmPlayerKill)
+    NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill)
     NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
     NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer)
     NetEvents:Subscribe(PlayerEvents.PitchAndYaw, self, self.OnPlayersPitchAndYaw)

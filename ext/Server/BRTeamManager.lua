@@ -284,17 +284,17 @@ end
 -- Resolve who should count the kill for
 function BRTeamManager:OnIncrementKill(p_Victim, p_Giver)
     if p_Victim.m_KillerName == nil and p_Giver ~= nil then
-        p_Giver:IncrementKills(p_Victim:GetName())
+        p_Giver:IncrementKills(p_Victim)
     else
         -- increment killer's counter
         local l_Killer = self:GetPlayer(p_Victim.m_KillerName)
         if l_Killer ~= nil then
-            l_Killer:IncrementKills(p_Victim:GetName())
+            l_Killer:IncrementKills(p_Victim)
         end
 
         -- send finish message to p_Giver 
         if p_Giver ~= nil and not p_Giver:Equals(l_Killer) then
-            NetEvent:SendToLocal(DamageEvents.ConfirmPlayerFinish, p_Giver.m_Player, p_Victim:GetName())
+            NetEvent:SendToLocal(DamageEvent.PlayerFinish, p_Giver.m_Player, p_Victim:GetName())
         end
 
         p_Victim.m_KillerName = nil

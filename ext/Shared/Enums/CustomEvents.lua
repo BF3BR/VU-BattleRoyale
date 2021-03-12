@@ -19,11 +19,12 @@ TeamManagerCustomEvents = {
     IncrementKill = "TM:IncrementKill"
 }
 
-DamageEvents = {
-    ConfirmHit = "DMG:CH",
-    ConfirmPlayerDown = "DMG:CPD",
-    ConfirmPlayerKill = "DMG:CPK",
-    ConfirmPlayerFinish = "DMG:CPF"
+DamageEvent = {
+    Hit = "DMG:H",
+    PlayerDown = "DMG:PD",
+    PlayerKill = "DMG:PK",
+    PlayerFinish = "DMG:PF",
+    PlayerKilled = "DMG:PKD"
 }
 
 PingEvents = {
