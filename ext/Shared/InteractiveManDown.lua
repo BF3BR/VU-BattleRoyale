@@ -108,8 +108,8 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
     p_Instance = SoldierEntityData(p_Instance)
     p_Instance:MakeWritable()
 
-    -- changing Max Health to 300hp
-    p_Instance.maxHealth = 300
+    -- changing Max Health to 200hp
+    p_Instance.maxHealth = 200
 
     local s_ManDownConnection = m_EventConnections:Create(p_Instance, s_CustomizeSoldierEntityData, -563307660,
                                                                206074481, 3)
