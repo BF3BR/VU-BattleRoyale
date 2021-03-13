@@ -25,6 +25,7 @@ end
 
 function VuBattleRoyaleShared:RegisterEvents()
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
+    Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate)
 end
 
 function VuBattleRoyaleShared:RegisterCallbacks()
@@ -100,6 +101,13 @@ end
 -- =============================================
 -- Events
 -- =============================================
+
+function VuBattleRoyaleShared:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
+    -- fix Aimglitch
+    if p_GunSway.dispersionAngle < p_GunSway.minDispersionAngle then
+        p_GunSway.dispersionAngle = p_GunSway.minDispersionAngle
+    end
+end
 
 function VuBattleRoyaleShared:OnWorldPartLoaded(p_Instance)
     local s_CustomWorldPartData = WorldPartData()
