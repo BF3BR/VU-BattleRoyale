@@ -454,16 +454,6 @@ function SpectatorCamera:IsEnabled()
 	return self.m_Active
 end
 
-function SpectatorCamera:OnGameStateChanged(p_GameState)
-    if p_GameState == nil then
-        return
-    end
-	
-	if p_GameState == GameStates.EndGame then
-		self:Disable()
-	end
-end
-
 function SpectatorCamera:OnLevelDestroy()
 	self:Disable()
 	self.m_SpectatedPlayer = nil
