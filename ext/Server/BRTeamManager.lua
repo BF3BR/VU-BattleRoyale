@@ -344,12 +344,6 @@ function BRTeamManager:OnSendPlayerState(p_Player, p_Inflictor)
     if l_BrPlayer ~= nil then
         l_BrPlayer:SendState()
     end
-    
-    local s_Table = {p_Player.id, nil}
-    if p_Inflictor ~= nil then
-        s_Table = {p_Player.id, p_Inflictor.id}
-    end
-    NetEvents:BroadcastLocal("ServerPlayer:Killed", s_Table)
 end
 
 function BRTeamManager:OnTeamJoinStrategy(p_Player, p_Strategy)
