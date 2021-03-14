@@ -60,6 +60,7 @@ PlayerEvents = {
     UpdateTimer = "VuBattleRoyale:UpdateTimer",
     GameStateChanged = "VuBattleRoyale:GameStateChanged",
     MinPlayersToStartChanged = "VuBattleRoyale:MinPlayersToStartChanged",
+    WinnerTeamUpdate = "VuBattleRoyale:WinnerTeamUpdate",
 }
 
 LMS = {

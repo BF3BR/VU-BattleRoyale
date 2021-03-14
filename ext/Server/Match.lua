@@ -153,6 +153,9 @@ function Match:OnMatchFirstTick()
 
         if self.m_WinnerTeam ~= nil then
             print("INFO: We have a winner team: " .. self.m_WinnerTeam.m_Id)
+
+            -- Broadcast the winnin teams ID to clients
+            NetEvents:Broadcast(PlayerEvents.WinnerTeamUpdate, self.m_WinnerTeam.m_Id)
         else
             print("INFO: Round ended without a winner.")
         end

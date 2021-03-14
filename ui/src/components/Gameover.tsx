@@ -7,6 +7,9 @@ import "./Gameover.scss";
 
 interface Props {
     localPlayer: Player|null;
+    afterInterval: () => void;
+    gameOverPlace: number;
+    gameOverIsWin: boolean;
 }
 
 const alertAudio = new Audio(winner);
@@ -14,32 +17,61 @@ alertAudio.volume = 0.3;
 alertAudio.autoplay = false;
 alertAudio.loop = false;
 
-const Gameover: React.FC<Props> = ({ localPlayer }) => {
+const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, afterInterval }) => {
     useEffect(() => {
-        if (alert !== null) {
+        if (alert !== null && localPlayer !== null) {
             alertAudio.play();
+            
+            if (!navigator.userAgent.includes('VeniceUnleashed')) {
+                if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
+                    return;
+                }
+            } else {
+                WebUI.Call('EnableKeyboard');
+                WebUI.Call('EnableMouse');    
+            }
 
             return () => {
                 alertAudio.currentTime = 0.0;
                 alertAudio.pause();
+
+                if (!navigator.userAgent.includes('VeniceUnleashed')) {
+                    if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
+                        return;
+                    }
+                } else {
+                    WebUI.Call('ResetKeyboard');
+                    WebUI.Call('ResetMouse');
+                }
             }
         }
-    }, [localPlayer]);
+    }, []);
 
     return (
         <>
             {localPlayer &&
                 <div id="Gameover">
+                    <span className="WonOrLost">
+                        {gameOverIsWin ?
+                            <span className="won">You Won!</span>
+                        :
+                            <span className="lost">You Lost!</span>
+                        }
+                    </span>
                     <span className="Name">
                         {localPlayer.name??''}
                     </span>
-                    <div className="Separator"></div>
-                    <span className="Rank">
-                        RANK <span>#{localPlayer.kill??''}</span>
-                    </span>
-                    <span className="Kills">
-                        KILLS <span>{localPlayer.kill??''}</span>
-                    </span>
+                    <div className="inline">
+                        {/*<span className="Rank">
+                            Your place: <span>#{gameOverPlace??99}</span>
+                        </span>*/}
+                        <span className="Kills">
+                            Your Kills: <span>{localPlayer.kill??''}</span>
+                        </span>
+                    </div>
+                    <button className="btn" onClick={afterInterval}>
+                        Return to game
+                    </button>
                 </div>
             }
         </>

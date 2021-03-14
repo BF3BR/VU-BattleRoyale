@@ -52,7 +52,11 @@ const App: React.FC = () => {
         if (state === "Warmup") {
             setAlertPlaySound(Sounds.Notification);
             setAlertLength(6);
-            setAlertString("The round is starting soon");
+            setAlertString("The round is starting soon...");
+        } else if (state === "EndGame" && gameOverScreen === false) {
+            setAlertPlaySound(Sounds.Notification);
+            setAlertLength(6);
+            setAlertString("The round is ended, restarting soon...");
         }
     }
 
@@ -68,6 +72,14 @@ const App: React.FC = () => {
     }
 
     const [gameOverScreen, setGameOverScreen] = useState<boolean>(false);
+    const [gameOverPlace, setGameOverPlace] = useState<number>(99);
+    const [gameOverIsWin, setGameOverIsWin] = useState<boolean>(false);
+    
+    window.OnGameOverScreen = (data: any) => {
+        setGameOverPlace(data.place);
+        setGameOverIsWin(data.isWin);
+        setGameOverScreen(true);
+    }
 
     /*
     * Player
@@ -388,12 +400,14 @@ const App: React.FC = () => {
                     deployScreen={deployScreen}
                 />
 
-                <Alert
-                    alert={alertString}
-                    afterInterval={() => setAlertString(null)}
-                    playSound={alertPlaySound}
-                    length={alertLength}
-                />
+                {!gameOverScreen &&
+                    <Alert
+                        alert={alertString}
+                        afterInterval={() => setAlertString(null)}
+                        playSound={alertPlaySound}
+                        length={alertLength}
+                    />
+                }
 
                 {deployScreen 
                 ?
@@ -420,9 +434,12 @@ const App: React.FC = () => {
                             spectatorTarget={spectatorTarget}
                         />
 
-                        {gameOverScreen &&
+                        {(gameOverScreen && localPlayer !== null) &&
                             <Gameover 
                                 localPlayer={localPlayer}
+                                gameOverPlace={gameOverPlace}
+                                gameOverIsWin={gameOverIsWin}
+                                afterInterval={() => setGameOverScreen(false)}
                             />
                         }
 
@@ -506,6 +523,7 @@ declare global {
         OnPlayerCurrentWeapon: (data: string) => void;
         OnPlayerWeapons: (data: any) => void;
         OnPlayerIsInPlane: (isInPlane: boolean) => void;
+        OnGameOverScreen: (data: any) => void; 
 
         SpectatorTarget: (p_TargetName: string) => void;
         SpectatorEnabled: (p_Enabled: boolean) => void;

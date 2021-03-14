@@ -6,9 +6,9 @@
     width: 100vw;
     display: flex;
     flex-flow: column;
-    align-items: flex-start;
+    align-items: center;
     justify-content: flex-start;
-    padding: 6vw 4vw;
+    padding: 22vh 0 0;
     font-size: .8vw;
     text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
     background: rgba(0,0,0,0.0);
@@ -16,49 +16,95 @@
     -webkit-animation: dark-background 1.5s ease both;
     animation: dark-background 1.5s ease both;
 
-    .Name {
+    .WonOrLost {
         -webkit-animation: scale-up-center 0.15s ease both;
         animation: scale-up-center 0.15s ease both;
         animation-delay: 2s;
         position: relative;
-        font-size: 6vw;
-        margin-bottom: 1vw;
-        letter-spacing: .75vw;
+        margin-bottom: .5vw;
+
+        span {
+            font-size: 1.45vw;
+            text-transform: uppercase;
+            font-style: normal;
+            font-weight: 600;
+
+            &.won {
+                color: #d1ffbe;
+                text-shadow: 0 0 0.5vw rgba(209, 255, 190, 0.4);
+            }
+
+            &.lost {
+                color: #ff9f80;
+                text-shadow: 0 0 0.5vw rgba(255, 159, 128, 0.4);
+            }
+        }
     }
 
-    .Separator {
+    .Name {
+        /*-webkit-animation: scale-up-center 0.15s ease both;
+        animation: scale-up-center 0.15s ease both;
+        animation-delay: 2s;*/
         -webkit-animation: scale-up-center 0.15s ease both;
         animation: scale-up-center 0.15s ease both;
-        animation-delay: 2.15s;
+        animation-delay: 2.45s;
         position: relative;
-        width: 4vw;
-        height: 0.1vw;
-        background: rgba(255,255,255,0.75);
-        margin-bottom: 1vw;
+        margin-bottom: 1.5vw;
+        color: #d5dde5;
+        font-size: 4.2vw;
+        text-transform: uppercase;
+        font-style: normal;
+        font-weight: 600;
+        text-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.25);
     }
 
+    .Rank,
+    .Kills {
+        color: #d5dde5;
+        font-size: 1.2vw;
+        text-transform: uppercase;
+        font-style: normal;
+        font-weight: 600;
+        text-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.4);
+        
+        span {
+            color: #94cdf3;
+            margin-left: .4vw;
+            text-shadow: 0 0 0.5vw rgba(148, 205, 243, 0.4);
+        }
+    }
+
+    .Kills {
+        span {
+            color: #ff9f80;
+            text-shadow: 0 0 0.5vw rgba(255, 159, 128, 0.4);
+        }
+    }
+
+    .inline {
+        display: flex;
+    }
+
+    
     .Rank {
         -webkit-animation: scale-up-center 0.15s ease both;
         animation: scale-up-center 0.15s ease both;
         animation-delay: 2.45s;
-        font-size: 2vw;
-        margin-bottom: 0.25vw;
+        margin-right: 2.5vw;
     }
 
     .Kills {
         -webkit-animation: scale-up-center 0.15s ease both;
         animation: scale-up-center 0.15s ease both;
         animation-delay: 2.9s;
-        font-size: 2vw;
+        margin: 0;
     }
 
-    .Rank,
-    .Kills {
-        span {
-            color: #c47532;
-            font-weight: 800;
-            margin-left: .6vw;
-        }
+    .btn {
+        -webkit-animation: scale-up-center 0.35s ease both;
+        animation: scale-up-center 0.35s ease both;
+        animation-delay: 3.5s;
+        margin-top: 3vw;
     }
 }
 

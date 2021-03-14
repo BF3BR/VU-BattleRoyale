@@ -45,6 +45,7 @@ function VuBattleRoyaleHud:RegisterVars()
     self.m_HudOnPlanePosition = CachedJsExecutor("OnPlanePosition(%s)", nil)
     self.m_HudOnNotifyInflictorAboutKillOrKnock = CachedJsExecutor("OnNotifyInflictorAboutKillOrKnock(%s)", nil)
     self.m_HudOnInteractiveMessageAndKey = CachedJsExecutor("OnInteractiveMessageAndKey(%s)", nil)
+    self.m_HudOnGameOverScreen = CachedJsExecutor("OnGameOverScreen(%s)", nil)
 end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
@@ -363,6 +364,13 @@ function VuBattleRoyaleHud:OnGunshipYaw(p_Trans)
 
     local s_YawRad = (math.atan(p_Trans.forward.z, p_Trans.forward.x) - (math.pi / 2)) % (2 * math.pi)
     self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
+end
+
+function VuBattleRoyaleHud:OnGameOverScreen(p_Place, p_IsWin)
+    self.m_HudOnGameOverScreen:ForceUpdate(json.encode({
+        ["place"] = p_Place, 
+        ["isWin"] = p_IsWin,
+    }))
 end
 
 if g_VuBattleRoyaleHud == nil then

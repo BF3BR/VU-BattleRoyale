@@ -58,6 +58,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer)
     NetEvents:Subscribe(PlayerEvents.PitchAndYaw, self, self.OnPlayersPitchAndYaw)
     NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged)
+    NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
     NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
     NetEvents:Subscribe(GunshipEvents.Camera, self, self.OnGunShipCamera)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
@@ -208,6 +209,46 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
     print("INFO: OnPlayerKilled: " .. s_Player.name)
 
     m_SpectatorCamera:OnPlayerKilled(s_Player.id, s_InflictorId)
+
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == nil then
+        return
+    end
+
+    if s_Player == s_LocalPlayer then
+        -- If the local player died we should check if anyone else alive in the team if not we should bring up the game over screen
+        if s_LocalPlayer.squadId == SquadId.SquadNone then
+            -- TODO: Fix place
+			m_Hud:OnGameOverScreen(99, false)
+            return
+		end
+
+        local s_Players = PlayerManager:GetPlayersBySquad(s_LocalPlayer.teamId, s_LocalPlayer.squadId)
+
+        local s_AliveSquadCount = 0
+        for _, l_Player in pairs(s_Players) do
+            if l_Player == s_LocalPlayer then
+                goto continue_enable
+            end
+
+            if l_Player.soldier == nil then
+                goto continue_enable
+            end
+
+            if l_Player.soldier.alive == false then
+                goto continue_enable
+            end
+            
+            s_AliveSquadCount = s_AliveSquadCount + 1
+    
+            ::continue_enable::
+        end
+
+        if s_AliveSquadCount == 0 then
+            m_Hud:OnGameOverScreen(99, false)
+            return
+        end
+    end
 end
 
 function VuBattleRoyaleClient:OnTeamJoinDenied(p_Error)
@@ -268,6 +309,26 @@ end
 
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
     m_Hud.m_MinPlayersToStart = p_MinPlayersToStart
+end
+
+function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
+    if p_WinnerTeamId == nil then
+        return
+    end
+
+    if self.m_BrPlayer == nil then
+        return
+    end
+
+    if self.m_BrPlayer.m_Team == nil then
+        return
+    end
+
+    if p_WinnerTeamId ~= self.m_BrPlayer.m_Team.m_Id then
+        return
+    end
+
+    m_Hud:OnGameOverScreen(1, true)
 end
 
 
