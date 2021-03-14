@@ -90,7 +90,7 @@ end
 function PhaseManagerClient:GetActivePlayerPosition()
     -- pick local or spectated player
     local l_Player = PlayerManager:GetLocalPlayer()
-    if not l_Player.alive and self.m_SpectatedPlayer ~= nil then
+    if (l_Player == nil or not l_Player.alive) and self.m_SpectatedPlayer ~= nil then
         l_Player = self.m_SpectatedPlayer
     end
 
