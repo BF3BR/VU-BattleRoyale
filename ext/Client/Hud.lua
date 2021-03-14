@@ -300,7 +300,11 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
         end
     end
 
-    self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
+    if s_LocalSoldier.isInteractiveManDown then
+        self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
+    else
+        self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health) -- - 100)
+    end
     self.m_HudOnPlayerArmor:Update(self.m_BrPlayer.m_Armor:GetPercentage())
     self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
     self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
