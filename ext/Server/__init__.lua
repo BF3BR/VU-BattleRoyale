@@ -12,6 +12,7 @@ local m_Whitelist = require "Whitelist"
 local m_PingServer = require "PingServer"
 local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
+--local m_InteractiveManDown = require "__shared/InteractiveManDown"
 
 function VuBattleRoyaleServer:__init()
     Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -43,6 +44,7 @@ function VuBattleRoyaleServer:RegisterEvents()
     Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
     Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
     Events:Subscribe("Player:ManDownRevived", self, self.OnManDownRevived)
+    Events:Subscribe("Player:ChangingWeapon", self, self.OnChangingWeapon)
     Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
 
     NetEvents:Subscribe("VuBattleRoyale:PlayerConnected", self, self.OnPlayerConnected)
@@ -104,6 +106,13 @@ function VuBattleRoyaleServer:OnManDownRevived(p_Player, p_Reviver, p_IsAdrenali
     else
         p_Player.soldier.health = 0.0001
     end
+end
+
+function VuBattleRoyaleServer:OnChangingWeapon(p_Player)
+    if p_Player == nil or p_Player.soldier == nil or p_Player.soldier.isInteractiveManDown == false then
+        return
+    end
+    -- p_Player.soldier:ApplyCustomization(m_InteractiveManDown:CreateManDownCustomizeSoldierData())
 end
 
 function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
