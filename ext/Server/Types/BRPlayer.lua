@@ -124,7 +124,7 @@ function BRPlayer:IncrementKills(p_Victim)
 
     -- send related net events
     NetEvents:SendToLocal(DamageEvent.PlayerKill, self.m_Player, p_Victim:GetName())
-    NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self.m_Player:GetName())
+    NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self:GetName())
 
     self:SendState()
 end
