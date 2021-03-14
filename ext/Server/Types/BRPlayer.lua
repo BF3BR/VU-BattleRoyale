@@ -85,8 +85,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
     if l_Soldier.isInteractiveManDown and p_Damage >= health then
         self:Kill(true)
         Events:DispatchLocal(TeamManagerEvent.IncrementKill, self, p_Giver)
-        NetEvents:BroadcastLocal("ServerPlayer:Killed", {self.m_Player.id, p_Giver.m_Player.id})
-        
+
         return health
     elseif not l_Soldier.isInteractiveManDown then
         -- health = health - 100
@@ -101,7 +100,6 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
             else
                 p_Giver:IncrementKills(self)
                 self:Kill(true)
-                NetEvents:BroadcastLocal("ServerPlayer:Killed", {self.m_Player.id, p_Giver.m_Player.id})
             end
 
             return health -- + 100
@@ -127,6 +125,7 @@ function BRPlayer:IncrementKills(p_Victim)
     -- send related net events
     NetEvents:SendToLocal(DamageEvent.PlayerKill, self.m_Player, p_Victim:GetName())
     NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self:GetName())
+    NetEvents:BroadcastLocal("ServerPlayer:Killed", {p_Victim.m_Player.id, self.m_Player.id})
 
     self:SendState()
 end

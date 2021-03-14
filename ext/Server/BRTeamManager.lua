@@ -338,7 +338,7 @@ function BRTeamManager:OnLockToggle(p_Player)
     end
 end
 
-function BRTeamManager:OnSendPlayerState(p_Player, p_Inflictor)
+function BRTeamManager:OnSendPlayerState(p_Player)
     local l_BrPlayer = self:GetPlayer(p_Player)
 
     if l_BrPlayer ~= nil then
