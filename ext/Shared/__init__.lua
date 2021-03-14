@@ -89,6 +89,11 @@ function VuBattleRoyaleShared:RegisterCallbacks()
        self, self.OnCharacterPhysicsData
     )
     
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid('9942F328-35C1-11DF-9556-FDADABD0ADCC'), 
+        Guid('FE76DD4D-CA25-2382-1ACB-40117A0AC957'), 
+        self, self.OnSoldierWeaponSwitchingData
+    )
     
     -- m_InteractiveManDown:RegisterCallbacks()
     m_DropWeapons:RegisterCallbacks()
@@ -192,6 +197,29 @@ function VuBattleRoyaleShared:OnMeleeEntityCommonData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.meleeAttackDistance = 0
     p_Instance.maxAttackHeightDifference = 0
+end
+
+function VuBattleRoyaleShared:OnSoldierWeaponSwitchingData(p_Instance)
+    p_Instance = SoldierWeaponSwitchingData(p_Instance)
+    p_Instance:MakeWritable()
+    -- add EIASwitchPrimaryWeapon from Slot0 to Slot9 if there is no weapon in Slot1
+    p_Instance.switchMap[1].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
+    -- add EIASwitchPrimaryWeapon from Slot1 to Slot9 if there is no weapon in Slot0
+    p_Instance.switchMap[7].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
+    -- EIASwitchPrimaryWeapon from Slot8 to Slot0 or Slot1
+    p_Instance.switchMap:add(WeaponSwitchingMapData())
+    p_Instance.switchMap[#p_Instance.switchMap].fromWeapon = WeaponSwitchingEnum.wsSlot8
+    p_Instance.switchMap[#p_Instance.switchMap].action = EntryInputActionEnum.EIASwitchPrimaryWeapon
+    p_Instance.switchMap[#p_Instance.switchMap].toWeapon:add(WeaponSwitchingEnum.wsSlot0)
+    p_Instance.switchMap[#p_Instance.switchMap].toWeapon:add(WeaponSwitchingEnum.wsSlot1)
+    p_Instance.switchMap[#p_Instance.switchMap].fireAndSwitchBackToPrev = false
+    -- EIASwitchPrimaryWeapon from Slot9 to Slot0 or Slot1
+    p_Instance.switchMap:add(WeaponSwitchingMapData())
+    p_Instance.switchMap[#p_Instance.switchMap].fromWeapon = WeaponSwitchingEnum.wsSlot9
+    p_Instance.switchMap[#p_Instance.switchMap].action = EntryInputActionEnum.EIASwitchPrimaryWeapon
+    p_Instance.switchMap[#p_Instance.switchMap].toWeapon:add(WeaponSwitchingEnum.wsSlot0)
+    p_Instance.switchMap[#p_Instance.switchMap].toWeapon:add(WeaponSwitchingEnum.wsSlot1)
+    p_Instance.switchMap[#p_Instance.switchMap].fireAndSwitchBackToPrev = false
 end
 
 function VuBattleRoyaleShared:OnLevelLoadResources()
