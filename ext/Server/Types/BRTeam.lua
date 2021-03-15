@@ -197,6 +197,17 @@ function BRTeam:CanBeJoinedById()
     return true
 end
 
+-- Updates the final placement of the team
+function BRTeam:SetPlacement(p_Placement)
+    if self.m_Placement == p_Placement then
+        return
+    end
+
+    self.m_Placement = p_Placement
+    self:BroadcastState()
+end
+
+-- Broadcasts the state of the team to all of its members
 function BRTeam:BroadcastState()
     local l_TeamData = self:AsTable()
     for _, l_BrPlayer in pairs(self.m_Players) do

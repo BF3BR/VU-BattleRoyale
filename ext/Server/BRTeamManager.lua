@@ -82,6 +82,7 @@ function BRTeamManager:GetWinningTeam()
         end
     end
 
+    l_Winner:SetPlacement(1)
     return l_Winner
 end
 
@@ -250,6 +251,28 @@ function BRTeamManager:CreateId(p_Len)
     end
 end
 
+-- Checks & updates the team's placement if all of its players are dead
+function BRTeamManager:UpdateTeamPlacement(p_Team)
+    if p_Team == nil or not p_Team.m_Active or p_Team:HasAlivePlayers() then
+        return
+    end
+
+    local l_Count = self:GetAliveTeamCount()
+    p_Team:SetPlacement(l_Count + 1)
+end
+
+-- Returns the number of active teams with at least one player alive
+function BRTeamManager:GetAliveTeamCount()
+    local l_Count = 0
+    for _, l_BrTeam in pairs(self.m_Teams) do
+        if l_BrTeam.m_Active and l_BrTeam:HasAlivePlayers() then
+            l_Count = l_Count + 1
+        end
+    end
+
+    return l_Count
+end
+
 function BRTeamManager:OnEndOfRound()
     -- put non custom team players back to their own teams
     for _, l_BrPlayer in pairs(self.m_Players) do
@@ -316,10 +339,6 @@ function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
     end
 
     self:UpdateTeamPlacement(p_Victim.m_Team)
-end
-
-function BRTeamManager:UpdateTeamPlacement(p_Team)
-    -- TODO
 end
 
 -- Resolve who should count the kill for
