@@ -379,7 +379,6 @@ function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin)
 end
 
 function VuBattleRoyaleHud:OnUpdatePlacement()
-    print(self.m_BrPlayer.m_Team.m_Placement)
     self.m_HudOnUpdatePlacement:Update(self.m_BrPlayer.m_Team.m_Placement)
 end
 
