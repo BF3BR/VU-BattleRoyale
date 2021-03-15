@@ -152,7 +152,7 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
         return
     end
 
-    if s_LocalPlayer.alive == false then
+    if s_LocalPlayer.alive == false then	
         return
     end
     local s_LocalSoldier = s_LocalPlayer.soldier
@@ -285,6 +285,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
     end
 
     if s_LocalPlayer.alive == false then
+        self.m_HudOnPlayerHealth:Update(0)
         return
     end
 
