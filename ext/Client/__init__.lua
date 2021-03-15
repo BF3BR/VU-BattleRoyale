@@ -385,16 +385,22 @@ function VuBattleRoyaleClient:OnUICreateKillMessage(p_Hook)
 end
 
 function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_Hook)
-    p_Hook:Return(nil)
+    if not ServerConfig.Debug.ShowAllNametags then
+        p_Hook:Return(nil)
+    end
 end
 
 
 function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_Hook)
-    p_Hook:Return(nil)
+    if not ServerConfig.Debug.ShowAllNametags then
+        p_Hook:Return(nil)
+    end
 end
 
 function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_Hook)
-    p_Hook:Return(nil)
+    if not ServerConfig.Debug.ShowAllNametags then
+        p_Hook:Return(nil)
+    end
 end
 
 function VuBattleRoyaleClient:OnUIRenderMinimap(p_Hook)

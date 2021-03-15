@@ -29,6 +29,8 @@ ServerConfig =
 
         EnableWinningCheck = true,
 
+        ShowAllNametags = false,
+
         Whitelist = {
             "voteban_flash",
             "Bree",
