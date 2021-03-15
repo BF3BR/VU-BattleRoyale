@@ -27,6 +27,9 @@ function BRTeam:__init(p_Id)
     -- indicates if the team let's random players to fill the remaining positions
     self.m_Locked = false
 
+    -- the final placement of the team
+    self.m_Placement = nil
+
     -- contains the players as Teammate[]
     self.m_Players = {}
 end
@@ -35,6 +38,7 @@ function BRTeam:UpdateFromTable(p_BrTeamTable)
     self.m_Id = p_BrTeamTable.Id
 
     self.m_Locked = p_BrTeamTable.Locked
+    self.m_Placement = p_BrTeamTable.Placement
 
     self.m_Players = {}
     for _, p_TeammateTable in ipairs(p_BrTeamTable.Players) do
@@ -44,12 +48,14 @@ end
 
 function BRTeam.static:FromTable(p_BrTeamTable)
     local l_Team = BRTeam(p_BrTeamTable.Id)
+    l_Team:UpdateFromTable(p_BrTeamTable)
 
-    l_Team.m_Locked = p_BrTeamTable.Locked
+    -- l_Team.m_Locked = p_BrTeamTable.Locked
+    -- l_Team.m_Placement = p_BrTeamTable.Placement
 
-    for _, p_TeammateTable in ipairs(p_BrTeamTable.Players) do
-        table.insert(l_Team.m_Players, Teammate:FromTable(p_TeammateTable))
-    end
+    -- for _, p_TeammateTable in ipairs(p_BrTeamTable.Players) do
+    --     table.insert(l_Team.m_Players, Teammate:FromTable(p_TeammateTable))
+    -- end
 
     return l_Team
 end

@@ -18,6 +18,9 @@ function BRTeam:__init(p_Id)
     -- indicates if the team is currently taking part in the match
     self.m_Active = false
 
+    -- the final placement of the team
+    self.m_Placement = nil
+
     -- vanilla team/squad ids
     self.m_TeamId = TeamId.Team1
     self.m_SquadId = SquadId.SquadNone
@@ -207,7 +210,20 @@ function BRTeam:AsTable()
         table.insert(l_Players, l_BrPlayer:AsTable(true))
     end
 
-    return {Id = self.m_Id, Locked = self.m_Locked, Players = l_Players}
+    return {
+        Id = self.m_Id,
+        Locked = self.m_Locked,
+        Placement = self.m_Placement,
+        Players = l_Players
+    }
+end
+
+function BRTeam:Reset()
+    -- deactivate team
+    self.m_Active = false
+
+    -- reset placement
+    self.m_Placement = nil
 end
 
 function BRTeam:Equals(p_OtherTeam)

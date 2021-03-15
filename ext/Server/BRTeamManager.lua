@@ -258,11 +258,13 @@ function BRTeamManager:OnEndOfRound()
             end
         end
 
-        -- deactivate team
-        l_BrPlayer.m_Team.m_Active = false
-
         -- reset BrPlayer state
         l_BrPlayer:Reset()
+    end
+
+    -- reset BrTeam state
+    for _, l_BrTeam in pairs(self.m_Teams) do
+        l_BrTeam:Reset()
     end
 end
 
