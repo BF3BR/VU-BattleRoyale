@@ -77,8 +77,8 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
     local s_SquadId = p_Player.squadId
 
     if self.m_Debug then
-        print("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " ..
-                  p_Position.y .. ", " .. p_Position.z)
+        -- print("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " ..
+        --           p_Position.y .. ", " .. p_Position.z)
     end
 
     -- Update the cooldown
@@ -109,8 +109,6 @@ end
 function PingServer:OnPlayerCreated(p_Player)
     -- I believe this only happens once, so it should be good enough
     NetEvents:SendToLocal(PingEvents.UpdateConfig, p_Player, self.m_PingDisplayCooldownTime)
-
-    print("updated configuration")
 end
 
 function PingServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap) -- levelName, gameMode, round, roundsPerMap
@@ -199,7 +197,7 @@ function PingServer:AssignPingIds(p_BrTeams)
             self.m_PlayerPingIds[l_PlayerId] = l_PlayerPingId
 
             -- Debug logging output
-            print("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
+            -- print("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
 
             -- Increment our player ping id
             l_PlayerPingId = l_PlayerPingId + 1
