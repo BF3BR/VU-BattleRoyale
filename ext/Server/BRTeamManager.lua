@@ -82,7 +82,10 @@ function BRTeamManager:GetWinningTeam()
         end
     end
 
-    l_Winner:SetPlacement(1)
+    if l_Winner ~= nil then
+        l_Winner:SetPlacement(1)
+    end
+
     return l_Winner
 end
 
@@ -252,13 +255,13 @@ function BRTeamManager:CreateId(p_Len)
 end
 
 -- Checks & updates the team's placement if all of its players are dead
-function BRTeamManager:UpdateTeamPlacement(p_Team)
-    if p_Team == nil or not p_Team.m_Active or p_Team:HasAlivePlayers() then
+function BRTeamManager:UpdateTeamPlacement(p_BrTeam)
+    if p_BrTeam == nil or not p_BrTeam.m_Active or p_BrTeam:HasAlivePlayers() then
         return
     end
 
     local l_Count = self:GetAliveTeamCount()
-    p_Team:SetPlacement(l_Count + 1)
+    p_BrTeam:SetPlacement(l_Count + 1)
 end
 
 -- Returns the number of active teams with at least one player alive
@@ -299,6 +302,13 @@ end
 
 function BRTeamManager:OnVanillaPlayerDestroyed(p_Player)
     print(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
+
+    -- update player's team placement if needed
+    local l_BrPlayer = self:GetPlayer(p_Player)
+    if l_BrPlayer ~= nil then
+        self:UpdateTeamPlacement(l_BrPlayer.m_Team)
+    end
+
     self:RemovePlayer(p_Player)
 end
 

@@ -197,9 +197,9 @@ function BRTeam:CanBeJoinedById()
     return true
 end
 
--- Updates the final placement of the team
+-- Sets the final placement of the team
 function BRTeam:SetPlacement(p_Placement)
-    if self.m_Placement == p_Placement then
+    if self.m_Placement ~= nil and not self.m_Active then
         return
     end
 
