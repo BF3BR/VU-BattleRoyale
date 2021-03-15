@@ -94,7 +94,7 @@ end
 
 function BRTeam:Merge(p_OtherTeam)
     -- check if merge is possible
-    if self:PlayersNumber() + p_OtherTeam:PlayersNumber() > ServerConfig.PlayersPerTeam then
+    if self:PlayerCount() + p_OtherTeam:PlayerCount() > ServerConfig.PlayersPerTeam then
         return false
     end
 
@@ -141,7 +141,7 @@ function BRTeam:IsEmpty()
 end
 
 -- Returns the number of players of the team
-function BRTeam:PlayersNumber()
+function BRTeam:PlayerCount()
     return MapHelper:Size(self.m_Players)
 end
 

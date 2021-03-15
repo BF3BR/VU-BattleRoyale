@@ -117,7 +117,7 @@ function BRTeamManager:AssignTeams()
 
     -- sort based on the number of players per team
     table.sort(l_UnlockedTeams, function(p_TeamA, p_TeamB)
-        return p_TeamA:PlayersNumber() < p_TeamB:PlayersNumber()
+        return p_TeamA:PlayerCount() < p_TeamB:PlayerCount()
     end)
 
     -- merge teams
@@ -140,7 +140,7 @@ function BRTeamManager:AssignTeams()
         l_BrTeam.m_Active = true
 
         -- assign team/squad ids for each BRTeam
-        if l_BrTeam:PlayersNumber() < 2 then
+        if l_BrTeam:PlayerCount() < 2 then
             l_BrTeam.m_TeamId = TeamId.Team1
             l_BrTeam.m_SquadId = SquadId.SquadNone
         else
