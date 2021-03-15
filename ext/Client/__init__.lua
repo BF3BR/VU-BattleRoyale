@@ -214,11 +214,14 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
         return
     end
 
+    if self.m_BrPlayer == nil then
+        return
+    end
+
     if s_Player == s_LocalPlayer then
         -- If the local player died we should check if anyone else alive in the team if not we should bring up the game over screen
         if s_LocalPlayer.squadId == SquadId.SquadNone then
-            -- TODO: Fix place
-			m_Hud:OnGameOverScreen(99, false)
+			m_Hud:OnGameOverScreen(false)
             return
 		end
 
@@ -244,7 +247,7 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
         end
 
         if s_AliveSquadCount == 0 then
-            m_Hud:OnGameOverScreen(99, false)
+            m_Hud:OnGameOverScreen(false)
             return
         end
     end
@@ -327,7 +330,7 @@ function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
         return
     end
 
-    m_Hud:OnGameOverScreen(1, true)
+    m_Hud:OnGameOverScreen(true)
 end
 
 

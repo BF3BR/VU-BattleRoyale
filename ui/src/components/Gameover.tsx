@@ -62,9 +62,9 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
                         {localPlayer.name??''}
                     </span>
                     <div className="inline">
-                        {/*<span className="Rank">
+                        <span className="Rank">
                             Your place: <span>#{gameOverPlace??99}</span>
-                        </span>*/}
+                        </span>
                         <span className="Kills">
                             Your Kills: <span>{localPlayer.kill??''}</span>
                         </span>

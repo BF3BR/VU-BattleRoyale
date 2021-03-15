@@ -76,9 +76,17 @@ const App: React.FC = () => {
     const [gameOverIsWin, setGameOverIsWin] = useState<boolean>(false);
     
     window.OnGameOverScreen = (data: any) => {
-        setGameOverPlace(data.place);
+        // setGameOverPlace(data.place);
         setGameOverIsWin(data.isWin);
         setGameOverScreen(true);
+    }
+
+    window.OnUpdatePlacement = (placement: number | null) => {
+        if (placement !== null) {
+            setGameOverPlace(placement);
+        } else {
+            setGameOverPlace(99);
+        }
     }
 
     /*
@@ -524,6 +532,7 @@ declare global {
         OnPlayerWeapons: (data: any) => void;
         OnPlayerIsInPlane: (isInPlane: boolean) => void;
         OnGameOverScreen: (data: any) => void; 
+        OnUpdatePlacement: (placemen: number|null) => void;
 
         SpectatorTarget: (p_TargetName: string) => void;
         SpectatorEnabled: (p_Enabled: boolean) => void;

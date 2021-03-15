@@ -16,7 +16,8 @@ TeamManagerNetEvent = {
 TeamManagerEvent = {
     DestroyTeam = "TM:DestroyTeam",
     PutOnATeam = "TM:PutOnATeam",
-    IncrementKill = "TM:IncrementKill"
+    IncrementKill = "TM:IncrementKill",
+    RegisterKill = "TM:RegisterKill"
 }
 
 DamageEvent = {

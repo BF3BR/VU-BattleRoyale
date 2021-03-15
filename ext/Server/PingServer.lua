@@ -52,7 +52,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 
     -- Ignore ping if player is solo
     -- local l_BrTeam = g_BRTeamManager:GetTeamByPlayer(p_Player)
-    -- if l_BrTeam ~= nil and l_BrTeam:PlayersNumber() < 2 then
+    -- if l_BrTeam ~= nil and l_BrTeam:PlayerCount() < 2 then
     --     return
     -- end
 

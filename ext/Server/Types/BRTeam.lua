@@ -18,6 +18,9 @@ function BRTeam:__init(p_Id)
     -- indicates if the team is currently taking part in the match
     self.m_Active = false
 
+    -- the final placement of the team
+    self.m_Placement = nil
+
     -- vanilla team/squad ids
     self.m_TeamId = TeamId.Team1
     self.m_SquadId = SquadId.SquadNone
@@ -91,7 +94,7 @@ end
 
 function BRTeam:Merge(p_OtherTeam)
     -- check if merge is possible
-    if self:PlayersNumber() + p_OtherTeam:PlayersNumber() > ServerConfig.PlayersPerTeam then
+    if self:PlayerCount() + p_OtherTeam:PlayerCount() > ServerConfig.PlayersPerTeam then
         return false
     end
 
@@ -138,7 +141,7 @@ function BRTeam:IsEmpty()
 end
 
 -- Returns the number of players of the team
-function BRTeam:PlayersNumber()
+function BRTeam:PlayerCount()
     return MapHelper:Size(self.m_Players)
 end
 
@@ -194,6 +197,17 @@ function BRTeam:CanBeJoinedById()
     return true
 end
 
+-- Sets the final placement of the team
+function BRTeam:SetPlacement(p_Placement)
+    if self.m_Placement ~= nil and not self.m_Active then
+        return
+    end
+
+    self.m_Placement = p_Placement
+    self:BroadcastState()
+end
+
+-- Broadcasts the state of the team to all of its members
 function BRTeam:BroadcastState()
     local l_TeamData = self:AsTable()
     for _, l_BrPlayer in pairs(self.m_Players) do
@@ -207,7 +221,20 @@ function BRTeam:AsTable()
         table.insert(l_Players, l_BrPlayer:AsTable(true))
     end
 
-    return {Id = self.m_Id, Locked = self.m_Locked, Players = l_Players}
+    return {
+        Id = self.m_Id,
+        Locked = self.m_Locked,
+        Placement = self.m_Placement,
+        Players = l_Players
+    }
+end
+
+function BRTeam:Reset()
+    -- deactivate team
+    self.m_Active = false
+
+    -- reset placement
+    self.m_Placement = nil
 end
 
 function BRTeam:Equals(p_OtherTeam)
