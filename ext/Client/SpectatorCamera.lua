@@ -95,6 +95,7 @@ function SpectatorCamera:OnPlayerDeleted(p_Player)
 
 	-- Handle disconnection of player being spectated.
 	if p_Player == self.m_SpectatedPlayer then
+		self.m_SpectatedPlayer = nil
 		self:SpectateNextPlayer()
 	end
 end
@@ -179,6 +180,8 @@ function SpectatorCamera:Enable(p_InflictorId)
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
 	end
+
+	self:SetTimer("NoPlayerFoundTimer", g_Timers:Interval(4, self, self.Enable))
 
 	-- If we found no player to spectate we just disable the spectator mode
 	self:Disable()
