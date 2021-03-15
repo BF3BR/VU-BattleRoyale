@@ -340,13 +340,16 @@ function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
         p_Victim.m_KillerName = nil
     end
 
+    local l_PlayerKilledArgs = {p_Victim.m_Player.id, nil}
     if l_Killer ~= nil then
-        -- broadcast kill
-        NetEvents:BroadcastLocal("ServerPlayer:Killed", {p_Victim.m_Player.id, l_Killer.m_Player.id})
+        l_PlayerKilledArgs[2] = l_Killer.m_Player.id
 
         -- increment killer's counter
         l_Killer:IncrementKills(p_Victim)
     end
+
+    -- broadcast kill
+    NetEvents:BroadcastLocal("ServerPlayer:Killed", l_PlayerKilledArgs)
 
     self:UpdateTeamPlacement(p_Victim.m_Team)
 end
