@@ -195,9 +195,10 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
         p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
         return
     end
-    
+
     if p_GiverInfo == nil or p_GiverInfo.giver == nil then
         if p_Soldier.health <= p_Info.damage then
+            -- TODO add placement check
             p_Soldier:ForceDead()
         end
 

@@ -30,7 +30,8 @@ function BRTeamManager:RegisterEvents()
 
     Events:Subscribe(TeamManagerEvent.PutOnATeam, self, self.OnPutOnATeam)
     Events:Subscribe(TeamManagerEvent.DestroyTeam, self, self.OnDestroyTeam)
-    Events:Subscribe(TeamManagerEvent.IncrementKill, self, self.OnIncrementKill)
+    -- Events:Subscribe(TeamManagerEvent.IncrementKill, self, self.OnIncrementKill)
+    Events:Subscribe(TeamManagerEvent.RegisterKill, self, self.OnRegisterKill)
 
     NetEvents:Subscribe(TeamManagerNetEvent.RequestTeamJoin, self, self.OnRequestTeamJoin)
     NetEvents:Subscribe(TeamManagerNetEvent.TeamLeave, self, self.OnLeaveTeam)
@@ -81,6 +82,10 @@ function BRTeamManager:GetWinningTeam()
         end
     end
 
+    if l_Winner ~= nil then
+        l_Winner:SetPlacement(1)
+    end
+
     return l_Winner
 end
 
@@ -116,7 +121,7 @@ function BRTeamManager:AssignTeams()
 
     -- sort based on the number of players per team
     table.sort(l_UnlockedTeams, function(p_TeamA, p_TeamB)
-        return p_TeamA:PlayersNumber() < p_TeamB:PlayersNumber()
+        return p_TeamA:PlayerCount() < p_TeamB:PlayerCount()
     end)
 
     -- merge teams
@@ -139,7 +144,7 @@ function BRTeamManager:AssignTeams()
         l_BrTeam.m_Active = true
 
         -- assign team/squad ids for each BRTeam
-        if l_BrTeam:PlayersNumber() < 2 then
+        if l_BrTeam:PlayerCount() < 2 then
             l_BrTeam.m_TeamId = TeamId.Team1
             l_BrTeam.m_SquadId = SquadId.SquadNone
         else
@@ -249,6 +254,28 @@ function BRTeamManager:CreateId(p_Len)
     end
 end
 
+-- Checks & updates the team's placement if all of its players are dead
+function BRTeamManager:UpdateTeamPlacement(p_BrTeam)
+    if p_BrTeam == nil or not p_BrTeam.m_Active or p_BrTeam:HasAlivePlayers() then
+        return
+    end
+
+    local l_Count = self:GetAliveTeamCount()
+    p_BrTeam:SetPlacement(l_Count + 1)
+end
+
+-- Returns the number of active teams with at least one player alive
+function BRTeamManager:GetAliveTeamCount()
+    local l_Count = 0
+    for _, l_BrTeam in pairs(self.m_Teams) do
+        if l_BrTeam.m_Active and l_BrTeam:HasAlivePlayers() then
+            l_Count = l_Count + 1
+        end
+    end
+
+    return l_Count
+end
+
 function BRTeamManager:OnEndOfRound()
     -- put non custom team players back to their own teams
     for _, l_BrPlayer in pairs(self.m_Players) do
@@ -258,11 +285,13 @@ function BRTeamManager:OnEndOfRound()
             end
         end
 
-        -- deactivate team
-        l_BrPlayer.m_Team.m_Active = false
-
         -- reset BrPlayer state
         l_BrPlayer:Reset()
+    end
+
+    -- reset BrTeam state
+    for _, l_BrTeam in pairs(self.m_Teams) do
+        l_BrTeam:Reset()
     end
 end
 
@@ -273,6 +302,13 @@ end
 
 function BRTeamManager:OnVanillaPlayerDestroyed(p_Player)
     print(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
+
+    -- update player's team placement if needed
+    local l_BrPlayer = self:GetPlayer(p_Player)
+    if l_BrPlayer ~= nil then
+        self:UpdateTeamPlacement(l_BrPlayer.m_Team)
+    end
+
     self:RemovePlayer(p_Player)
 end
 
@@ -286,15 +322,14 @@ function BRTeamManager:OnDestroyTeam(p_Team)
     self:RemoveTeam(p_Team)
 end
 
--- Resolve who should count the kill for
-function BRTeamManager:OnIncrementKill(p_Victim, p_Giver)
-    if p_Victim.m_KillerName == nil and p_Giver ~= nil then
-        p_Giver:IncrementKills(p_Victim)
-    else
-        -- increment killer's counter
-        local l_Killer = self:GetPlayer(p_Victim.m_KillerName)
-        if l_Killer ~= nil then
-            l_Killer:IncrementKills(p_Victim)
+function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
+    local l_Killer = p_Giver
+
+    -- resolve who gets the kill
+    if p_Victim.m_KillerName ~= nil then
+        local l_OrigKiller = self:GetPlayer(p_Victim.m_KillerName)
+        if l_OrigKiller ~= nil then
+            l_Killer = l_OrigKiller
         end
 
         -- send finish message to p_Giver 
@@ -304,7 +339,40 @@ function BRTeamManager:OnIncrementKill(p_Victim, p_Giver)
 
         p_Victim.m_KillerName = nil
     end
+
+    local l_PlayerKilledArgs = {p_Victim.m_Player.id, nil}
+    if l_Killer ~= nil then
+        l_PlayerKilledArgs[2] = l_Killer.m_Player.id
+
+        -- increment killer's counter
+        l_Killer:IncrementKills(p_Victim)
+    end
+
+    -- broadcast kill
+    NetEvents:BroadcastLocal("ServerPlayer:Killed", l_PlayerKilledArgs)
+
+    self:UpdateTeamPlacement(p_Victim.m_Team)
 end
+
+-- Resolve who should count the kill for
+-- function BRTeamManager:OnIncrementKill(p_Victim, p_Giver)
+--     if p_Victim.m_KillerName == nil and p_Giver ~= nil then
+--         p_Giver:IncrementKills(p_Victim)
+--     else
+--         -- increment killer's counter
+--         local l_Killer = self:GetPlayer(p_Victim.m_KillerName)
+--         if l_Killer ~= nil then
+--             l_Killer:IncrementKills(p_Victim)
+--         end
+
+--         -- send finish message to p_Giver 
+--         if p_Giver ~= nil and not p_Giver:Equals(l_Killer) then
+--             NetEvent:SendToLocal(DamageEvent.PlayerFinish, p_Giver.m_Player, p_Victim:GetName())
+--         end
+
+--         p_Victim.m_KillerName = nil
+--     end
+-- end
 
 function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
     local l_BrPlayer = self:GetPlayer(p_Player)

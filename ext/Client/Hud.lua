@@ -46,6 +46,7 @@ function VuBattleRoyaleHud:RegisterVars()
     self.m_HudOnNotifyInflictorAboutKillOrKnock = CachedJsExecutor("OnNotifyInflictorAboutKillOrKnock(%s)", nil)
     self.m_HudOnInteractiveMessageAndKey = CachedJsExecutor("OnInteractiveMessageAndKey(%s)", nil)
     self.m_HudOnGameOverScreen = CachedJsExecutor("OnGameOverScreen(%s)", nil)
+    self.m_HudOnUpdatePlacement = CachedJsExecutor("OnUpdatePlacement(%s)", 99)
 end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
@@ -144,6 +145,7 @@ function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
     self:PushLocalPlayerYaw()
     self:PushLocalPlayerAmmoArmorAndHealth()
     self:PushLocalPlayerTeam()
+    self:OnUpdatePlacement()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
@@ -371,11 +373,14 @@ function VuBattleRoyaleHud:OnGunshipYaw(p_Trans)
     self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
 end
 
-function VuBattleRoyaleHud:OnGameOverScreen(p_Place, p_IsWin)
+function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin)
     self.m_HudOnGameOverScreen:ForceUpdate(json.encode({
-        ["place"] = p_Place, 
         ["isWin"] = p_IsWin,
     }))
+end
+
+function VuBattleRoyaleHud:OnUpdatePlacement()
+    self.m_HudOnUpdatePlacement:Update(self.m_BrPlayer.m_Team.m_Placement)
 end
 
 if g_VuBattleRoyaleHud == nil then
