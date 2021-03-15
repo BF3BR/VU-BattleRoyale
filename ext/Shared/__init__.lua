@@ -206,6 +206,18 @@ function VuBattleRoyaleShared:OnSoldierWeaponSwitchingData(p_Instance)
     p_Instance.switchMap[1].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
     -- add EIASwitchPrimaryWeapon from Slot1 to Slot9 if there is no weapon in Slot0
     p_Instance.switchMap[7].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
+    -- add EIASwitchPrimaryWeapon from Slot2 to Slot9 if there is no weapon in Slot0 and Slot1
+	p_Instance.switchMap[13].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
+	-- add EIASwitchPrimaryWeapon from Slot3 to Slot9 if there is no weapon in Slot0 and Slot1
+	p_Instance.switchMap[19].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
+	-- add EIASwitchPrimaryWeapon from Slot4 to Slot9 if there is no weapon in Slot0 and Slot1
+	p_Instance.switchMap[25].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
+	-- add EIASwitchPrimaryWeapon from Slot5 to Slot9 if there is no weapon in Slot0 and Slot1
+	p_Instance.switchMap[31].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
+	-- add EIASwitchPrimaryWeapon from Slot6 to Slot9 if there is no weapon in Slot0 and Slot1
+	p_Instance.switchMap[37].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
+	-- add EIASwitchPrimaryWeapon from Slot7 to Slot9 if there is no weapon in Slot0 and Slot1
+	p_Instance.switchMap[43].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
     -- EIASwitchPrimaryWeapon from Slot8 to Slot0 or Slot1
     p_Instance.switchMap:add(WeaponSwitchingMapData())
     p_Instance.switchMap[#p_Instance.switchMap].fromWeapon = WeaponSwitchingEnum.wsSlot8
