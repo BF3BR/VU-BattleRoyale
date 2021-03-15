@@ -11,15 +11,9 @@ PickupsConfig = {
     MarkerHideRadius = 1,
     MedkitCapacity = 10,
     AmmobagCapacity = 10,
+    NoPickupWeight = 35,
     Tiers = {
         [1] = {
-            Slots = {},
-            Message = "NO ITEM",
-            HudIcon = nil,
-            Weight = 70,
-            Weapons = {}
-        },
-        [2] = {
             Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER I",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier1,
@@ -43,7 +37,7 @@ PickupsConfig = {
                 }
             }
         },
-        [3] = {
+        [2] = {
             Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER II",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier2,
@@ -92,7 +86,7 @@ PickupsConfig = {
                 }
             }
         },
-        [4] = {
+        [3] = {
             Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER III",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier3,
@@ -123,7 +117,7 @@ PickupsConfig = {
                 },
             }
         },
-        --[[[5] = {
+        --[[[4] = {
             Slots = { WeaponSlot.WeaponSlot_2, WeaponSlot.WeaponSlot_5 },
             Message = "HEALTH",
             HudIcon = UIHudIcon.UIHudIcon_MedicBag,
@@ -137,7 +131,7 @@ PickupsConfig = {
                 },
             }
         },
-        [6] = {
+        [5] = {
             Slots = { WeaponSlot.WeaponSlot_2, WeaponSlot.WeaponSlot_5 },
             Message = "AMMO",
             HudIcon = UIHudIcon.UIHudIcon_AmmoCrate,

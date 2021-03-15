@@ -8,11 +8,12 @@ end
 
 function LootManagerServer:OnLevelLoadResources()
     local s_WeightTable = {}
-    local s_AccumulatedWeight = 0
+    local s_AccumulatedWeight = PickupsConfig.NoPickupWeight
+    s_WeightTable[1] = s_AccumulatedWeight
 
     for l_Tier, l_TierConfig in ipairs(PickupsConfig.Tiers) do
         s_AccumulatedWeight = s_AccumulatedWeight + l_TierConfig.Weight
-        s_WeightTable[l_Tier] = s_AccumulatedWeight
+        s_WeightTable[l_Tier + 1] = s_AccumulatedWeight
     end
 
     self.m_RandomSpawnTransforms = {}
@@ -35,7 +36,7 @@ function LootManagerServer:OnLevelLoadResources()
 
         -- Ignore the first tier (NO ITEM)
         if s_Tier ~= nil and s_Tier ~= 1 then
-            table.insert(self.m_RandomSpawnTransforms, { tier = s_Tier, transform = l_Transform})
+            table.insert(self.m_RandomSpawnTransforms, { tier = s_Tier - 1, transform = l_Transform})
         end
     end
 

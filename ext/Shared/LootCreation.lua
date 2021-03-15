@@ -90,10 +90,6 @@ end
 
 function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
     for l_Tier, l_TierConfig in pairs(PickupsConfig.Tiers) do
-        if l_Tier == 1 then
-            goto skip_tier
-        end
-
         local s_UseWeaponMesh = l_TierConfig.Mesh == nil
 
         local s_PickupEntityData = WeaponUnlockPickupEntityData()
@@ -176,8 +172,6 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
         p_Registry.entityRegistry:add(s_MapMarkerEntityData)
 
         self.m_PickupBlueprints[l_Tier] = s_SpatialPrefabBlueprint
-
-        ::skip_tier::
     end
 end
 
