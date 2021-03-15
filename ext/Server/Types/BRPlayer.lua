@@ -84,7 +84,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
     local health = l_Soldier.health
     if l_Soldier.isInteractiveManDown and p_Damage >= health then
         self:Kill(true)
-        Events:DispatchLocal(TeamManagerEvent.IncrementKill, self, p_Giver)
+        Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
 
         return health
     elseif not l_Soldier.isInteractiveManDown then
@@ -98,8 +98,10 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
                 self.m_KillerName = p_Giver:GetName()
                 NetEvents:SendToLocal(DamageEvent.PlayerDown, p_Giver.m_Player, self:GetName())
             else
-                p_Giver:IncrementKills(self)
+                -- p_Giver:IncrementKills(self)
+                self.m_KillerName = nil -- TODO move to onRevive
                 self:Kill(true)
+                Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
             end
 
             return health -- + 100
@@ -120,14 +122,14 @@ end
 
 -- Increments the kill counter of the player
 function BRPlayer:IncrementKills(p_Victim)
-    self.m_Kills = self.m_Kills + 1
+    if p_Victim == nil or not self:Equals(p_Victim) then
+        self.m_Kills = self.m_Kills + 1
+        self:SendState()
+    end
 
     -- send related net events
     NetEvents:SendToLocal(DamageEvent.PlayerKill, self.m_Player, p_Victim:GetName())
     NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self:GetName())
-    NetEvents:BroadcastLocal("ServerPlayer:Killed", {p_Victim.m_Player.id, self.m_Player.id})
-
-    self:SendState()
 end
 
 -- Checks if the player and `p_OtherBrPlayer` are on the same team
