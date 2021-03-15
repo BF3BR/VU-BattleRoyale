@@ -83,6 +83,9 @@
 
     .inline {
         display: flex;
+        -webkit-animation: scale-up-center 0.15s ease both;
+        animation: scale-up-center 0.15s ease both;
+        animation-delay: 2.9s;
     }
 
     
@@ -94,9 +97,6 @@
     }
 
     .Kills {
-        -webkit-animation: scale-up-center 0.15s ease both;
-        animation: scale-up-center 0.15s ease both;
-        animation-delay: 2.9s;
         margin: 0;
     }
 
