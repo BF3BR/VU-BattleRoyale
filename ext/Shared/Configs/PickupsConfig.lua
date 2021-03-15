@@ -9,15 +9,21 @@ PickupsConfig = {
     MarkerTransform = Vec3(0, 0.5, 0),
     MarkerShowRadius = 6,
     MarkerHideRadius = 1,
-    NoPickupWeight = 50,
     MedkitCapacity = 10,
     AmmobagCapacity = 10,
     Tiers = {
         [1] = {
+            Slots = {},
+            Message = "NO ITEM",
+            HudIcon = nil,
+            Weight = 70,
+            Weapons = {}
+        },
+        [2] = {
             Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER I",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier1,
-            Weight = 50,
+            Weight = 70,
             Weapons = {
                 {
                     Type = g_Weapons.PP2000,
@@ -37,11 +43,11 @@ PickupsConfig = {
                 }
             }
         },
-        [2] = {
+        [3] = {
             Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER II",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier2,
-            Weight = 25,
+            Weight = 15,
             Weapons = {
                 {
                     Type = g_Weapons.M249,
@@ -86,11 +92,11 @@ PickupsConfig = {
                 }
             }
         },
-        [3] = {
+        [4] = {
             Slots = { WeaponSlot.WeaponSlot_0, WeaponSlot.WeaponSlot_1 },
             Message = "TIER III",
             HudIcon = UIHudIcon.UIHudIcon_WeaponPickupTier3,
-            Weight = 10,
+            Weight = 2,
             Weapons = {
                 {
                     Type = g_Weapons.M98B,
@@ -117,7 +123,7 @@ PickupsConfig = {
                 },
             }
         },
-        [4] = {
+        --[[[5] = {
             Slots = { WeaponSlot.WeaponSlot_2, WeaponSlot.WeaponSlot_5 },
             Message = "HEALTH",
             HudIcon = UIHudIcon.UIHudIcon_MedicBag,
@@ -131,7 +137,7 @@ PickupsConfig = {
                 },
             }
         },
-        [5] = {
+        [6] = {
             Slots = { WeaponSlot.WeaponSlot_2, WeaponSlot.WeaponSlot_5 },
             Message = "AMMO",
             HudIcon = UIHudIcon.UIHudIcon_AmmoCrate,
@@ -144,6 +150,6 @@ PickupsConfig = {
                     Ammo = 1,
                 }
             }
-        }
+        }]]
     }   
 }

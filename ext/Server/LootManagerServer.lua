@@ -8,26 +8,33 @@ end
 
 function LootManagerServer:OnLevelLoadResources()
     local s_WeightTable = {}
-    local s_AccumulatedWeight = PickupsConfig.NoPickupWeight
-    for l_Tier, l_TierConfig in pairs(PickupsConfig.Tiers) do
+    local s_AccumulatedWeight = 0
+
+    for l_Tier, l_TierConfig in ipairs(PickupsConfig.Tiers) do
         s_AccumulatedWeight = s_AccumulatedWeight + l_TierConfig.Weight
-        s_WeightTable[s_AccumulatedWeight] = l_Tier
+        s_WeightTable[l_Tier] = s_AccumulatedWeight
     end
 
     self.m_RandomSpawnTransforms = {}
 
-    -- TODO: Fix map realted issue
-    for i, l_Transform in pairs(MapsConfig.XP5_003.LootSpawnPoints) do
+    local s_LevelName = LevelNameHelper:GetLevelName()
+    if s_LevelName == nil then
+        return
+    end
+
+    for i, l_Transform in pairs(MapsConfig[s_LevelName].LootSpawnPoints) do
         local s_Tier
         local s_Random = MathUtils:GetRandom(0, 1) * s_AccumulatedWeight
 
-        for l_Weight, l_Tier in pairs(s_WeightTable) do
-            if s_Random >= l_Weight then
+        for l_Tier, l_Weight in ipairs(s_WeightTable) do
+            if s_Random <= l_Weight then
                 s_Tier = l_Tier
+                break
             end
         end
 
-        if s_Tier ~= nil then
+        -- Ignore the first tier (NO ITEM)
+        if s_Tier ~= nil and s_Tier ~= 1 then
             table.insert(self.m_RandomSpawnTransforms, { tier = s_Tier, transform = l_Transform})
         end
     end
