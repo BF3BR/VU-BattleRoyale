@@ -3,6 +3,7 @@ class "LootCreation"
 require "__shared/Enums/CustomEvents"
 
 local m_ConnectionHelper = require("__shared/Utils/ConnectionHelper")
+local m_Logger = Logger("LootCreation", true)
 
 local m_MedkitFiringData = FrostbiteDC{
     partitionGuid = Guid('B54E9BDA-1F2E-11E0-8602-946E2AD98284'),
@@ -68,7 +69,7 @@ end
 -- Loot Creation
 function LootCreation:OnRandomLootTransforms(p_Transforms)
     self.m_RandomLootTransforms = p_Transforms
-    print("[LootCreation] Received loot transforms")
+    m_Logger:Write("Received loot transforms")
 end
 
 function LootCreation:OnWorldPartLoaded(p_WorldPartData, p_Registry)
@@ -85,7 +86,7 @@ function LootCreation:OnWorldPartLoaded(p_WorldPartData, p_Registry)
         p_Registry.referenceObjectRegistry:add(s_PickupReferenceObjectData)
     end
 
-    print("[LootCreation] Created loot spawns")
+    m_Logger:Write("Created loot spawns")
 end
 
 function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)

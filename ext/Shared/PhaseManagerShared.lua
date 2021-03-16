@@ -6,6 +6,8 @@ require "__shared/Mixins/TimersMixin"
 
 class ("PhaseManagerShared", TimersMixin)
 
+local m_Logger = Logger("PhaseManagerShared", true)
+
 function PhaseManagerShared:__init()
     TimersMixin.__init(self)
 
@@ -36,7 +38,7 @@ function PhaseManagerShared:OnLevelLoaded()
     -- get and check config for the current map
     local l_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
     if l_MapConfig == nil then
-        print("[PhaseManagerShared] ERROR, invalid level name")
+        m_Logger:Error("invalid level name")
         return
     end
 

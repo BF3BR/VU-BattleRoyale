@@ -1,5 +1,7 @@
 local Airdrop = class "Airdrop"
 
+local m_Logger = Logger("Airdrop", true)
+
 function Airdrop:__init(p_Match)
     -- Save match reference
     self.m_Match = p_Match
@@ -25,7 +27,7 @@ function Airdrop:OnEngineUpdate(p_DeltaTime)
         self.m_DropTimer = self.m_DropTimer + p_DeltaTime
 
         if self.m_DropTimer >= self.m_TimeToDrop then
-            print("INFO: Airdrop dropped the item!")
+            m_Logger:Write("INFO: Airdrop dropped the item!")
             self.m_TimeToDrop = nil
 
             -- TODO: Drop the loot crate
@@ -72,7 +74,7 @@ function Airdrop:Spawn(p_StartTransform, p_Enable, p_TimeToDrop)
                 self.m_SetFlyPath = true
                 self.m_Enabled = true
                 self.m_TimeToDrop = p_TimeToDrop
-                print("INFO: Time to drop: " .. p_TimeToDrop)
+                m_Logger:Write("INFO: Time to drop: " .. p_TimeToDrop)
             else
                 s_VehicleSpawnEntity:FireEvent("Unspawn")
 

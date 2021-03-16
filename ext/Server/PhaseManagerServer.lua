@@ -9,6 +9,8 @@ require "__shared/Types/Circle"
 
 class("PhaseManagerServer", PhaseManagerShared)
 
+local m_Logger = Logger("PhaseManagerServer", true)
+
 function PhaseManagerServer:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
 
@@ -209,7 +211,7 @@ function PhaseManagerServer:DebugMessage()
 
     -- check if PhaseManager's work is completed
     if l_Delay < 0 then
-        print("PM: Completed")
+        m_Logger:Write("PM: Completed")
         return
     end
 
@@ -220,5 +222,5 @@ function PhaseManagerServer:DebugMessage()
         [SubphaseType.Moving] = "Circle is moving"
     }
 
-    print(string.format("PM: [%d] %s for %.2f seconds", self.m_PhaseIndex, l_Messages[self.m_SubphaseIndex], l_Delay))
+    m_Logger:Write(string.format("PM: [%d] %s for %.2f seconds", self.m_PhaseIndex, l_Messages[self.m_SubphaseIndex], l_Delay))
 end

@@ -5,6 +5,8 @@ require "Types/BRPlayer"
 
 class "BRTeamManager"
 
+local m_Logger = Logger("BRTeamManager", true)
+
 function BRTeamManager:__init()
     self:RegisterVars()
     self:RegisterEvents()
@@ -179,7 +181,7 @@ end
 -- Creates a BRPlayer instance for the specified player
 function BRTeamManager:CreatePlayer(p_Player)
     if p_Player == nil then
-        print("[BRTeamManager] ERROR, could not create BRPlayer")
+        m_Logger:Error("could not create BRPlayer")
         return nil
     end
 
@@ -296,12 +298,12 @@ function BRTeamManager:OnEndOfRound()
 end
 
 function BRTeamManager:OnVanillaPlayerCreated(p_Player)
-    print(string.format("TM: Creating BRPlayer for '%s'", p_Player.name))
+    m_Logger:Write(string.format("TM: Creating BRPlayer for '%s'", p_Player.name))
     self:CreatePlayer(p_Player)
 end
 
 function BRTeamManager:OnVanillaPlayerDestroyed(p_Player)
-    print(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
+    m_Logger:Write(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
 
     -- update player's team placement if needed
     local l_BrPlayer = self:GetPlayer(p_Player)

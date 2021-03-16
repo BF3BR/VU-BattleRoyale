@@ -3,6 +3,8 @@ class "PingClient"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/EventRouter"
 
+local m_Logger = Logger("PingClient", true)
+
 function PingClient:__init()
     self.m_LastPing = Vec3(0, 0, 0)
     self.m_Color = Vec3(0, 0, 0)
@@ -82,7 +84,7 @@ function PingClient:OnPing(p_Args)
 
     -- This should not happen, but we validate anyway for stability
     if self.m_PingCommand == nil then
-        print("invalid ping command")
+        m_Logger:Write("invalid ping command")
         return
     end
 
@@ -91,7 +93,7 @@ end
 
 function PingClient:OnPingNotify(p_PingId, p_Position)
     if self.m_Debug then
-        print("pingId: " .. p_PingId .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
+        m_Logger:Write("pingId: " .. p_PingId .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
     end
 
     local s_PingInfo = self.m_SquadPings[p_PingId]
@@ -107,9 +109,9 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
 end
 
 function PingClient:OnPingUpdateConfig(p_CooldownTime)
-    print("received config")
+    m_Logger:Write("received config")
     if self.m_Debug then
-        print("cooldownTime: " .. p_CooldownTime)
+        m_Logger:Write("cooldownTime: " .. p_CooldownTime)
     end
 
     self.m_CooldownTime = p_CooldownTime
@@ -118,7 +120,7 @@ end
 function PingClient:OnUiDrawHud()
     for l_PingId, l_PingInfo in pairs(self.m_SquadPings) do
         if l_PingInfo == nil then
-            print("invalid ping info")
+            m_Logger:Write("invalid ping info")
             goto __on_ui_draw_hud_cont__
         end
 
@@ -126,7 +128,7 @@ function PingClient:OnUiDrawHud()
         local l_Cooldown = l_PingInfo[2]
 
         if l_Cooldown < 0.001 then
-            print("invalid cooldown")
+            m_Logger:Write("invalid cooldown")
             self.m_SquadPings[l_PingId] = nil
             goto __on_ui_draw_hud_cont__
         end
@@ -174,11 +176,11 @@ function PingClient:OnUpdateManagerUpdate(p_DeltaTime, p_Pass)
         return
     end
 
-    print("raycasting...")
+    m_Logger:Write("raycasting...")
 
     local s_Transform = ClientUtils:GetCameraTransform()
     if s_Transform == nil then
-        print("invalid transform")
+        m_Logger:Write("invalid transform")
         return
     end
 
@@ -192,7 +194,7 @@ function PingClient:OnUpdateManagerUpdate(p_DeltaTime, p_Pass)
     local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater |
                                                     RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
     if s_RaycastHit == nil then
-        print("no raycast")
+        m_Logger:Write("no raycast")
         return
     end
 

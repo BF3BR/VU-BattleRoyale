@@ -1,5 +1,7 @@
 class "VuBattleRoyaleShared"
 
+require "__shared/Configs/ServerConfig"
+require "__shared/Utils/Logger"
 require "__shared/Utils/EventRouter"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
@@ -9,6 +11,7 @@ require "__shared/Weapons/Attachments"
 require "__shared/Weapons/Weapons"
 require "__shared/Weapons/Gadgets"
 require "__shared/Configs/PickupsConfig"
+-- local m_Logger = Logger("VuBattleRoyaleShared", true)
 local m_DropWeapons = require "__shared/DropWeapons"
 local m_LootCreation = require "__shared/LootCreation"
 -- local m_InteractiveManDown = require "__shared/InteractiveManDown"
