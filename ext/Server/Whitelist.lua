@@ -1,7 +1,5 @@
 class "Whitelist"
 
-require "__shared/Configs/ServerConfig"
-
 function Whitelist:OnPlayerRequestJoin(p_Hook, p_JoinMode, p_AccountGuid, p_PlayerGuid, p_PlayerName)
     if #ServerConfig.Debug.Whitelist > 0 then
         for _, l_Name in ipairs(ServerConfig.Debug.Whitelist) do

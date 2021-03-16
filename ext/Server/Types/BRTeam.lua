@@ -1,5 +1,4 @@
 require "__shared/Utils/MapHelper"
-require "__shared/Configs/ServerConfig"
 require "__shared/Enums/CustomEvents"
 require "__shared/Enums/TeamJoinStrategy"
 

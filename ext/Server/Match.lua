@@ -1,5 +1,4 @@
 require "__shared/Configs/MapsConfig"
-require "__shared/Configs/ServerConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/Timers"
