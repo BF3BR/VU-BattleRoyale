@@ -85,6 +85,13 @@ function UICleanup:RegisterCallbacks()
         Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"), 
         self, self.OnBlurredBlueScreen
     )
+
+    -- nametag icons
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid('187A8BC1-B761-11E0-B02E-AE94D7595F06'),
+        Guid('FDD01ACB-50A9-BA73-DD3A-849BE7E30144'),
+        self, self.OnIconTexture
+    )
 end
 
 function UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
@@ -120,6 +127,23 @@ function UICleanup:OnUITrackingtagCompData(p_Instance)
     p_Instance.showEngineerArmorThreshold = 0
     p_Instance.showSupportAmmoThreshold = 0
     p_Instance.teamRadioDistance = 0
+end
+
+function UICleanup:OnIconTexture(p_Instance)
+    p_Instance = UIMinimapIconTextureAtlasAsset(p_Instance)
+    p_Instance:MakeWritable()
+
+    for i = #p_Instance.icons, 1, -1 do
+        local icon = p_Instance.icons[i]
+        if icon ~= nil and
+        (icon.iconType == UIHudIcon.UIHudIcon_SquadLeader or
+        icon.iconType == UIHudIcon.UIHudIcon_SquadleaderBg) then
+            for _, state in ipairs(icon.states) do
+                state.textureInfos[1].minUv = Vec2(0, 0)
+                state.textureInfos[1].maxUv = Vec2(0, 0)
+            end
+        end
+    end
 end
 
 function UICleanup:OnUI3dIconCompData(p_Instance)
