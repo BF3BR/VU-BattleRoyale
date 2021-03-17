@@ -16,7 +16,7 @@ function Gunship:__init(p_Match, p_TeamManager)
     -- TODO: Fix this (?)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
     NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute)
-    Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
+    self.m_PlayerUpdateInputEvent = Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
 
     self.m_SetFlyPath = false
     self.m_CumulatedTime = 0
@@ -71,7 +71,17 @@ function Gunship:OnPlayerUpdateInput(p_Player)
     end
 end
 
-function Gunship:OnEngineUpdate(p_DeltaTime)
+function Gunship:OnEngineUpdate(p_GameState, p_DeltaTime)
+    if self.m_PlayerUpdateInputEvent ~= nil then
+        if p_GameState >= 5 and #self.m_OpenParachuteList == 0 then
+            m_Logger:Write("Unsubscribe Player:UpdateInput")
+            self.m_PlayerUpdateInputEvent:Unsubscribe()
+            self.m_PlayerUpdateInputEvent = nil
+        end
+    elseif p_GameState <= 1 then
+        self.m_PlayerUpdateInputEvent = Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
+    end
+    
     if not self.m_SetFlyPath then
         if self.m_VehicleEntity ~= nil then
             NetEvents:BroadcastLocal(GunshipEvents.Position, self.m_VehicleEntity.transform)
