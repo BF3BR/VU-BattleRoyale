@@ -161,24 +161,15 @@ function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
 end
 
 function VuBattleRoyaleClient:OnDamageConfirmPlayerDown(p_VictimName)
-    if p_VictimName == nil then
-        return
-    end
-
-    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-    if s_LocalPlayer == nil then
-        return
-    end
-
-    if p_VictimName == s_LocalPlayer.name then
-        return
-    end
-
-    m_Hud:OnDamageConfirmPlayerKill(p_VictimName, false)
+    self:OnDamageConfirmPlayerKillOrDown(p_VictimName, false)
 end
 
 function VuBattleRoyaleClient:OnDamageConfirmPlayerKill(p_VictimName)
-    if p_VictimName == nil then
+    self:OnDamageConfirmPlayerKillOrDown(p_VictimName, true)
+end
+
+function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_IsKill)    
+    if p_VictimName == nil or p_IsKill == nil then
         return
     end
 
@@ -191,7 +182,7 @@ function VuBattleRoyaleClient:OnDamageConfirmPlayerKill(p_VictimName)
         return
     end
 
-    m_Hud:OnDamageConfirmPlayerKill(p_VictimName, true)
+    m_Hud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
 end
 
 function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
