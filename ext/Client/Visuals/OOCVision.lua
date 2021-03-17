@@ -1,5 +1,7 @@
 class "OOCVision"
 
+local m_Logger = Logger("OOCVision", true)
+
 -- Out of Circle Vision
 function OOCVision:__init()
     self.m_IsEnabled = false
@@ -50,7 +52,7 @@ function OOCVision:CreateVisuals()
 
     local original = ResourceManager:SearchForInstanceByGuid(MapsConfig[LevelNameHelper:GetLevelName()].SkyComponentDataGuid)
     if original == nil then
-        print("Could not find original SkyComponentData")
+        m_Logger:Write("Could not find original SkyComponentData")
         return nil
     end
 

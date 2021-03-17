@@ -1,6 +1,7 @@
 class "LootManagerServer"
 
 require "__shared/Enums/CustomEvents"
+local m_Logger = Logger("LootManagerServer", true)
 
 function LootManagerServer:__init()
     self.m_RandomSpawnTransforms = {}
@@ -45,7 +46,7 @@ function LootManagerServer:OnLevelLoadResources()
 end
 
 function LootManagerServer:OnPlayerAuthenticated(p_Player)
-    print("[LootManagerServer] Sending loot transforms")
+    m_Logger:Write("Sending loot transforms")
     NetEvents:SendToLocal(LMS.RLT, p_Player, self.m_RandomSpawnTransforms)
 end
 

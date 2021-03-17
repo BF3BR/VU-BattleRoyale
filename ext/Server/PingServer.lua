@@ -3,6 +3,8 @@ class "PingServer"
 require "BRTeamManager"
 require "__shared/Enums/CustomEvents"
 
+local m_Logger = Logger("PingServer", true)
+
 function PingServer:__init()
     -- Subscribe to the netevent for a player ping
     self.m_PlayerPingEvent = NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing)
@@ -46,7 +48,7 @@ end
 function PingServer:OnPlayerPing(p_Player, p_Position)
     -- Validate our player
     if p_Player == nil then
-        print("invalid player")
+        m_Logger:Write("invalid player")
         return
     end
 
@@ -62,13 +64,13 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
     -- If there is a cooldown then ignore this request
     local s_Cooldown = self:FindPlayerCooldownByPlayerId(s_PlayerId)
     if s_Cooldown > 0.0 then
-        print("player on cooldown")
+        m_Logger:Write("player on cooldown")
         return
     end
 
     local s_PingId = self:FindPingIdByPlayerId(s_PlayerId)
     if s_PingId == -1 then
-        print("invalid ping id")
+        m_Logger:Write("invalid ping id")
         return
     end
 
@@ -77,7 +79,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
     local s_SquadId = p_Player.squadId
 
     if self.m_Debug then
-        -- print("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " ..
+        -- m_Logger:Write("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " ..
         --           p_Position.y .. ", " .. p_Position.z)
     end
 
@@ -197,7 +199,7 @@ function PingServer:AssignPingIds(p_BrTeams)
             self.m_PlayerPingIds[l_PlayerId] = l_PlayerPingId
 
             -- Debug logging output
-            -- print("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
+            -- m_Logger:Write("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
 
             -- Increment our player ping id
             l_PlayerPingId = l_PlayerPingId + 1

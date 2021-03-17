@@ -1,5 +1,4 @@
 require "__shared/Configs/MapsConfig"
-require "__shared/Configs/ServerConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/Timers"
@@ -13,6 +12,7 @@ require "PhaseManagerServer"
 class("Match", TimersMixin)
 
 local m_LootManager = require("LootManagerServer")
+local m_Logger = Logger("Match", true)
 
 function Match:__init(p_Server, p_TeamManager)
     -- call TimersMixin's constructor
@@ -57,12 +57,12 @@ end
 function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
     if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
         if self.m_RestartQueue then
-            print("INFO: Restart triggered.")
+            m_Logger:Write("INFO: Restart triggered.")
 
             local s_Result = RCON:SendCommand("mapList.restartRound")
             if #s_Result >= 1 then
                 if s_Result[1] ~= "OK" then
-                    print("INFO: Command: mapList.restartRound returned: " .. s_Result[1])
+                    m_Logger:Write("INFO: Command: mapList.restartRound returned: " .. s_Result[1])
                 end
             end
             
@@ -152,12 +152,12 @@ function Match:OnMatchFirstTick()
         self.m_Airdrop:Spawn(nil, false)
 
         if self.m_WinnerTeam ~= nil then
-            print("INFO: We have a winner team: " .. self.m_WinnerTeam.m_Id)
+            m_Logger:Write("INFO: We have a winner team: " .. self.m_WinnerTeam.m_Id)
 
             -- Broadcast the winnin teams ID to clients
             NetEvents:Broadcast(PlayerEvents.WinnerTeamUpdate, self.m_WinnerTeam.m_Id)
         else
-            print("INFO: Round ended without a winner.")
+            m_Logger:Write("INFO: Round ended without a winner.")
         end
     end
 end
@@ -240,7 +240,7 @@ function Match:AirdropManager(p_DeltaTime)
 
         -- Remove the airdrop plane after 120 sec
         if self.m_AirdropTimer >= 120.0 then
-            print("INFO: Airdrop unspawned")
+            m_Logger:Write("INFO: Airdrop unspawned")
             self.m_AirdropTimer = 0.0
             self.m_Airdrop:Spawn(nil, false, nil)
         end
@@ -256,7 +256,7 @@ function Match:AirdropManager(p_DeltaTime)
         self.m_AirdropTimer = 0.0
 
         if not self.m_Airdrop:GetEnabled() then
-            print("INFO: Airdrop spawned")
+            m_Logger:Write("INFO: Airdrop spawned")
             self.m_Airdrop:Spawn(self:GetRandomGunshipStart(), true, MathUtils:GetRandom(20, 60))
         end
     end

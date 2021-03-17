@@ -1,7 +1,6 @@
 class "VuBattleRoyaleHud"
 
 require "__shared/Utils/CachedJsExecutor"
-require "__shared/Configs/ServerConfig"
 require "__shared/Utils/Timers"
 require "__shared/Enums/GameStates"
 

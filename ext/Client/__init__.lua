@@ -1,5 +1,7 @@
 class "VuBattleRoyaleClient"
 
+require "__shared/Configs/ServerConfig"
+require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/EventRouter"
 require "__shared/Utils/LootPointHelper"
@@ -18,6 +20,7 @@ local m_Hud = require "Hud"
 local m_SpectatorCamera = require "SpectatorCamera"
 local m_Showroom = require "Showroom"
 local m_Ping = require "PingClient"
+local m_Logger = Logger("VuBattleRoyaleClient", true)
 
 
 function VuBattleRoyaleClient:__init()
@@ -128,7 +131,7 @@ end
 
 function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
     if p_OldGameState == nil or p_GameState == nil then
-        print("ERROR: Invalid gamestate from the server")
+        m_Logger:Error("Invalid gamestate from the server")
         return
     end
 
@@ -140,7 +143,7 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
         return
     end
 
-    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
+    m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 
     self.m_GameState = p_GameState
 
@@ -205,7 +208,7 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
     end
     local s_InflictorId = p_Table[2]
 
-    print("INFO: OnPlayerKilled: " .. s_Player.name)
+    m_Logger:Write("INFO: OnPlayerKilled: " .. s_Player.name)
 
     m_SpectatorCamera:OnPlayerKilled(s_Player.id, s_InflictorId)
 

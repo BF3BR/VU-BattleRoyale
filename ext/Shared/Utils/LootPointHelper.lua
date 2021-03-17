@@ -3,7 +3,6 @@ class "LootPointHelper"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/EventRouter"
 require "__shared/Configs/MapsConfig"
-require "__shared/Configs/ServerConfig"
 
 function LootPointHelper:__init()
     self.m_Points = {}

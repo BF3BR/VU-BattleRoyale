@@ -1,8 +1,9 @@
 class "VuBattleRoyaleServer"
 
+require "__shared/Configs/ServerConfig"
+require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
-require "__shared/Configs/ServerConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 
@@ -12,6 +13,7 @@ local m_Whitelist = require "Whitelist"
 local m_PingServer = require "PingServer"
 local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
+local m_Logger = Logger("VuBattleRoyaleServer", true)
 --local m_InteractiveManDown = require "__shared/InteractiveManDown"
 
 function VuBattleRoyaleServer:__init()
@@ -328,7 +330,7 @@ end
 
 function VuBattleRoyaleServer:ChangeGameState(p_GameState)
     if p_GameState < GameStates.None or p_GameState > GameStates.EndGame then
-        print("ERROR: Attempted to switch to an invalid gamestate.")
+        m_Logger:Error("Attempted to switch to an invalid gamestate.")
         return
     end
 
@@ -336,7 +338,7 @@ function VuBattleRoyaleServer:ChangeGameState(p_GameState)
     TicketManager:SetTicketCount(TeamId.Team1, 999)
     TicketManager:SetTicketCount(TeamId.Team2, 999)
 
-    print("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
+    m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 
     local s_OldGameState = self.m_GameState
     self.m_GameState = p_GameState
@@ -380,7 +382,7 @@ function VuBattleRoyaleServer:SetupRconVariables()
         local s_Result = RCON:SendCommand(l_Command, { l_Value })
         if #s_Result >= 1 then
             if s_Result[1] ~= "OK" then
-                print("INFO: Command: " .. l_Command .. " returned: " .. s_Result[1])
+                m_Logger:Write("INFO: Command: " .. l_Command .. " returned: " .. s_Result[1])
             end
         end
     end
