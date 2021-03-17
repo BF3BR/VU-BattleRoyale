@@ -25,6 +25,7 @@ function VuBattleRoyaleServer:__init()
     self.m_PlayersPitchAndYaw = {}
 
     self.m_WaitForStart = true
+    self.m_CumulatedTime = 0
 
     -- Create a new match
     self.m_Match = Match(self, m_TeamManager)
@@ -80,20 +81,27 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
         -- Update the players pitch and yaw table
         self:GetPlayersPitchAndYaw()
 
-        local s_PlayerCount = 0
-        local s_Players = PlayerManager:GetPlayers()
-        for _, l_Player in ipairs(s_Players) do
-            if l_Player == nil and l_Player.alive == false then
-                goto update_allowed_guids_continue
+        if self.m_CumulatedTime < 1 then
+            self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
+            return
+        end
+        self.m_CumulatedTime = 0
+        if PlayerManager:GetPlayerCount() >= self.m_MinPlayersToStart then
+            local s_SpawnedPlayerCount = 0
+            local s_Players = PlayerManager:GetPlayers()
+            for _, l_Player in ipairs(s_Players) do
+                if l_Player == nil and l_Player.alive == false then
+                    goto update_allowed_guids_continue
+                end
+
+                s_SpawnedPlayerCount = s_SpawnedPlayerCount + 1
+
+                ::update_allowed_guids_continue::
             end
 
-            s_PlayerCount = s_PlayerCount + 1
-
-            ::update_allowed_guids_continue::
-        end
-
-        if self.m_GameState == GameStates.None and s_PlayerCount >= self.m_MinPlayersToStart then
-            self:ChangeGameState(GameStates.Warmup)
+            if self.m_GameState == GameStates.None and s_SpawnedPlayerCount >= self.m_MinPlayersToStart then
+                self:ChangeGameState(GameStates.Warmup)
+            end
         end
     end
 end
@@ -393,7 +401,7 @@ function VuBattleRoyaleServer:GetPlayersPitchAndYaw()
 
     local s_Players = PlayerManager:GetPlayers()
     for _, l_Player in ipairs(s_Players) do
-        if l_Player == nil and l_Player.alive == false then
+        if l_Player == nil and (l_Player.alive == false or l_Player.input == nil) then
             goto update_allowed_guids_continue
         end
 
