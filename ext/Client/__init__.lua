@@ -56,6 +56,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate)
     Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove)
 
+    NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
     NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill)
     NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
     NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer)
@@ -63,6 +64,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged)
     NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
     NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
+    Events:Subscribe("UpdatePass_PreSim", self, self.OnUpdatePassPreSim)
     NetEvents:Subscribe(GunshipEvents.Camera, self, self.OnGunShipCamera)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
     NetEvents:Subscribe(GunshipEvents.Position, self, self.OnGunshipPosition)
@@ -156,6 +158,23 @@ function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
     end
 
     m_Hud:OnUpdateTimer(p_Time)
+end
+
+function VuBattleRoyaleClient:OnDamageConfirmPlayerDown(p_VictimName)
+    if p_VictimName == nil then
+        return
+    end
+
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == nil then
+        return
+    end
+
+    if p_VictimName == s_LocalPlayer.name then
+        return
+    end
+
+    m_Hud:OnDamageConfirmPlayerKill(p_VictimName, false)
 end
 
 function VuBattleRoyaleClient:OnDamageConfirmPlayerKill(p_VictimName)
@@ -283,6 +302,10 @@ function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
     m_Gunship:OnForceJumpOufOfGunship()
 end
 
+function VuBattleRoyaleClient:OnUpdatePassPreSim(p_DeltaTime)
+    m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+end
+
 function VuBattleRoyaleClient:OnGunShipCamera()
     m_Gunship:OnGunShipCamera()
     m_Hud:OnGunShipCamera()
@@ -402,7 +425,7 @@ end
 
 function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_Hook)
     if not ServerConfig.Debug.ShowAllNametags then
-        p_Hook:Return(nil)
+        --p_Hook:Return(nil)
     end
 end
 
