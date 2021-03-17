@@ -46,7 +46,7 @@ function Match:__init(p_Server, p_TeamManager)
 end
 
 function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
-    self.m_Gunship:OnEngineUpdate(p_DeltaTime)
+    self.m_Gunship:OnEngineUpdate(p_GameState, p_DeltaTime)
     self.m_Airdrop:OnEngineUpdate(p_DeltaTime)
 
     if self:GetCurrentState() == GameStates.Match then

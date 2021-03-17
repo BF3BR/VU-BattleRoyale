@@ -64,6 +64,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged)
     NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
     NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
+    Events:Subscribe("UpdatePass_PreSim", self, self.OnUpdatePassPreSim)
     NetEvents:Subscribe(GunshipEvents.Camera, self, self.OnGunShipCamera)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
     NetEvents:Subscribe(GunshipEvents.Position, self, self.OnGunshipPosition)
@@ -292,6 +293,10 @@ function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
     m_Gunship:OnForceJumpOufOfGunship()
 end
 
+function VuBattleRoyaleClient:OnUpdatePassPreSim(p_DeltaTime)
+    m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+end
+
 function VuBattleRoyaleClient:OnGunShipCamera()
     m_Gunship:OnGunShipCamera()
     m_Hud:OnGunShipCamera()
@@ -411,7 +416,7 @@ end
 
 function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_Hook)
     if not ServerConfig.Debug.ShowAllNametags then
-        p_Hook:Return(nil)
+        --p_Hook:Return(nil)
     end
 end
 

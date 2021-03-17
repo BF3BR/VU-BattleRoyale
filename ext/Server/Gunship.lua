@@ -2,6 +2,8 @@ local Gunship = class "Gunship"
 
 require "__shared/Enums/CustomEvents"
 
+local m_Logger = Logger("Gunship", true)
+
 function Gunship:__init(p_Match, p_TeamManager)
     -- Save Match and TeamManager reference
     self.m_Match = p_Match
@@ -13,6 +15,8 @@ function Gunship:__init(p_Match, p_TeamManager)
 
     -- TODO: Fix this (?)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
+    NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute)
+    self.m_PlayerUpdateInputEvent = Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
 
     self.m_SetFlyPath = false
     self.m_CumulatedTime = 0
@@ -20,6 +24,8 @@ function Gunship:__init(p_Match, p_TeamManager)
     self.m_Enabled = false
 
     self.m_VehicleEntity = nil
+
+    self.m_OpenParachuteList = {}
 end
 
 function Gunship:OnJumpOutOfGunship(p_Player)
@@ -50,7 +56,32 @@ function Gunship:OnJumpOutOfGunship(p_Player)
     NetEvents:SendToLocal(GunshipEvents.JumpOut, p_Player)
 end
 
-function Gunship:OnEngineUpdate(p_DeltaTime)
+function Gunship:OnOpenParachute(p_Player)
+    table.insert(self.m_OpenParachuteList, p_Player)  
+end
+
+function Gunship:OnPlayerUpdateInput(p_Player)
+    for l_Index, l_Player in pairs(self.m_OpenParachuteList) do
+        if p_Player == l_Player then
+            m_Logger:Write("Open Parachute for player: " .. p_Player.name)
+            l_Player.input:SetLevel(EntryInputActionEnum.EIAToggleParachute, 1.0)
+            table.remove(self.m_OpenParachuteList, l_Index)
+            return
+        end
+    end
+end
+
+function Gunship:OnEngineUpdate(p_GameState, p_DeltaTime)
+    if self.m_PlayerUpdateInputEvent ~= nil then
+        if p_GameState >= 5 and #self.m_OpenParachuteList == 0 then
+            m_Logger:Write("Unsubscribe Player:UpdateInput")
+            self.m_PlayerUpdateInputEvent:Unsubscribe()
+            self.m_PlayerUpdateInputEvent = nil
+        end
+    elseif p_GameState <= 1 then
+        self.m_PlayerUpdateInputEvent = Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
+    end
+    
     if not self.m_SetFlyPath then
         if self.m_VehicleEntity ~= nil then
             NetEvents:BroadcastLocal(GunshipEvents.Position, self.m_VehicleEntity.transform)
