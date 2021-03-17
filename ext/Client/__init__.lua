@@ -56,6 +56,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate)
     Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove)
 
+    NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
     NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill)
     NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
     NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer)
@@ -158,8 +159,16 @@ function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
     m_Hud:OnUpdateTimer(p_Time)
 end
 
+function VuBattleRoyaleClient:OnDamageConfirmPlayerDown(p_VictimName)
+    self:OnDamageConfirmPlayerKillOrDown(p_VictimName, false)
+end
+
 function VuBattleRoyaleClient:OnDamageConfirmPlayerKill(p_VictimName)
-    if p_VictimName == nil then
+    self:OnDamageConfirmPlayerKillOrDown(p_VictimName, true)
+end
+
+function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_IsKill)    
+    if p_VictimName == nil or p_IsKill == nil then
         return
     end
 
@@ -172,7 +181,7 @@ function VuBattleRoyaleClient:OnDamageConfirmPlayerKill(p_VictimName)
         return
     end
 
-    m_Hud:OnDamageConfirmPlayerKill(p_VictimName, true)
+    m_Hud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
 end
 
 function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
