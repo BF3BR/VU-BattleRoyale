@@ -102,6 +102,9 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
             if self.m_GameState == GameStates.None and s_SpawnedPlayerCount >= self.m_MinPlayersToStart then
                 self:ChangeGameState(GameStates.Warmup)
             end
+        else if self.m_GameState == GameStates.Warmup then
+                self:ChangeGameState(GameStates.None)
+            end
         end
     end
 end
@@ -339,6 +342,10 @@ end
 function VuBattleRoyaleServer:ChangeGameState(p_GameState)
     if p_GameState < GameStates.None or p_GameState > GameStates.EndGame then
         m_Logger:Error("Attempted to switch to an invalid gamestate.")
+        return
+    end
+
+    if p_GameState == self.m_GameState then
         return
     end
 
