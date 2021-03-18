@@ -2,8 +2,19 @@ class "Teammate"
 
 function Teammate:__init(p_Name, p_State, p_IsTeamLeader)
     self.m_Name = p_Name
-    self.m_State = p_State or BRPlayerState.Alive
+    self.m_State = p_State or BRPlayerState.Alive -- TODO probably will be removed
     self.m_IsTeamLeader = p_IsTeamLeader or false
+end
+
+function Teammate:GetState()
+    local l_Player = PlayerManager:GetPlayerByName(self.m_Name)
+    if l_Player == nil or l_Player.soldier == nil or not l_Player.alive then
+        return BRPlayerState.Dead
+    elseif l_Player.soldier.isInteractiveManDown then
+        return BRPlayerState.Down
+    else
+        return BRPlayerState.Alive
+    end
 end
 
 function Teammate:FromTable(p_TeammateTable)
@@ -13,7 +24,7 @@ end
 function Teammate:AsTable()
     return {
         Name = self.m_Name,
-        State = self.m_State,
+        State = self:GetState(),
         IsTeamLeader = self.m_IsTeamLeader,
     }
 end
