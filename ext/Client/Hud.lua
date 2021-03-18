@@ -95,7 +95,8 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
     if self.m_Ticks >= ServerConfig.HudUpdateRate then
         self.m_HudOnMinPlayersToStart:ForceUpdate(self.m_MinPlayersToStart)
         self:PushUpdatePlayersInfo()
-
+        self:PushLocalPlayerTeam()
+        
         self.m_Ticks = 0.0
     end
 
@@ -144,7 +145,6 @@ function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
     self:PushLocalPlayerPos()
     self:PushLocalPlayerYaw()
     self:PushLocalPlayerAmmoArmorAndHealth()
-    self:PushLocalPlayerTeam()
     self:OnUpdatePlacement()
 end
 
@@ -193,12 +193,16 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 
     local s_PlayersObject = {}
     for _, l_Player in pairs(s_Players) do
+        local l_State = 3
+        if l_Player.alive then
+            l_State = 1
+        end
 		table.insert(s_PlayersObject, {
             ["id"] = l_Player.id,
             ["name"] = l_Player.name,
-            ["kill"] = 0, -- TODO: Add BrPlayer (not local) kills
-            ["alive"] = l_Player.alive,
-            ["isTeamLeader"] = false,
+            ["kill"] = 0, -- TODO: Add BrPlayer
+            ["state"] = l_State, -- TODO: Add BrPlayer
+            ["isTeamLeader"] = false, -- TODO: Add BrPlayer
         })
     end
     self.m_HudOnPlayersInfo:Update(json.encode(s_PlayersObject))
@@ -213,7 +217,7 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
             ["id"] = s_LocalPlayer.id,
             ["name"] = s_LocalPlayer.name,
             ["kill"] =  (self.m_BrPlayer.m_Kills or 0),
-            ["alive"] = s_LocalPlayer.alive,
+            ["state"] = self.m_BrPlayer:GetState(),
             ["isTeamLeader"] = self.m_BrPlayer.m_IsTeamLeader,
         }
         self.m_HudOnLocalPlayerInfo:Update(json.encode(s_LocalPlayerTable))
@@ -328,7 +332,7 @@ function VuBattleRoyaleHud:PushLocalPlayerTeam()
     if self.m_BrPlayer.m_Team ~= nil then
         self.m_HudOnUpdateTeamId:Update(self.m_BrPlayer.m_Team.m_Id);
         self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked);
-        self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
+        self.m_HudOnUpdateTeamPlayers:ForceUpdate(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
     end
 end
 
@@ -380,6 +384,10 @@ function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin)
 end
 
 function VuBattleRoyaleHud:OnUpdatePlacement()
+    if self.m_BrPlayer.m_Team.m_Placement == nil then
+        return
+    end
+    
     self.m_HudOnUpdatePlacement:Update(self.m_BrPlayer.m_Team.m_Placement)
 end
 

@@ -115,7 +115,7 @@ const App: React.FC = () => {
         setLocalPlayer({
             name: 'KVN',
             kill: 15,
-            alive: true,
+            state: 1,
             color: Color.White,
             isTeamLeader: true,
         });
@@ -134,7 +134,7 @@ const App: React.FC = () => {
     const [playerInventory, setPlayerInventory] = useState<string[]>([]);
 
     window.OnPlayerHealth = (data: number) => {
-        setPlayerHealth(data);
+        setPlayerHealth(Math.ceil(data));
     }
 
     window.OnPlayerArmor = (data: number) => {
@@ -295,7 +295,7 @@ const App: React.FC = () => {
             p_Team.map((teamPlayer: any) => {
                 tempTeam.push({
                     name: teamPlayer.Name,
-                    alive: (teamPlayer.State === 3),
+                    state: teamPlayer.State,
                     kill: 0,
                     color: Color.White,
                     isTeamLeader: teamPlayer.IsTeamLeader,
@@ -465,7 +465,7 @@ const App: React.FC = () => {
                     <>
                         <KillAndAliveInfo
                             kills={localPlayer !== null ? localPlayer.kill : 0}
-                            alive={players !== null ? Object.values(players).filter(player => player.alive === true).length : 0}
+                            alive={players !== null ? Object.values(players).filter(player => player.state === 1).length : 0}
                             spectating={spectating}
                         />
 

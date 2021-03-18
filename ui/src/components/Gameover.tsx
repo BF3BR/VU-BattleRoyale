@@ -21,31 +21,23 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
     useEffect(() => {
         if (alert !== null && localPlayer !== null) {
             alertAudio.play();
-            
-            if (!navigator.userAgent.includes('VeniceUnleashed')) {
-                if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
-                    return;
-                }
-            } else {
-                WebUI.Call('EnableKeyboard');
-                WebUI.Call('EnableMouse');    
-            }
+            WebUI.Call('EnableKeyboard');
+            WebUI.Call('EnableMouse');
+        }
 
-            return () => {
-                alertAudio.currentTime = 0.0;
-                alertAudio.pause();
-
-                if (!navigator.userAgent.includes('VeniceUnleashed')) {
-                    if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
-                        return;
-                    }
-                } else {
-                    WebUI.Call('ResetKeyboard');
-                    WebUI.Call('ResetMouse');
-                }
-            }
+        return () => {
+            alertAudio.currentTime = 0.0;
+            alertAudio.pause();
+            WebUI.Call('ResetKeyboard');
+            WebUI.Call('ResetMouse');
         }
     }, []);
+
+    const OnReturnToGame = () => {
+        WebUI.Call('ResetKeyboard');
+        WebUI.Call('ResetMouse');
+        afterInterval();
+    }
 
     return (
         <>
@@ -69,7 +61,7 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
                             Your Kills: <span>{localPlayer.kill??''}</span>
                         </span>
                     </div>
-                    <button className="btn" onClick={afterInterval}>
+                    <button className="btn" onClick={OnReturnToGame}>
                         Return to game
                     </button>
                 </div>

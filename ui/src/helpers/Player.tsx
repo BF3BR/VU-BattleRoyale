@@ -8,7 +8,7 @@ export enum Color {
 export interface Player {
     name: string;
     kill: number;
-    alive: boolean;
+    state: number;
     color: Color;
     isTeamLeader: boolean;
 }

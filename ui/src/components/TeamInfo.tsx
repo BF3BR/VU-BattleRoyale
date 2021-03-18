@@ -17,7 +17,7 @@ const TeamInfo: React.FC<Props> = ({ team, deployScreen }) => {
         <>
             <div id="TeamInfo" className={deployScreen ? "deployScreen" : ""}>
                 {team.map((player: Player, index: number) => (
-                    <div className={"TeamPlayer " + player.color.toString() + " " + (player.alive? "isAlive" : "isDead")} key={index}>
+                    <div className={"TeamPlayer " + player.color.toString() + " state" + player.state.toString()} key={index}>
                         <div className="TeamPlayerName">
                             <span>{player.name ?? ''}</span>
                         </div>

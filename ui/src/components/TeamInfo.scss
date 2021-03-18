@@ -32,11 +32,18 @@
             font-weight: 600;
             line-height: 1vw;
             font-size: .8vw;
-            color: #ff9900;
-            text-shadow: 0 0 0.25vw rgba(196, 117, 50, .8);
+            color: #9EC555;
+            text-shadow: 0 0 0.25vw rgba(158, 197, 85, .8);
         }
 
-        &.isDead {
+        &.state2 {
+            span {
+                color: #ff9900;
+                text-shadow: 0 0 0.25vw rgba(196, 117, 50, 0.8);
+            }
+        }
+
+        &.state3 {
             opacity: .7;
 
             span {
