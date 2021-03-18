@@ -40,6 +40,17 @@ function BRPlayer:ToggleLock()
     NetEvents:Send(TeamManagerNetEvent.TeamToggleLock)
 end
 
+function BRPlayer:GetState()
+    local l_Player = PlayerManager:GetLocalPlayer()
+    if l_Player == nil or l_Player.soldier == nil or not l_Player.alive then
+        return BRPlayerState.Dead
+    elseif l_Player.soldier.isInteractiveManDown then
+        return BRPlayerState.Down
+    else
+        return BRPlayerState.Alive
+    end
+end
+
 function BRPlayer:OnReceivePlayerState(p_State)
     if p_State.Team ~= nil then
         self.m_Team:UpdateFromTable(p_State.Team)
