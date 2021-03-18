@@ -23,6 +23,7 @@ import './App.scss';
 import KillMessage from "./components/KillMessage";
 import { FireLogicType } from "./helpers/FireLogicType";
 import { Sounds } from "./helpers/Sounds";
+import TeamInfo from "./components/TeamInfo";
 
 const App: React.FC = () => {
     /*
@@ -410,6 +411,13 @@ const App: React.FC = () => {
                     spectating={spectating}
                     deployScreen={deployScreen}
                 />
+
+                {team.length > 0 &&
+                    <TeamInfo 
+                        team={team}
+                        deployScreen={deployScreen}
+                    />
+                }
 
                 {!gameOverScreen &&
                     <Alert

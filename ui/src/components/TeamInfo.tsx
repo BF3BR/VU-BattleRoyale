@@ -4,21 +4,23 @@ import Timer from "./Timer";
 
 import { Player, Color } from "../helpers/Player";
 
-import "./MatchInfo.scss";
+import "./TeamInfo.scss";
 
 interface Props {
-    players: Player[]|null;
+    team: Player[] | null;
+    deployScreen: boolean;
 }
 
-const TeamInfo: React.FC<Props> = ({ players }) => {
+const TeamInfo: React.FC<Props> = ({ team, deployScreen }) => {
 
     return (
         <>
-            <div id="TeamInfo">
-                {players.map((player: Player, index: number) => (
-                    <div className={"player " + "color-" + player.color.toString()} key={index}>
-                        <span className="icon"></span>
-                        <span className="icon">{player.name??''}</span>
+            <div id="TeamInfo" className={deployScreen ? "deployScreen" : ""}>
+                {team.map((player: Player, index: number) => (
+                    <div className={"TeamPlayer " + player.color.toString() + " " + (player.alive? "isAlive" : "isDead")} key={index}>
+                        <div className="TeamPlayerName">
+                            <span>{player.name ?? ''}</span>
+                        </div>
                     </div>
                 ))}
             </div>

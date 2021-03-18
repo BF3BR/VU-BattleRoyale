@@ -1,0 +1,52 @@
+#TeamInfo {
+    position: absolute;
+    bottom: 2vw;
+    left: 15.25vw;
+    width: auto;
+    z-index: 999;
+
+    .TeamPlayer {
+        width: auto;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-shadow: 0 0 0.15vw rgba(7, 7, 7, 0.45);
+        margin-bottom: 0.4vw;
+
+        .TeamPlayerName {
+            max-width: 9vw;
+            text-overflow: ellipsis;
+            overflow: hidden; 
+            white-space: nowrap;
+        }
+
+        &:last-of-type {
+            margin: 0;
+        }
+
+        span {
+            text-transform: uppercase;
+            margin: 0;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 1vw;
+            font-size: .8vw;
+            color: #ff9900;
+            text-shadow: 0 0 0.25vw rgba(196, 117, 50, .8);
+        }
+
+        &.isDead {
+            opacity: .7;
+
+            span {
+                color: #fff;
+                text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.4);
+            }
+        }
+    }
+
+    &.deployScreen {
+        display: none;
+    }
+}
