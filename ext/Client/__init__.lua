@@ -394,6 +394,7 @@ function VuBattleRoyaleClient:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
 end
 
 function VuBattleRoyaleClient:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
+    m_Hud:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
     m_UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
 end
 

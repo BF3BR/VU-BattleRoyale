@@ -46,6 +46,7 @@ function VuBattleRoyaleHud:RegisterVars()
     self.m_HudOnInteractiveMessageAndKey = CachedJsExecutor("OnInteractiveMessageAndKey(%s)", nil)
     self.m_HudOnGameOverScreen = CachedJsExecutor("OnGameOverScreen(%s)", nil)
     self.m_HudOnUpdatePlacement = CachedJsExecutor("OnUpdatePlacement(%s)", 99)
+    self.m_HudOnHideWebUI = CachedJsExecutor("OnHideWebUI(%s)", true)
 end
 
 function VuBattleRoyaleHud:OnExtensionLoaded()
@@ -380,6 +381,15 @@ end
 
 function VuBattleRoyaleHud:OnUpdatePlacement()
     self.m_HudOnUpdatePlacement:Update(self.m_BrPlayer.m_Team.m_Placement)
+end
+
+function VuBattleRoyaleHud:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
+    local s_Screen = UIGraphAsset(p_Screen)
+    if s_Screen.name == "UI/Flow/Screen/IngameMenuMP" then
+        self.m_HudOnHideWebUI:Update(false)
+    elseif s_Screen.name == "UI/Flow/Screen/HudScreen" then
+        self.m_HudOnHideWebUI:Update(true)
+    end
 end
 
 if g_VuBattleRoyaleHud == nil then

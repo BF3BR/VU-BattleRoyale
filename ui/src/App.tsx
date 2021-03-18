@@ -346,6 +346,11 @@ const App: React.FC = () => {
         // window.location.reload();
     }
 
+    const [showUI, setShowUI] = useState<boolean>(true);
+    window.OnHideWebUI = (p_Toggle: boolean) => {
+        setShowUI(p_Toggle);
+    }
+
     return (
         <>
             {debugMode &&
@@ -359,6 +364,15 @@ const App: React.FC = () => {
                     #debug {
                         display: flex !important;
                         opacity: 0.1;
+                    }
+                `}} />
+            }
+
+            {showUI === false &&
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                    body {
+                        opacity: 0 !important;
                     }
                 `}} />
             }
@@ -415,7 +429,7 @@ const App: React.FC = () => {
                     deployScreen={deployScreen}
                 />
 
-                {team.length > 0 &&
+                {team.length > 1 &&
                     <TeamInfo 
                         team={team}
                         deployScreen={deployScreen}
@@ -567,5 +581,6 @@ declare global {
         OnInteractiveMessageAndKey: (data: any) => void;
 
         ResetVars: () => void;
+        OnHideWebUI: (p_Toggle: boolean) => void;
     }
 }
