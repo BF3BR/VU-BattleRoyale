@@ -13,6 +13,10 @@ ServerConfig =
 
     GunshipDespawn = 60.0,
 
+    ParachuteRaycastUpdateRate = 0.2,
+
+    ForceParachuteHeight = 150.0,
+
     MatchStateTimes = {
         [GameStates.None] = nil,
         [GameStates.Warmup] = 60.0,
