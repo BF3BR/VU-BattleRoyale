@@ -50,7 +50,10 @@ const App: React.FC = () => {
     window.OnGameState = (state: string) => {
         setGameState(state);
 
-        if (state === "Warmup") {
+        if (state === "None") {
+            setGameOverScreen(false);
+        } else if (state === "Warmup") {
+            setGameOverScreen(false);
             setAlertPlaySound(Sounds.Notification);
             setAlertLength(6);
             setAlertString("The round is starting soon...");
