@@ -16,7 +16,9 @@ function PingClient:__init()
     self.m_Opacity = 0.3
 
     self.m_PingColors = {
-        Vec4(1, 0, 0, self.m_Opacity), Vec4(0, 1, 0, self.m_Opacity), Vec4(0, 0, 1, self.m_Opacity),
+        Vec4(1, 0, 0, self.m_Opacity),
+        Vec4(0, 1, 0, self.m_Opacity),
+        Vec4(0, 0, 1, self.m_Opacity),
         Vec4(0.5, 0.5, 0.5, self.m_Opacity)
     }
 
@@ -96,6 +98,12 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
         m_Logger:Write("pingId: " .. p_PingId .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
     end
 
+    -- Send ping to compass
+    local l_PingIdStr = tostring(math.floor(p_PingId))
+    local l_Position2d = Vec2(p_Position.x, p_Position.z)
+    local l_RgbaColor = self:GetRgbaColorByPingId(p_PingId)
+    Events:Dispatch('Compass:CreateMarker', l_PingIdStr, l_Position2d, l_RgbaColor)
+
     local s_PingInfo = self.m_SquadPings[p_PingId]
     if s_PingInfo == nil then
         -- No information currently exists
@@ -129,6 +137,7 @@ function PingClient:OnUiDrawHud()
 
         if l_Cooldown < 0.001 then
             m_Logger:Write("invalid cooldown")
+            Events:Dispatch('Compass:RemoveMarker', tostring(math.floor(l_PingId)))
             self.m_SquadPings[l_PingId] = nil
             goto __on_ui_draw_hud_cont__
         end
@@ -221,6 +230,19 @@ function PingClient:GetColorByPingId(p_PingId)
     end
 
     return s_Color
+end
+
+function PingClient:GetRgbaColorByPingId(p_PingId)
+    -- Validate ping id
+    if p_PingId == -1 then
+        return
+    end
+
+    -- Get original color
+    local s_Color = self:GetColorByPingId(p_PingId)
+
+    -- Convert to rgba string
+    return string.format('rgba(%s, %s, %s, %s)', s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)
 end
 
 if g_PingClient == nil then
