@@ -40,19 +40,33 @@ interface Props {
     teamCode: string|null;
     teamJoinError: number|null;
     setTeamJoinError: (p_Error: number|null) => void;
+    selectedAppearance: number;
+    setSelectedAppearance: (data: number) => void;
+    selectedTeamType: number;
+    setSelectedTeamType: (data: number) => void;
 }
 
 let isFirstLoad = true;
 
-const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOpen, isTeamLeader, teamCode, teamJoinError, setTeamJoinError }) => {
-    const [selectedAppearance, setSelectedAppearance] = useState<number>(0);
-    const [selectedTeamType, setSelectedTeamType] = useState<number>(1);
-
+const DeployScreen: React.FC<Props> = ({ 
+    setDeployScreen, 
+    team, 
+    teamSize, 
+    teamOpen, 
+    isTeamLeader, 
+    teamCode, 
+    teamJoinError, 
+    setTeamJoinError,
+    selectedAppearance,
+    setSelectedAppearance,
+    selectedTeamType,
+    setSelectedTeamType
+}) => {
     const OnAppearanceRight = () => {
         if (selectedAppearance === AppearanceArray.length - 1) {
             setSelectedAppearance(0);
         } else {
-            setSelectedAppearance(prevState => prevState + 1);
+            setSelectedAppearance(selectedAppearance + 1);
         }
     }
 
@@ -60,7 +74,7 @@ const DeployScreen: React.FC<Props> = ({ setDeployScreen, team, teamSize, teamOp
         if (selectedAppearance === 0) {
             setSelectedAppearance(Object.keys(AppearanceArray).length - 1);
         } else {
-            setSelectedAppearance(prevState => prevState - 1);
+            setSelectedAppearance(selectedAppearance - 1);
         }
     }
 

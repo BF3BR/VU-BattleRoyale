@@ -281,6 +281,9 @@ const App: React.FC = () => {
         }
     }
 
+    const [selectedAppearance, setSelectedAppearance] = useState<number>(0);
+    const [selectedTeamType, setSelectedTeamType] = useState<number>(1);
+
     const [team, setTeam] = useState<Player[]>([]);
     window.OnUpdateTeamPlayers = (p_Team: any) => {
         let tempTeam: Player[] = [];
@@ -428,6 +431,10 @@ const App: React.FC = () => {
                         teamCode={teamId??'-'}
                         teamJoinError={teamJoinError}
                         setTeamJoinError={setTeamJoinError}
+                        selectedAppearance={selectedAppearance}
+                        setSelectedAppearance={setSelectedAppearance}
+                        selectedTeamType={selectedTeamType}
+                        setSelectedTeamType={setSelectedTeamType}
                     />
                 :
                     <>
