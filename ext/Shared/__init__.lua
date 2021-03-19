@@ -14,7 +14,7 @@ require "__shared/Configs/PickupsConfig"
 -- local m_Logger = Logger("VuBattleRoyaleShared", true)
 local m_DropWeapons = require "__shared/DropWeapons"
 local m_LootCreation = require "__shared/LootCreation"
--- local m_InteractiveManDown = require "__shared/InteractiveManDown"
+local m_InteractiveManDown = require "__shared/InteractiveManDown"
 
 function VuBattleRoyaleShared:__init()
     Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -98,7 +98,7 @@ function VuBattleRoyaleShared:RegisterCallbacks()
         self, self.OnSoldierWeaponSwitchingData
     )
     
-    -- m_InteractiveManDown:RegisterCallbacks()
+    m_InteractiveManDown:RegisterCallbacks()
     m_DropWeapons:RegisterCallbacks()
 end
 

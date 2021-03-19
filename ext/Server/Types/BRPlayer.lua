@@ -88,7 +88,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 
         return health
     elseif not l_Soldier.isInteractiveManDown then
-        -- health = health - 100
+         health = health - 100
         p_Damage = self.m_Armor:ApplyDamage(p_Damage)
         self:SendState()
 
@@ -104,7 +104,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
                 Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
             end
 
-            return health -- + 100
+            return health + 100
         end
     end
 
