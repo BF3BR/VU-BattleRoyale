@@ -14,7 +14,7 @@ local m_PingServer = require "PingServer"
 local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
 local m_Logger = Logger("VuBattleRoyaleServer", true)
---local m_InteractiveManDown = require "__shared/InteractiveManDown"
+local m_InteractiveManDown = require "__shared/InteractiveManDown"
 
 function VuBattleRoyaleServer:__init()
     Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -125,7 +125,7 @@ function VuBattleRoyaleServer:OnChangingWeapon(p_Player)
     if p_Player == nil or p_Player.soldier == nil or p_Player.soldier.isInteractiveManDown == false then
         return
     end
-    -- p_Player.soldier:ApplyCustomization(m_InteractiveManDown:CreateManDownCustomizeSoldierData())
+    p_Player.soldier:ApplyCustomization(m_InteractiveManDown:CreateManDownCustomizeSoldierData())
 end
 
 function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
