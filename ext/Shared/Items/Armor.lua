@@ -10,7 +10,7 @@ end
 -- Applies damage to the armor. Returns the damage passed through.
 function Armor:ApplyDamage(p_Damage)
     -- check if armor is fully damaged
-    if self.m_CurrentDurability < 1 then
+    if self.m_CurrentDurability <= 0 then
         return p_Damage
     end
 
