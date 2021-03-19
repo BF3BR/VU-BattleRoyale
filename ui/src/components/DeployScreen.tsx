@@ -179,7 +179,7 @@ const DeployScreen: React.FC<Props> = ({
                             <div className="card-header">
                                 <h1>
                                     Your Team                                    
-                                    <span>Code: <b>{teamCode??''}</b></span>
+                                    <span>Code: <b className="codeNumbers">{teamCode??' - '}</b></span>
                                     <label id="TeamOpenClose" className={teamOpen ? "isOpen" : "isClose"}>
                                         {teamOpen ?
                                             <img src={lockOpen} alt="Open" />
