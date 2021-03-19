@@ -138,7 +138,7 @@ end
 
 -- Checks if the player has any alive teammates
 function BRPlayer:HasAliveTeammates()
-    return self.m_Team ~= nil and self.m_Team:HasAlivePlayers(self)
+    return self.m_Team ~= nil and self.m_Team:HasAlivePlayers(self, true)
 end
 
 -- Kills the player

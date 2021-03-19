@@ -146,10 +146,21 @@ end
 
 -- Checks if the team has any alive players
 -- @param p_PlayerToIgnore (optional)
-function BRTeam:HasAlivePlayers(p_PlayerToIgnore)
+-- @param p_NotManDownCheck (optional)
+function BRTeam:HasAlivePlayers(p_PlayerToIgnore, p_NotManDownCheck)
+    p_NotManDownCheck = not (not p_NotManDownCheck)
+
     for _, l_BrPlayer in pairs(self.m_Players) do
         if l_BrPlayer.m_Player.alive and (p_PlayerToIgnore == nil or not l_BrPlayer:Equals(p_PlayerToIgnore)) then
-            return true
+            -- ensure its not in mandown state if the p_NotManDownCheck flag is enabled
+            if p_NotManDownCheck then
+                local l_Soldier = l_BrPlayer:GetSoldier()
+                if l_Soldier ~= nil and not l_Soldier.isInteractiveManDown then
+                    return true
+                end
+            else
+                return true
+            end
         end
     end
 
