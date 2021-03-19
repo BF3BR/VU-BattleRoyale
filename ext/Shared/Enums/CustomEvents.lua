@@ -63,6 +63,9 @@ PlayerEvents = {
     GameStateChanged = "VuBattleRoyale:GameStateChanged",
     MinPlayersToStartChanged = "VuBattleRoyale:MinPlayersToStartChanged",
     WinnerTeamUpdate = "VuBattleRoyale:WinnerTeamUpdate",
+    PlayerConnected = "VuBattleRoyale:PlayerConnected",
+    PlayerDeploy = "VuBattleRoyale:PlayerDeploy",
+    EnableSpectate = "VuBattleRoyale:EnableSpectate",
 }
 
 LMS = {

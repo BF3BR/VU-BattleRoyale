@@ -50,8 +50,8 @@ function VuBattleRoyaleServer:RegisterEvents()
     Events:Subscribe("Player:ChangingWeapon", self, self.OnChangingWeapon)
     Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
 
-    NetEvents:Subscribe("VuBattleRoyale:PlayerConnected", self, self.OnPlayerConnected)
-    NetEvents:Subscribe("VuBattleRoyale:PlayerDeploy", self, self.OnPlayerDeploy)
+    NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected)
+    NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy)
 
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
     Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
@@ -158,6 +158,8 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
         end
 
         s_BrPlayer:Spawn(s_SpawnTrans)
+    else
+        NetEvents:SendTo(PlayerEvents.EnableSpectate, p_Player)
     end
 end
 

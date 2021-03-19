@@ -55,6 +55,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUIDrawHud)
     Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate)
     Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove)
+    Events:Subscribe("UpdatePass_PreSim", self, self.OnUpdatePassPreSim)
 
     NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
     NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill)
@@ -63,8 +64,8 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(PlayerEvents.PitchAndYaw, self, self.OnPlayersPitchAndYaw)
     NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged)
     NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
+    NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate)
     NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
-    Events:Subscribe("UpdatePass_PreSim", self, self.OnUpdatePassPreSim)
     NetEvents:Subscribe(GunshipEvents.Camera, self, self.OnGunShipCamera)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
     NetEvents:Subscribe(GunshipEvents.Position, self, self.OnGunshipPosition)
@@ -195,10 +196,9 @@ function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
         return
     end
 
-    if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
-        NetEvents:Send("VuBattleRoyale:PlayerConnected")
-    elseif p_Player.name == s_LocalPlayer.name then
-        m_SpectatorCamera:Enable()
+    if p_Player == s_LocalPlayer then
+        -- Tell the server that the local player is connected
+        NetEvents:Send(PlayerEvents.PlayerConnected)
     end
 end
 
@@ -350,6 +350,10 @@ function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
     m_Hud:OnGameOverScreen(true)
 end
 
+function VuBattleRoyaleClient:OnEnableSpectate()
+    m_SpectatorCamera:Enable()
+end
+
 
 -- =============================================
 -- WebUI Events
@@ -357,7 +361,7 @@ end
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
     m_Showroom:SetCamera(false)
-    NetEvents:Send("VuBattleRoyale:PlayerDeploy")
+    NetEvents:Send(PlayerEvents.PlayerDeploy)
 end
 
 function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)

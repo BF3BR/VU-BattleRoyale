@@ -9,7 +9,7 @@ function SpectatorCamera:__init()
 	-- call TimersMixin's constructor
 	TimersMixin.__init(self)
 	
-	self.m_SpectatedPlayer = nil
+	self.m_SpectatedPlayerId = nil
 
 	self.m_Distance = 2.0
 	self.m_Height = 1.75
@@ -51,7 +51,7 @@ function SpectatorCamera:OnPlayerRespawn(p_Player)
 
 	-- If we have nobody to spectate and this player is spectatable
 	-- then switch to them.
-	if self.m_SpectatedPlayer == nil then
+	if self.m_SpectatedPlayerId == nil then
 		self:SpectatePlayer(p_Player)
 	end
 end
@@ -73,10 +73,10 @@ function SpectatorCamera:OnPlayerKilled(p_PlayerId, p_InflictorId)
         end)
 		return
     -- Handle death of player being spectated.
-	elseif self.m_SpectatedPlayer == nil then
+	elseif self.m_SpectatedPlayerId == nil then
 		self:SpectateNextPlayer()
 		return
-	elseif p_PlayerId == self.m_SpectatedPlayer.id then
+	elseif p_PlayerId == self.m_SpectatedPlayerId then
 		if p_InflictorId ~= nil then
 			local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
 			if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
@@ -94,8 +94,8 @@ function SpectatorCamera:OnPlayerDeleted(p_Player)
 	end
 
 	-- Handle disconnection of player being spectated.
-	if p_Player == self.m_SpectatedPlayer then
-		self.m_SpectatedPlayer = nil
+	if p_Player.id == self.m_SpectatedPlayerId then
+		self.m_SpectatedPlayerId = nil
 		self:SpectateNextPlayer()
 	end
 end
@@ -157,8 +157,6 @@ function SpectatorCamera:Enable(p_InflictorId)
 		return
 	end
 
-	self:RemoveTimer("NoPlayerFoundTimer")
-
 	-- If we're alive we don't allow spectating.
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
@@ -175,16 +173,19 @@ function SpectatorCamera:Enable(p_InflictorId)
 	end
 
     if s_PlayerToSpectate ~= nil then
-        WebUI:ExecuteJS("SpectatorTarget('" .. tostring(s_PlayerToSpectate.name) .. "');")
-        WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
+		-- self:RemoveTimer("NoPlayerFoundTimer")
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
 	end
 
-	self:SetTimer("NoPlayerFoundTimer", g_Timers:Interval(4, self, self.Enable))
+	self:SetTimer("NoPlayerFoundTimer", g_Timers:Timeout(4, self, self.ReEnable))
 
 	-- If we found no player to spectate we just disable the spectator mode
 	self:Disable()
+end
+
+function SpectatorCamera:ReEnable()
+	self:Enable(nil)
 end
 
 function SpectatorCamera:Disable()
@@ -195,7 +196,7 @@ function SpectatorCamera:Disable()
     WebUI:ExecuteJS("SpectatorTarget('');")
     WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(false) .. ");")
 
-	self.m_SpectatedPlayer = nil
+	self.m_SpectatedPlayerId = nil
 
 	self:ReleaseControl()
 	self:DestroyCamera()
@@ -275,9 +276,12 @@ function SpectatorCamera:SpectatePlayer(p_Player)
 		return
 	end
 
+	WebUI:ExecuteJS("SpectatorTarget('" .. tostring(p_Player.name) .. "');")
+	WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
+
 	-- Dispatch a local event so phasemanager can toggle the OOC visuals
 	Events:DispatchLocal(SpectatorEvent.PlayerChanged, p_Player)
-	self.m_SpectatedPlayer = p_Player
+	self.m_SpectatedPlayerId = p_Player.id
 end
 
 function SpectatorCamera:SpectateNextPlayer()
@@ -286,9 +290,9 @@ function SpectatorCamera:SpectateNextPlayer()
 	end
 
 	-- If we are not spectating anyone just find the first player to spectate.
-	if self.m_SpectatedPlayer == nil then
+	if self.m_SpectatedPlayerId == nil then
 		local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
-	
+
 		if s_PlayerToSpectate == nil then
 			s_PlayerToSpectate = self:FindFirstPlayerToSpectate(false)
 		end
@@ -297,6 +301,9 @@ function SpectatorCamera:SpectateNextPlayer()
 			self:SpectatePlayer(s_PlayerToSpectate)
 		end
 
+		-- If no players found we just reset the spectator mode
+		self:Disable()
+		self:Enable()
 		return
 	end
 
@@ -304,11 +311,11 @@ function SpectatorCamera:SpectateNextPlayer()
 	if s_NextPlayer == nil then
 		s_NextPlayer = self:GetNextPlayer(false)
 	end
+
 	-- If we didn't find any players to spectate then switch to freecam.
 	if s_NextPlayer == nil then
 		self:Disable()
 	else
-		WebUI:ExecuteJS("SpectatorTarget('" .. tostring(s_NextPlayer.name) .. "');")
 		self:SpectatePlayer(s_NextPlayer)
 	end
 end
@@ -333,7 +340,7 @@ function SpectatorCamera:GetNextPlayer(p_OnlySquadMates)
 	end
 
 	for i, l_Player in pairs(s_Players) do
-		if l_Player == self.m_SpectatedPlayer then
+		if l_Player.id == self.m_SpectatedPlayerId then
 			s_CurrentIndex = i
 			break
 		end
@@ -373,7 +380,7 @@ function SpectatorCamera:SpectatePreviousPlayer()
 	end
 
 	-- If we are not spectating anyone just find the first player to spectate.
-	if self.m_SpectatedPlayer == nil then
+	if self.m_SpectatedPlayerId == nil then
 		local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
 	
 		if s_PlayerToSpectate == nil then
@@ -394,7 +401,6 @@ function SpectatorCamera:SpectatePreviousPlayer()
 	if s_PreviousPlayer == nil then
 		self:Disable()
 	else
-		WebUI:ExecuteJS("SpectatorTarget('" .. tostring(s_PreviousPlayer.name) .. "');")
 		self:SpectatePlayer(s_PreviousPlayer)
 	end
 end
@@ -419,7 +425,7 @@ function SpectatorCamera:GetPreviousPlayer(p_OnlySquadMates)
 	end
 
 	for i, l_Player in pairs(s_Players) do
-		if l_Player == self.m_SpectatedPlayer then
+		if l_Player.id == self.m_SpectatedPlayerId then
 			s_CurrentIndex = i
 			break
 		end
@@ -459,7 +465,7 @@ end
 
 function SpectatorCamera:OnLevelDestroy()
 	self:Disable()
-	self.m_SpectatedPlayer = nil
+	self.m_SpectatedPlayerId = nil
 	self.m_PlayersPitchAndYaw = { }
 end
 
@@ -468,10 +474,18 @@ function SpectatorCamera:OnEngineUpdate(p_DeltaTime)
 		return
 	end
 
-	-- Don't update if we don't have a player with an alive soldier.
-	local s_Player = self.m_SpectatedPlayer
+	if self.m_SpectatedPlayerId == nil then
+		return
+	end
 
-	if s_Player == nil or s_Player.soldier == nil or s_Player.id == nil then
+	-- Don't update if we don't have a player with an alive soldier.
+	local s_Player = PlayerManager:GetPlayerById(self.m_SpectatedPlayerId)
+
+	if s_Player == nil then
+		return
+	end
+
+	if s_Player.soldier == nil or s_Player.id == nil then
 		return
 	end
 
