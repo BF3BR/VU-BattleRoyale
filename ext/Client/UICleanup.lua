@@ -132,26 +132,31 @@ end
 function UICleanup:OnIconTexture(p_Instance)
     p_Instance = UIMinimapIconTextureAtlasAsset(p_Instance)
     p_Instance:MakeWritable()
-	
+
     for i = #p_Instance.icons, 1, -1 do
         local icon = p_Instance.icons[i]
         if icon ~= nil then
             if icon.iconType == UIHudIcon.UIHudIcon_SquadLeader or
             icon.iconType == UIHudIcon.UIHudIcon_SquadleaderBg or
+            icon.iconType == UIHudIcon.UIHudIcon_Player or
             icon.iconType == UIHudIcon.UIHudIcon_Gunship then
                 for _, state in ipairs(icon.states) do
                     state.textureInfos[1].minUv = Vec2(0, 0)
                     state.textureInfos[1].maxUv = Vec2(0, 0)
                 end
             end
+
             if icon.iconType == UIHudIcon.UIHudIcon_KitAssault or
             icon.iconType == UIHudIcon.UIHudIcon_KitEngineer or
             icon.iconType == UIHudIcon.UIHudIcon_KitSupport or
             icon.iconType == UIHudIcon.UIHudIcon_KitRecon then
-                for _, state in ipairs(icon.states) do
-                    state.textureInfos[1].minUv = Vec2(0.50390625, 0.6689453125)
-                    state.textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
-                end
+                -- replace kit icons for squad
+                icon.states[1].textureInfos[1].minUv = Vec2(0.50390625, 0.6689453125)
+                icon.states[1].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
+
+                -- remove kit icons for enemies
+                icon.states[2].textureInfos[1].minUv = Vec2(0, 0)
+                icon.states[2].textureInfos[1].maxUv = Vec2(0, 0)
             end
         end
     end
@@ -171,9 +176,9 @@ function UICleanup:OnUI3dIconCompData(p_Instance)
 end
 
 function UICleanup:OnBlurredBlueScreen(instance)
-	instance = ComponentData(instance)
-	instance:MakeWritable()
-	instance.excluded = true
+    instance = ComponentData(instance)
+    instance:MakeWritable()
+    instance.excluded = true
 end
 
 -- Edit selected UIScreenAsset's nodes
