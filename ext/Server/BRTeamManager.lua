@@ -336,7 +336,7 @@ function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
 
         -- send finish message to p_Giver 
         if p_Giver ~= nil and not p_Giver:Equals(l_Killer) then
-            NetEvent:SendToLocal(DamageEvent.PlayerFinish, p_Giver.m_Player, p_Victim:GetName())
+            NetEvents:SendToLocal(DamageEvent.PlayerFinish, p_Giver.m_Player, p_Victim:GetName())
         end
 
         p_Victim.m_KillerName = nil
