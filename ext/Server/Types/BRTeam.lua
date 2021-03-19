@@ -217,6 +217,20 @@ function BRTeam:SetPlacement(p_Placement)
     self:BroadcastState()
 end
 
+-- Finishes every player of the team which may be in mandown state
+-- and sends the related kill messages
+function BRTeam:FinishPlayers(p_PlayerToIgnore)
+    if not self.m_Active then
+        return
+    end
+
+    for _, l_BrPlayer in pairs(self.m_Players) do
+        if (p_PlayerToIgnore == nil or not l_BrPlayer:Equals(p_PlayerToIgnore)) and l_BrPlayer:Kill(true) then
+            Events:DispatchLocal(TeamManagerEvent.RegisterKill, l_BrPlayer, nil)
+        end
+    end
+end
+
 -- Broadcasts the state of the team to all of its members
 function BRTeam:BroadcastState()
     local l_TeamData = self:AsTable()

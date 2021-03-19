@@ -100,6 +100,10 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
             else
                 self.m_KillerName = nil -- TODO move to onRevive
                 self:Kill(true)
+
+                -- finish the mandown teammates
+                self:FinishTeammates()
+
                 Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
             end
 
@@ -146,7 +150,7 @@ end
 function BRPlayer:Kill(p_Forced)
     -- check if alive
     if not self.m_Player.alive then
-        return
+        return false
     end
 
     p_Forced = not (not p_Forced)
@@ -154,7 +158,7 @@ function BRPlayer:Kill(p_Forced)
     -- get soldier entity
     local l_Soldier = self:GetSoldier()
     if l_Soldier == nil then
-        return
+        return true -- TODO maybe should return false
     end
 
     if p_Forced then
@@ -162,6 +166,12 @@ function BRPlayer:Kill(p_Forced)
     else
         l_Soldier:Kill()
     end
+
+    return true
+end
+
+function BRPlayer:FinishTeammates()
+    return self.m_Team ~= nil and self.m_Team:FinishPlayers(self)
 end
 
 -- Spawns the player

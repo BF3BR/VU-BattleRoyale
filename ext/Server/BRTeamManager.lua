@@ -32,7 +32,6 @@ function BRTeamManager:RegisterEvents()
 
     Events:Subscribe(TeamManagerEvent.PutOnATeam, self, self.OnPutOnATeam)
     Events:Subscribe(TeamManagerEvent.DestroyTeam, self, self.OnDestroyTeam)
-    -- Events:Subscribe(TeamManagerEvent.IncrementKill, self, self.OnIncrementKill)
     Events:Subscribe(TeamManagerEvent.RegisterKill, self, self.OnRegisterKill)
 
     NetEvents:Subscribe(TeamManagerNetEvent.RequestTeamJoin, self, self.OnRequestTeamJoin)
@@ -355,26 +354,6 @@ function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
 
     self:UpdateTeamPlacement(p_Victim.m_Team)
 end
-
--- Resolve who should count the kill for
--- function BRTeamManager:OnIncrementKill(p_Victim, p_Giver)
---     if p_Victim.m_KillerName == nil and p_Giver ~= nil then
---         p_Giver:IncrementKills(p_Victim)
---     else
---         -- increment killer's counter
---         local l_Killer = self:GetPlayer(p_Victim.m_KillerName)
---         if l_Killer ~= nil then
---             l_Killer:IncrementKills(p_Victim)
---         end
-
---         -- send finish message to p_Giver 
---         if p_Giver ~= nil and not p_Giver:Equals(l_Killer) then
---             NetEvent:SendToLocal(DamageEvent.PlayerFinish, p_Giver.m_Player, p_Victim:GetName())
---         end
-
---         p_Victim.m_KillerName = nil
---     end
--- end
 
 function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
     local l_BrPlayer = self:GetPlayer(p_Player)
