@@ -26,6 +26,7 @@ function VuBattleRoyaleServer:__init()
 
     self.m_WaitForStart = true
     self.m_CumulatedTime = 0
+    self.m_ForcedWarmup = false
 
     -- Create a new match
     self.m_Match = Match(self, m_TeamManager)
@@ -102,7 +103,7 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
             if self.m_GameState == GameStates.None and s_SpawnedPlayerCount >= self.m_MinPlayersToStart then
                 self:ChangeGameState(GameStates.Warmup)
             end
-        else if self.m_GameState == GameStates.Warmup then
+        else if self.m_GameState == GameStates.Warmup and self.m_ForcedWarmup == false then
                 self:ChangeGameState(GameStates.None)
             end
         end
@@ -180,10 +181,12 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
     self:SetupRconVariables()
     self.m_Match:OnRestartRound()
     self.m_WaitForStart = false
+    self.m_ForcedWarmup = false
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
     self.m_WaitForStart = true
+    self.m_ForcedWarmup = false
 end
 
 
@@ -233,6 +236,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleServer:OnForceWarmupCommand(p_Command, p_Args, p_LoggedIn)
+    self.m_ForcedWarmup = true
 	self:ChangeGameState(GameStates.Warmup)
 
 	return { 
