@@ -85,12 +85,6 @@ function VuBattleRoyaleShared:RegisterCallbacks()
         Guid("64357471-E246-4FCD-B0EF-6F693FA98D71"),
        self, self.OnFreeFallCharacterStatePoseInfo
     )
-
-    ResourceManager:RegisterInstanceLoadHandler(
-        Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"),
-        Guid("A10FF2AA-F3CF-416B-A79B-E8C5416A9EBC"),
-       self, self.OnCharacterPhysicsData
-    )
     
     ResourceManager:RegisterInstanceLoadHandler(
         Guid('9942F328-35C1-11DF-9556-FDADABD0ADCC'), 
@@ -161,13 +155,6 @@ function VuBattleRoyaleShared:OnFreeFallCharacterStatePoseInfo(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.velocity = 40.0
     p_Instance.accelerationGain = 0.35
-end
-
-function VuBattleRoyaleShared:OnCharacterPhysicsData(p_Instance)
-    -- Modify the max ascend angle
-    p_Instance = CharacterPhysicsData(p_Instance)
-    p_Instance:MakeWritable()
-    p_Instance.maxAscendAngle = 75.0
 end
 
 function VuBattleRoyaleShared:OnPreRoundEntityData(p_Instance)
