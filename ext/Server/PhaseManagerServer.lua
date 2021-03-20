@@ -122,8 +122,10 @@ function PhaseManagerServer:Finalize()
     self:RemoveTimer("NextSubphase")
     self:RemoveTimer("MovingCircle")
 
-    -- Match outer circle with inner circle
-    self.m_OuterCircle = self.m_InnerCircle:Clone()
+    -- match outer circle with inner circle
+    if self.m_PhaseIndex == #self.m_Phases then
+        self.m_OuterCircle = self.m_InnerCircle:Clone()
+    end
 
     -- display debug message and update clients
     self:DebugMessage()
