@@ -159,8 +159,9 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
 
     s_SoldierBlueprint.eventConnections:add(s_ManDownConnection) -- add connection that equips the m9 kit when you go mandown
 
-    local s_Partition = DatabasePartition((ResourceManager:FindPartitionForInstance(p_Instance)))
-    s_Partition:AddInstance(s_CustomizeSoldierEntityData) -- add entitydata to the s_Partition
+    -- this causes crashes for unknown reasons but also it's not needed
+    --local s_Partition = DatabasePartition((ResourceManager:FindPartitionForInstance(p_Instance)))
+    --s_Partition:AddInstance(s_CustomizeSoldierEntityData) -- add entitydata to the s_Partition
 
     local registry = RegistryContainer()
     registry.referenceObjectRegistry:add(s_CustomizeSoldierEntityData) -- add entityData to registry
