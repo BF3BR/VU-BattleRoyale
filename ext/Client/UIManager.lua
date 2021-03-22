@@ -19,6 +19,7 @@ local m_WidgetIndexes = {
 local m_MenuItems = {
 	"ID_M_IGMMP_RESUME",
 	"ID_M_IGMMP_OPTIONS",
+	"ID_M_IGMMP_SUICIDE",
 	"ID_M_IGMMP_QUIT",
 }
 
