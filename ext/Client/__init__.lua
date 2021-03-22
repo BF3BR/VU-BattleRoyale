@@ -17,7 +17,7 @@ local m_UIManager = require "UIManager"
 local m_Gunship = require "Gunship"
 local m_Showroom = require "Showroom"
 local m_Hud = require "Hud"
-local m_SpectatorCamera = require "SpectatorCamera"
+local m_SpectatorClient = require "SpectatorClient"
 local m_Showroom = require "Showroom"
 local m_Ping = require "PingClient"
 local m_Logger = Logger("VuBattleRoyaleClient", true)
@@ -61,7 +61,6 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill)
     NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
     NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer)
-    NetEvents:Subscribe(PlayerEvents.PitchAndYaw, self, self.OnPlayersPitchAndYaw)
     NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged)
     NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
     NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate)
@@ -72,6 +71,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(GunshipEvents.Yaw, self, self.OnGunshipYaw)
     NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied)
     NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
+    NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
 
     self:RegisterWebUIEvents()
 end
@@ -105,9 +105,9 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnLevelDestroy()
-    m_SpectatorCamera:OnLevelDestroy()
+    m_SpectatorClient:OnLevelDestroy()
     m_Hud:OnLevelDestroy()
-    m_SpectatorCamera:OnLevelDestroy()
+    m_SpectatorClient:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLevelLoaded()
@@ -121,7 +121,7 @@ end
 
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)
-    m_SpectatorCamera:OnEngineUpdate(p_DeltaTime)
+    m_SpectatorClient:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUIDrawHud()
@@ -129,7 +129,7 @@ function VuBattleRoyaleClient:OnUIDrawHud()
 end
 
 function VuBattleRoyaleClient:OnExtensionUnloading()
-    m_SpectatorCamera:OnExtensionUnloading()
+    m_SpectatorClient:OnExtensionUnloading()
 end
 
 function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
@@ -204,11 +204,11 @@ end
 
 function VuBattleRoyaleClient:OnPlayerRespawn(p_Player)
     m_Hud:OnPlayerRespawn(p_Player)
-    m_SpectatorCamera:OnPlayerRespawn(p_Player)
+    m_SpectatorClient:OnPlayerRespawn(p_Player)
 end
 
 function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
-    m_SpectatorCamera:OnPlayerDeleted(p_Player)
+    m_SpectatorClient:OnPlayerDeleted(p_Player)
 end
 
 function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
@@ -220,7 +220,7 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
 
     m_Logger:Write("INFO: OnPlayerKilled: " .. s_Player.name)
 
-    m_SpectatorCamera:OnPlayerKilled(s_Player.id, s_InflictorId)
+    m_SpectatorClient:OnPlayerKilled(s_Player.id, s_InflictorId)
 
     local s_LocalPlayer = PlayerManager:GetLocalPlayer()
     if s_LocalPlayer == nil then
@@ -276,7 +276,7 @@ end
 
 function VuBattleRoyaleClient:OnClientUpdateInput()
     m_Gunship:OnClientUpdateInput()
-    m_SpectatorCamera:OnClientUpdateInput()
+    m_SpectatorClient:OnClientUpdateInput()
     m_Hud:OnClientUpdateInput()
     m_Ping:OnClientUpdateInput()
 end
@@ -322,8 +322,8 @@ function VuBattleRoyaleClient:OnJumpOutOfGunship()
     m_Hud:OnJumpOutOfGunship()
 end
 
-function VuBattleRoyaleClient:OnPlayersPitchAndYaw(p_PitchAndYaw)
-    m_SpectatorCamera:OnPlayersPitchAndYaw(p_PitchAndYaw)
+function VuBattleRoyaleClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
+    m_SpectatorClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
 end
 
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
@@ -351,7 +351,7 @@ function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
 end
 
 function VuBattleRoyaleClient:OnEnableSpectate()
-    m_SpectatorCamera:Enable()
+    m_SpectatorClient:Enable()
 end
 
 

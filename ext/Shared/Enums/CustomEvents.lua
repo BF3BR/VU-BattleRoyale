@@ -58,7 +58,6 @@ GunshipEvents = {
 }
 
 PlayerEvents = {
-    PitchAndYaw = "VuBattleRoyale:PlayersPitchAndYaw",
     UpdateTimer = "VuBattleRoyale:UpdateTimer",
     GameStateChanged = "VuBattleRoyale:GameStateChanged",
     MinPlayersToStartChanged = "VuBattleRoyale:MinPlayersToStartChanged",
@@ -66,6 +65,11 @@ PlayerEvents = {
     PlayerConnected = "VuBattleRoyale:PlayerConnected",
     PlayerDeploy = "VuBattleRoyale:PlayerDeploy",
     EnableSpectate = "VuBattleRoyale:EnableSpectate",
+}
+
+SpectatorEvents = {
+    RequestPitchAndYaw = "SpectatorEvents:RequestPitchAndYaw",
+    PostPitchAndYaw = "SpectatorEvents:PostPitchAndYaw",
 }
 
 LMS = {

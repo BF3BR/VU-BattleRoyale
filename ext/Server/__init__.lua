@@ -13,6 +13,7 @@ local m_Whitelist = require "Whitelist"
 local m_PingServer = require "PingServer"
 local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
+local m_SpectatorServer = require "SpectatorServer"
 local m_Logger = Logger("VuBattleRoyaleServer", true)
 local m_InteractiveManDown = require "__shared/InteractiveManDown"
 
@@ -21,8 +22,6 @@ function VuBattleRoyaleServer:__init()
 
     -- Holds the gamestate information
     self.m_GameState = GameStates.None
-
-    self.m_PlayersPitchAndYaw = {}
 
     self.m_WaitForStart = true
     self.m_CumulatedTime = 0
@@ -53,6 +52,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected)
     NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy)
+    NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSepctatorRequestPithcAndYaw)
 
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
     Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
@@ -78,9 +78,6 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
     if not self.m_WaitForStart then
         -- Update the match
         self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
-
-        -- Update the players pitch and yaw table
-        self:GetPlayersPitchAndYaw()
 
         if self.m_CumulatedTime < 1 then
             self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
@@ -162,6 +159,14 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
     else
         NetEvents:SendTo(PlayerEvents.EnableSpectate, p_Player)
     end
+end
+
+function VuBattleRoyaleServer:OnSepctatorRequestPithcAndYaw(p_Player, p_SpectatingId)
+    if p_SpectatingId == nil then
+        return
+    end
+
+    m_SpectatorServer:OnSepctatorRequestPithcAndYaw(p_Player, p_SpectatingId)
 end
 
 function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
@@ -407,27 +412,6 @@ function VuBattleRoyaleServer:SetupRconVariables()
             end
         end
     end
-end
-
-function VuBattleRoyaleServer:GetPlayersPitchAndYaw()
-    self.m_PlayersPitchAndYaw = {}
-
-    local s_Players = PlayerManager:GetPlayers()
-    for _, l_Player in ipairs(s_Players) do
-        if l_Player == nil and (l_Player.alive == false or l_Player.input == nil) then
-            goto update_allowed_guids_continue
-        end
-
-        self.m_PlayersPitchAndYaw[l_Player.id] = {
-            Yaw = l_Player.input.authoritativeAimingYaw,
-            Pitch = l_Player.input.authoritativeAimingPitch,
-            Camera = l_Player.input.authoritativeCameraPosition,
-        }
-
-        ::update_allowed_guids_continue::
-    end
-    
-    NetEvents:BroadcastUnreliable(PlayerEvents.PitchAndYaw, self.m_PlayersPitchAndYaw)
 end
 
 return VuBattleRoyaleServer()

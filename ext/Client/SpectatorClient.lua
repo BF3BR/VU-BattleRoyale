@@ -3,9 +3,9 @@ require "__shared/Utils/MathHelper"
 require "__shared/Utils/Timers"
 require "__shared/Mixins/TimersMixin"
 
-class("SpectatorCamera", TimersMixin)
+class("SpectatorClient", TimersMixin)
 
-function SpectatorCamera:__init()
+function SpectatorClient:__init()
 	-- call TimersMixin's constructor
 	TimersMixin.__init(self)
 	
@@ -18,25 +18,31 @@ function SpectatorCamera:__init()
 	self.m_Active = false
 	self.m_LookAtPos = nil
 
-	self.m_PlayersPitchAndYaw = { }
+	self.m_SpectatingPlayerPitch = 0.0
+	self.m_SpectatingPlayerYaw = 0.0
 
 	self.m_LastPitch = 0.0
 	self.m_LastYaw = 0.0
 end
 
-function SpectatorCamera:OnExtensionUnloading()
+function SpectatorClient:OnExtensionUnloading()
 	self:Disable()
 end
 
-function SpectatorCamera:OnLevelDestroy()
+function SpectatorClient:OnLevelDestroy()
 	self:Disable()
 end
 
-function SpectatorCamera:OnPlayersPitchAndYaw(p_PitchAndYaw)
-	self.m_PlayersPitchAndYaw = p_PitchAndYaw
+function SpectatorClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
+	if p_Pitch == nil or p_Yaw == nil then
+		return
+	end
+
+	self.m_SpectatingPlayerPitch = p_Pitch
+	self.m_SpectatingPlayerYaw = p_Yaw
 end
 
-function SpectatorCamera:OnPlayerRespawn(p_Player)
+function SpectatorClient:OnPlayerRespawn(p_Player)
 	if not self:IsEnabled() then
 		return
 	end
@@ -56,7 +62,7 @@ function SpectatorCamera:OnPlayerRespawn(p_Player)
 	end
 end
 
-function SpectatorCamera:OnPlayerKilled(p_PlayerId, p_InflictorId)
+function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 	if p_PlayerId == nil then
 		return
 	end
@@ -88,7 +94,7 @@ function SpectatorCamera:OnPlayerKilled(p_PlayerId, p_InflictorId)
 	self:SpectateNextPlayer()
 end
 
-function SpectatorCamera:OnPlayerDeleted(p_Player)
+function SpectatorClient:OnPlayerDeleted(p_Player)
 	if not self:IsEnabled() then
 		return
 	end
@@ -100,7 +106,7 @@ function SpectatorCamera:OnPlayerDeleted(p_Player)
 	end
 end
 
-function SpectatorCamera:OnClientUpdateInput()
+function SpectatorClient:OnClientUpdateInput()
     if self:IsEnabled() then
         if InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight) then
             self:SpectateNextPlayer()
@@ -112,7 +118,7 @@ function SpectatorCamera:OnClientUpdateInput()
     end
 end
 
-function SpectatorCamera:FindFirstPlayerToSpectate(p_OnlySquadMates, p_InflictorId)
+function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_InflictorId)
 	local s_PlayerToSpectate = nil
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
@@ -152,7 +158,7 @@ function SpectatorCamera:FindFirstPlayerToSpectate(p_OnlySquadMates, p_Inflictor
 	return s_PlayerToSpectate
 end
 
-function SpectatorCamera:Enable(p_InflictorId)
+function SpectatorClient:Enable(p_InflictorId)
 	if self:IsEnabled() then
 		return
 	end
@@ -184,11 +190,11 @@ function SpectatorCamera:Enable(p_InflictorId)
 	self:Disable()
 end
 
-function SpectatorCamera:ReEnable()
+function SpectatorClient:ReEnable()
 	self:Enable(nil)
 end
 
-function SpectatorCamera:Disable()
+function SpectatorClient:Disable()
 	if not self:IsEnabled() then
 		return
     end
@@ -202,7 +208,7 @@ function SpectatorCamera:Disable()
 	self:DestroyCamera()
 end
 
-function SpectatorCamera:DestroyCamera()
+function SpectatorClient:DestroyCamera()
 	if self.m_Entity == nil then
 		return
 	end
@@ -213,7 +219,7 @@ function SpectatorCamera:DestroyCamera()
 	self.m_LookAtPos = nil
 end
 
-function SpectatorCamera:TakeControl()
+function SpectatorClient:TakeControl()
 	-- By firing the "TakeControl" event on the camera entity we make the
 	-- current player switch to this camera from their first person camera.
 	self.m_Active = true
@@ -221,7 +227,7 @@ function SpectatorCamera:TakeControl()
 end
 
 
-function SpectatorCamera:ReleaseControl()
+function SpectatorClient:ReleaseControl()
 	-- By firing the "ReleaseControl" event on the camera entity we return
 	-- the player to whatever camera they were supposed to be using.
 	self.m_Active = false
@@ -231,7 +237,7 @@ function SpectatorCamera:ReleaseControl()
 	end
 end
 
-function SpectatorCamera:CreateCameraData()
+function SpectatorClient:CreateCameraData()
 	if self.m_Data ~= nil then
 		return
 	end
@@ -246,7 +252,7 @@ function SpectatorCamera:CreateCameraData()
 	self.m_Data.transform = LinearTransform()
 end
 
-function SpectatorCamera:CreateCamera()
+function SpectatorClient:CreateCamera()
 	if self.m_Entity ~= nil then
 		return
 	end
@@ -259,7 +265,7 @@ function SpectatorCamera:CreateCamera()
 	self.m_Entity:Init(Realm.Realm_Client, true)
 end
 
-function SpectatorCamera:SpectatePlayer(p_Player)
+function SpectatorClient:SpectatePlayer(p_Player)
 	if not self:IsEnabled() then
 		return
 	end
@@ -284,7 +290,7 @@ function SpectatorCamera:SpectatePlayer(p_Player)
 	self.m_SpectatedPlayerId = p_Player.id
 end
 
-function SpectatorCamera:SpectateNextPlayer()
+function SpectatorClient:SpectateNextPlayer()
 	if not self:IsEnabled() then
 		return
 	end
@@ -320,7 +326,7 @@ function SpectatorCamera:SpectateNextPlayer()
 	end
 end
 
-function SpectatorCamera:GetNextPlayer(p_OnlySquadMates)
+function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	-- Find the index of the current player.
 	local s_CurrentIndex = 0
 	local s_Players = nil
@@ -374,7 +380,7 @@ function SpectatorCamera:GetNextPlayer(p_OnlySquadMates)
 	return s_NextPlayer
 end
 
-function SpectatorCamera:SpectatePreviousPlayer()
+function SpectatorClient:SpectatePreviousPlayer()
 	if not self:IsEnabled() then
 		return
 	end
@@ -405,7 +411,7 @@ function SpectatorCamera:SpectatePreviousPlayer()
 	end
 end
 
-function SpectatorCamera:GetPreviousPlayer(p_OnlySquadMates)
+function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	-- Find the index of the current player.
 	local s_CurrentIndex = 0
 	local s_Players = nil
@@ -459,17 +465,18 @@ function SpectatorCamera:GetPreviousPlayer(p_OnlySquadMates)
 	return s_PreviousPlayer
 end
 
-function SpectatorCamera:IsEnabled()
+function SpectatorClient:IsEnabled()
 	return self.m_Active
 end
 
-function SpectatorCamera:OnLevelDestroy()
+function SpectatorClient:OnLevelDestroy()
 	self:Disable()
 	self.m_SpectatedPlayerId = nil
-	self.m_PlayersPitchAndYaw = { }
+	self.m_SpectatingPlayerPitch = 0.0
+	self.m_SpectatingPlayerYaw = 0.0
 end
 
-function SpectatorCamera:OnEngineUpdate(p_DeltaTime)
+function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	if not self:IsEnabled() then
 		return
 	end
@@ -489,15 +496,14 @@ function SpectatorCamera:OnEngineUpdate(p_DeltaTime)
 		return
 	end
 
-	if self.m_PlayersPitchAndYaw[s_Player.id] == nil then
-		return
-	end
+	-- Request the spectating player's pitch and yaw
+	NetEvents:Send(SpectatorEvents.RequestPitchAndYaw, s_Player.id)
 	
 	-- Get the soldier's aiming angles.
-	local s_Yaw = MathHelper:LerpRadians(self.m_LastYaw, self.m_PlayersPitchAndYaw[s_Player.id]["Yaw"], p_DeltaTime * 10)
+	local s_Yaw = MathHelper:LerpRadians(self.m_LastYaw, self.m_SpectatingPlayerYaw, p_DeltaTime * 10)
 	self.m_LastYaw = s_Yaw
 	
-	local s_Pitch = MathUtils:Lerp(self.m_LastPitch, self.m_PlayersPitchAndYaw[s_Player.id]["Pitch"], p_DeltaTime * 10)
+	local s_Pitch = MathUtils:Lerp(self.m_LastPitch, self.m_SpectatingPlayerPitch, p_DeltaTime * 10)
 	self.m_LastPitch = s_Pitch
 
 	-- Fix angles so we're looking at the right thing.
@@ -547,8 +553,8 @@ function SpectatorCamera:OnEngineUpdate(p_DeltaTime)
 	self.m_Data.transform.forward = self.m_Data.transform.forward * -1
 end
 
-if g_SpectatorCamera == nil then
-    g_SpectatorCamera = SpectatorCamera()
+if g_SpectatorClient == nil then
+    g_SpectatorClient = SpectatorClient()
 end
 
-return g_SpectatorCamera
+return g_SpectatorClient
