@@ -64,9 +64,9 @@ function VuBattleRoyaleServer:RegisterHooks()
 end
 
 function VuBattleRoyaleServer:RegisterRconCommands()
-    RCON:RegisterCommand('forceWarmup', RemoteCommandFlag.RequiresLogin, self, self.OnForceWarmupCommand)
-    RCON:RegisterCommand('forceEnd', RemoteCommandFlag.RequiresLogin, self, self.OnForceEndgameCommand)
-    RCON:RegisterCommand('setMinPlayers', RemoteCommandFlag.RequiresLogin, self, self.OnMinPlayersCommand)
+    RCON:RegisterCommand("forceWarmup", RemoteCommandFlag.RequiresLogin, self, self.OnForceWarmupCommand)
+    RCON:RegisterCommand("forceEnd", RemoteCommandFlag.RequiresLogin, self, self.OnForceEndgameCommand)
+    RCON:RegisterCommand("setMinPlayers", RemoteCommandFlag.RequiresLogin, self, self.OnMinPlayersCommand)
 end
 
 
@@ -241,12 +241,19 @@ end
 -- =============================================
 
 function VuBattleRoyaleServer:OnForceWarmupCommand(p_Command, p_Args, p_LoggedIn)
+    if self.m_GameState ~= GameStates.None then
+        return { 
+            "ERROR",
+            "You can only start the warmup pre-round!"
+        }
+    end
+
     self.m_ForcedWarmup = true
-	self:ChangeGameState(GameStates.Warmup)
+    self:ChangeGameState(GameStates.Warmup)
 
 	return { 
-        'OK',
-        'Warmup started!'
+        "OK",
+        "Warmup started!"
     }
 end
 
@@ -254,16 +261,16 @@ function VuBattleRoyaleServer:OnForceEndgameCommand(p_Command, p_Args, p_LoggedI
 	self:ChangeGameState(GameStates.EndGame)
 
 	return { 
-        'OK',
-        'Game ended!'
+        "OK",
+        "Game ended!"
     }
 end
 
 function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
     if p_Args[1] == nil then
         return { 
-            'ERROR',
-            'You need to specify the min players count!'
+            "ERROR",
+            "You need to specify the min players count!"
         }
     end
 
@@ -271,8 +278,8 @@ function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
 
     if s_MinNum <= 0 or s_MinNum > 99 then
         return { 
-            'ERROR',
-            'You can only set the min players count between 0 and 99!'
+            "ERROR",
+            "You can only set the min players count between 0 and 99!"
         }
     end
 
@@ -280,8 +287,8 @@ function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
     NetEvents:BroadcastLocal(PlayerEvents.MinPlayersToStartChanged, s_MinNum)
 
 	return { 
-        'OK',
-        'Min players count set!'
+        "OK",
+        "Min players count set!"
     }
 end
 
