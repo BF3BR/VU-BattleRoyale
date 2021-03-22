@@ -149,8 +149,11 @@ function BRTeamManager:AssignTeams()
             l_BrTeam.m_TeamId = TeamId.Team1
             l_BrTeam.m_SquadId = SquadId.SquadNone
         else
-            l_BrTeam.m_TeamId = math.floor(l_Index / 32) + 1
-            l_BrTeam.m_SquadId = l_Index % 32 + 1
+            -- old teamIds logic
+            -- l_BrTeam.m_TeamId = math.floor(l_Index / 32) + 1
+            -- l_BrTeam.m_SquadId = l_Index % 32 + 1
+            l_BrTeam.m_TeamId = l_Index % 15 + 2
+            l_BrTeam.m_SquadId = l_Index // 15 + 1
 
             l_Index = l_Index + 1
         end
