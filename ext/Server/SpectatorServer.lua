@@ -1,6 +1,6 @@
 class "SpectatorServer"
 
-function SpectatorServer:OnSepctatorRequestPithcAndYaw(p_Player, p_SpectatingId)
+function SpectatorServer:OnSpectatorRequestPitchAndYaw(p_Player, p_SpectatingId)
     if p_Player == nil or p_SpectatingId == nil then
         return
     end

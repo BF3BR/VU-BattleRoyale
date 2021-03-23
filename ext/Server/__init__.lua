@@ -52,7 +52,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 
     NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected)
     NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy)
-    NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSepctatorRequestPitchAndYaw)
+    NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw)
 
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
     Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
@@ -161,12 +161,12 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
     end
 end
 
-function VuBattleRoyaleServer:OnSepctatorRequestPitchAndYaw(p_Player, p_SpectatingId)
+function VuBattleRoyaleServer:OnSpectatorRequestPitchAndYaw(p_Player, p_SpectatingId)
     if p_SpectatingId == nil then
         return
     end
 
-    m_SpectatorServer:OnSepctatorRequestPitchAndYaw(p_Player, p_SpectatingId)
+    m_SpectatorServer:OnSpectatorRequestPitchAndYaw(p_Player, p_SpectatingId)
 end
 
 function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
