@@ -23,14 +23,14 @@ function MathHelper:RandomTrianglePoint(p_TrianglePoints)
 
     local l_SqrtR1 = math.sqrt(l_R1)
 
-    local l_X = (1 - l_SqrtR1) * l_A.x + (l_SqrtR1 * (1 - l_R2)) * l_B.x + (l_SqrtR1 * l_R2) * l_C.x;
-    local l_Y = (1 - l_SqrtR1) * l_A.y + (l_SqrtR1 * (1 - l_R2)) * l_B.y + (l_SqrtR1 * l_R2) * l_C.y;
+    local l_X = (1 - l_SqrtR1) * l_A.x + (l_SqrtR1 * (1 - l_R2)) * l_B.x + (l_SqrtR1 * l_R2) * l_C.x
+    local l_Y = (1 - l_SqrtR1) * l_A.y + (l_SqrtR1 * (1 - l_R2)) * l_B.y + (l_SqrtR1 * l_R2) * l_C.y
 
     return Vec2(l_X, l_Y)
 end
 
 function MathHelper:LerpRadians(p_PointA, p_PointB, p_Time)
-    local s_Result = 0.0;
+    local s_Result = 0.0
 
     local s_Diff = p_PointB - p_PointA
     if s_Diff < -math.pi then

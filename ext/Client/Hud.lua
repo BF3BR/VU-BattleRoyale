@@ -91,6 +91,10 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
         WebUI:Hide()
         return
     end
+
+    if self.m_BrPlayer.m_Team ~= nil then
+        self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked)
+    end
     
     if self.m_Ticks >= ServerConfig.HudUpdateRate then
         self.m_HudOnMinPlayersToStart:ForceUpdate(self.m_MinPlayersToStart)
@@ -327,11 +331,10 @@ function VuBattleRoyaleHud:PushLocalPlayerTeam()
         return
     end
 
-    self.m_HudOnUpdateTeamSize:Update(ServerConfig.PlayersPerTeam);
+    self.m_HudOnUpdateTeamSize:Update(ServerConfig.PlayersPerTeam)
 
     if self.m_BrPlayer.m_Team ~= nil then
-        self.m_HudOnUpdateTeamId:Update(self.m_BrPlayer.m_Team.m_Id);
-        self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked);
+        self.m_HudOnUpdateTeamId:Update(self.m_BrPlayer.m_Team.m_Id)
         self.m_HudOnUpdateTeamPlayers:ForceUpdate(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
     end
 end
@@ -341,7 +344,7 @@ function VuBattleRoyaleHud:OnTeamJoinDenied(p_Error)
         return
     end
 
-    self.m_HudOnTeamJoinError:ForceUpdate(p_Error);
+    self.m_HudOnTeamJoinError:ForceUpdate(p_Error)
 end
 
 function VuBattleRoyaleHud:OnGunShipCamera()

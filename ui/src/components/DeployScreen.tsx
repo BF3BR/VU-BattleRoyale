@@ -182,9 +182,9 @@ const DeployScreen: React.FC<Props> = ({
                                     <span>Code: <b className="codeNumbers">{teamCode??' - '}</b></span>
                                     <label id="TeamOpenClose" className={teamOpen ? "isOpen" : "isClose"}>
                                         {teamOpen ?
-                                            <img src={lockOpen} alt="Open" />
+                                            <img src={lockOpen} alt="FILL" />
                                         :
-                                            <img src={lock} alt="Locked" />
+                                            <img src={lock} alt="NO FILL" />
                                         }
                                         <input
                                             name="teamOpen"
@@ -195,11 +195,11 @@ const DeployScreen: React.FC<Props> = ({
                                         />
                                         {teamOpen ?
                                             <>
-                                                Open
+                                                FILL
                                             </>
                                         :
                                             <>
-                                                Closed
+                                                NO FILL
                                             </>
                                         }
                                     </label>

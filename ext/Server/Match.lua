@@ -195,7 +195,7 @@ function Match:GetRandomWarmupSpawnpoint()
         return nil
     end
     
-    local s_SpawnTrans = nil;
+    local s_SpawnTrans = nil
     s_SpawnTrans = MapsConfig[s_LevelName]["WarmupSpawnPoints"][ math.random( #MapsConfig[s_LevelName]["WarmupSpawnPoints"] ) ]
 
     return s_SpawnTrans
