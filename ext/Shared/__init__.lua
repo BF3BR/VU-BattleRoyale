@@ -91,7 +91,19 @@ function VuBattleRoyaleShared:RegisterCallbacks()
         Guid('FE76DD4D-CA25-2382-1ACB-40117A0AC957'), 
         self, self.OnSoldierWeaponSwitchingData
     )
-    
+
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid('C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4'),
+        Guid('AD413546-DEAF-8115-B89C-D666E801C67A'),
+        self, self.OnGameModeSettings
+    )
+
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid('19631E31-2E3A-432B-8929-FB57BAA7D28E'),
+        Guid('B4BB6CFA-0E53-45F9-B190-1287DCC093A9'),
+        self, self.OnTeamEntityData
+    )
+
     m_InteractiveManDown:RegisterCallbacks()
     m_DropWeapons:RegisterCallbacks()
 end
@@ -227,6 +239,38 @@ end
 function VuBattleRoyaleShared:OnLevelLoadResources()
     ResourceManager:MountSuperBundle("spchunks")
     ResourceManager:MountSuperBundle("levels/coop_010/coop_010")
+end
+
+function VuBattleRoyaleShared:OnGameModeSettings(p_Instance)
+    local settings = GameModeSettings(p_Instance)
+    settings:MakeWritable()
+    local s_GameModeTeamSize = GameModeTeamSize()
+    s_GameModeTeamSize.playerCount = 127
+    s_GameModeTeamSize.squadSize = 4
+    for i=1, 14 do
+        settings.information[1].sizes[3].teams:add(s_GameModeTeamSize)
+    end
+end
+
+function VuBattleRoyaleShared:OnTeamEntityData(p_Instance)
+    for i=3, 16, 1 do
+        local s_NewTeamId = TeamEntityData(MathUtils:RandomGuid())
+        s_NewTeamId.isEventConnectionTarget = 3
+        s_NewTeamId.isPropertyConnectionTarget  = 3
+        s_NewTeamId.indexInBlueprint = i
+        s_NewTeamId.team = TeamData(p_Instance)
+        s_NewTeamId.id = i
+
+        local s_LogicPrefabBlueprint = LogicPrefabBlueprint(
+            ResourceManager:FindInstanceByGuid(
+                Guid('466C8E5C-BD29-11E0-923F-C41005FFB7BD'),
+                Guid('D0DB1029-9313-7D6D-BBA9-9C8F92C0040B')
+            )
+        )
+        s_LogicPrefabBlueprint:MakeWritable()
+        s_LogicPrefabBlueprint.objects:add(s_NewTeamId)
+        s_LogicPrefabBlueprint.partition:AddInstance(s_NewTeamId)
+    end
 end
 
 -- =============================================
