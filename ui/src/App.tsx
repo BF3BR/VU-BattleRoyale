@@ -289,7 +289,9 @@ const App: React.FC = () => {
     const [selectedTeamType, setSelectedTeamType] = useState<number>(1);
 
     const [team, setTeam] = useState<Player[]>([]);
+    const [downedTeammatesCount, setDownedTeammatesCount] = useState<number>(0);
     window.OnUpdateTeamPlayers = (p_Team: any) => {
+        let tempDownedTeammatesCount = 0;
         let tempTeam: Player[] = [];
         if (p_Team !== undefined && p_Team.length > 0) {
             p_Team.forEach((teamPlayer: any) => {
@@ -299,10 +301,21 @@ const App: React.FC = () => {
                     kill: 0,
                     color: Color.White,
                     isTeamLeader: teamPlayer.IsTeamLeader,
-                })
+                });
+
+                if (teamPlayer.State === 2) {
+                    tempDownedTeammatesCount++;
+                }
             });
         }
         setTeam(tempTeam);
+
+        if (tempDownedTeammatesCount > downedTeammatesCount) {
+            setAlertPlaySound(Sounds.Alert);
+            setAlertLength(4);
+            setAlertString("One of your teammate is downed");
+        }
+        setDownedTeammatesCount(tempDownedTeammatesCount);
     }
 
     const [teamId, setTeamId] = useState<string>('-');
