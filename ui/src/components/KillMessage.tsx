@@ -20,6 +20,7 @@ const KillMessage: React.FC<Props> = ({ killed, enemyName, kills, resetMessage }
                 clearInterval(interval);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [killed]);
 
     return (

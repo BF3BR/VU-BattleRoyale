@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 /* Helpers */
 import Vec3 from "./helpers/Vec3";
@@ -6,7 +6,7 @@ import Circle from "./helpers/Circle";
 import Player, { Color } from "./helpers/Player";
 
 /* Components */
-import ParaDropDistance from "./components/ParaDropDistance";
+// import ParaDropDistance from "./components/ParaDropDistance";
 import MiniMap from "./components/MiniMap";
 import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
@@ -16,7 +16,7 @@ import Alert from "./components/Alert";
 import SpactatorInfo from "./components/SpactatorInfo";
 import Gameover from "./components/Gameover";
 import DeployScreen from "./components/DeployScreen";
-import Inventory from "./components/Inventory";
+// import Inventory from "./components/Inventory";
 
 /* Style */
 import './App.scss';
@@ -39,8 +39,8 @@ const App: React.FC = () => {
     /*
     * Paradrop
     */
-    const [paradropPercentage, setParadropPercentage] = useState<number>(100);
-    const [paradropDistance, setParadropDistance] = useState<number>(100);
+    // const [paradropPercentage, setParadropPercentage] = useState<number>(100);
+    // const [paradropDistance, setParadropDistance] = useState<number>(100);
 
 
     /*
@@ -131,7 +131,7 @@ const App: React.FC = () => {
     const [playerSecondaryAmmo, setPlayerSecondaryAmmo] = useState<number>(0);
     const [playerFireLogic, setPlayerFireLogic] = useState<string>("AUTO");
     const [playerCurrentWeapon, setPlayerCurrentWeapon] = useState<string>('');
-    const [playerInventory, setPlayerInventory] = useState<string[]>([]);
+    // const [playerInventory, setPlayerInventory] = useState<string[]>([]);
 
     window.OnPlayerHealth = (data: number) => {
         setPlayerHealth(Math.ceil(data));
@@ -292,7 +292,7 @@ const App: React.FC = () => {
     window.OnUpdateTeamPlayers = (p_Team: any) => {
         let tempTeam: Player[] = [];
         if (p_Team !== undefined && p_Team.length > 0) {
-            p_Team.map((teamPlayer: any) => {
+            p_Team.forEach((teamPlayer: any) => {
                 tempTeam.push({
                     name: teamPlayer.Name,
                     state: teamPlayer.State,

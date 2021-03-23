@@ -34,11 +34,8 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
                 afterInterval();
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const OnReturnToGame = () => {
-        afterInterval();
-    }
 
     return (
         <>
@@ -62,9 +59,6 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
                             Your Kills: <span>{localPlayer.kill??''}</span>
                         </span>
                     </div>
-                    <button className="btn" onClick={OnReturnToGame}>
-                        Return to game
-                    </button>
                 </div>
             }
         </>

@@ -1,8 +1,6 @@
 import React from "react";
 
-import Timer from "./Timer";
-
-import { Player, Color } from "../helpers/Player";
+import { Player } from "../helpers/Player";
 
 import "./TeamInfo.scss";
 

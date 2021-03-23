@@ -71,6 +71,7 @@ const Alert: React.FC<Props> = ({ alert, afterInterval, playSound, length }) => 
                 clearInterval(interval);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [alert, length]);
 
     return (
