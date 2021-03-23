@@ -231,8 +231,10 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
         return
     end
 
-    if s_Player == s_LocalPlayer then
-        -- If the local player died we should check if anyone else alive in the team if not we should bring up the game over screen
+    if s_Player == s_LocalPlayer or (s_Player.squadId == s_LocalPlayer.squadId and s_Player.teamId == s_LocalPlayer.teamId) then
+        -- If the local player died or the player that died is your squadmate we should check
+        -- if anyone else alive in the squad, if not we should bring up the gameover screen
+        -- So the gameover screen should only pop up when the last player in your squad dies
         if s_LocalPlayer.squadId == SquadId.SquadNone then
 			m_Hud:OnGameOverScreen(false)
             return

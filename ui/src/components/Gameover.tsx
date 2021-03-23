@@ -21,21 +21,22 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
     useEffect(() => {
         if (alert !== null && localPlayer !== null) {
             alertAudio.play();
-            WebUI.Call('EnableKeyboard');
-            WebUI.Call('EnableMouse');
-        }
 
-        return () => {
-            alertAudio.currentTime = 0.0;
-            alertAudio.pause();
-            WebUI.Call('ResetKeyboard');
-            WebUI.Call('ResetMouse');
+            const interval = setInterval(() => {
+                afterInterval();
+            }, 10000);
+
+            return () => {
+                alertAudio.currentTime = 0.0;
+                alertAudio.pause();
+    
+                clearInterval(interval);
+                afterInterval();
+            }
         }
     }, []);
 
     const OnReturnToGame = () => {
-        WebUI.Call('ResetKeyboard');
-        WebUI.Call('ResetMouse');
         afterInterval();
     }
 
