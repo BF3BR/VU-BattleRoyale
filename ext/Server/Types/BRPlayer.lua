@@ -18,7 +18,7 @@ function BRPlayer:__init(p_Player)
     -- the name of the player who killed this BRPlayer
     self.m_KillerName = nil
 
-    self.m_TeamJoinStrategy = TeamJoinStrategy.NoJoin
+    self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
     self.m_Armor = Armor:BasicArmor()
     self.m_Kills = 0
     self.m_Score = 0
@@ -29,6 +29,7 @@ function BRPlayer:GetName()
     return (self.m_Player ~= nil and self.m_Player.name) or nil
 end
 
+-- Returns the soldier object, if exists, or nil
 function BRPlayer:GetSoldier()
     return self.m_Player ~= nil and self.m_Player.soldier
 end
@@ -97,6 +98,9 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
             if self:HasAliveTeammates() then
                 self.m_KillerName = p_Giver:GetName()
                 NetEvents:SendToLocal(DamageEvent.PlayerDown, p_Giver.m_Player, self:GetName())
+
+                -- start mandown damage timer
+                g_Timers:Interval(1, self, self.OnManDownDamage)
             else
                 self.m_KillerName = nil -- TODO move to onRevive
                 self:Kill(true)
@@ -133,6 +137,20 @@ function BRPlayer:IncrementKills(p_Victim)
     -- send related net events
     NetEvents:SendToLocal(DamageEvent.PlayerKill, self.m_Player, p_Victim:GetName())
     NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self:GetName())
+end
+
+function BRPlayer:OnManDownDamage(timer)
+    local l_Soldier = self:GetSoldier()
+
+    -- check if dead
+    if l_Soldier == nil or not l_Soldier.isInteractiveManDown then
+        Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, nil)
+        timer:Destroy()
+        return
+    end
+
+    -- apply damage
+    l_Soldier.health = math.max(0, l_Soldier.health - 1)
 end
 
 -- Checks if the player and `p_OtherBrPlayer` are on the same team
