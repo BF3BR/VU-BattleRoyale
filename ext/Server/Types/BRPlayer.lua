@@ -18,7 +18,7 @@ function BRPlayer:__init(p_Player)
     -- the name of the player who killed this BRPlayer
     self.m_KillerName = nil
 
-    self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
+    self.m_TeamJoinStrategy = TeamJoinStrategy.NoJoin
     self.m_Armor = Armor:BasicArmor()
     self.m_Kills = 0
     self.m_Score = 0
@@ -142,9 +142,13 @@ end
 function BRPlayer:OnManDownDamage(timer)
     local l_Soldier = self:GetSoldier()
 
-    -- check if dead
+    -- check if not in interactiveManDown
     if l_Soldier == nil or not l_Soldier.isInteractiveManDown then
-        Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, nil)
+        -- check if dead
+        if self.m_Player ~= nil and not self.m_Player.alive then
+            Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, nil)
+        end
+
         timer:Destroy()
         return
     end
