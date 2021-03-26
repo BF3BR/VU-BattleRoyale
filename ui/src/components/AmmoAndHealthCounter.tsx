@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import PercentageCounter from "./PercentageCounter";
+import PercentageCounter from "./helpers/PercentageCounter";
 import { WeaponNames } from "../helpers/WeaponNames";
 
 import "./AmmoAndHealthCounter.scss";

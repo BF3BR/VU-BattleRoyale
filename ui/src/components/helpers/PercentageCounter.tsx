@@ -1,7 +1,7 @@
 import React from "react";
 
-import armor from "../assets/img/armor.svg";
-import health from "../assets/img/medic.svg";
+import armor from "../../assets/img/armor.svg";
+import health from "../../assets/img/medic.svg";
 
 import "./PercentageCounter.scss";
 

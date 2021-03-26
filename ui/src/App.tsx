@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import Vec3 from "./helpers/Vec3";
 import Circle from "./helpers/Circle";
 import Player, { Color } from "./helpers/Player";
+import { FireLogicType } from "./helpers/FireLogicType";
+import { Sounds } from "./helpers/Sounds";
 
 /* Components */
-// import ParaDropDistance from "./components/ParaDropDistance";
-import MiniMap from "./components/MiniMap";
+import MiniMap from "./components/map/MiniMap";
 import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
 import InteractMessage from "./components/InteractMessage";
@@ -16,14 +17,12 @@ import Alert from "./components/Alert";
 import SpactatorInfo from "./components/SpactatorInfo";
 import Gameover from "./components/Gameover";
 import DeployScreen from "./components/DeployScreen";
-// import Inventory from "./components/Inventory";
+import TeamInfo from "./components/TeamInfo";
+import KillMessage from "./components/KillMessage";
 
 /* Style */
 import './App.scss';
-import KillMessage from "./components/KillMessage";
-import { FireLogicType } from "./helpers/FireLogicType";
-import { Sounds } from "./helpers/Sounds";
-import TeamInfo from "./components/TeamInfo";
+import Ping from "./helpers/Ping";
 
 const App: React.FC = () => {
     /*
@@ -35,12 +34,6 @@ const App: React.FC = () => {
             debugMode = true;
         }
     }
-
-    /*
-    * Paradrop
-    */
-    // const [paradropPercentage, setParadropPercentage] = useState<number>(100);
-    // const [paradropDistance, setParadropDistance] = useState<number>(100);
 
 
     /*
@@ -131,7 +124,6 @@ const App: React.FC = () => {
     const [playerSecondaryAmmo, setPlayerSecondaryAmmo] = useState<number>(0);
     const [playerFireLogic, setPlayerFireLogic] = useState<string>("AUTO");
     const [playerCurrentWeapon, setPlayerCurrentWeapon] = useState<string>('');
-    // const [playerInventory, setPlayerInventory] = useState<string[]>([]);
 
     window.OnPlayerHealth = (data: number) => {
         setPlayerHealth(Math.ceil(data));
@@ -175,6 +167,8 @@ const App: React.FC = () => {
             setInteractiveKey(data.key);
         }
     }
+
+
     /*
     * Spectator
     */
@@ -273,6 +267,7 @@ const App: React.FC = () => {
         }
     }
 
+
     /*
     * Deploy screen
     */
@@ -364,6 +359,26 @@ const App: React.FC = () => {
         setShowUI(p_Toggle);
     }
 
+    const [pingsTable, setPingsTable] = useState<Array<Ping>>([]);
+    window.OnCreateMarker = (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number) => {
+        let pings = [ ...pingsTable ];
+        pings.push({
+            id: p_Key,
+            color: p_Color,
+            position: {
+                x: p_PositionX,
+                y: 0,
+                z: p_PositionZ,
+            }
+        });
+        setPingsTable(pings);
+    }
+
+    window.OnRemoveMarker = (p_Key: string) => {
+        let pings = pingsTable.filter((ping: Ping, _: number) => ping.id !== p_Key);
+        setPingsTable(pings);
+    }
+
     return (
         <>
             {debugMode &&
@@ -391,14 +406,6 @@ const App: React.FC = () => {
             }
 
             <div id="debug">
-                {/*<input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={paradropPercentage}
-                    onChange={(event: any) => setParadropPercentage(event.target.value)}
-                    step="1"
-                />*/}
                 <button onClick={() => setShowMinimap(prevState => !prevState)}>Show Map</button>
                 <button onClick={() => setOpenMap(prevState => !prevState)}>Open Map</button>
                 <button onClick={() => window.OnPlayerPos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Player Pos</button>
@@ -423,7 +430,7 @@ const App: React.FC = () => {
                             y: 555,
                             z: -864,
                         },
-                        radius: 450,
+                        radius: 250,
                     });
                 }}>setRandomCircle</button>
                 <button onClick={() => SetKilledMessage(false, 'TestUser', 3)}>SetKillMsg</button>
@@ -520,13 +527,6 @@ const App: React.FC = () => {
                                     resetMessage={() => SetKilledMessage(null, null, null)}
                                 />
 
-
-                                {/*<ParaDropDistance 
-                                    percentage={paradropPercentage}
-                                    distance={300}
-                                    warnPercentage={15}
-                                />*/}
-
                                 {showMinimap &&
                                     <MiniMap
                                         open={openMap}
@@ -535,13 +535,9 @@ const App: React.FC = () => {
                                         innerCircle={innerCircle}
                                         outerCircle={outerCircle}
                                         playerIsInPlane={playerIsInPlane}
+                                        pingsTable={pingsTable}
                                     />
                                 }
-
-                                {/*<Inventory
-                                    mapOpen={openMap}
-                                    playerInventory={playerInventory}
-                                />*/}
                             </>
                         }
                     </>
@@ -595,5 +591,8 @@ declare global {
 
         ResetVars: () => void;
         OnHideWebUI: (p_Toggle: boolean) => void;
+
+        OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number) => void;
+        OnRemoveMarker: (p_Key: string) => void;
     }
 }

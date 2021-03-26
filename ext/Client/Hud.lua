@@ -16,6 +16,8 @@ function VuBattleRoyaleHud:__init()
 
     self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
 
+    self.m_Markers = {}
+
     self:RegisterVars()
 end
 
@@ -401,6 +403,25 @@ function VuBattleRoyaleHud:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_P
     elseif s_Screen.name == "UI/Flow/Screen/HudScreen" then
         self.m_HudOnHideWebUI:Update(true)
     end
+end
+
+function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionZ, p_Color)
+    local s_Marker = {
+        Key = p_Key,
+        PositionX = p_PositionX,
+        PositionZ = p_PositionZ,
+        Color = p_Color
+    }
+    self.m_Markers[p_Key] = s_Marker
+    WebUI:ExecuteJS(string.format('OnCreateMarker("%s", "%s", %s, %s)', s_Marker.Key, s_Marker.Color, s_Marker.PositionX, s_Marker.PositionZ))
+end
+
+function VuBattleRoyaleHud:RemoveMarker(p_Key)
+    if self.m_Markers[p_Key] == nil then
+        return
+    end
+    self.m_Markers[p_Key] = nil
+    WebUI:ExecuteJS(string.format('OnRemoveMarker("%s")', p_Key))
 end
 
 if g_VuBattleRoyaleHud == nil then

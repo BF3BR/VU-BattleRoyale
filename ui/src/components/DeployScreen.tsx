@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { sendToLua } from "../Helpers";
 import Player from "../helpers/Player";
-import BrSelect from "./BrSelect";
+import BrSelect from "./helpers/BrSelect";
 
 import arrow from "../assets/img/arrow.svg";
 import lock from "../assets/img/lock.svg";

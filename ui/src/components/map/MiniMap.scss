@@ -6,24 +6,9 @@
     height: 12vw;
     width: 12vw;
     border: 0.1vw solid rgba(7,7,7,.8);
-    transition: all .1s ease;
-    background: transparent url('../assets/img/noise-gif-square-anim.gif') 50% 50% no-repeat;
+    background: transparent url('../../assets/img/noise.gif') 50% 50% no-repeat;
     background-size: cover;
     box-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.05);
-
-    &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        background: transparent url('../assets/img/ezgif.com-gif-maker.gif');
-        background-repeat: repeat;
-        background-size: 200px 200px;
-        width: 100%;
-        height: 100%;
-        opacity: .05;
-        filter: blur(10px) grayscale(1);
-    }
 
     &.open {
         position: absolute;
@@ -33,7 +18,6 @@
         height: 90vh;
         width: 90vh;
         background: rgba(0, 0, 0, 0.1);
-        transition: all .1s ease;
         max-height: 2048px;
         max-width: 2048px;
 
@@ -42,7 +26,7 @@
         }
     }
 
-    #minimapCanvas {
+    /*#minimapCanvas {
         position: relative;
         width: 100%;
         height: 100%;
@@ -55,5 +39,19 @@
         opacity: 0;
         pointer-events: none;
         display: none;
+    }*/
+    canvas {
+        position: relative;
+        width: 100%;
+        height: 100%;
+
+        &.hidden {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            pointer-events: none;
+            display: none;
+        }
     }
 }

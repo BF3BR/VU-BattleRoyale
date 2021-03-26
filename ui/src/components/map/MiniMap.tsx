@@ -1,7 +1,8 @@
 import React from "react";
 
-import Circle from "../helpers/Circle";
-import Vec3 from "../helpers/Vec3";
+import Circle from "../../helpers/Circle";
+import Ping from "../../helpers/Ping";
+import Vec3 from "../../helpers/Vec3";
 
 import MapCanvas from "./MapCanvas";
 
@@ -14,9 +15,10 @@ interface Props {
     innerCircle: Circle|null;
     outerCircle: Circle|null;
     playerIsInPlane: boolean;
+    pingsTable: Array<Ping>;
 }
 
-const MiniMap: React.FC<Props> = ({ open, playerPos, playerYaw, innerCircle, outerCircle, playerIsInPlane }) => {
+const MiniMap: React.FC<Props> = ({ open, playerPos, playerYaw, innerCircle, outerCircle, playerIsInPlane, pingsTable }) => {
 
     return (
         <>
@@ -29,6 +31,7 @@ const MiniMap: React.FC<Props> = ({ open, playerPos, playerYaw, innerCircle, out
                         innerCircle={innerCircle} 
                         outerCircle={outerCircle} 
                         playerIsInPlane={playerIsInPlane}
+                        pingsTable={pingsTable}
                     />
                 :   
                     <></>
