@@ -18,7 +18,12 @@ function BRPlayer:__init(p_Player)
     -- the name of the player who killed this BRPlayer
     self.m_KillerName = nil
 
+    -- the position of the player in the squad
+    self.m_PosInSquad = 1
+
+    -- the user selected strategy that is used when the teams are formed
     self.m_TeamJoinStrategy = TeamJoinStrategy.NoJoin
+
     self.m_Armor = Armor:BasicArmor()
     self.m_Kills = 0
     self.m_Score = 0
@@ -248,6 +253,7 @@ end
 function BRPlayer:AsTable(p_Simple, p_TeamData)
     -- state used for squad members
     if p_Simple then
+        -- TODO remove it
         local l_State = BRPlayerState.Dead
         if self.m_Player ~= nil and self.m_Player.alive and self.m_Player.soldier ~= nil then
             if self.m_Player.soldier.isAlive then
@@ -257,7 +263,12 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
             end
         end
 
-        return {Name = self:GetName(), IsTeamLeader = self.m_IsTeamLeader, State = l_State}
+        return {
+            Name = self:GetName(),
+            IsTeamLeader = self.m_IsTeamLeader,
+            State = l_State,
+            PosInSquad = self.m_PosInSquad
+        }
     end
 
     -- get team data
@@ -274,7 +285,8 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
             TeamJoinStrategy = self.m_TeamJoinStrategy,
             IsTeamLeader = self.m_IsTeamLeader,
             Kills = self.m_Kills,
-            Score = self.m_Score
+            Score = self.m_Score,
+            PosInSquad = self.m_PosInSquad
         }
     }
 end

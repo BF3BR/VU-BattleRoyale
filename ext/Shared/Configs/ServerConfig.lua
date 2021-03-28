@@ -27,6 +27,13 @@ ServerConfig =
         [GameStates.EndGame] = 15.0,
     },
 
+    PlayerColors = {
+        Vec4(1, 0, 0, 0.5),
+        Vec4(0, 1, 0, 0.5),
+        Vec4(0, 0, 1, 0.5),
+        Vec4(0.5, 0.5, 0.5, 0.5)
+    },
+
     -- DEBUG STUFF
     Debug = {
         EnableLootPointSpheres = false,
