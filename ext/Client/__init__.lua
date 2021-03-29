@@ -11,6 +11,7 @@ require "__shared/Enums/CustomEvents"
 
 require "PhaseManagerClient"
 require "BRPlayer"
+require "Visuals/OOCFires"
 
 local m_UICleanup = require "UICleanup"
 local m_UIManager = require "UIManager"

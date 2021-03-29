@@ -10,7 +10,9 @@ function RaycastHelper:__init()
 end
 
 -- Returns the ground height (Y) value of a certain position
-function RaycastHelper:GetY(p_Pos)
+function RaycastHelper:GetY(p_Pos, p_Height)
+    p_Height = p_Height or 100
+
     -- used math.floor to reduce raycasts number
     -- local l_X = math.floor(p_Pos.x)
     -- local l_Z = math.floor(p_Pos.z)
@@ -23,8 +25,8 @@ function RaycastHelper:GetY(p_Pos)
         return self.m_RaycastMemo[l_Key]
     end
 
-    local l_From = p_Pos + Vec3(0, 100, 0)
-    local l_To = p_Pos - Vec3(0, 100, 0)
+    local l_From = p_Pos + Vec3(0, p_Height, 0)
+    local l_To = p_Pos - Vec3(0, p_Height, 0)
     local l_Hit = RaycastManager:Raycast(l_From, l_To, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter |
                                              RayCastFlags.DontCheckRagdoll)
 
