@@ -20,6 +20,7 @@ function OOCFires:__init()
 
     self.m_IsLoaded = false
     self.m_PrevRotation = 0
+    self.m_LastRadius = 0
 
     self.m_OuterCircle = nil
     self.m_WasUpdated = false
@@ -47,19 +48,48 @@ function OOCFires:OnPresim(p_State)
         return
     end
 
-    m_Logger:Write("about to spawn a fire")
+    m_Logger:Write("about to spawn some fires")
+
+    self:SpawnMany(6)
+
+    -- -- rotation
+    -- local l_Circle = Circle(self.m_OuterCircle.Center, self.m_OuterCircle.Radius)
+    -- local l_PlusAngle = MathUtils:GetRandom(0.64, 0.96)
+    -- self.m_PrevRotation = (self.m_PrevRotation + l_PlusAngle) % (2 * math.pi)
+
+    -- -- position
+    -- local l_Position = l_Circle:CircumferencePoint(self.m_PrevRotation)
+    -- l_Position.y = g_RaycastHelper:GetY(l_Position, 600)
+
+    -- -- spawn
+    -- self:SpawnFire(l_Position)
+end
+
+function OOCFires:SpawnMany(p_Count)
+    -- check distance from previous fire zone
+    if math.abs(self.m_OuterCircle.Radius - self.m_LastRadius) < 3 then
+        return
+    end
+    self.m_LastRadius = self.m_OuterCircle.Radius
+
+    local l_AngleStep = 2 * math.pi / p_Count
 
     -- rotation
     local l_Circle = Circle(self.m_OuterCircle.Center, self.m_OuterCircle.Radius)
     local l_PlusAngle = MathUtils:GetRandom(0.64, 0.96)
     self.m_PrevRotation = (self.m_PrevRotation + l_PlusAngle) % (2 * math.pi)
 
-    -- position
-    local l_Position = l_Circle:CircumferencePoint(self.m_PrevRotation)
-    l_Position.y = g_RaycastHelper:GetY(l_Position, 600)
+    -- spawn fires
+    for i = 1, p_Count do
+        local l_Rotation = self.m_PrevRotation + i * l_AngleStep
 
-    -- spawn
-    self:SpawnFire(l_Position)
+        -- position
+        local l_Position = l_Circle:CircumferencePoint(l_Rotation)
+        l_Position.y = g_RaycastHelper:GetY(l_Position, 600)
+
+        -- spawn
+        self:SpawnFire(l_Position)
+    end
 end
 
 function OOCFires:OnCircleMove(p_OuterCircle)
@@ -105,14 +135,6 @@ function OOCFires:SpawnFire(p_Position)
 
         -- remove oldest fire if needed
         self:DespawnOldest()
-
-        -- for _, l_Entity in ipairs(l_SpawnedEntities) do
-        --     l_Entity:FireEvent('Stop')
-        --     l_Entity:FireEvent('Disable')
-
-        --     l_Entity:FireEvent('Start')
-        --     l_Entity:FireEvent('Enable')
-        -- end
     else
         m_Logger:Error("No blueprint")
     end
