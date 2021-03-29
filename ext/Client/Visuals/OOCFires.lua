@@ -12,13 +12,14 @@ class "OOCFires"
 
 local m_Logger = Logger("OOCFires", true)
 
-local s_MaxFireEffects = 24
+local s_MaxFireEffects = 256
 
 -- Out of Circle Fires
 function OOCFires:__init()
+    self.m_Queue = Queue()
+
     self.m_IsLoaded = false
     self.m_PrevRotation = 0
-    self.m_Queue = Queue()
 
     self.m_OuterCircle = nil
     self.m_WasUpdated = false
@@ -50,7 +51,8 @@ function OOCFires:OnPresim(p_State)
 
     -- rotation
     local l_Circle = Circle(self.m_OuterCircle.Center, self.m_OuterCircle.Radius)
-    self.m_PrevRotation = (self.m_PrevRotation + 0.64) % (2 * math.pi)
+    local l_PlusAngle = MathUtils:GetRandom(0.64, 0.96)
+    self.m_PrevRotation = (self.m_PrevRotation + l_PlusAngle) % (2 * math.pi)
 
     -- position
     local l_Position = l_Circle:CircumferencePoint(self.m_PrevRotation)
@@ -69,7 +71,8 @@ function OOCFires:SpawnFire(p_Position)
     m_Logger:Write("Trying to spawn fire at:")
     m_Logger:Write(p_Position)
 
-    local l_Blueprint = EffectBlueprint(ResourceManager:SearchForInstanceByGuid(Guid("392D298D-CD2D-498F-AF2E-2C2F5B2AF137")))
+    local l_Blueprint = EffectBlueprint(ResourceManager:SearchForInstanceByGuid(
+                                            Guid("392D298D-CD2D-498F-AF2E-2C2F5B2AF137")))
 
     local l_Transform = LinearTransform()
     l_Transform.trans = p_Position
@@ -89,24 +92,58 @@ function OOCFires:SpawnFire(p_Position)
             l_Entity:Init(Realm.Realm_Client, true)
 
             table.insert(l_SpawnedEntities, l_Entity)
+
+            l_Entity:FireEvent("Stop")
+            l_Entity:FireEvent("Disable")
+
+            l_Entity:FireEvent("Start")
+            l_Entity:FireEvent("Enable")
         end
 
-        m_Logger:Write("calling FireEvent " .. tostring(#l_SpawnedEntities))
+        -- add created entities in the queue
+        self.m_Queue:Enqueue(l_SpawnedEntities)
 
-        for _, l_Entity in ipairs(l_SpawnedEntities) do
-            l_Entity:FireEvent('Stop')
-            l_Entity:FireEvent('Disable')
+        -- remove oldest fire if needed
+        self:DespawnOldest()
 
-            l_Entity:FireEvent('Start')
-            l_Entity:FireEvent('Enable')
-        end
+        -- for _, l_Entity in ipairs(l_SpawnedEntities) do
+        --     l_Entity:FireEvent('Stop')
+        --     l_Entity:FireEvent('Disable')
+
+        --     l_Entity:FireEvent('Start')
+        --     l_Entity:FireEvent('Enable')
+        -- end
     else
-        m_Logger:Write("No blueprint")
+        m_Logger:Error("No blueprint")
     end
 end
 
 function OOCFires:ShouldSpawn()
-    return MathUtils:GetRandom(0, 10) > 9.95
+    return MathUtils:GetRandom(0, 10) > 9.99
+end
+
+function OOCFires:DespawnOldest(p_Forced)
+    if self.m_Queue:Size() < s_MaxFireEffects and not p_Forced then
+        return
+    end
+
+    local l_Entities = self.m_Queue:Dequeue()
+    if l_Entities == nil then
+        return
+    end
+
+    m_Logger:Write("removing oldest entity")
+
+    for i, l_Entity in ipairs(l_Entities) do
+        l_Entity:FireEvent("Stop")
+        l_Entity:FireEvent("Disable")
+
+        -- destroy entity
+        l_Entity:Destroy()
+
+        -- clear reference
+        l_Entities[i] = nil
+    end
 end
 
 function OOCFires:OnLoad()
@@ -115,6 +152,18 @@ end
 
 function OOCFires:OnDestroy()
     self.m_IsLoaded = false
+
+    -- destroy entities
+    while not self.m_Queue:IsEmpty() do
+        self:DespawnOldest(true)
+    end
+
+    -- reset vars
+    self.m_Queue = Queue()
+    self.m_IsLoaded = false
+    self.m_PrevRotation = 0
+    self.m_OuterCircle = nil
+    self.m_WasUpdated = false
 end
 
 -- define global
