@@ -86,7 +86,7 @@ function InteractiveManDown:OnVeniceSoldierHealthModuleData(p_Instance)
     p_Instance.manDownStateHealthPoints = 100.0
     p_Instance.timeForCorpse = 1.0
     p_Instance.immortalTimeAfterSpawn = 0.0
-    p_Instance.manDownStateTime = 60.0
+    p_Instance.manDownStateTime = 110.0
     p_Instance.regenerationRate = 0.0
     AntRef(SoldierHealthModuleBinding(p_Instance.binding).interactiveManDown).assetId = 357042550
     AntRef(SoldierHealthModuleBinding(p_Instance.binding).revived).assetId = -1
