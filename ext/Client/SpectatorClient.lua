@@ -162,6 +162,13 @@ function SpectatorClient:Enable(p_InflictorId)
 		return
 	end
 
+	local s_Transform = LinearTransform(
+				Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588), 
+				Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069), 
+				Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139), 
+				Vec3(98.216575622559, 889.53924560547, -815.45764160156))
+	SpectatorManager:SetFreecameraTransform(s_Transform)
+
 	-- If we're alive we don't allow spectating.
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
