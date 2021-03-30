@@ -81,9 +81,7 @@ end
 
 -- Update spectating player's object
 function PhaseManagerClient:OnSpectatingPlayer(p_Player)
-    if p_Player ~= nil then
-        self.m_SpectatedPlayer = p_Player
-    end
+    self.m_SpectatedPlayer = p_Player
 end
 
 -- Returns the position of the local or the spectated player

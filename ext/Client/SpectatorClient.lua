@@ -71,8 +71,10 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 
     if s_Player == nil then
         return
-    end
-
+	end
+	print("activate spectator?")
+	print(p_PlayerId)
+	print(s_Player.id)
     if s_Player.id == p_PlayerId then
 		g_Timers:Timeout(5, p_InflictorId, function(inflictorId)
 			self:Enable(inflictorId)
@@ -203,6 +205,8 @@ function SpectatorClient:Disable()
     WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(false) .. ");")
 
 	self.m_SpectatedPlayerId = nil
+	-- Dispatch a local event for phasemanager
+	Events:DispatchLocal(SpectatorEvent.PlayerChanged)
 
 	self:ReleaseControl()
 	self:DestroyCamera()
