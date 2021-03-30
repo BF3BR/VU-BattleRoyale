@@ -1,5 +1,4 @@
 import Vec3 from "./Vec3";
-import { Color } from "./Player";
 
 interface Ping {
     id: string;

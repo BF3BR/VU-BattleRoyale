@@ -1,16 +1,13 @@
-export enum Color {
-    White,
-    Red,
-    Blue,
-    Green,
-}
+import Vec3 from "./Vec3";
 
 export interface Player {
     name: string;
     kill: number;
     state: number;
-    color: Color;
     isTeamLeader: boolean;
+    color?: string;
+    position?: Vec3;
+    yaw?: number;
 }
 
 export default Player;

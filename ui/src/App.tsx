@@ -3,7 +3,7 @@ import React, { useState } from "react";
 /* Helpers */
 import Vec3 from "./helpers/Vec3";
 import Circle from "./helpers/Circle";
-import Player, { Color } from "./helpers/Player";
+import Player from "./helpers/Player";
 import { FireLogicType } from "./helpers/FireLogicType";
 import { Sounds } from "./helpers/Sounds";
 
@@ -101,6 +101,7 @@ const App: React.FC = () => {
 
     const [localPlayer, setLocalPlayer] = useState<Player | null>(null);
     window.OnLocalPlayerInfo = (data: any) => {
+        console.log(data);
         setLocalPlayer(data);
     }
 
@@ -109,8 +110,8 @@ const App: React.FC = () => {
             name: 'KVN',
             kill: 15,
             state: 1,
-            color: Color.White,
             isTeamLeader: true,
+            color: "rgba(255, 0, 0, 0.3)",
         });
     }
 
@@ -294,8 +295,14 @@ const App: React.FC = () => {
                     name: teamPlayer.Name,
                     state: teamPlayer.State,
                     kill: 0,
-                    color: Color.White,
                     isTeamLeader: teamPlayer.IsTeamLeader,
+                    color: teamPlayer.Color,
+                    /*position: {
+                        x: 0,
+                        y: 0,
+                        z: 0,
+                    },
+                    yaw: 0,*/
                 });
 
                 if (teamPlayer.State === 2) {
@@ -311,6 +318,37 @@ const App: React.FC = () => {
             setAlertString("One of your teammate is downed");
         }
         setDownedTeammatesCount(tempDownedTeammatesCount);
+    }
+
+    const CreateRandomTeam = () => {
+        let tempTeam: Player[] = [];
+        tempTeam.push({
+            name: "Test 1 ",
+            state: 1,
+            kill: 0,
+            isTeamLeader: false,
+            color: "rgba(255, 255, 255, 0.3)",
+            position: {
+                x: 522.175720,
+                y: 155.705505,
+                z: -822.253479,
+            },
+            yaw: 60,
+        });
+        tempTeam.push({
+            name: "Test 1 ",
+            state: 1,
+            kill: 0,
+            isTeamLeader: false,
+            color: "rgba(0, 255, 255, 0.3)",
+            position: {
+                x: 522.175720,
+                y: 155.705505,
+                z: -922.253479,
+            },
+            yaw: 30,
+        });
+        setTeam(tempTeam);
     }
 
     const [teamId, setTeamId] = useState<string>('-');
@@ -361,7 +399,7 @@ const App: React.FC = () => {
 
     const [pingsTable, setPingsTable] = useState<Array<Ping>>([]);
     window.OnCreateMarker = (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number) => {
-        let pings = [ ...pingsTable ];
+        let pings = pingsTable.filter((ping: Ping, _: number) => ping.id !== p_Key);
         pings.push({
             id: p_Key,
             color: p_Color,
@@ -435,6 +473,7 @@ const App: React.FC = () => {
                 }}>setRandomCircle</button>
                 <button onClick={() => SetKilledMessage(false, 'TestUser', 3)}>SetKillMsg</button>
                 <button onClick={() => setDeployScreen(true)}>setDeployScreen</button>
+                <button onClick={CreateRandomTeam}>CreateRandomTeam</button>
             </div>
 
             <div id="VUBattleRoyale">
@@ -527,17 +566,18 @@ const App: React.FC = () => {
                                     resetMessage={() => SetKilledMessage(null, null, null)}
                                 />
 
-                                {showMinimap &&
-                                    <MiniMap
-                                        open={openMap}
-                                        playerPos={playerPos}
-                                        playerYaw={playerYaw}
-                                        innerCircle={innerCircle}
-                                        outerCircle={outerCircle}
-                                        playerIsInPlane={playerIsInPlane}
-                                        pingsTable={pingsTable}
-                                    />
-                                }
+                                <MiniMap
+                                    open={openMap}
+                                    playerPos={playerPos}
+                                    playerYaw={playerYaw}
+                                    innerCircle={innerCircle}
+                                    outerCircle={outerCircle}
+                                    playerIsInPlane={playerIsInPlane}
+                                    pingsTable={pingsTable}
+                                    team={team}
+                                    localPlayer={localPlayer}
+                                    showMinimap={showMinimap}
+                                />
                             </>
                         }
                     </>

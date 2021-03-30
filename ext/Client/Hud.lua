@@ -225,6 +225,7 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
             ["kill"] =  (self.m_BrPlayer.m_Kills or 0),
             ["state"] = self.m_BrPlayer:GetState(),
             ["isTeamLeader"] = self.m_BrPlayer.m_IsTeamLeader,
+            ["color"] = self.m_BrPlayer:GetColor(true),
         }
         self.m_HudOnLocalPlayerInfo:Update(json.encode(s_LocalPlayerTable))
     end
@@ -233,14 +234,14 @@ end
 function VuBattleRoyaleHud:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
     if p_Action == UIInputAction.UIInputAction_MapSize and p_EventType ==
         UIInputActionEventType.UIInputActionEventType_Pressed then
-        WebUI:ExecuteJS("OnMapSizeChange()")
+        WebUI:ExecuteJS("OnMapSizeChange();")
         p_Hook:Pass(UIInputAction.UIInputAction_None, p_EventType)
         return
     end
 
     if p_Action == UIInputAction.UIInputAction_MapZoom and p_EventType ==
         UIInputActionEventType.UIInputActionEventType_Pressed then
-        WebUI:ExecuteJS("OnMapSizeChange()")
+        WebUI:ExecuteJS("OnMapZoomChange();")
         p_Hook:Pass(UIInputAction.UIInputAction_None, p_EventType)
         return
     end

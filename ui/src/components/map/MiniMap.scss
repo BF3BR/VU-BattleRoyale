@@ -9,6 +9,19 @@
     background: transparent url('../../assets/img/noise.gif') 50% 50% no-repeat;
     background-size: cover;
     box-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+
+    &.hideMinimap {
+        display: none !important;
+    }
+
+    canvas {
+        position: absolute;
+        width: 160% !important;
+        height: 160% !important;
+        left: -30%;
+        top: -30%;
+    }
 
     &.open {
         position: absolute;
@@ -17,41 +30,17 @@
         transform: translate(-50%, 50%);
         height: 90vh;
         width: 90vh;
-        background: rgba(0, 0, 0, 0.1);
+        background-size: 300px !important;
+        background-repeat: repeat;
         max-height: 2048px;
         max-width: 2048px;
 
-        &::after {
-            opacity: 0;
-        }
-    }
-
-    /*#minimapCanvas {
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-
-    #circlesCanvas {
-        position: absolute;
-        left: 0;
-        top: 0;
-        opacity: 0;
-        pointer-events: none;
-        display: none;
-    }*/
-    canvas {
-        position: relative;
-        width: 100%;
-        height: 100%;
-
-        &.hidden {
-            position: absolute;
+        canvas {
             left: 0;
             top: 0;
-            opacity: 0;
-            pointer-events: none;
-            display: none;
+            width: 100% !important;
+            height: 100% !important;
+            transform: rotate(0deg) !important;
         }
     }
 }
