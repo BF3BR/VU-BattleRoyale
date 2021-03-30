@@ -309,30 +309,14 @@ function VuBattleRoyaleServer:DisablePreRound()
 		ticketCounterEntity = ticketCounterIterator:Next()
 	end
 	
-	-- This is for Rush tickets etc.
-	local lifeCounterIterator = EntityManager:GetIterator("ServerLifeCounterEntity")
-	local lifeCounterEntity = lifeCounterIterator:Next()
-	while lifeCounterEntity do
-		lifeCounterEntity = Entity(lifeCounterEntity)
-		lifeCounterEntity:FireEvent("StartRound")
-		lifeCounterEntity = lifeCounterIterator:Next()
-	end
-	
-	-- This is for TDM tickets etc.
-	local killCounterIterator = EntityManager:GetIterator("ServerKillCounterEntity")
-	local killCounterEntity = killCounterIterator:Next()
-	while killCounterEntity do
-		killCounterEntity = Entity(killCounterEntity)
-		killCounterEntity:FireEvent("StartRound")
-		killCounterEntity = killCounterIterator:Next()
-	end
-	
 	-- This is needed so you are able to move
 	local inputRestrictionIterator = EntityManager:GetIterator("ServerInputRestrictionEntity")
 	local inputRestrictionEntity = inputRestrictionIterator:Next()
 	while inputRestrictionEntity do
-		inputRestrictionEntity = Entity(inputRestrictionEntity)
-		inputRestrictionEntity:FireEvent("Disable")
+		if inputRestrictionEntity.data.instanceGuid == Guid('E8C37E6A-0C8B-4F97-ABDD-28715376BD2D') then
+			inputRestrictionEntity = Entity(inputRestrictionEntity)
+			inputRestrictionEntity:FireEvent("Disable")
+		end
 		inputRestrictionEntity = inputRestrictionIterator:Next()
 	end
 	
@@ -343,17 +327,6 @@ function VuBattleRoyaleServer:DisablePreRound()
 		roundOverEntity = Entity(roundOverEntity)
 		roundOverEntity:FireEvent("RoundStarted")
 		roundOverEntity = roundOverIterator:Next()
-	end
-	
-	-- This EventGate needs to be closed otherwise Attacker can"t win in Rush 
-	local eventGateIterator = EntityManager:GetIterator("EventGateEntity")
-	local eventGateEntity = eventGateIterator:Next()
-	while eventGateEntity do
-		eventGateEntity = Entity(eventGateEntity)
-		if eventGateEntity.data.instanceGuid == Guid("253BD7C1-920E-46D6-B112-5857D88DAF41") then
-			eventGateEntity:FireEvent("Close")
-		end
-		eventGateEntity = eventGateIterator:Next()
 	end
 end
 
