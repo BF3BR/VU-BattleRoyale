@@ -71,41 +71,38 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 
     if s_Player == nil then
         return
-	end
-	print("activate spectator?")
-	print(p_PlayerId)
-	print(s_Player.id)
+    end
     if s_Player.id == p_PlayerId then
-		g_Timers:Timeout(5, p_InflictorId, function(inflictorId)
-			self:Enable(inflictorId)
+        g_Timers:Timeout(5, p_InflictorId, function(inflictorId)
+            self:Enable(inflictorId)
         end)
-		return
+        return
     -- Handle death of player being spectated.
-	elseif self.m_SpectatedPlayerId == nil then
-		self:SpectateNextPlayer()
-		return
-	elseif p_PlayerId == self.m_SpectatedPlayerId then
-		if p_InflictorId ~= nil then
-			local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
-			if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
-				self:SpectatePlayer(s_Inflictor)
-				return
-			end
-		end
-	end
-	self:SpectateNextPlayer()
+    elseif self.m_SpectatedPlayerId == nil then
+        self:SpectateNextPlayer()
+        return
+    elseif p_PlayerId == self.m_SpectatedPlayerId then
+        if p_InflictorId ~= nil then
+            local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
+            if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
+                self:SpectatePlayer(s_Inflictor)
+                return
+            end
+        end
+    end
+    self:SpectateNextPlayer()
 end
 
 function SpectatorClient:OnPlayerDeleted(p_Player)
-	if not self:IsEnabled() then
-		return
-	end
+    if not self:IsEnabled() then
+        return
+    end
 
-	-- Handle disconnection of player being spectated.
-	if p_Player.id == self.m_SpectatedPlayerId then
-		self.m_SpectatedPlayerId = nil
-		self:SpectateNextPlayer()
-	end
+    -- Handle disconnection of player being spectated.
+    if p_Player.id == self.m_SpectatedPlayerId then
+        self.m_SpectatedPlayerId = nil
+        self:SpectateNextPlayer()
+    end
 end
 
 function SpectatorClient:OnClientUpdateInput()
