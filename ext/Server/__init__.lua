@@ -113,7 +113,7 @@ end
 
 function VuBattleRoyaleServer:OnManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
     if p_Reviver ~= nil then
-        p_Player.soldier.health = 30
+        p_Player.soldier.health = 130
     else
         p_Player.soldier.health = 0.0001
     end
