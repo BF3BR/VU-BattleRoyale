@@ -23,6 +23,9 @@ function SpectatorClient:__init()
 
 	self.m_LastPitch = 0.0
 	self.m_LastYaw = 0.0
+
+	self.m_GameState = nil
+	self.m_IsSpectatingGunship = false
 end
 
 function SpectatorClient:OnExtensionUnloading()
@@ -117,6 +120,13 @@ function SpectatorClient:OnClientUpdateInput()
     end
 end
 
+function SpectatorClient:OnGameStateChanged(p_GameState)
+    if p_GameState == nil then
+        return
+    end
+    self.m_GameState = p_GameState
+end
+
 function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_InflictorId)
 	local s_PlayerToSpectate = nil
 	local s_Players = nil
@@ -184,10 +194,15 @@ function SpectatorClient:Enable(p_InflictorId)
 		s_PlayerToSpectate = self:FindFirstPlayerToSpectate(false, p_InflictorId)
 	end
 
-    if s_PlayerToSpectate ~= nil then
+	if s_PlayerToSpectate ~= nil then
 		-- self:RemoveTimer("NoPlayerFoundTimer")
+		if self.m_IsSpectatingGunship then
+			self:SpectateGunship(false)	
+		end
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
+	elseif self.m_GameState == GameStates.Plane then
+		self:SpectateGunship(true)	
 	end
 
 	self:SetTimer("NoPlayerFoundTimer", g_Timers:Timeout(4, self, self.ReEnable))
@@ -559,6 +574,29 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	self.m_Data.transform:LookAtTransform(s_CameraLocation, self.m_LookAtPos)
 	self.m_Data.transform.left = self.m_Data.transform.left * -1
 	self.m_Data.transform.forward = self.m_Data.transform.forward * -1
+end
+
+function SpectatorClient:SpectateGunship(p_Enable)
+    local s_CameraEntityIterator = EntityManager:GetIterator("ClientCameraEntity")
+    local s_CameraEntity = s_CameraEntityIterator:Next()
+
+    while s_CameraEntity do
+        if s_CameraEntity.data.instanceGuid == Guid("B19E172D-24EB-4513-9844-53ECA80A4FF9") then
+            s_CameraEntity = Entity(s_CameraEntity)
+
+            if p_Enable then
+                self.m_IsSpectatingGunship = true
+                s_CameraEntity:FireEvent("TakeControl")
+            else
+                self.m_IsSpectatingGunship = false
+                s_CameraEntity:FireEvent("ReleaseControl")
+            end
+
+            return
+        end
+
+        s_CameraEntity = s_CameraEntityIterator:Next()
+    end
 end
 
 if g_SpectatorClient == nil then
