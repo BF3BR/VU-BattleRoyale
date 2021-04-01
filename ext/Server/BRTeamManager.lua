@@ -165,6 +165,7 @@ function BRTeamManager:AssignTeams()
 end
 
 -- Creates a BRTeam
+-- @return BRTeam
 function BRTeamManager:CreateTeam()
     -- create team and add it's reference
     local l_Team = BRTeam(self:CreateId())
@@ -174,6 +175,7 @@ function BRTeamManager:CreateTeam()
 end
 
 -- Removes a BRTeam
+-- @param p_Team BRTeam
 function BRTeamManager:RemoveTeam(p_Team)
     -- clear reference and destroy team
     self.m_Teams[p_Team.m_Id] = nil
@@ -181,6 +183,8 @@ function BRTeamManager:RemoveTeam(p_Team)
 end
 
 -- Creates a BRPlayer instance for the specified player
+-- @param p_Player Player
+-- @return BRPlayer|nil
 function BRTeamManager:CreatePlayer(p_Player)
     if p_Player == nil then
         m_Logger:Error("could not create BRPlayer")
@@ -206,6 +210,7 @@ function BRTeamManager:CreatePlayer(p_Player)
 end
 
 -- Removes a BRPlayer
+-- @param p_Player Player|BRPlayer|string
 function BRTeamManager:RemovePlayer(p_Player)
     local l_BrPlayer = self:GetPlayer(p_Player)
 
@@ -215,16 +220,23 @@ function BRTeamManager:RemovePlayer(p_Player)
     end
 end
 
+-- Creates a new BRTeam and puts the player in it
+-- @param p_BrPlayer BRPlayer
+-- @return BRTeam
 function BRTeamManager:CreateTeamWithPlayer(p_BrPlayer)
     local l_Team = self:CreateTeam()
 
+    -- set team lock based on player's preferences
     if p_BrPlayer.m_TeamJoinStrategy == TeamJoinStrategy.Custom then
         l_Team.m_Locked = false
     else
         l_Team.m_Locked = true
     end
 
+    -- add player to the team
     l_Team:AddPlayer(p_BrPlayer)
+
+    return l_Team
 end
 
 -- Kills every player
@@ -238,7 +250,7 @@ end
 function BRTeamManager:UnspawnAllSoldiers()
     local s_HumanPlayerEntityIterator = EntityManager:GetIterator("ServerHumanPlayerEntity")
     local s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
-    
+
     while s_HumanPlayerEntity do
         s_HumanPlayerEntity = Entity(s_HumanPlayerEntity)	
         s_HumanPlayerEntity:FireEvent("UnSpawnAllSoldiers")
@@ -247,6 +259,8 @@ function BRTeamManager:UnspawnAllSoldiers()
 end
 
 -- Create a unique BRTeam id
+-- @param p_Len number (optional)
+-- @return string
 function BRTeamManager:CreateId(p_Len)
     p_Len = p_Len or 4
 
@@ -259,6 +273,7 @@ function BRTeamManager:CreateId(p_Len)
 end
 
 -- Checks & updates the team's placement if all of its players are dead
+-- @param p_BrTeam BRTeam
 function BRTeamManager:UpdateTeamPlacement(p_BrTeam)
     if p_BrTeam == nil or not p_BrTeam.m_Active or p_BrTeam:HasAlivePlayers() then
         return
@@ -269,6 +284,7 @@ function BRTeamManager:UpdateTeamPlacement(p_BrTeam)
 end
 
 -- Returns the number of active teams with at least one player alive
+-- @return number
 function BRTeamManager:GetAliveTeamCount()
     local l_Count = 0
     for _, l_BrTeam in pairs(self.m_Teams) do

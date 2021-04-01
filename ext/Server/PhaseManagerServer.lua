@@ -9,6 +9,7 @@ require "__shared/Types/Circle"
 
 class("PhaseManagerServer", PhaseManagerShared)
 
+local m_BRTeamManager = require "BRTeamManager"
 local m_Logger = Logger("PhaseManagerServer", true)
 
 function PhaseManagerServer:RegisterVars()
@@ -163,12 +164,19 @@ function PhaseManagerServer:ApplyDamage()
         return
     end
 
+    -- get damage for current phase
     local l_Damage = self:GetCurrentPhase().Damage
-    for _, l_Player in ipairs(PlayerManager:GetPlayers()) do
-        if l_Player.soldier ~= nil then
-            if not self.m_OuterCircle:IsInnerPoint(l_Player.soldier.transform.trans) then
-                local l_NewHealth = l_Player.soldier.health - l_Damage
-                l_Player.soldier.health = math.max(0, l_NewHealth)
+
+    for _, l_BrPlayer in pairs(m_BRTeamManager.m_Players) do
+        local l_Soldier = l_BrPlayer:GetSoldier()
+
+        -- check if soldier is outside of the circle
+        if l_Soldier ~= nil and not self.m_OuterCircle:IsInnerPoint(l_BrPlayer:GetPosition()) then
+            l_Damage = l_BrPlayer:OnDamaged(l_Damage, nil, true)
+
+            -- update player's health if needed
+            if l_BrPlayer.m_Player.alive then
+                l_Soldier.health = math.max(0, l_Soldier.health - l_Damage)
             end
         end
     end

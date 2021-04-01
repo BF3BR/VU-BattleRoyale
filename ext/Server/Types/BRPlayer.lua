@@ -70,12 +70,17 @@ function BRPlayer:ApplyTeamSquadIds()
 end
 
 -- 
-function BRPlayer:OnDamaged(p_Damage, p_Giver)
-    if self:IsTeammate(p_Giver) and not self:Equals(p_Giver) then
+function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
+    p_IgnoreProtection = not (not p_IgnoreProtection)
+
+    -- check if giver isnt a teammate or the player himself
+    if p_Giver ~= nil and self:IsTeammate(p_Giver) and not self:Equals(p_Giver) then
         return 0
     end
 
-    NetEvents:SendToLocal(DamageEvent.Hit, p_Giver.m_Player, p_Damage)
+    if p_Giver ~= nil then
+        NetEvents:SendToLocal(DamageEvent.Hit, p_Giver.m_Player, p_Damage)
+    end
 
     local l_Soldier = self:GetSoldier()
     if l_Soldier == nil then
@@ -90,14 +95,22 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
         return health
     elseif not l_Soldier.isInteractiveManDown then
         health = health - 100
-        p_Damage = self.m_Armor:ApplyDamage(p_Damage)
-        self:SendState()
+
+        -- apply damage to the armor
+        if not p_IgnoreProtection then
+            p_Damage = self.m_Armor:ApplyDamage(p_Damage)
+            self:SendState()
+        end
 
         if p_Damage >= health then
             -- kill instantly if no teammates left
             if self:HasAliveTeammates() then
-                self.m_KillerName = p_Giver:GetName()
-                NetEvents:SendToLocal(DamageEvent.PlayerDown, p_Giver.m_Player, self:GetName())
+                if p_Giver ~= nil then
+                    self.m_KillerName = p_Giver:GetName()
+                    NetEvents:SendToLocal(DamageEvent.PlayerDown, p_Giver.m_Player, self:GetName())
+                else
+                    self.m_KillerName = nil
+                end
 
                 -- start mandown damage timer
                 g_Timers:Interval(1, self, self.OnManDownDamage)
@@ -183,17 +196,30 @@ function BRPlayer:Kill(p_Forced)
         return true -- TODO maybe should return false
     end
 
-    if p_Forced then
-        l_Soldier:ForceDead()
-    else
-        l_Soldier:Kill()
-    end
+    -- TODO removed ForceDead(), it causes crashes
+    -- if p_Forced then
+    --     l_Soldier:ForceDead()
+    -- else
+    --     l_Soldier:Kill()
+    -- end
+    l_Soldier:Kill()
 
     return true
 end
 
 function BRPlayer:FinishTeammates()
     return self.m_Team ~= nil and self.m_Team:FinishPlayers(self)
+end
+
+-- Returns the position of the player if alive
+-- @return Vec3|nil
+function BRPlayer:GetPosition()
+    local l_Soldier = self:GetSoldier()
+    if l_Soldier == nil then
+        return nil
+    end
+
+    return l_Soldier.transform.trans
 end
 
 -- Spawns the player
