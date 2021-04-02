@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-import { Sounds } from "../helpers/Sounds";
+import { Sounds } from "../helpers/SoundsHelper";
 
 import exclamation from "../assets/img/warning.svg";
 import alert from "../assets/sounds/alarm.mp3";

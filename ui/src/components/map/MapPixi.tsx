@@ -5,33 +5,21 @@ import {GlowFilter} from '@pixi/filter-glow';
 import * as PIXI from 'pixi.js';
 import '@pixi/graphics-extras';
 
-import Vec3 from '../../helpers/Vec3';
-import Circle from '../../helpers/Circle';
-import Player from '../../helpers/Player';
-import Ping from '../../helpers/Ping';
+import Vec3 from '../../helpers/Vec3Helper';
+import Circle from '../../helpers/CircleHelper';
+import Player from '../../helpers/PlayerHelper';
+import Ping from '../../helpers/PingHelper';
 
 import XP5_003 from "../../assets/img/XP5_003.jpg";
 import airplane from "../../assets/img/airplane.svg";
-
-// TODO: Map based
-var landscapeTexture = PIXI.Texture.from(XP5_003);
-
-var airplaneSprite = new PIXI.Sprite(PIXI.Texture.from(airplane));
-airplaneSprite.anchor.set(0.5);
-airplaneSprite.scale.set(0.35);
+import { MapsConfig } from '../../helpers/MapsConfigHelper';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
+var airPlaneTexture = PIXI.Texture.from(airplane);
+
 const width = 1024;
 const height = 1024;
-const worldWidth = 2048;
-const worldHeight = 2048;
-
-// TODO: Map based
-const topLeftPos = {
-    x: 667.28,
-    z: -290.44,
-};
 
 const stageOptions = {
     antialias: false,
@@ -39,8 +27,29 @@ const stageOptions = {
     backgroundAlpha: 0
 };
 
+// Based on map config
+let worldWidthHeight: number = 2048;
+
+let topLeftPos = {
+    x: 0,
+    z: 0,
+};
+
+var landscapeTexture: any = null;
+
+window.OnLevelFinalized = (levelName?: string) => {
+    switch (levelName) {
+        case "Levels/XP5_003/XP5_003":
+        default:
+            landscapeTexture = PIXI.Texture.from(XP5_003);
+            worldWidthHeight = MapsConfig["XP5_003"].worldWidthHeight;
+            topLeftPos = MapsConfig["XP5_003"].topLeftPos;
+            break;
+    }
+}
+
 const getMapPos = (pos: number, topLeftPos: number)  => {
-    return (topLeftPos - pos) * (worldWidth / 1250);
+    return (topLeftPos - pos) * (worldWidthHeight / 1250);
 }
 
 const getConvertedPlayerColor = (color: string) => {
@@ -62,7 +71,7 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         viewport
             .drag()
             .pinch()
-            .wheel({ percent: 0.6, smooth: 5 }) //, center: new PIXI.Point(500, 500)
+            .wheel({ percent: 1.35, smooth: 5 }) //, center: new PIXI.Point(500, 500)
             .decelerate()
             .bounce({ sides: 'all', time: 150, ease: 'easeInOutSine', underflow: 'center'})
             .clampZoom({ minWidth: 400, maxWidth: 2000 });
@@ -80,7 +89,7 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         });
     },
     didMount() {
-        // console.log("viewport mounted");
+        
     }
 });
 
@@ -92,6 +101,8 @@ interface MapPixiProps {
     open: boolean;
     playerPos: Vec3;
     playerYaw: number;
+    planePos: Vec3|null;
+    planeYaw: number|null;
     innerCircle: Circle;
     outerCircle: Circle;
     pingsTable: Array<Ping>;
@@ -104,6 +115,8 @@ const MapPixi: React.FC<MapPixiProps> = ({
     open, 
     playerPos, 
     playerYaw, 
+    planePos, 
+    planeYaw, 
     innerCircle, 
     outerCircle, 
     pingsTable,
@@ -154,74 +167,82 @@ const MapPixi: React.FC<MapPixiProps> = ({
             focus();
         } else {
             follow(snapZoomHeight);
+
+            if (!navigator.userAgent.includes('VeniceUnleashed')) {
+                if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
+                    return;
+                }
+            }
+            WebUI.Call('ResetMouse');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
+    window.OnMapEnableMouse = () => {
+        if (!navigator.userAgent.includes('VeniceUnleashed')) {
+            if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
+                return;
+            }
+        }
+        WebUI.Call('EnableMouse');
+    }
+
     window.OnMapZoomChange = () => {
-        switch (snapZoomHeight) {
-            case 600:
-                setSnapZoomHeight(900);
-                follow(900);
-                break;
-            case 900:
-                setSnapZoomHeight(1100);
-                follow(1100);
-                break;
-            case 1100:
-            default:
-                setSnapZoomHeight(600);
-                follow(600);
-                break;
+        if (!open) {
+            switch (snapZoomHeight) {
+                case 600:
+                    setSnapZoomHeight(900);
+                    follow(900);
+                    break;
+                case 900:
+                    setSnapZoomHeight(1100);
+                    follow(1100);
+                    break;
+                case 1100:
+                default:
+                    setSnapZoomHeight(600);
+                    follow(600);
+                    break;
+            }
         }
     }
 
     const drawPlayer = React.useCallback((g: any, color: number, local: boolean) => {
         var sideLegnth = 25;
-        g.clear()
-
-        if (local && playerIsInPlane) {
-            g.addChild(airplaneSprite);
-            g.filters = [new GlowFilter({ 
-                distance: 30, 
-                outerStrength: 1.5, 
-                innerStrength: 0.2,
-                color: 0x9EC555,
-            })];
-        } else {
-            g.beginFill(color, 0.3)
-            g.lineStyle({
-                width: 1, 
-                color: color, 
-                alpha: 1,
-                join: PIXI.LINE_JOIN.MITER,
-                miterLimit: 10,
-            });
-            g.moveTo(0, 0 + sideLegnth / 2);
-            g.lineTo(0 - sideLegnth, 0 + sideLegnth);
-            g.lineTo(0, 0 - sideLegnth);
-            g.lineTo(0 + sideLegnth, 0 + sideLegnth);
-            g.lineTo(0, 0 + sideLegnth / 2);
-            g.closePath();
-            g.endFill();
-            g.filters = [new GlowFilter({ 
-                distance: 30, 
-                outerStrength: 1.5, 
-                innerStrength: .1,
-                color: color,
-            })];
-        }
+        g.clear();
+        g.beginFill(color, 0.3);
+        g.lineStyle({
+            width: 4, 
+            color: color, 
+            alpha: 1,
+            join: PIXI.LINE_JOIN.MITER,
+            miterLimit: 10,
+        });
+        g.moveTo(0, 0 + sideLegnth / 2);
+        g.lineTo(0 - sideLegnth, 0 + sideLegnth);
+        g.lineTo(0, 0 - sideLegnth);
+        g.lineTo(0 + sideLegnth, 0 + sideLegnth);
+        g.lineTo(0, 0 + sideLegnth / 2);
+        g.closePath();
+        g.endFill();
+        g.filters = [new GlowFilter({ 
+            distance: 15, 
+            outerStrength: 1.5, 
+            innerStrength: .1,
+            color: color,
+        })];
     }, []);
 
     function Circle(props: any) {
         const draw = useCallback((g) => {
             var radius = props.circle.radius ?? 100;
-            radius = radius * (worldWidth / 1250);
+            radius = radius * (worldWidthHeight / 1250);
 
             g.clear();
 
             if (props.outer) {
                 g.beginFill(0xff9900, 0.3)
-                g.drawTorus(getMapPos(props.circle.center.x, topLeftPos.x), getMapPos(props.circle.center.z, topLeftPos.z), radius, worldHeight * 2);
+                g.drawTorus(getMapPos(props.circle.center.x, topLeftPos.x), getMapPos(props.circle.center.z, topLeftPos.z), radius, worldWidthHeight * 2);
                 g.endFill();
 
                 var f = new PIXI.Graphics();
@@ -270,7 +291,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                 f.clear();
                 f.beginFill(color, 0.3)
                 g.lineStyle({
-                    width: 4, 
+                    width: 5, 
                     color: color, 
                     alpha: 1,
                     join: PIXI.LINE_JOIN.MITER,
@@ -291,6 +312,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                 })];
                 g.addChild(f);
             });
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [props]);
       
         return <Graphics x={0} y={0} draw={draw} />;
@@ -309,17 +331,19 @@ const MapPixi: React.FC<MapPixiProps> = ({
                     plugins={["drag", "pinch", "wheel", "decelerate"]}
                     screenWidth={width}
                     screenHeight={height}
-                    worldWidth={worldWidth}
-                    worldHeight={worldHeight}
+                    worldWidth={worldWidthHeight}
+                    worldHeight={worldWidthHeight}
                 >
-                    <Sprite
-                        texture={landscapeTexture}
-                        anchor={0}
-                        scale={1}
-                        width={worldWidth}
-                        height={worldHeight}
-                        angle={0}
-                    />
+                    {landscapeTexture !== null &&
+                        <Sprite
+                            texture={landscapeTexture}
+                            anchor={0}
+                            scale={1}
+                            width={worldWidthHeight}
+                            height={worldWidthHeight}
+                            angle={0}
+                        />
+                    }
 
                     {innerCircle !== null &&
                         <Circle 
@@ -334,15 +358,6 @@ const MapPixi: React.FC<MapPixiProps> = ({
                             outer={true}
                         />
                     }
-
-                    <Graphics 
-                        draw={(g: any) => drawPlayer(g, localPlayer !== null ? getConvertedPlayerColor(localPlayer.color) : 0xff0000, true)}
-                        x={getMapPos(playerPos.x, topLeftPos.x)}
-                        y={getMapPos(playerPos.z, topLeftPos.z)}
-                        angle={playerYaw}
-                        ref={followPlayer}
-                        scale={1}
-                    />
 
                     {(team !== null && team.length > 0 && localPlayer !== null) &&
                         team
@@ -361,6 +376,31 @@ const MapPixi: React.FC<MapPixiProps> = ({
                         ))
                     }
 
+                    {planePos !== null &&
+                        <>
+                            <Sprite
+                                texture={airPlaneTexture}
+                                anchor={0.5}
+                                width={50}
+                                height={50}
+                                x={getMapPos(planePos.x, topLeftPos.x)}
+                                y={getMapPos(planePos.z, topLeftPos.z)}
+                                angle={planeYaw}
+                                scale={open ? .35 : 0.35}
+                            />                        
+                        </>
+                    }
+
+                    <Graphics 
+                        draw={(g: any) => drawPlayer(g, localPlayer !== null ? getConvertedPlayerColor(localPlayer.color) : 0xff0000, true)}
+                        x={getMapPos(playerPos.x, topLeftPos.x)}
+                        y={getMapPos(playerPos.z, topLeftPos.z)}
+                        angle={playerYaw}
+                        ref={followPlayer}
+                        scale={1}
+                        visible={!playerIsInPlane}
+                    />
+
                     {(pingsTable !== null && pingsTable.length > 0) &&
                         <Pings />
                     }
@@ -375,5 +415,7 @@ export default MapPixi;
 declare global {
     interface Window {
         OnMapZoomChange: () => void;
+        OnMapEnableMouse: () => void;
+        OnLevelFinalized: (levelName?: any) => void;
     }
 }

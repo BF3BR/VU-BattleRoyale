@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react'
-import Circle from '../../helpers/Circle';
-import Ping from '../../helpers/Ping';
-import Player from '../../helpers/Player';
+import Circle from '../../helpers/CircleHelper';
+import Ping from '../../helpers/PingHelper';
+import Player from '../../helpers/PlayerHelper';
 
 /* Icons */
 const playerIcon = new Image();

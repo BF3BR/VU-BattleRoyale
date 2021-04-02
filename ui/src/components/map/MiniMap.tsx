@@ -1,11 +1,10 @@
 import React from "react";
 
-import Circle from "../../helpers/Circle";
-import Ping from "../../helpers/Ping";
-import Player from "../../helpers/Player";
-import Vec3 from "../../helpers/Vec3";
+import Circle from "../../helpers/CircleHelper";
+import Ping from "../../helpers/PingHelper";
+import Player from "../../helpers/PlayerHelper";
+import Vec3 from "../../helpers/Vec3Helper";
 
-import MapCanvas from "./MapCanvas";
 import MapPixi from "./MapPixi";
 
 import "./MiniMap.scss";
@@ -14,6 +13,8 @@ interface Props {
     open: boolean;
     playerPos: Vec3|null;
     playerYaw: number|null;
+    planePos: Vec3|null;
+    planeYaw: number|null;
     innerCircle: Circle|null;
     outerCircle: Circle|null;
     playerIsInPlane: boolean;
@@ -27,6 +28,8 @@ const MiniMap: React.FC<Props> = ({
     open, 
     playerPos, 
     playerYaw, 
+    planePos, 
+    planeYaw, 
     innerCircle, 
     outerCircle, 
     playerIsInPlane, 
@@ -43,6 +46,8 @@ const MiniMap: React.FC<Props> = ({
                         open={open}
                         playerPos={playerPos} 
                         playerYaw={playerYaw} 
+                        planePos={planePos}
+                        planeYaw={planeYaw}
                         innerCircle={innerCircle}
                         outerCircle={outerCircle}
                         team={team}

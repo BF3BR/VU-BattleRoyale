@@ -32,6 +32,39 @@ function Teammate:GetColor(p_AsRgba)
     return string.format("rgba(%s, %s, %s, %s)", l_Color.x * 255, l_Color.y * 255, l_Color.z * 255, l_Color.w)
 end
 
+function Teammate:GetPosition()
+    local s_Player = PlayerManager:GetPlayerByName(self.m_Name)
+
+    if s_Player == nil then
+        return nil
+    end
+
+	if s_Player.soldier == nil then
+		return
+	end
+
+    return {
+        x = s_Player.soldier.transform.trans.x,
+        y = s_Player.soldier.transform.trans.y,
+        z = s_Player.soldier.transform.trans.z
+    }
+end
+
+function Teammate:GetYaw()
+    local s_Player = PlayerManager:GetPlayerByName(self.m_Name)
+
+    if s_Player == nil then
+        return nil
+    end
+
+	if s_Player.soldier == nil then
+		return nil
+	end
+
+    local s_YawRad = (math.atan(s_Player.soldier.worldTransform.forward.z, s_Player.soldier.worldTransform.forward.x) - (math.pi / 2)) % (2 * math.pi)
+    return math.floor((180 / math.pi) * s_YawRad)
+end
+
 function Teammate:FromTable(p_TeammateTable)
     return Teammate(p_TeammateTable.Name, p_TeammateTable.State, p_TeammateTable.IsTeamLeader, p_TeammateTable.PosInSquad)
 end
@@ -42,7 +75,9 @@ function Teammate:AsTable()
         State = self:GetState(),
         IsTeamLeader = self.m_IsTeamLeader,
         PosInSquad = self.m_PosInSquad,
-        Color = self:GetColor(true)
+        Color = self:GetColor(true),
+        Position = self:GetPosition(),
+        Yaw = self:GetYaw(),
     }
 end
 

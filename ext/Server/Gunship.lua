@@ -73,12 +73,12 @@ end
 
 function Gunship:OnEngineUpdate(p_GameState, p_DeltaTime)
     if self.m_PlayerUpdateInputEvent ~= nil then
-        if p_GameState >= 5 and #self.m_OpenParachuteList == 0 then
+        if p_GameState >= GameStates.Match and #self.m_OpenParachuteList == 0 then
             m_Logger:Write("Unsubscribe Player:UpdateInput")
             self.m_PlayerUpdateInputEvent:Unsubscribe()
             self.m_PlayerUpdateInputEvent = nil
         end
-    elseif p_GameState <= 1 then
+    elseif p_GameState <= GameStates.Warmup then
         self.m_PlayerUpdateInputEvent = Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
     end
     

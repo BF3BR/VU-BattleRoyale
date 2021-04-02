@@ -303,18 +303,10 @@ function VuBattleRoyaleClient:OnGunShipCamera()
 end
 
 function VuBattleRoyaleClient:OnGunshipPosition(p_Trans)
-    if p_Trans == nil then
-        return
-    end
-
     m_Hud:OnGunshipPosition(p_Trans)
 end
 
 function VuBattleRoyaleClient:OnGunshipYaw(p_Trans)
-    if p_Trans == nil then
-        return
-    end
-
     m_Hud:OnGunshipYaw(p_Trans)
 end
 

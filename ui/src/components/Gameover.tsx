@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Player from "../helpers/Player";
+import Player from "../helpers/PlayerHelper";
 
 import winner from "../assets/sounds/winner.mp3";
 

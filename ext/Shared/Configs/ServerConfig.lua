@@ -28,10 +28,10 @@ ServerConfig =
     },
 
     PlayerColors = {
-        Vec4(1, 0, 0, 0.5),
-        Vec4(0, 1, 0, 0.5),
-        Vec4(0, 0, 1, 0.5),
-        Vec4(0.5, 0.5, 0.5, 0.5)
+        Vec4(0.619, 0.772, 0.333, 0.5),
+        Vec4(1.000, 0.733, 0.337, 0.5),
+        Vec4(1.000, 0.623, 0.501, 0.5),
+        Vec4(0.580, 0.803, 0.952, 0.5)
     },
 
     -- DEBUG STUFF
@@ -42,7 +42,7 @@ ServerConfig =
 
         Logger_Print_All = true,
 
-        EnableWinningCheck = true,
+        EnableWinningCheck = false,
 
         ShowAllNametags = false,
 

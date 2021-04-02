@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { sendToLua } from "../Helpers";
-import Player from "../helpers/Player";
+import Player, { rgbaToRgb } from "../helpers/PlayerHelper";
 import BrSelect from "./helpers/BrSelect";
 
 import arrow from "../assets/img/arrow.svg";
@@ -208,9 +208,9 @@ const DeployScreen: React.FC<Props> = ({
                             <div className="card-content">
                                 <div className="TeamPlayers">
                                     {team.map((player: Player, index: number) => (
-                                        <div className={"TeamPlayer " + player.color.toString()} key={index}>
+                                        <div className={"TeamPlayer"} key={index}>
                                             <div className="TeamPlayerName">
-                                                <div className="circle"></div>
+                                                <div className="circle" style={{ background: rgbaToRgb(player.color), boxShadow: "0 0 0.5vw " + rgbaToRgb(player.color) }}></div>
                                                 <span>{player.name??''}</span>
                                             </div>
                                             {player.isTeamLeader &&
