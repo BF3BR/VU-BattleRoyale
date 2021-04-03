@@ -23,7 +23,7 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
             alertAudio.play();
 
             const interval = setInterval(() => {
-                afterInterval();
+                //afterInterval();
             }, 10000);
 
             return () => {
@@ -42,23 +42,21 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
             {localPlayer &&
                 <div id="Gameover">
                     <span className="WonOrLost">
-                        {gameOverIsWin ?
-                            <span className="won">You Won!</span>
+                        {!gameOverIsWin ?
+                            <span className="won">You Won</span>
                         :
-                            <span className="lost">You Lost!</span>
+                            <span className="lost">You Lost</span>
                         }
                     </span>
-                    <span className="Name">
+                    {/*<span className="Name">
                         {localPlayer.name??''}
+                    </span>*/}
+                    <span className="Rank">
+                        Your place: <span>#{gameOverPlace??99}</span>
                     </span>
-                    <div className="inline">
-                        <span className="Rank">
-                            Your place: <span>#{gameOverPlace??99}</span>
-                        </span>
-                        <span className="Kills">
-                            Your Kills: <span>{localPlayer.kill??''}</span>
-                        </span>
-                    </div>
+                    <span className="Kills">
+                        Your Kills: <span>{localPlayer.kill??''}</span>
+                    </span>
                 </div>
             }
         </>

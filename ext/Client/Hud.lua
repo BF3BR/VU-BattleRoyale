@@ -12,7 +12,6 @@ function VuBattleRoyaleHud:__init()
     self.m_Ticks = 0.0
     self.m_BrPlayer = nil
     self.m_IsPlayerOnPlane = false
-    self.m_StateTimer = nil
 
     self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
 
@@ -356,7 +355,6 @@ function VuBattleRoyaleHud:OnJumpOutOfGunship()
 end
 
 function VuBattleRoyaleHud:OnGunshipPosition(p_Trans)
-    -- not self.m_IsPlayerOnPlane
     if p_Trans == nil  then
         self.m_HudOnPlanePos:Update(nil)
     end
@@ -375,7 +373,6 @@ function VuBattleRoyaleHud:OnGunshipPosition(p_Trans)
 end
 
 function VuBattleRoyaleHud:OnGunshipYaw(p_Trans)
-    -- not self.m_IsPlayerOnPlane
     if p_Trans == nil then
         self.m_HudOnPlaneYaw:Update(nil)
     end
