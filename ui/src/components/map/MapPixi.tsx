@@ -28,7 +28,8 @@ const stageOptions = {
 };
 
 // Based on map config
-let worldWidthHeight: number = 2048;
+let textureWidthHeight: number = 2048;
+let worldWidthHeight: number = 1250;
 
 let topLeftPos = {
     x: 0,
@@ -42,6 +43,7 @@ window.OnLevelFinalized = (levelName?: string) => {
         case "Levels/XP5_003/XP5_003":
         default:
             landscapeTexture = PIXI.Texture.from(XP5_003);
+            textureWidthHeight = MapsConfig["XP5_003"].textureWidthHeight;
             worldWidthHeight = MapsConfig["XP5_003"].worldWidthHeight;
             topLeftPos = MapsConfig["XP5_003"].topLeftPos;
             break;
@@ -49,7 +51,7 @@ window.OnLevelFinalized = (levelName?: string) => {
 }
 
 const getMapPos = (pos: number, topLeftPos: number)  => {
-    return (topLeftPos - pos) * (worldWidthHeight / 1250);
+    return (topLeftPos - pos) * (textureWidthHeight / worldWidthHeight);
 }
 
 const getConvertedPlayerColor = (color: string) => {
@@ -179,12 +181,14 @@ const MapPixi: React.FC<MapPixiProps> = ({
     }, [open]);
 
     window.OnMapEnableMouse = () => {
-        if (!navigator.userAgent.includes('VeniceUnleashed')) {
-            if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
-                return;
+        if (open) {
+            if (!navigator.userAgent.includes('VeniceUnleashed')) {
+                if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
+                    return;
+                }
             }
+            WebUI.Call('EnableMouse');
         }
-        WebUI.Call('EnableMouse');
     }
 
     window.OnMapZoomChange = () => {
@@ -236,13 +240,13 @@ const MapPixi: React.FC<MapPixiProps> = ({
     function Circle(props: any) {
         const draw = useCallback((g) => {
             var radius = props.circle.radius ?? 100;
-            radius = radius * (worldWidthHeight / 1250);
+            radius = radius * (textureWidthHeight / worldWidthHeight);
 
             g.clear();
 
             if (props.outer) {
                 g.beginFill(0xff9900, 0.3)
-                g.drawTorus(getMapPos(props.circle.center.x, topLeftPos.x), getMapPos(props.circle.center.z, topLeftPos.z), radius, worldWidthHeight * 2);
+                g.drawTorus(getMapPos(props.circle.center.x, topLeftPos.x), getMapPos(props.circle.center.z, topLeftPos.z), radius, textureWidthHeight * 2);
                 g.endFill();
 
                 var f = new PIXI.Graphics();
@@ -331,16 +335,16 @@ const MapPixi: React.FC<MapPixiProps> = ({
                     plugins={["drag", "pinch", "wheel", "decelerate"]}
                     screenWidth={width}
                     screenHeight={height}
-                    worldWidth={worldWidthHeight}
-                    worldHeight={worldWidthHeight}
+                    worldWidth={textureWidthHeight}
+                    worldHeight={textureWidthHeight}
                 >
                     {landscapeTexture !== null &&
                         <Sprite
                             texture={landscapeTexture}
                             anchor={0}
                             scale={1}
-                            width={worldWidthHeight}
-                            height={worldWidthHeight}
+                            width={textureWidthHeight}
+                            height={textureWidthHeight}
                             angle={0}
                         />
                     }

@@ -5,6 +5,7 @@ export var MapsConfig:any = {
             x: 667.28,
             z: -290.44,
         },
-        worldWidthHeight: 2048,
+        textureWidthHeight: 2048,
+        worldWidthHeight: 1250,
     },
 };
