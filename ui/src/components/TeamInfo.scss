@@ -26,30 +26,37 @@
         }
 
         span {
+            display: flex;
+            align-items: flex-end;
             text-transform: uppercase;
             margin: 0;
             font-style: normal;
             font-weight: 600;
             line-height: 1vw;
             font-size: .8vw;
-            color: #9EC555;
-            text-shadow: 0 0 0.25vw rgba(158, 197, 85, .8);
+            //color: #9EC555;
+            //text-shadow: 0 0 0.25vw rgba(158, 197, 85, .8);
+
+            img {
+                max-width: .7vw;
+                margin-left: 0.5vw;
+            }
         }
 
         &.state2 {
             span {
-                color: #ff9900;
-                text-shadow: 0 0 0.25vw rgba(196, 117, 50, 0.8);
+                //color: #ff9900;
+                //text-shadow: 0 0 0.25vw rgba(196, 117, 50, 0.8);
             }
         }
 
         &.state3 {
-            opacity: .7;
+            opacity: .4;
 
-            span {
-                color: #fff;
-                text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.4);
-            }
+            /*span {
+                color: #fff !important;
+                text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.4) !important;
+            }*/
         }
     }
 

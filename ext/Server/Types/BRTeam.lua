@@ -46,6 +46,7 @@ function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
     -- add references
     self.m_Players[p_BrPlayer:GetName()] = p_BrPlayer
     p_BrPlayer.m_Team = self
+    p_BrPlayer.m_PosInSquad = MapHelper:Size(self.m_Players)
 
     -- assign thew player as team leader if needed
     self:AssignLeader()
@@ -77,6 +78,14 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 
     -- assign new team leader if needed
     self:AssignLeader()
+
+    -- updates the position of the player in the squad
+    local l_Size = MapHelper:Size(self.m_Players)
+    for _, l_Player in pairs(self.m_Players) do
+        if l_Player.m_PosInSquad > l_Size then
+            l_Player.m_PosInSquad = l_Player.m_PosInSquad - 1
+        end
+    end
 
     -- update client state
     if not p_IgnoreBroadcast then

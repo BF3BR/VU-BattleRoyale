@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 
 /* Helpers */
-import Vec3 from "./helpers/Vec3";
-import Circle from "./helpers/Circle";
-import Player, { Color } from "./helpers/Player";
+import Vec3 from "./helpers/Vec3Helper";
+import Circle from "./helpers/CircleHelper";
+import Player from "./helpers/PlayerHelper";
+import { FireLogicType } from "./helpers/FireLogicTypeHelper";
+import { Sounds } from "./helpers/SoundsHelper";
+import Ping from "./helpers/PingHelper";
 
 /* Components */
-// import ParaDropDistance from "./components/ParaDropDistance";
-import MiniMap from "./components/MiniMap";
+import MiniMap from "./components/map/MiniMap";
 import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
 import InteractMessage from "./components/InteractMessage";
@@ -16,16 +18,22 @@ import Alert from "./components/Alert";
 import SpactatorInfo from "./components/SpactatorInfo";
 import Gameover from "./components/Gameover";
 import DeployScreen from "./components/DeployScreen";
-// import Inventory from "./components/Inventory";
+import TeamInfo from "./components/TeamInfo";
+import KillMessage from "./components/KillMessage";
+import LoadingScreen from "./components/LoadingScreen";
 
 /* Style */
 import './App.scss';
-import KillMessage from "./components/KillMessage";
-import { FireLogicType } from "./helpers/FireLogicType";
-import { Sounds } from "./helpers/Sounds";
-import TeamInfo from "./components/TeamInfo";
 
 const App: React.FC = () => {
+    /*
+    * UI State
+    */
+    const [uiState, setUIState] = useState<"hidden" | "loading" | "game">("loading");
+    window.OnSetUIState = (p_Toggle: "hidden" | "loading" | "game") => {
+        setUIState(p_Toggle);
+    }
+
     /*
     * Debug
     */
@@ -33,14 +41,11 @@ const App: React.FC = () => {
     if (!navigator.userAgent.includes('VeniceUnleashed')) {
         if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
             debugMode = true;
+            if (uiState !== "game") {
+                setUIState("game");
+            }
         }
     }
-
-    /*
-    * Paradrop
-    */
-    // const [paradropPercentage, setParadropPercentage] = useState<number>(100);
-    // const [paradropDistance, setParadropDistance] = useState<number>(100);
 
 
     /*
@@ -116,8 +121,8 @@ const App: React.FC = () => {
             name: 'KVN',
             kill: 15,
             state: 1,
-            color: Color.White,
             isTeamLeader: true,
+            color: "rgba(255, 0, 0, 0.3)",
         });
     }
 
@@ -131,7 +136,6 @@ const App: React.FC = () => {
     const [playerSecondaryAmmo, setPlayerSecondaryAmmo] = useState<number>(0);
     const [playerFireLogic, setPlayerFireLogic] = useState<string>("AUTO");
     const [playerCurrentWeapon, setPlayerCurrentWeapon] = useState<string>('');
-    // const [playerInventory, setPlayerInventory] = useState<string[]>([]);
 
     window.OnPlayerHealth = (data: number) => {
         setPlayerHealth(Math.ceil(data));
@@ -158,7 +162,7 @@ const App: React.FC = () => {
     }
 
     window.OnPlayerWeapons = (data: any) => {
-        console.log(data);
+        //console.log(data);
     }
 
     const [interactiveMessage, setInteractiveMessage] = useState<string|null>(null);
@@ -175,6 +179,8 @@ const App: React.FC = () => {
             setInteractiveKey(data.key);
         }
     }
+
+
     /*
     * Spectator
     */
@@ -227,6 +233,25 @@ const App: React.FC = () => {
         setPlayerYaw(p_YawRad);
     }
 
+    const [planePos, setPlanePos] = useState<Vec3 | null>(null);
+    window.OnPlanePos = (p_DataJson: any) => {
+        console.log(p_DataJson);
+        if (p_DataJson !== undefined && p_DataJson.x !== undefined && p_DataJson.y !== undefined && p_DataJson.z !== undefined) {
+            setPlanePos({
+                x: p_DataJson.x,
+                y: p_DataJson.y,
+                z: p_DataJson.z,
+            });
+        } else {
+            setPlanePos(null);
+        }
+    }
+
+    const [planeYaw, setPlaneYaw] = useState<number | null>(null);
+    window.OnPlaneYaw = (p_YawRad: number) => {
+        setPlaneYaw(p_YawRad);
+    }
+
     window.OnMapSizeChange = () => {
         setOpenMap(prevState => !prevState);
     }
@@ -273,6 +298,7 @@ const App: React.FC = () => {
         }
     }
 
+
     /*
     * Deploy screen
     */
@@ -299,8 +325,14 @@ const App: React.FC = () => {
                     name: teamPlayer.Name,
                     state: teamPlayer.State,
                     kill: 0,
-                    color: Color.White,
                     isTeamLeader: teamPlayer.IsTeamLeader,
+                    color: teamPlayer.Color,
+                    position: {
+                        x: teamPlayer.Position?.x,
+                        y: teamPlayer.Position?.y,
+                        z: teamPlayer.Position?.z,
+                    },
+                    yaw: teamPlayer.Yaw,
                 });
 
                 if (teamPlayer.State === 2) {
@@ -316,6 +348,63 @@ const App: React.FC = () => {
             setAlertString("One of your teammate is downed");
         }
         setDownedTeammatesCount(tempDownedTeammatesCount);
+    }
+
+    const CreateRandomTeam = () => {
+        let tempTeam: Player[] = [];
+        tempTeam.push({
+            name: "Test 1",
+            state: 1,
+            kill: 0,
+            isTeamLeader: false,
+            color: "rgba(255, 187, 86, 0.3)",
+            position: {
+                x: 522.175720,
+                y: 155.705505,
+                z: -822.253479,
+            },
+            yaw: 60,
+        });
+        tempTeam.push({
+            name: "Test 2",
+            state: 1,
+            kill: 0,
+            isTeamLeader: false,
+            color: "rgba(158, 197, 85, 0.3)",
+            position: {
+                x: 522.175720,
+                y: 155.705505,
+                z: -922.253479,
+            },
+            yaw: 30,
+        });
+        tempTeam.push({
+            name: "Test 3",
+            state: 2,
+            kill: 0,
+            isTeamLeader: false,
+            color: "rgba(255, 159, 128, 0.3)",
+            position: {
+                x: 522.175720,
+                y: 155.705505,
+                z: -922.253479,
+            },
+            yaw: 30,
+        });
+        tempTeam.push({
+            name: "Test 4",
+            state: 2,
+            kill: 0,
+            isTeamLeader: false,
+            color: "rgba(148, 205, 243, 0.3)",
+            position: {
+                x: 522.175720,
+                y: 155.705505,
+                z: -922.253479,
+            },
+            yaw: 30,
+        });
+        setTeam(tempTeam);
     }
 
     const [teamId, setTeamId] = useState<string>('-');
@@ -354,14 +443,25 @@ const App: React.FC = () => {
             SetKilledMessage(data.isKill, data.name, data.kills);
         }
     }
-    
-    window.ResetVars = () => {
-        // window.location.reload();
+
+    const [pingsTable, setPingsTable] = useState<Array<Ping>>([]);
+    window.OnCreateMarker = (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number) => {
+        let pings = pingsTable.filter((ping: Ping, _: number) => ping.id !== p_Key);
+        pings.push({
+            id: p_Key,
+            color: p_Color,
+            position: {
+                x: p_PositionX,
+                y: 0,
+                z: p_PositionZ,
+            }
+        });
+        setPingsTable(pings);
     }
 
-    const [showUI, setShowUI] = useState<boolean>(true);
-    window.OnHideWebUI = (p_Toggle: boolean) => {
-        setShowUI(p_Toggle);
+    window.OnRemoveMarker = (p_Key: string) => {
+        let pings = pingsTable.filter((ping: Ping, _: number) => ping.id !== p_Key);
+        setPingsTable(pings);
     }
 
     return (
@@ -381,28 +481,27 @@ const App: React.FC = () => {
                 `}} />
             }
 
-            {showUI === false &&
+            {uiState === "hidden" &&
                 <style dangerouslySetInnerHTML={{
                     __html: `
                     body {
                         opacity: 0 !important;
+                        pointer-events: none !important;
                     }
                 `}} />
             }
 
+            {uiState === "loading" &&
+                <LoadingScreen />
+            }
+
             <div id="debug">
-                {/*<input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={paradropPercentage}
-                    onChange={(event: any) => setParadropPercentage(event.target.value)}
-                    step="1"
-                />*/}
                 <button onClick={() => setShowMinimap(prevState => !prevState)}>Show Map</button>
                 <button onClick={() => setOpenMap(prevState => !prevState)}>Open Map</button>
                 <button onClick={() => window.OnPlayerPos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Player Pos</button>
                 <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
+                <button onClick={() => window.OnPlanePos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Plane Pos</button>
+                <button onClick={() => window.OnPlaneYaw(Math.random() * 100)}>Set Random Plane Yaw</button>
                 <button onClick={() => window.OnUpdateTimer(3)}>Random Timer</button>
                 <button onClick={() => setAlertString("Heads up, the Circle is moving")}>Set alert</button>
                 <button onClick={() => setSpectating(prevState => !prevState)}>Set Spectator</button>
@@ -423,11 +522,14 @@ const App: React.FC = () => {
                             y: 555,
                             z: -864,
                         },
-                        radius: 450,
+                        radius: 250,
                     });
                 }}>setRandomCircle</button>
                 <button onClick={() => SetKilledMessage(false, 'TestUser', 3)}>SetKillMsg</button>
                 <button onClick={() => setDeployScreen(true)}>setDeployScreen</button>
+                <button onClick={CreateRandomTeam}>CreateRandomTeam</button>
+                <button onClick={() => window.OnPlayerIsInPlane(true)}>OnPlayerIsInPlane true</button>
+                <button onClick={() => window.OnPlayerIsInPlane(false)}>OnPlayerIsInPlane false</button>
             </div>
 
             <div id="VUBattleRoyale">
@@ -520,28 +622,20 @@ const App: React.FC = () => {
                                     resetMessage={() => SetKilledMessage(null, null, null)}
                                 />
 
-
-                                {/*<ParaDropDistance 
-                                    percentage={paradropPercentage}
-                                    distance={300}
-                                    warnPercentage={15}
-                                />*/}
-
-                                {showMinimap &&
-                                    <MiniMap
-                                        open={openMap}
-                                        playerPos={playerPos}
-                                        playerYaw={playerYaw}
-                                        innerCircle={innerCircle}
-                                        outerCircle={outerCircle}
-                                        playerIsInPlane={playerIsInPlane}
-                                    />
-                                }
-
-                                {/*<Inventory
-                                    mapOpen={openMap}
-                                    playerInventory={playerInventory}
-                                />*/}
+                                <MiniMap
+                                    open={openMap}
+                                    playerPos={playerPos}
+                                    playerYaw={playerYaw}
+                                    planePos={planePos}
+                                    planeYaw={planeYaw}
+                                    innerCircle={innerCircle}
+                                    outerCircle={outerCircle}
+                                    playerIsInPlane={playerIsInPlane}
+                                    pingsTable={pingsTable}
+                                    team={team}
+                                    localPlayer={localPlayer}
+                                    showMinimap={showMinimap}
+                                />
                             </>
                         }
                     </>
@@ -557,6 +651,8 @@ declare global {
     interface Window {
         OnPlayerPos: (p_DataJson: any) => void;
         OnPlayerYaw: (p_YawRad: number) => void;
+        OnPlanePos: (p_DataJson: any) => void;
+        OnPlaneYaw: (p_YawRad: number) => void;
 
         OnMapSizeChange: () => void;
         OnMapShow: (show: boolean) => void;
@@ -593,7 +689,9 @@ declare global {
         OnNotifyInflictorAboutKillOrKnock: (data: any) => void;
         OnInteractiveMessageAndKey: (data: any) => void;
 
-        ResetVars: () => void;
-        OnHideWebUI: (p_Toggle: boolean) => void;
+        OnSetUIState: (p_Toggle: "hidden" | "loading" | "game") => void;
+
+        OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number) => void;
+        OnRemoveMarker: (p_Key: string) => void;
     }
 }

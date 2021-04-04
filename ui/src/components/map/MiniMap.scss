@@ -1,0 +1,46 @@
+#miniMap {
+    position: absolute;
+    box-sizing: border-box;
+    bottom: 2vw;
+    left: 2.5vw;
+    height: 12vw;
+    width: 12vw;
+    border: 0.1vw solid rgba(7,7,7,.8);
+    background: transparent url('../../assets/img/noise.gif') 50% 50% no-repeat;
+    background-size: cover;
+    box-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+
+    &.hideMinimap {
+        display: none !important;
+    }
+
+    canvas {
+        position: absolute;
+        width: 160% !important;
+        height: 160% !important;
+        left: -30%;
+        top: -30%;
+    }
+
+    &.open {
+        position: absolute;
+        bottom: 50%;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        height: 90vh;
+        width: 90vh;
+        background-size: 300px !important;
+        background-repeat: repeat;
+        max-height: 2048px;
+        max-width: 2048px;
+
+        canvas {
+            left: 0;
+            top: 0;
+            width: 100% !important;
+            height: 100% !important;
+            transform: rotate(0deg) !important;
+        }
+    }
+}

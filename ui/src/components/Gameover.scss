@@ -21,22 +21,44 @@
         animation: scale-up-center 0.15s ease both;
         animation-delay: 2s;
         position: relative;
-        margin-bottom: .5vw;
+        margin-bottom: 2vw;
 
         span {
-            font-size: 1.45vw;
+            font-size: 4.5vw;
             text-transform: uppercase;
             font-style: normal;
             font-weight: 600;
+            width: 30vw;
+            height: 9vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             &.won {
                 color: #d1ffbe;
                 text-shadow: 0 0 0.5vw rgba(209, 255, 190, 0.4);
+                background: rgba(209, 255, 190, .25);
+                border: 0.1vw solid #d1ffbe;
             }
 
             &.lost {
                 color: #ff9f80;
                 text-shadow: 0 0 0.5vw rgba(255, 159, 128, 0.4);
+                background: rgba(255, 159, 128, .25);
+                border: 0.1vw solid #ff9f80;
+            }
+
+            &::before {
+                content: '';
+                background: transparent url('../assets/img/noise.gif') 50% 50% repeat;
+                background-size: 200px;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -5;
+                opacity: 0.3;
             }
         }
     }
@@ -61,7 +83,7 @@
     .Rank,
     .Kills {
         color: #d5dde5;
-        font-size: 1.2vw;
+        font-size: 1.45vw;
         text-transform: uppercase;
         font-style: normal;
         font-weight: 600;
@@ -81,22 +103,25 @@
         }
     }
 
-    .inline {
+    /*.inline {
         display: flex;
         -webkit-animation: scale-up-center 0.15s ease both;
         animation: scale-up-center 0.15s ease both;
         animation-delay: 2.9s;
-    }
+    }*/
 
     
     .Rank {
         -webkit-animation: scale-up-center 0.15s ease both;
         animation: scale-up-center 0.15s ease both;
         animation-delay: 2.45s;
-        margin-right: 2.5vw;
+        margin: 0 0 1vw;
     }
 
     .Kills {
+        -webkit-animation: scale-up-center 0.15s ease both;
+        animation: scale-up-center 0.15s ease both;
+        animation-delay: 2.9s;
         margin: 0;
     }
 

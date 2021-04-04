@@ -1,9 +1,12 @@
+require "__shared/Configs/ServerConfig"
+
 class "Teammate"
 
-function Teammate:__init(p_Name, p_State, p_IsTeamLeader)
+function Teammate:__init(p_Name, p_State, p_IsTeamLeader, p_PosInSquad)
     self.m_Name = p_Name
     self.m_State = p_State or BRPlayerState.Alive -- TODO probably will be removed
     self.m_IsTeamLeader = p_IsTeamLeader or false
+    self.m_PosInSquad = p_PosInSquad or 1
 end
 
 function Teammate:GetState()
@@ -17,8 +20,53 @@ function Teammate:GetState()
     end
 end
 
+function Teammate:GetColor(p_AsRgba)
+    local l_Color = ServerConfig.PlayerColors[self.m_PosInSquad] or Vec4(1, 1, 1, 1)
+
+    -- return color as Vec4
+    if not p_AsRgba then
+        return l_Color
+    end
+
+    -- return color as an rgba string
+    return string.format("rgba(%s, %s, %s, %s)", l_Color.x * 255, l_Color.y * 255, l_Color.z * 255, l_Color.w)
+end
+
+function Teammate:GetPosition()
+    local s_Player = PlayerManager:GetPlayerByName(self.m_Name)
+
+    if s_Player == nil then
+        return nil
+    end
+
+	if s_Player.soldier == nil then
+		return
+	end
+
+    return {
+        x = s_Player.soldier.transform.trans.x,
+        y = s_Player.soldier.transform.trans.y,
+        z = s_Player.soldier.transform.trans.z
+    }
+end
+
+function Teammate:GetYaw()
+    local s_Player = PlayerManager:GetPlayerByName(self.m_Name)
+
+    if s_Player == nil then
+        return nil
+    end
+
+	if s_Player.soldier == nil then
+		return nil
+	end
+
+    local s_YawRad = (math.atan(s_Player.soldier.worldTransform.forward.z, s_Player.soldier.worldTransform.forward.x) - (math.pi / 2)) % (2 * math.pi)
+    return math.floor((180 / math.pi) * s_YawRad)
+end
+
 function Teammate:FromTable(p_TeammateTable)
-    return Teammate(p_TeammateTable.Name, p_TeammateTable.State, p_TeammateTable.IsTeamLeader)
+    return Teammate(p_TeammateTable.Name, p_TeammateTable.State, p_TeammateTable.IsTeamLeader, p_TeammateTable.PosInSquad)
 end
 
 function Teammate:AsTable()
@@ -26,6 +74,10 @@ function Teammate:AsTable()
         Name = self.m_Name,
         State = self:GetState(),
         IsTeamLeader = self.m_IsTeamLeader,
+        PosInSquad = self.m_PosInSquad,
+        Color = self:GetColor(true),
+        Position = self:GetPosition(),
+        Yaw = self:GetYaw(),
     }
 end
 
@@ -60,13 +112,6 @@ end
 function BRTeam.static:FromTable(p_BrTeamTable)
     local l_Team = BRTeam(p_BrTeamTable.Id)
     l_Team:UpdateFromTable(p_BrTeamTable)
-
-    -- l_Team.m_Locked = p_BrTeamTable.Locked
-    -- l_Team.m_Placement = p_BrTeamTable.Placement
-
-    -- for _, p_TeammateTable in ipairs(p_BrTeamTable.Players) do
-    --     table.insert(l_Team.m_Players, Teammate:FromTable(p_TeammateTable))
-    -- end
 
     return l_Team
 end

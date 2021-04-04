@@ -13,6 +13,7 @@ function BRPlayer:__init()
     self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
     self.m_Kills = 0
     self.m_Score = 0
+    self.m_PosInSquad = 1
 
     self:RegisterEvents()
 end
@@ -65,5 +66,18 @@ function BRPlayer:OnReceivePlayerState(p_State)
         self.m_TeamJoinStrategy = p_State.Data.TeamJoinStrategy
         self.m_Kills = p_State.Data.Kills
         self.m_Score = p_State.Data.Score
+        self.m_PosInSquad = p_State.Data.PosInSquad
     end
+end
+
+function BRPlayer:GetColor(p_AsRgba)
+    local l_Color = ServerConfig.PlayerColors[self.m_PosInSquad] or Vec4(1, 1, 1, 1)
+
+    -- return color as Vec4
+    if not p_AsRgba then
+        return l_Color
+    end
+
+    -- return color as an rgba string
+    return string.format("rgba(%s, %s, %s, %s)", l_Color.x * 255, l_Color.y * 255, l_Color.z * 255, l_Color.w)
 end

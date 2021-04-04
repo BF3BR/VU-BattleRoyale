@@ -1,8 +1,8 @@
 import React from "react";
 
-import Timer from "./Timer";
+import Timer from "./helpers/Timer";
 
-import Player from "../helpers/Player";
+import Player from "../helpers/PlayerHelper";
 
 import "./MatchInfo.scss";
 

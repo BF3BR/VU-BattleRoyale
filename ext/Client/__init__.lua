@@ -15,7 +15,6 @@ require "BRPlayer"
 local m_UICleanup = require "UICleanup"
 local m_UIManager = require "UIManager"
 local m_Gunship = require "Gunship"
-local m_Showroom = require "Showroom"
 local m_Hud = require "Hud"
 local m_SpectatorClient = require "SpectatorClient"
 local m_Showroom = require "Showroom"
@@ -105,7 +104,6 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnLevelDestroy()
-    m_SpectatorClient:OnLevelDestroy()
     m_Hud:OnLevelDestroy()
     m_SpectatorClient:OnLevelDestroy()
 end
@@ -306,18 +304,10 @@ function VuBattleRoyaleClient:OnGunShipCamera()
 end
 
 function VuBattleRoyaleClient:OnGunshipPosition(p_Trans)
-    if p_Trans == nil then
-        return
-    end
-
     m_Hud:OnGunshipPosition(p_Trans)
 end
 
 function VuBattleRoyaleClient:OnGunshipYaw(p_Trans)
-    if p_Trans == nil then
-        return
-    end
-
     m_Hud:OnGunshipYaw(p_Trans)
 end
 

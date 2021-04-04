@@ -3,6 +3,7 @@ class "PingClient"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/EventRouter"
 
+local m_Hud = require "Hud"
 local m_Logger = Logger("PingClient", true)
 
 function PingClient:__init()
@@ -103,6 +104,7 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
     local l_Position2d = Vec2(p_Position.x, p_Position.z)
     local l_RgbaColor = self:GetRgbaColorByPingId(p_PingId)
     Events:Dispatch('Compass:CreateMarker', l_PingIdStr, l_Position2d, l_RgbaColor)
+    m_Hud:CreateMarker(l_PingIdStr, p_Position.x, p_Position.z, l_RgbaColor)
 
     local s_PingInfo = self.m_SquadPings[p_PingId]
     if s_PingInfo == nil then
@@ -138,6 +140,7 @@ function PingClient:OnUiDrawHud()
         if l_Cooldown < 0.001 then
             m_Logger:Write("invalid cooldown")
             Events:Dispatch('Compass:RemoveMarker', tostring(math.floor(l_PingId)))
+            m_Hud:RemoveMarker(tostring(math.floor(l_PingId)))
             self.m_SquadPings[l_PingId] = nil
             goto __on_ui_draw_hud_cont__
         end

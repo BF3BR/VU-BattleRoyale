@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Player from "../helpers/Player";
+import Player from "../helpers/PlayerHelper";
 
 import winner from "../assets/sounds/winner.mp3";
 
@@ -43,22 +43,20 @@ const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, 
                 <div id="Gameover">
                     <span className="WonOrLost">
                         {gameOverIsWin ?
-                            <span className="won">You Won!</span>
+                            <span className="won">You Won</span>
                         :
-                            <span className="lost">You Lost!</span>
+                            <span className="lost">You Lost</span>
                         }
                     </span>
-                    <span className="Name">
+                    {/*<span className="Name">
                         {localPlayer.name??''}
+                    </span>*/}
+                    <span className="Rank">
+                        Your place: <span>#{gameOverPlace??99}</span>
                     </span>
-                    <div className="inline">
-                        <span className="Rank">
-                            Your place: <span>#{gameOverPlace??99}</span>
-                        </span>
-                        <span className="Kills">
-                            Your Kills: <span>{localPlayer.kill??''}</span>
-                        </span>
-                    </div>
+                    <span className="Kills">
+                        Your Kills: <span>{localPlayer.kill??''}</span>
+                    </span>
                 </div>
             }
         </>
