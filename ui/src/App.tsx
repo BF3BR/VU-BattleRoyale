@@ -235,7 +235,6 @@ const App: React.FC = () => {
 
     const [planePos, setPlanePos] = useState<Vec3 | null>(null);
     window.OnPlanePos = (p_DataJson: any) => {
-        console.log(p_DataJson);
         if (p_DataJson !== undefined && p_DataJson.x !== undefined && p_DataJson.y !== undefined && p_DataJson.z !== undefined) {
             setPlanePos({
                 x: p_DataJson.x,

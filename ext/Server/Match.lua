@@ -175,6 +175,7 @@ end
 function Match:OnRemoveGunship()
     if self.m_Gunship:GetEnabled() then
         self.m_Gunship:Spawn(nil, false)
+        NetEvents:BroadcastLocal(GunshipEvents.Remove)
     end
 end
 

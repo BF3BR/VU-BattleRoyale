@@ -13,6 +13,7 @@ import Ping from '../../helpers/PingHelper';
 import XP5_003 from "../../assets/img/XP5_003.jpg";
 import airplane from "../../assets/img/airplane.svg";
 import { MapsConfig } from '../../helpers/MapsConfigHelper';
+import { sendToLua } from '../../Helpers';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -54,6 +55,10 @@ const getMapPos = (pos: number, topLeftPos: number)  => {
     return (topLeftPos - pos) * (textureWidthHeight / worldWidthHeight);
 }
 
+const getGamePos = (pos: number, topLeftPos: number)  => {
+    return topLeftPos - (pos * (worldWidthHeight / textureWidthHeight));
+}
+
 const getConvertedPlayerColor = (color: string) => {
     const rgba = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
     const hex = `0x${((1 << 24) + (parseInt(rgba[0]) << 16) + (parseInt(rgba[1]) << 8) + parseInt(rgba[2])).toString(16).slice(1)}`;
@@ -70,13 +75,23 @@ const PixiViewportComponent = PixiComponent("Viewport", {
             ...viewportProps
         });
 
+        const handleClick = (data: any) => {
+            if (data.world !== null) {
+                sendToLua("WebUI:PingFromMap", JSON.stringify({ 
+                    x: getGamePos(data.world.x, topLeftPos.x),
+                    y: getGamePos(data.world.y, topLeftPos.z)
+                }));
+            }
+        }
+
         viewport
             .drag()
             .pinch()
             .wheel({ percent: 1.35, smooth: 5 }) //, center: new PIXI.Point(500, 500)
             .decelerate()
             .bounce({ sides: 'all', time: 150, ease: 'easeInOutSine', underflow: 'center'})
-            .clampZoom({ minWidth: 400, maxWidth: 2000 });
+            .clampZoom({ minWidth: 400, maxWidth: 2000 })
+            .on('clicked', handleClick);
 
         return viewport;
     },

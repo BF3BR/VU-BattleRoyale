@@ -387,6 +387,11 @@ function VuBattleRoyaleHud:OnGunshipYaw(p_Trans)
     self.m_HudOnPlaneYaw:Update(s_Floored)
 end
 
+function VuBattleRoyaleHud:OnGunshipRemove(p_Trans)
+    self.m_HudOnPlanePos:Update(nil)
+    self.m_HudOnPlaneYaw:Update(nil)
+end
+
 function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin)
     self.m_HudOnGameOverScreen:ForceUpdate(json.encode({
         ["isWin"] = p_IsWin,

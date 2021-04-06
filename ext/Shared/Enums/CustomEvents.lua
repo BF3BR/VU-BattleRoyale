@@ -55,6 +55,7 @@ GunshipEvents = {
     Position = "Gunship:Position",
     Yaw = "Gunship:Yaw",
     OpenParachute = "Gunship:OpenParachute",
+    Remove = "Gunship:Remove",
 }
 
 PlayerEvents = {

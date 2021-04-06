@@ -68,6 +68,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
     NetEvents:Subscribe(GunshipEvents.Position, self, self.OnGunshipPosition)
     NetEvents:Subscribe(GunshipEvents.Yaw, self, self.OnGunshipYaw)
+    NetEvents:Subscribe(GunshipEvents.Remove, self, self.OnGunshipRemove)
     NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied)
     NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
     NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
@@ -309,6 +310,10 @@ end
 
 function VuBattleRoyaleClient:OnGunshipYaw(p_Trans)
     m_Hud:OnGunshipYaw(p_Trans)
+end
+
+function VuBattleRoyaleClient:OnGunshipRemove()
+    m_Hud:OnGunshipRemove()
 end
 
 function VuBattleRoyaleClient:OnJumpOutOfGunship()
