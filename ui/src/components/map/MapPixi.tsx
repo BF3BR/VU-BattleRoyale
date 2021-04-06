@@ -252,6 +252,42 @@ const MapPixi: React.FC<MapPixiProps> = ({
         })];
     }, []);
 
+    function isInsideTheRadius(x: number, y: number, cx: number, cy: number, r: number) {
+        var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+        return distancesquared <= r * r;
+    }
+
+    const drawPlayerToInnerLine = React.useCallback((g: any, innerCircle: Circle, x: number, y: number) => {
+        var innerCircleX = getMapPos(innerCircle.center.x, topLeftPos.x);
+        var innerCircleY = getMapPos(innerCircle.center.z, topLeftPos.z);
+        var innerCircleRadius = innerCircle.radius * (textureWidthHeight / worldWidthHeight);
+        g.clear();
+
+        if (isInsideTheRadius(x, y, innerCircleX, innerCircleY, innerCircleRadius)) {
+            return;
+        }
+
+        var theta = Math.atan2(y - innerCircleY, x - innerCircleX);
+        var Px = innerCircleX + innerCircleRadius * Math.cos(theta);
+        var Py = innerCircleY + innerCircleRadius * Math.sin(theta);
+
+        g.lineStyle({
+            width: 5, 
+            color: 0xffffff, 
+            alpha: 1,
+            join: PIXI.LINE_JOIN.MITER,
+            miterLimit: 10,
+        });
+        g.moveTo(x, y);
+        g.lineTo(Px, Py);
+        g.filters = [new GlowFilter({ 
+            distance: 15, 
+            outerStrength: 1.5, 
+            innerStrength: .1,
+            color: 0xffffff,
+        })];
+    }, []);
+
     function Circle(props: any) {
         const draw = useCallback((g) => {
             var radius = props.circle.radius ?? 100;
@@ -408,6 +444,17 @@ const MapPixi: React.FC<MapPixiProps> = ({
                                 scale={open ? .35 : 0.35}
                             />                        
                         </>
+                    }
+
+                    {innerCircle !== null &&
+                        <Graphics 
+                            draw={(g: any) => drawPlayerToInnerLine(g, innerCircle, getMapPos(playerPos.x, topLeftPos.x), getMapPos(playerPos.z, topLeftPos.z))}
+                            x={0}
+                            y={0}
+                            angle={0}
+                            scale={1}
+                            visible={!playerIsInPlane}
+                        />
                     }
 
                     <Graphics 
