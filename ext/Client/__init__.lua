@@ -68,7 +68,6 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
     NetEvents:Subscribe(GunshipEvents.Position, self, self.OnGunshipPosition)
     NetEvents:Subscribe(GunshipEvents.Yaw, self, self.OnGunshipYaw)
-    NetEvents:Subscribe(GunshipEvents.Remove, self, self.OnGunshipRemove)
     NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied)
     NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
     NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
@@ -81,6 +80,7 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
     Events:Subscribe("WebUI:SetTeamJoinStrategy", self, self.OnWebUISetTeamJoinStrategy)
     Events:Subscribe("WebUI:ToggleLock", self, self.OnWebUIToggleLock)
     Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam)
+    Events:Subscribe("WebUI:PingFromMap", self, self.OnWebUIPingFromMap)
 end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
@@ -312,10 +312,6 @@ function VuBattleRoyaleClient:OnGunshipYaw(p_Trans)
     m_Hud:OnGunshipYaw(p_Trans)
 end
 
-function VuBattleRoyaleClient:OnGunshipRemove()
-    m_Hud:OnGunshipRemove()
-end
-
 function VuBattleRoyaleClient:OnJumpOutOfGunship()
     m_Hud:OnJumpOutOfGunship()
 end
@@ -386,6 +382,9 @@ function VuBattleRoyaleClient:OnWebUIJoinTeam(p_Id)
     self.m_BrPlayer:JoinTeam(p_Id)
 end
 
+function VuBattleRoyaleClient:OnWebUIPingFromMap(p_Table)
+    m_Ping:OnWebUIPingFromMap(p_Table)
+end
 
 -- =============================================
 -- Hooks

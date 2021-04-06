@@ -3,6 +3,8 @@ class "PingClient"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/EventRouter"
 
+local PingingMethod = { Screen = 0, World = 1 }
+
 local m_Hud = require "Hud"
 local m_Logger = Logger("PingClient", true)
 
@@ -38,6 +40,11 @@ function PingClient:__init()
 
     self.m_RaycastLength = 2000.0
 
+    -- Minimap Pinging related
+    self.m_PingingMethod = PingingMethod.World
+    self.m_Position_X = 0
+    self.m_Position_Z = 0
+
     -- Should we send a ping (used for sync across UpdateState's)
     self.m_ShouldPing = false
 
@@ -51,47 +58,24 @@ function PingClient:__init()
     end
 end
 
-function PingClient:__gc()
-    -- Unsubscribe from events
-    -- self.m_PingNotifyEvent:Unsubscribe()
-    -- self.m_PingUpdateConfigEvent:Unsubscribe()
-    -- self.m_UiDrawHudEvent:Unsubscribe()
-    -- self.m_EngineUpdateEvent:Unsubscribe()
-    -- self.m_UpdateManagerUpdateEvent:Unsubscribe()
-
-    if self.m_Debug then
-        -- Remove the console commands
-        Console:Deregister(self.m_PingCommand)
-
-        self.m_PingCommand = nil
-    end
-end
-
 function PingClient:OnClientUpdateInput()
     if InputManager:WentKeyDown(InputDeviceKeys.IDK_Q) then
-        self:OnPing()
+        self.m_ShouldPing = true
+        self.m_PingingMethod = PingingMethod.World
     end
 end
 
-function PingClient:OnPing(p_Args)
-    -- This should only be enabled if debug mode is enabled
-    if not self.m_Debug then
+function PingClient:OnWebUIPingFromMap(p_Coordinates)
+    if p_Coordinates == nil then
+        m_Logger:Error("No Coordinates received")
         return
     end
-
-    -- Do not ping if player is solo
-    -- local l_Player = PlayerManager:GetLocalPlayer()
-    -- if l_Player ~= nil and l_Player.squadId == SquadId.SquadNone then
-    --     return
-    -- end
-
-    -- This should not happen, but we validate anyway for stability
-    if self.m_PingCommand == nil then
-        m_Logger:Write("invalid ping command")
-        return
-    end
-
+    local s_Coordinates = json.decode(p_Coordinates)
+    m_Logger:Write(s_Coordinates)
+    self.m_Position_X = s_Coordinates.x
+    self.m_Position_Z = s_Coordinates.y
     self.m_ShouldPing = true
+    self.m_PingingMethod = PingingMethod.Screen
 end
 
 function PingClient:OnPingNotify(p_PingId, p_Position)
@@ -154,6 +138,11 @@ function PingClient:OnUiDrawHud()
             if l_Coordinates ~= nil then
                 DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PingId), Vec4(1, 0, 0, 1), 1.1)
             end
+        else
+            local l_Coordinates = ClientUtils:WorldToScreen(l_Position)
+            if l_Coordinates ~= nil then
+                -- call webui
+            end
         end
         ::__on_ui_draw_hud_cont__::
     end
@@ -190,6 +179,26 @@ function PingClient:OnUpdateManagerUpdate(p_DeltaTime, p_Pass)
 
     m_Logger:Write("raycasting...")
 
+    local s_RaycastHit = nil
+
+    if self.m_PingingMethod == PingingMethod.World then
+        s_RaycastHit = self:RaycastWorld()
+    else
+        s_RaycastHit = self:RaycastScreen()
+    end
+
+    self.m_ShouldPing = false
+
+    if s_RaycastHit == nil then
+        m_Logger:Write("no raycast")
+        return
+    end
+
+    -- Send the server a client notification that we want to ping at this location
+    NetEvents:Send(PingEvents.ClientPing, s_RaycastHit.position)
+end
+
+function PingClient:RaycastWorld()
     local s_Transform = ClientUtils:GetCameraTransform()
     if s_Transform == nil then
         m_Logger:Write("invalid transform")
@@ -205,15 +214,30 @@ function PingClient:OnUpdateManagerUpdate(p_DeltaTime, p_Pass)
 
     local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater |
                                                     RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
-    if s_RaycastHit == nil then
-        m_Logger:Write("no raycast")
+    return s_RaycastHit
+end
+
+function PingClient:RaycastScreen()
+    local s_Position = Vec3(self.m_Position_X, 2000 ,self.m_Position_Z)
+    if s_Position == nil then
+        m_Logger:Write("invalid transform")
         return
     end
 
-    -- Send the server a client notification that we want to ping at this location
-    NetEvents:Send(PingEvents.ClientPing, s_RaycastHit.position)
+    local s_Direction = Vec3(0, -1, 0)
 
-    self.m_ShouldPing = false
+    local s_RayStart = s_Position
+    local s_RayEnd = Vec3(s_Position.x + (s_Direction.x * self.m_RaycastLength),
+                            s_Position.y + (s_Direction.y * self.m_RaycastLength),
+                            s_Position.z + (s_Direction.z * self.m_RaycastLength))
+
+    local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater |
+                                                    RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
+
+    self.m_Position_X = 0
+    self.m_Position_Z = 0
+
+    return s_RaycastHit
 end
 
 function PingClient:OnLevelLoaded(p_LevelName, p_GameMode)
