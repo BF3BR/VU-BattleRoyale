@@ -235,7 +235,7 @@ const App: React.FC = () => {
 
     const [planePos, setPlanePos] = useState<Vec3 | null>(null);
     window.OnPlanePos = (p_DataJson: any) => {
-        if (p_DataJson !== undefined && p_DataJson.x !== undefined && p_DataJson.y !== undefined && p_DataJson.z !== undefined) {
+        if (p_DataJson !== undefined && p_DataJson !== null && p_DataJson.x !== undefined && p_DataJson.y !== undefined && p_DataJson.z !== undefined) {
             setPlanePos({
                 x: p_DataJson.x,
                 y: p_DataJson.y,
@@ -247,8 +247,12 @@ const App: React.FC = () => {
     }
 
     const [planeYaw, setPlaneYaw] = useState<number | null>(null);
-    window.OnPlaneYaw = (p_YawRad: number) => {
-        setPlaneYaw(p_YawRad);
+    window.OnPlaneYaw = (p_YawRad: number | null) => {
+        if (p_YawRad !== undefined) {
+            setPlaneYaw(p_YawRad);
+        } else {
+            setPlaneYaw(null);
+        }
     }
 
     window.OnMapSizeChange = () => {
@@ -651,7 +655,7 @@ declare global {
         OnPlayerPos: (p_DataJson: any) => void;
         OnPlayerYaw: (p_YawRad: number) => void;
         OnPlanePos: (p_DataJson: any) => void;
-        OnPlaneYaw: (p_YawRad: number) => void;
+        OnPlaneYaw: (p_YawRad: number|null) => void;
 
         OnMapSizeChange: () => void;
         OnMapShow: (show: boolean) => void;
