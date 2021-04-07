@@ -53,6 +53,8 @@ function VuBattleRoyaleServer:RegisterEvents()
     NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected)
     NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy)
     NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw)
+    NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing)
+    Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.OnTeamsAssigned)
 
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
     Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
@@ -75,35 +77,36 @@ end
 -- =============================================
 
 function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
-    if not self.m_WaitForStart then
-        -- Update the match
-        self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
+    if self.m_WaitForStart then
+        return
+    end
+    m_PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+    -- Update the match
+    self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
 
-        if self.m_CumulatedTime < 1 then
-            self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
-            return
+    if self.m_CumulatedTime < 1 then
+        self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
+        return
+    end
+    self.m_CumulatedTime = 0
+    if PlayerManager:GetPlayerCount() >= self.m_MinPlayersToStart then
+        local s_SpawnedPlayerCount = 0
+        local s_Players = PlayerManager:GetPlayers()
+        for _, l_Player in ipairs(s_Players) do
+            if l_Player == nil and l_Player.alive == false then
+                goto update_allowed_guids_continue
+            end
+
+            s_SpawnedPlayerCount = s_SpawnedPlayerCount + 1
+
+            ::update_allowed_guids_continue::
         end
-        self.m_CumulatedTime = 0
-        if PlayerManager:GetPlayerCount() >= self.m_MinPlayersToStart then
-            local s_SpawnedPlayerCount = 0
-            local s_Players = PlayerManager:GetPlayers()
-            for _, l_Player in ipairs(s_Players) do
-                if l_Player == nil and l_Player.alive == false then
-                    goto update_allowed_guids_continue
-                end
 
-                s_SpawnedPlayerCount = s_SpawnedPlayerCount + 1
-
-                ::update_allowed_guids_continue::
-            end
-
-            if self.m_GameState == GameStates.None and s_SpawnedPlayerCount >= self.m_MinPlayersToStart then
-                self:ChangeGameState(GameStates.Warmup)
-            end
-        else if self.m_GameState == GameStates.Warmup and self.m_ForcedWarmup == false then
-                self:ChangeGameState(GameStates.None)
-            end
+        if self.m_GameState == GameStates.None and s_SpawnedPlayerCount >= self.m_MinPlayersToStart then
+            self:ChangeGameState(GameStates.Warmup)
         end
+    elseif self.m_GameState == GameStates.Warmup and self.m_ForcedWarmup == false then
+        self:ChangeGameState(GameStates.None)
     end
 end
 
@@ -130,7 +133,7 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
     if p_Player == nil then
         return
     end
-
+    m_PingServer:OnPlayerConnected(p_Player)
     -- Send out gamestate information if he connects or reconnects
     NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, self.m_GameState)
 
@@ -187,6 +190,7 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
     self.m_Match:OnRestartRound()
     self.m_WaitForStart = false
     self.m_ForcedWarmup = false
+    m_PingServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
@@ -194,6 +198,13 @@ function VuBattleRoyaleServer:OnLevelDestroy()
     self.m_ForcedWarmup = false
 end
 
+function VuBattleRoyaleServer:OnPlayerPing(p_Player, p_Position)
+    m_PingServer:OnPlayerPing(p_Player, p_Position)
+end
+
+function VuBattleRoyaleServer:OnTeamsAssigned(p_BrTeams)
+    m_PingServer:AssignPingIds(p_BrTeams)
+end
 
 -- =============================================
 -- Hooks

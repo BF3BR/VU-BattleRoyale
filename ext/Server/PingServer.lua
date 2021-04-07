@@ -6,20 +6,6 @@ require "__shared/Enums/CustomEvents"
 local m_Logger = Logger("PingServer", true)
 
 function PingServer:__init()
-    -- Subscribe to the netevent for a player ping
-    self.m_PlayerPingEvent = NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing)
-
-    -- Subscribe to the player respawn event so we can send updated configuration information
-    -- self.m_PlayerCreatedEvent = Events:Subscribe("Player:Respawn", self, self.OnPlayerCreated)
-    self.m_PlayerCreatedEvent = NetEvents:Subscribe("VuBattleRoyale:PlayerConnected", self, self.OnPlayerCreated)
-
-    -- This is used for clearing out all existing pingids, cooldowns
-    self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-
-    self.m_EngineUpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
-
-    self.m_AssignTeamsEvent = Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.AssignPingIds)
-
     -- Table of playerId, pingId
     self.m_PlayerPingIds = {}
 
@@ -28,7 +14,7 @@ function PingServer:__init()
     self.m_PlayerCooldowns = {}
 
     -- Whenever someone pings how long before they can ping again
-    self.m_PingCooldownTime = 0.40
+    self.m_PingCooldownTime = 0.60
 
     -- Client side player display time
     self.m_PingDisplayCooldownTime = 5.0
@@ -37,26 +23,12 @@ function PingServer:__init()
     self.m_Debug = true
 end
 
-function PingServer:__gc()
-    -- Clean up our events
-    -- self.m_PlayerPingEvent:Unsubscribe()
-    -- self.m_PlayerCreatedEvent:Unsubscribe()
-    -- self.m_LevelLoadedEvent:Unsubscribe()
-    -- self.m_AssignTeamsEvent:Unsubscribe()
-end
-
 function PingServer:OnPlayerPing(p_Player, p_Position)
     -- Validate our player
     if p_Player == nil then
         m_Logger:Write("invalid player")
         return
     end
-
-    -- Ignore ping if player is solo
-    -- local l_BrTeam = g_BRTeamManager:GetTeamByPlayer(p_Player)
-    -- if l_BrTeam ~= nil and l_BrTeam:PlayerCount() < 2 then
-    --     return
-    -- end
 
     -- Get the player id
     local s_PlayerId = p_Player.id
@@ -79,8 +51,8 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
     local s_SquadId = p_Player.squadId
 
     if self.m_Debug then
-        -- m_Logger:Write("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " ..
-        --           p_Position.y .. ", " .. p_Position.z)
+        m_Logger:Write("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " ..
+                   p_Position.y .. ", " .. p_Position.z)
     end
 
     -- Update the cooldown
@@ -108,12 +80,12 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 
 end
 
-function PingServer:OnPlayerCreated(p_Player)
+function PingServer:OnPlayerConnected(p_Player)
     -- I believe this only happens once, so it should be good enough
     NetEvents:SendToLocal(PingEvents.UpdateConfig, p_Player, self.m_PingDisplayCooldownTime)
 end
 
-function PingServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap) -- levelName, gameMode, round, roundsPerMap
+function PingServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
     -- Clear out the player ping ids
     self.m_PlayerPingIds = {}
 
@@ -164,7 +136,7 @@ function PingServer:AddPlayerCooldown(p_PlayerId, p_CooldownTime)
 
     -- If we have a result then add this time to the existing result
     if s_Result ~= nil then
-        s_Result = s_Result + p_CooldownTime
+        self.m_PlayerCooldowns[p_PlayerId] = s_Result + p_CooldownTime
         return
     end
 
@@ -199,7 +171,7 @@ function PingServer:AssignPingIds(p_BrTeams)
             self.m_PlayerPingIds[l_PlayerId] = l_PlayerPingId
 
             -- Debug logging output
-            -- m_Logger:Write("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
+            m_Logger:Write("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
 
             -- Increment our player ping id
             l_PlayerPingId = l_PlayerPingId + 1
@@ -209,4 +181,8 @@ function PingServer:AssignPingIds(p_BrTeams)
     end
 end
 
-g_PingServer = PingServer()
+if g_PingServer == nil then
+    g_PingServer = PingServer()
+end
+
+return g_PingServer

@@ -1,9 +1,8 @@
 class "PingClient"
 
 require "__shared/Enums/CustomEvents"
+require "__shared/Enums/PingTypes"
 require "__shared/Utils/EventRouter"
-
-local PingingMethod = { Screen = 0, World = 1 }
 
 local m_Hud = require "Hud"
 local m_Logger = Logger("PingClient", true)
@@ -16,7 +15,7 @@ function PingClient:__init()
     -- This is pingId, { position, cooldownTime }
     self.m_SquadPings = {}
 
-    self.m_Opacity = 0.3
+    self.m_Opacity = 0.4
 
     self.m_PingColors = {
         Vec4(1, 0, 0, self.m_Opacity),
@@ -24,14 +23,6 @@ function PingClient:__init()
         Vec4(0, 0, 1, self.m_Opacity),
         Vec4(0.5, 0.5, 0.5, self.m_Opacity)
     }
-
-    -- Events
-    self.m_PingNotifyEvent = NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
-    self.m_PingUpdateConfigEvent = NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig)
-    self.m_UiDrawHudEvent = Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUiDrawHud)
-    self.m_EngineUpdateEvent = Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
-    self.m_UpdateManagerUpdateEvent = Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
-    self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
 
     -- This is set by the server
     self.m_CooldownTime = 0.0
@@ -41,7 +32,7 @@ function PingClient:__init()
     self.m_RaycastLength = 2000.0
 
     -- Minimap Pinging related
-    self.m_PingingMethod = PingingMethod.World
+    self.m_PingMethod = PingMethod.World
     self.m_Position_X = 0
     self.m_Position_Z = 0
 
@@ -50,18 +41,12 @@ function PingClient:__init()
 
     -- Enable debug logging
     self.m_Debug = true
-
-    -- Check if debug mode is enabled
-    self.m_PingCommand = nil
-    if self.m_Debug then
-        self.m_PingCommand = Console:Register("ping", "ping", self, self.OnPing)
-    end
 end
 
 function PingClient:OnClientUpdateInput()
     if InputManager:WentKeyDown(InputDeviceKeys.IDK_Q) then
         self.m_ShouldPing = true
-        self.m_PingingMethod = PingingMethod.World
+        self.m_PingMethod = PingMethod.World
     end
 end
 
@@ -75,13 +60,11 @@ function PingClient:OnWebUIPingFromMap(p_Coordinates)
     self.m_Position_X = s_Coordinates.x
     self.m_Position_Z = s_Coordinates.y
     self.m_ShouldPing = true
-    self.m_PingingMethod = PingingMethod.Screen
+    self.m_PingMethod = PingMethod.Screen
 end
 
 function PingClient:OnPingNotify(p_PingId, p_Position)
-    if self.m_Debug then
-        m_Logger:Write("pingId: " .. p_PingId .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
-    end
+    m_Logger:Write("pingId: " .. p_PingId .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
 
     -- Send ping to compass
     local l_PingIdStr = tostring(math.floor(p_PingId))
@@ -99,19 +82,19 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
 
     -- Update the structure
     local l_UpdatedCooldown = s_PingInfo[2] + self.m_CooldownTime
-    self.m_SquadPings[p_PingId] = {p_Position, math.max(l_UpdatedCooldown, 3 * self.m_CooldownTime)}
+    if l_UpdatedCooldown > 3 * self.m_CooldownTime then
+        l_UpdatedCooldown = 3 * self.m_CooldownTime
+    end
+    self.m_SquadPings[p_PingId] = {p_Position, l_UpdatedCooldown}
 end
 
 function PingClient:OnPingUpdateConfig(p_CooldownTime)
-    m_Logger:Write("received config")
-    if self.m_Debug then
-        m_Logger:Write("cooldownTime: " .. p_CooldownTime)
-    end
+    m_Logger:Write("cooldownTime: " .. p_CooldownTime)
 
     self.m_CooldownTime = p_CooldownTime
 end
 
-function PingClient:OnUiDrawHud()
+function PingClient:OnUIDrawHud()
     for l_PingId, l_PingInfo in pairs(self.m_SquadPings) do
         if l_PingInfo == nil then
             m_Logger:Write("invalid ping info")
@@ -148,7 +131,7 @@ function PingClient:OnUiDrawHud()
     end
 end
 
-function PingClient:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+function PingClient:OnEngineUpdate(p_DeltaTime)
     -- Update all of the cooldowns
     for l_PingId, l_Info in pairs(self.m_SquadPings) do
         if l_Info == nil then
@@ -166,12 +149,7 @@ function PingClient:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
     end
 end
 
-function PingClient:OnUpdateManagerUpdate(p_DeltaTime, p_Pass)
-    -- Only do raycasts on presim
-    if p_Pass ~= UpdatePass.UpdatePass_PreSim then
-        return
-    end
-
+function PingClient:OnUpdatePassPreSim(p_DeltaTime)
     -- If we do not need to ping dont worry about anything
     if not self.m_ShouldPing then
         return
@@ -181,7 +159,7 @@ function PingClient:OnUpdateManagerUpdate(p_DeltaTime, p_Pass)
 
     local s_RaycastHit = nil
 
-    if self.m_PingingMethod == PingingMethod.World then
+    if self.m_PingMethod == PingMethod.World then
         s_RaycastHit = self:RaycastWorld()
     else
         s_RaycastHit = self:RaycastScreen()

@@ -72,6 +72,8 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied)
     NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
     NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
+    NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
+    NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig)
 
     self:RegisterWebUIEvents()
 end
@@ -110,9 +112,10 @@ function VuBattleRoyaleClient:OnLevelDestroy()
     m_SpectatorClient:OnLevelDestroy()
 end
 
-function VuBattleRoyaleClient:OnLevelLoaded()
+function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
     m_Showroom:SetCamera(true)
     WebUI:ExecuteJS("ToggleDeployMenu(true);")
+    m_Ping:OnLevelLoaded(p_LevelName, p_GameMode)
 end
 
 function VuBattleRoyaleClient:OnLevelFinalized(p_LevelName, p_GameMode)
@@ -122,10 +125,12 @@ end
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)
     m_SpectatorClient:OnEngineUpdate(p_DeltaTime)
+    m_Ping:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUIDrawHud()
     m_Hud:OnUIDrawHud(self.m_BrPlayer)
+    m_Ping:OnUIDrawHud()
 end
 
 function VuBattleRoyaleClient:OnExtensionUnloading()
@@ -298,6 +303,7 @@ end
 
 function VuBattleRoyaleClient:OnUpdatePassPreSim(p_DeltaTime)
     m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+    m_Ping:OnUpdatePassPreSim(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnGunShipCamera()
@@ -353,6 +359,13 @@ function VuBattleRoyaleClient:OnEnableSpectate()
     m_SpectatorClient:Enable()
 end
 
+function VuBattleRoyaleClient:OnPingNotify(p_PingId, p_Position)
+    m_Ping:OnPingNotify(p_PingId, p_Position)
+end
+
+function VuBattleRoyaleClient:OnPingUpdateConfig(p_CooldownTime)
+    m_Ping:OnPingUpdateConfig(p_CooldownTime)
+end
 
 -- =============================================
 -- WebUI Events
