@@ -76,8 +76,8 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
         return
     end
     if s_Player.id == p_PlayerId then
-        g_Timers:Timeout(5, p_InflictorId, function(inflictorId)
-            self:Enable(inflictorId)
+        g_Timers:Timeout(5, p_InflictorId, function()
+            self:Enable(p_InflictorId)
         end)
         return
     -- Handle death of player being spectated.
