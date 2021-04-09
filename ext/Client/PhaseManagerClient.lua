@@ -32,6 +32,7 @@ function PhaseManagerClient:RegisterEvents()
         self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
     end
 
+    Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted)
     Events:Subscribe("UpdatePass_PreSim", self, self.OnPreSim)
     Events:Subscribe(SpectatorEvent.PlayerChanged, self, self.OnSpectatingPlayer)
     Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnRender)
@@ -143,6 +144,12 @@ function PhaseManagerClient:OnRender()
     self.m_OuterCircle:Render(OuterCircleRenderer, l_PlayerPos)
     if self.m_RenderInnerCircle and not self.m_Completed then
         self.m_InnerCircle:Render(InnerCircleRenderer, l_PlayerPos)
+    end
+end
+
+function PhaseManagerClient:OnPlayerDeleted(p_Player)
+    if self.m_SpectatedPlayer ~= nil and self.m_SpectatedPlayer.name == p_Player.name then
+        self.m_SpectatedPlayer = nil
     end
 end
 
