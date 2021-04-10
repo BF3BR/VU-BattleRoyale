@@ -1,9 +1,12 @@
+require "__shared/Enums/CustomEvents"
+
 class "RaycastHelper"
 
 function RaycastHelper:__init()
     self.m_RaycastMemo = {}
 
     Events:Subscribe("Level:Destroy", self, self.Clear)
+    Events:Subscribe(PhaseManagerEvent.Update, self, self.Clear)
 
     -- Memoize Functions https://www.lua.org/pil/17.1.html
     setmetatable(self.m_RaycastMemo, {__mode = "kv"})

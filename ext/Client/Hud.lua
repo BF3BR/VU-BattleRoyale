@@ -6,6 +6,7 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/UiStates"
 
 local m_Showroom = require "Showroom"
+local m_Logger = Logger("VuBattleRoyaleHud", true)
 
 function VuBattleRoyaleHud:__init()
     self.m_GameState = GameStates.None
@@ -252,6 +253,35 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
     WebUI:ExecuteJS("OnMapShow(true)")
     self:PushLocalPlayerPos()
     self:PushLocalPlayerYaw()
+    
+    if self.m_GameState <= GameStates.Warmup then
+        return
+    end
+
+    local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+    if s_LocalPlayer == p_Player and p_Player.soldier ~= nil then
+        self:RegisterOnBeingInteractedCallbacks(p_Player.soldier)
+    end
+end
+
+function VuBattleRoyaleHud:RegisterOnBeingInteractedCallbacks(p_Soldier)
+    for i, l_Entity in pairs(p_Soldier.bus.entities) do
+        if l_Entity.data ~= nil then
+            if l_Entity.data.instanceGuid == Guid('34130787-22C3-0F9D-6AA7-4BC214FA1734') then
+                l_Entity:RegisterEventCallback(self, self.OnBeingInteractedStarted)
+            elseif l_Entity.data.instanceGuid == Guid('D0F06E9A-AE8B-E614-F8C3-54A47CF22565') then
+                l_Entity:RegisterEventCallback(self, self.OnBeingInteractedFinished)
+            end
+        end
+    end
+end
+
+function VuBattleRoyaleHud:OnBeingInteractedStarted(p_Entity, p_Event)
+    m_Logger:Write("The interaction with the local player started")
+end
+
+function VuBattleRoyaleHud:OnBeingInteractedFinished(p_Entity, p_Event)
+    m_Logger:Write("The interaction with the local player ended")
 end
 
 function VuBattleRoyaleHud:OnPhaseManagerUpdate(p_Data)

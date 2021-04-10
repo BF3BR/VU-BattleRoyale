@@ -104,6 +104,19 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
     -- CustomizeSoldierEntityData that will use the M9 Kit and connect it to the interactiveManDown
     local s_CustomizeSoldierEntityData = self:CreateManDownCustomizeSoldierEntityData(s_ManDownCustomizeSoldierData)
 
+    -- Create EventSplitterEntities for custom events
+    local s_EventSplitterEntityDataStart = EventSplitterEntityData(Guid('34130787-22C3-0F9D-6AA7-4BC214FA1734'))
+	s_EventSplitterEntityDataStart.isEventConnectionTarget = 2
+	s_EventSplitterEntityDataStart.isPropertyConnectionTarget = 3
+	s_EventSplitterEntityDataStart.runOnce = false
+	s_EventSplitterEntityDataStart.realm = Realm.Realm_Client
+	
+	local s_EventSplitterEntityDataFinish = EventSplitterEntityData(Guid('D0F06E9A-AE8B-E614-F8C3-54A47CF22565'))
+	s_EventSplitterEntityDataFinish.isEventConnectionTarget = 2
+	s_EventSplitterEntityDataFinish.isPropertyConnectionTarget = 3
+	s_EventSplitterEntityDataFinish.runOnce = false
+	s_EventSplitterEntityDataFinish.realm = Realm.Realm_Client
+
     -- create EventConnection so it is connected to interactiveManDown
     p_Instance = SoldierEntityData(p_Instance)
     p_Instance:MakeWritable()
@@ -113,9 +126,17 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
 
     local s_ManDownConnection = m_EventConnections:Create(p_Instance, s_CustomizeSoldierEntityData, -563307660,
                                                                206074481, 3)
+    local s_BeingInteractedStartedImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataStart, -1741104687,
+                                                               1723395486, 2)
+	local s_BeingInteractedCancelledImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataFinish, -1025749669,
+                                                               1723395486, 2)
+	local s_BeingInteractedFinishedImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataFinish, 1957374978,
+                                                               1723395486, 2)
 
     -- Region add all created to the MPSoldier and Registry of the game
     p_Instance.components:add(s_CustomizeSoldierEntityData) -- add entityData to components
+	p_Instance.components:add(s_EventSplitterEntityDataStart)
+	p_Instance.components:add(s_EventSplitterEntityDataFinish)
 
     local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:FindInstanceByGuid(
                                                     Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
@@ -158,13 +179,20 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
     end
 
     s_SoldierBlueprint.eventConnections:add(s_ManDownConnection) -- add connection that equips the m9 kit when you go mandown
+	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedStartedImpulseConnection)
+	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedCancelledImpulseConnection)
+	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedFinishedImpulseConnection)
 
     -- this causes crashes for unknown reasons but also it's not needed
     --local s_Partition = DatabasePartition((ResourceManager:FindPartitionForInstance(p_Instance)))
     --s_Partition:AddInstance(s_CustomizeSoldierEntityData) -- add entitydata to the s_Partition
+	--s_Partition:AddInstance(s_EventSplitterEntityDataStart)
+	--s_Partition:AddInstance(s_EventSplitterEntityDataFinish)
 
     local registry = RegistryContainer()
     registry.referenceObjectRegistry:add(s_CustomizeSoldierEntityData) -- add entityData to registry
+	registry.entityRegistry:add(s_EventSplitterEntityDataStart)
+	registry.entityRegistry:add(s_EventSplitterEntityDataFinish)
     ResourceManager:AddRegistry(registry, ResourceCompartment.ResourceCompartment_Game)
 
     -- Add connections between EntityInteractionComponentData and InterfaceDescriptionData
