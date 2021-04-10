@@ -104,6 +104,12 @@ function VuBattleRoyaleShared:RegisterCallbacks()
         self, self.OnTeamEntityData
     )
 
+    ResourceManager:RegisterInstanceLoadHandler(
+        Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+        Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"),
+        self, self.OnSoldierBlueprint
+    )
+
     m_InteractiveManDown:RegisterCallbacks()
     m_DropWeapons:RegisterCallbacks()
 end
@@ -271,6 +277,32 @@ function VuBattleRoyaleShared:OnTeamEntityData(p_Instance)
         s_LogicPrefabBlueprint.objects:add(s_NewTeamId)
         s_LogicPrefabBlueprint.partition:AddInstance(s_NewTeamId)
     end
+end
+
+function VuBattleRoyaleShared:OnSoldierBlueprint(p_Instance)
+    -- Add 1 CharacterSpawnReference
+    local s_SpatialPrefabBlueprint = SpatialPrefabBlueprint(ResourceManager:SearchForDataContainer("Gameplay/GameModes/Conquest"))
+    s_SpatialPrefabBlueprint:MakeWritable()
+    local partition = ResourceManager:FindPartitionForInstance(s_SpatialPrefabBlueprint)
+    local registry = RegistryContainer()
+	
+    local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1"))
+    s_CharacterSpawnReferenceObjectData.team = TeamId.TeamNeutral
+    s_CharacterSpawnReferenceObjectData.locationTextSid = "1"
+    s_CharacterSpawnReferenceObjectData.locationNameSid = "Spawn 1"
+    s_CharacterSpawnReferenceObjectData.blueprint = SoldierBlueprint(p_Instance)
+    s_CharacterSpawnReferenceObjectData.playerType = PlayerSpawnType.PlayerSpawnType_HumanPlayer
+    s_CharacterSpawnReferenceObjectData.useAsSpawnPoint = true
+    s_CharacterSpawnReferenceObjectData.maxCount = 0
+    s_CharacterSpawnReferenceObjectData.takeControlEntryIndex = 1
+    s_CharacterSpawnReferenceObjectData.isEventConnectionTarget = 2
+    s_CharacterSpawnReferenceObjectData.isPropertyConnectionTarget = 3
+    
+    s_SpatialPrefabBlueprint.objects:add(s_CharacterSpawnReferenceObjectData)
+    partition:AddInstance(s_CharacterSpawnReferenceObjectData)
+    registry.referenceObjectRegistry:add(s_CharacterSpawnReferenceObjectData)
+	
+    ResourceManager:AddRegistry(registry, ResourceCompartment.ResourceCompartment_Game)  	
 end
 
 -- =============================================

@@ -265,6 +265,58 @@ function BRPlayer:Spawn(p_Trans)
     self.m_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
 end
 
+function BRPlayer:GunshipSpawn(p_Trans)
+    -- check if alive
+    if self.m_Player.alive then
+        return
+    end
+
+    local s_SoldierAsset = nil
+    local s_Appearance = nil
+    local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
+
+    self.m_Player.selectedKit = s_SoldierBlueprint
+
+    -- TODO: @Janssent's appearance code gonna land here probably
+    if self.m_Player.teamId == TeamId.Team1 then
+        s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
+        s_Appearance = ResourceManager:SearchForDataContainer(
+                           "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
+    else
+        s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
+        s_Appearance = ResourceManager:SearchForDataContainer(
+                           "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
+    end
+
+    if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
+        return
+    end
+
+    self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+    local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+        Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
+        Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+    self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})                                                  
+    local s_Event = ServerPlayerEvent("Spawn", self.m_Player, true, false, false, false, false, false, self.m_Player.teamId)
+	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
+	local s_Entity = s_EntityIterator:Next()
+	while s_Entity do
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid('67A2C146-9CC0-E7EC-5227-B2DCB9D316C1') then
+			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
+			s_CharacterSpawnReferenceObjectData:MakeWritable()
+			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Trans
+			s_Entity:FireEvent(s_Event)
+			break
+		end
+		s_Entity = s_EntityIterator:Next()
+	end
+    g_Timers:Timeout(0.01, self.m_Player, function(p_Player)
+        p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+        p_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
+		p_Player.soldier:SetTransform(p_Trans)
+    end)
+end
+
 function BRPlayer:CreateCustomizeSoldierData()
     local s_CustomizeSoldierData = CustomizeSoldierData()
     s_CustomizeSoldierData.restoreToOriginalVisualState = false
