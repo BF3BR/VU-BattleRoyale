@@ -28,7 +28,7 @@ end
 
 function VuBattleRoyaleShared:RegisterEvents()
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
-    Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate)
+    Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate)
 end
 
 function VuBattleRoyaleShared:RegisterCallbacks()
@@ -87,20 +87,20 @@ function VuBattleRoyaleShared:RegisterCallbacks()
     )
     
     ResourceManager:RegisterInstanceLoadHandler(
-        Guid('9942F328-35C1-11DF-9556-FDADABD0ADCC'), 
-        Guid('FE76DD4D-CA25-2382-1ACB-40117A0AC957'), 
+        Guid("9942F328-35C1-11DF-9556-FDADABD0ADCC"), 
+        Guid("FE76DD4D-CA25-2382-1ACB-40117A0AC957"), 
         self, self.OnSoldierWeaponSwitchingData
     )
 
     ResourceManager:RegisterInstanceLoadHandler(
-        Guid('C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4'),
-        Guid('AD413546-DEAF-8115-B89C-D666E801C67A'),
+        Guid("C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4"),
+        Guid("AD413546-DEAF-8115-B89C-D666E801C67A"),
         self, self.OnGameModeSettings
     )
 
     ResourceManager:RegisterInstanceLoadHandler(
-        Guid('19631E31-2E3A-432B-8929-FB57BAA7D28E'),
-        Guid('B4BB6CFA-0E53-45F9-B190-1287DCC093A9'),
+        Guid("19631E31-2E3A-432B-8929-FB57BAA7D28E"),
+        Guid("B4BB6CFA-0E53-45F9-B190-1287DCC093A9"),
         self, self.OnTeamEntityData
     )
 
@@ -263,8 +263,8 @@ function VuBattleRoyaleShared:OnTeamEntityData(p_Instance)
 
         local s_LogicPrefabBlueprint = LogicPrefabBlueprint(
             ResourceManager:FindInstanceByGuid(
-                Guid('466C8E5C-BD29-11E0-923F-C41005FFB7BD'),
-                Guid('D0DB1029-9313-7D6D-BBA9-9C8F92C0040B')
+                Guid("466C8E5C-BD29-11E0-923F-C41005FFB7BD"),
+                Guid("D0DB1029-9313-7D6D-BBA9-9C8F92C0040B")
             )
         )
         s_LogicPrefabBlueprint:MakeWritable()

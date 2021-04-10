@@ -222,10 +222,10 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
     if s_Player == nil then
         return
     end
-    local s_InflictorId = p_Table[2]
 
     m_Logger:Write("INFO: OnPlayerKilled: " .. s_Player.name)
 
+    local s_InflictorId = p_Table[2]
     m_SpectatorClient:OnPlayerKilled(s_Player.id, s_InflictorId)
 
     local s_LocalPlayer = PlayerManager:GetLocalPlayer()
@@ -237,40 +237,25 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
         return
     end
 
-    if s_Player == s_LocalPlayer or (s_Player.squadId == s_LocalPlayer.squadId and s_Player.teamId == s_LocalPlayer.teamId) then
-        -- If the local player died or the player that died is your squadmate we should check
-        -- if anyone else alive in the squad, if not we should bring up the gameover screen
-        -- So the gameover screen should only pop up when the last player in your squad dies
-        if s_LocalPlayer.squadId == SquadId.SquadNone then
-			m_Hud:OnGameOverScreen(false)
-            return
-		end
+    local s_AliveSquadCount = 1
+    if s_Player.name == l_Teammate.Name then
+        s_AliveSquadCount = 0
+    end
 
-        local s_Players = PlayerManager:GetPlayersBySquad(s_LocalPlayer.teamId, s_LocalPlayer.squadId)
-
-        local s_AliveSquadCount = 0
-        for _, l_Player in pairs(s_Players) do
-            if l_Player == s_LocalPlayer then
-                goto continue_enable
+    local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+    if s_TeamPlayers ~= nil then
+        for _, l_Teammate in ipairs(s_TeamPlayers) do
+            if l_Teammate ~= nil then
+                if l_Teammate.State ~= BRPlayerState.Dead and s_Player.name ~= l_Teammate.Name then
+                    s_AliveSquadCount = s_AliveSquadCount + 1
+                end
             end
-
-            if l_Player.soldier == nil then
-                goto continue_enable
-            end
-
-            if l_Player.soldier.alive == false then
-                goto continue_enable
-            end
-            
-            s_AliveSquadCount = s_AliveSquadCount + 1
-    
-            ::continue_enable::
         end
+    end
 
-        if s_AliveSquadCount == 0 then
-            m_Hud:OnGameOverScreen(false)
-            return
-        end
+    if s_AliveSquadCount == 0 then
+        m_Hud:OnGameOverScreen(false)
+        return
     end
 end
 

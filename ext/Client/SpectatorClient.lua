@@ -75,9 +75,12 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
     if s_Player == nil then
         return
     end
+	
     if s_Player.id == p_PlayerId then
         g_Timers:Timeout(5, p_InflictorId, function()
-            self:Enable(p_InflictorId)
+			if self.m_GameState ~= GameStates.EndGame and self.m_GameState ~= GameStates.None and self.m_GameState ~= GameStates.Warmup then
+				self:Enable(p_InflictorId)
+			end
         end)
         return
     -- Handle death of player being spectated.
@@ -181,6 +184,10 @@ function SpectatorClient:Enable(p_InflictorId)
 
 	-- If we're alive we don't allow spectating.
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil then
+		return
+	end
 
 	if s_LocalPlayer.soldier ~= nil and not s_LocalPlayer.soldier.isDead then
 		return
