@@ -49,7 +49,7 @@ end
 function InteractiveManDown:OnInputRestrictionData(p_Instance)
     p_Instance = InputRestrictionEntityData(p_Instance)
     p_Instance:MakeWritable()
-    p_Instance.selectWeapon9 = false
+    p_Instance.selectWeapon9 = true
     p_Instance.sprint = false
     p_Instance.changeWeapon = false
     p_Instance.zoom = false
@@ -83,7 +83,6 @@ function InteractiveManDown:OnVeniceSoldierHealthModuleData(p_Instance)
     PoseConstraintsData(p_Instance.interactiveManDownPoseConstraints).crouchPose = false
     p_Instance.manDownStateHealthPoints = 100.0
     p_Instance.interactiveManDownThreshold = 100.0
-    p_Instance.manDownStateHealthPoints = 100.0
     p_Instance.timeForCorpse = 1.0
     p_Instance.immortalTimeAfterSpawn = 0.0
     p_Instance.manDownStateTime = 110.0
@@ -103,6 +102,17 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
     local s_ManDownCustomizeSoldierData = self:CreateManDownCustomizeSoldierData()
     -- CustomizeSoldierEntityData that will use the M9 Kit and connect it to the interactiveManDown
     local s_CustomizeSoldierEntityData = self:CreateManDownCustomizeSoldierEntityData(s_ManDownCustomizeSoldierData)
+
+    local s_BeingInteracted_DelayEntityData = self:CreateDelayEntityData(Guid("ED2D8D65-D942-60BC-20F2-0EE10307F6BC"))
+    local s_BeingInteracted_InputRestrictionEntityData = self:CreateBeingInteractedInputRestrictionEntityData()
+
+    local s_EntityInteractionComponentData = EntityInteractionComponentData(
+                                                 ResourceManager:FindInstanceByGuid(
+                                                     Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
+                                                     Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE")))
+													 
+	local s_SoldierInteraction_DelayEntityData = self:CreateDelayEntityData(Guid("2854112F-E1D2-7BBE-D809-7315794B5271"))
+    local s_SoldierInteraction_InputRestrictionEntityData = self:CreateSoldierInterationInputRestrictionEntityData()
 
     -- Create EventSplitterEntities for custom events
     local s_EventSplitterEntityDataStart = EventSplitterEntityData(Guid('34130787-22C3-0F9D-6AA7-4BC214FA1734'))
@@ -132,11 +142,33 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
                                                                1723395486, 2)
 	local s_BeingInteractedFinishedImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataFinish, 1957374978,
                                                                1723395486, 2)
+    -- being interacted inputrestriction
+    local s_BeingInteractedStartedInputRestrictionConnection = m_EventConnections:Create(p_Instance, s_BeingInteracted_InputRestrictionEntityData, -1741104687,
+                                                               -559281700, 3)
+	local s_BeingInteractedCancelledInputRestrictionConnection = m_EventConnections:Create(p_Instance, s_BeingInteracted_InputRestrictionEntityData, -1025749669,
+                                                               1928776733, 3)
+	local s_BeingInteractedFinishedDelayConnection = m_EventConnections:Create(p_Instance, s_BeingInteracted_DelayEntityData, 1957374978,
+                                                               5862146, 3)
+	local s_BeingInteractedDelayToInputRestrictionConnection = m_EventConnections:Create(s_BeingInteracted_DelayEntityData, s_BeingInteracted_InputRestrictionEntityData, 193453899,
+                                                               1928776733, 3)
+    -- being interacted inputrestriction
+    local s_SoldierInteractionStartedInputRestrictionConnection = m_EventConnections:Create(s_EntityInteractionComponentData, s_SoldierInteraction_InputRestrictionEntityData, 1783953429,
+                                                                -559281700, 3)
+    local s_SoldierInteractionCancelledInputRestrictionConnection = m_EventConnections:Create(s_EntityInteractionComponentData, s_SoldierInteraction_InputRestrictionEntityData, -1947428449,
+                                                                1928776733, 3)
+    local s_SoldierInteractionFinishedDelayConnection = m_EventConnections:Create(s_EntityInteractionComponentData, s_SoldierInteraction_DelayEntityData, -1956653754,
+                                                                5862146, 3)
+    local s_SoldierInteractionDelayToInputRestrictionConnection = m_EventConnections:Create(s_SoldierInteraction_DelayEntityData, s_SoldierInteraction_InputRestrictionEntityData, 193453899,
+                                                                1928776733, 3)
 
     -- Region add all created to the MPSoldier and Registry of the game
-    p_Instance.components:add(s_CustomizeSoldierEntityData) -- add entityData to components
+    p_Instance.components:add(s_CustomizeSoldierEntityData)
 	p_Instance.components:add(s_EventSplitterEntityDataStart)
 	p_Instance.components:add(s_EventSplitterEntityDataFinish)
+	p_Instance.components:add(s_BeingInteracted_InputRestrictionEntityData)
+	p_Instance.components:add(s_BeingInteracted_DelayEntityData)
+	p_Instance.components:add(s_SoldierInteraction_InputRestrictionEntityData)
+	p_Instance.components:add(s_SoldierInteraction_DelayEntityData)
 
     local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:FindInstanceByGuid(
                                                     Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
@@ -181,28 +213,41 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
     s_SoldierBlueprint.eventConnections:add(s_ManDownConnection) -- add connection that equips the m9 kit when you go mandown
 	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedStartedImpulseConnection)
 	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedCancelledImpulseConnection)
-	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedFinishedImpulseConnection)
+    s_SoldierBlueprint.eventConnections:add(s_BeingInteractedFinishedImpulseConnection)
+    -- being interacted inputrestriction
+	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedStartedInputRestrictionConnection)
+	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedCancelledInputRestrictionConnection)
+	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedFinishedDelayConnection)
+	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedDelayToInputRestrictionConnection)
+	s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionStartedInputRestrictionConnection)
+	s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionCancelledInputRestrictionConnection)
+	s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionFinishedDelayConnection)
+	s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionDelayToInputRestrictionConnection)
 
     -- this causes crashes for unknown reasons but also it's not needed
-    --local s_Partition = DatabasePartition((ResourceManager:FindPartitionForInstance(p_Instance)))
+    local s_Partition = DatabasePartition((ResourceManager:FindPartitionForInstance(p_Instance)))
     --s_Partition:AddInstance(s_CustomizeSoldierEntityData) -- add entitydata to the s_Partition
 	--s_Partition:AddInstance(s_EventSplitterEntityDataStart)
-	--s_Partition:AddInstance(s_EventSplitterEntityDataFinish)
+    --s_Partition:AddInstance(s_EventSplitterEntityDataFinish)
+    --s_Partition:AddInstance(s_BeingInteracted_InputRestrictionEntityData)
+	--s_Partition:AddInstance(s_BeingInteracted_DelayEntityData)
+    --s_Partition:AddInstance(s_SoldierInteraction_InputRestrictionEntityData)
+	--s_Partition:AddInstance(s_SoldierInteraction_DelayEntityData)
 
     local registry = RegistryContainer()
     registry.referenceObjectRegistry:add(s_CustomizeSoldierEntityData) -- add entityData to registry
 	registry.entityRegistry:add(s_EventSplitterEntityDataStart)
 	registry.entityRegistry:add(s_EventSplitterEntityDataFinish)
+	registry.entityRegistry:add(s_BeingInteracted_InputRestrictionEntityData)
+	registry.entityRegistry:add(s_BeingInteracted_DelayEntityData)
+	registry.entityRegistry:add(s_SoldierInteraction_InputRestrictionEntityData)
+	registry.entityRegistry:add(s_SoldierInteraction_DelayEntityData)
     ResourceManager:AddRegistry(registry, ResourceCompartment.ResourceCompartment_Game)
 
     -- Add connections between EntityInteractionComponentData and InterfaceDescriptionData
     -- OnSoldierInteraction-Finished, -Started, -Cancelled
     -- OnInteractionStarted, -Stopped
 
-    local s_EntityInteractionComponentData = EntityInteractionComponentData(
-                                                 ResourceManager:FindInstanceByGuid(
-                                                     Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
-                                                     Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE")))
     local s_InterfaceDescriptorData = InterfaceDescriptorData(
                                           ResourceManager:FindInstanceByGuid(
                                               Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
@@ -307,6 +352,139 @@ function InteractiveManDown:CreateManDownCustomizeSoldierEntityData(p_CustomizeS
     s_CoopManDownSoldierEntityData.customizeSoldierData = p_CustomizeSoldierData
 
     return s_CoopManDownSoldierEntityData
+end
+
+function InteractiveManDown:CreateDelayEntityData(p_Guid)
+    local s_DelayEntityData = DelayEntityData(p_Guid)
+	s_DelayEntityData.delay = 0.3
+	s_DelayEntityData.realm = Realm.Realm_Server
+	s_DelayEntityData.autoStart = false
+	s_DelayEntityData.runOnce = false
+	s_DelayEntityData.removeDuplicateEvents = false
+	s_DelayEntityData.isEventConnectionTarget = 1
+	s_DelayEntityData.isPropertyConnectionTarget = 3
+
+    return s_DelayEntityData
+end
+
+function InteractiveManDown:CreateBeingInteractedInputRestrictionEntityData()
+    local s_InputRestrictionEntityData = InputRestrictionEntityData(Guid('4FFD99D0-3E9B-2A8F-967E-3A0724A06BA7'))
+	s_InputRestrictionEntityData.overridePreviousInputRestriction = true
+	s_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
+	s_InputRestrictionEntityData.throttle = false
+	s_InputRestrictionEntityData.strafe = false
+	s_InputRestrictionEntityData.brake = false
+	s_InputRestrictionEntityData.handBrake = false
+	s_InputRestrictionEntityData.clutch = false
+	s_InputRestrictionEntityData.yaw = true
+	s_InputRestrictionEntityData.pitch = true
+	s_InputRestrictionEntityData.roll = true
+	s_InputRestrictionEntityData.fire = true
+	s_InputRestrictionEntityData.fireCountermeasure = false
+	s_InputRestrictionEntityData.altFire = false
+	s_InputRestrictionEntityData.cycleRadioChannel = false
+	s_InputRestrictionEntityData.selectMeleeWeapon = false
+	s_InputRestrictionEntityData.zoom = false
+	s_InputRestrictionEntityData.jump = false
+	s_InputRestrictionEntityData.changeVehicle = false
+	s_InputRestrictionEntityData.changeEntry = false
+	s_InputRestrictionEntityData.changePose = false
+	s_InputRestrictionEntityData.toggleParachute = false
+	s_InputRestrictionEntityData.changeWeapon = false
+	s_InputRestrictionEntityData.reload = true
+	s_InputRestrictionEntityData.toggleCamera = false
+	s_InputRestrictionEntityData.sprint = false
+	s_InputRestrictionEntityData.scoreboardMenu = true
+	s_InputRestrictionEntityData.mapZoom = false
+	s_InputRestrictionEntityData.gearUp = false
+	s_InputRestrictionEntityData.gearDown = false
+	s_InputRestrictionEntityData.threeDimensionalMap = false
+	s_InputRestrictionEntityData.giveOrder = false
+	s_InputRestrictionEntityData.prone = false
+	s_InputRestrictionEntityData.switchPrimaryInventory = true
+	s_InputRestrictionEntityData.switchPrimaryWeapon = true
+	s_InputRestrictionEntityData.grenadeLauncher = true
+	s_InputRestrictionEntityData.staticGadget = true
+	s_InputRestrictionEntityData.dynamicGadget1 = true
+	s_InputRestrictionEntityData.dynamicGadget2 = true
+	s_InputRestrictionEntityData.meleeAttack = true
+	s_InputRestrictionEntityData.throwGrenade = true
+	s_InputRestrictionEntityData.selectWeapon1 = true
+	s_InputRestrictionEntityData.selectWeapon2 = true
+	s_InputRestrictionEntityData.selectWeapon3 = true
+	s_InputRestrictionEntityData.selectWeapon4 = true
+	s_InputRestrictionEntityData.selectWeapon5 = true
+	s_InputRestrictionEntityData.selectWeapon6 = true
+	s_InputRestrictionEntityData.selectWeapon7 = true
+	s_InputRestrictionEntityData.selectWeapon8 = true
+	s_InputRestrictionEntityData.selectWeapon9 = true
+	s_InputRestrictionEntityData.enabled = true
+	s_InputRestrictionEntityData.runtimeComponentCount = 0
+	s_InputRestrictionEntityData.transform = LinearTransform(Vec3(1.000000, 0.000000, 0.000000), Vec3(0.000000, 1.000000, 0.000000), Vec3(0.000000, 0.000000, 1.000000), Vec3(0.000000, 0.000000, 0.000000))
+	s_InputRestrictionEntityData.isEventConnectionTarget = 1
+    s_InputRestrictionEntityData.isPropertyConnectionTarget = 3
+    
+    return s_InputRestrictionEntityData
+end
+
+function InteractiveManDown:CreateSoldierInterationInputRestrictionEntityData()
+    s_InputRestrictionEntityData = InputRestrictionEntityData(Guid('3A0724A0-2A8F-3E9B-6BA7-4FFD99D0967E'))
+    s_InputRestrictionEntityData.overridePreviousInputRestriction = true
+    s_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
+    s_InputRestrictionEntityData.throttle = false
+    s_InputRestrictionEntityData.strafe = false
+    s_InputRestrictionEntityData.brake = false
+    s_InputRestrictionEntityData.handBrake = false
+    s_InputRestrictionEntityData.clutch = false
+    s_InputRestrictionEntityData.yaw = false
+    s_InputRestrictionEntityData.pitch = false
+    s_InputRestrictionEntityData.roll = false
+    s_InputRestrictionEntityData.fire = false
+    s_InputRestrictionEntityData.fireCountermeasure = false
+    s_InputRestrictionEntityData.altFire = false
+    s_InputRestrictionEntityData.cycleRadioChannel = false
+    s_InputRestrictionEntityData.selectMeleeWeapon = false
+    s_InputRestrictionEntityData.zoom = false
+    s_InputRestrictionEntityData.jump = false
+    s_InputRestrictionEntityData.changeVehicle = false
+    s_InputRestrictionEntityData.changeEntry = false
+    s_InputRestrictionEntityData.changePose = false
+    s_InputRestrictionEntityData.toggleParachute = false
+    s_InputRestrictionEntityData.changeWeapon = false
+    s_InputRestrictionEntityData.reload = false
+    s_InputRestrictionEntityData.toggleCamera = false
+    s_InputRestrictionEntityData.sprint = false
+    s_InputRestrictionEntityData.scoreboardMenu = true
+    s_InputRestrictionEntityData.mapZoom = false
+    s_InputRestrictionEntityData.gearUp = false
+    s_InputRestrictionEntityData.gearDown = false
+    s_InputRestrictionEntityData.threeDimensionalMap = false
+    s_InputRestrictionEntityData.giveOrder = false
+    s_InputRestrictionEntityData.prone = false
+    s_InputRestrictionEntityData.switchPrimaryInventory = true
+    s_InputRestrictionEntityData.switchPrimaryWeapon = true
+    s_InputRestrictionEntityData.grenadeLauncher = true
+    s_InputRestrictionEntityData.staticGadget = true
+    s_InputRestrictionEntityData.dynamicGadget1 = true
+    s_InputRestrictionEntityData.dynamicGadget2 = true
+    s_InputRestrictionEntityData.meleeAttack = true
+    s_InputRestrictionEntityData.throwGrenade = true
+    s_InputRestrictionEntityData.selectWeapon1 = true
+    s_InputRestrictionEntityData.selectWeapon2 = true
+    s_InputRestrictionEntityData.selectWeapon3 = true
+    s_InputRestrictionEntityData.selectWeapon4 = true
+    s_InputRestrictionEntityData.selectWeapon5 = true
+    s_InputRestrictionEntityData.selectWeapon6 = true
+    s_InputRestrictionEntityData.selectWeapon7 = true
+    s_InputRestrictionEntityData.selectWeapon8 = true
+    s_InputRestrictionEntityData.selectWeapon9 = true
+    s_InputRestrictionEntityData.enabled = true
+    s_InputRestrictionEntityData.runtimeComponentCount = 0
+    s_InputRestrictionEntityData.transform = LinearTransform(Vec3(1.000000, 0.000000, 0.000000), Vec3(0.000000, 1.000000, 0.000000), Vec3(0.000000, 0.000000, 1.000000), Vec3(0.000000, 0.000000, 0.000000))
+    s_InputRestrictionEntityData.isEventConnectionTarget = 1
+    s_InputRestrictionEntityData.isPropertyConnectionTarget = 3
+
+    return s_InputRestrictionEntityData
 end
 
 if g_InteractiveManDown == nil then
