@@ -26,6 +26,8 @@ function SpectatorClient:__init()
 
 	self.m_GameState = nil
 	self.m_IsSpectatingGunship = false
+	
+	self.m_IsDefaultFreeCamSet = false
 end
 
 function SpectatorClient:OnExtensionUnloading()
@@ -75,12 +77,9 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
     if s_Player == nil then
         return
     end
-	
     if s_Player.id == p_PlayerId then
         g_Timers:Timeout(5, p_InflictorId, function()
-			if self.m_GameState ~= GameStates.EndGame and self.m_GameState ~= GameStates.None and self.m_GameState ~= GameStates.Warmup then
-				self:Enable(p_InflictorId)
-			end
+            self:Enable(p_InflictorId)
         end)
         return
     -- Handle death of player being spectated.
@@ -174,20 +173,19 @@ function SpectatorClient:Enable(p_InflictorId)
 	if self:IsEnabled() then
 		return
 	end
-
-	local s_Transform = LinearTransform(
+	
+	if self.m_IsDefaultFreeCamSet == false then
+		local s_Transform = LinearTransform(
 				Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588), 
 				Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069), 
 				Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139), 
 				Vec3(98.216575622559, 889.53924560547, -815.45764160156))
-	SpectatorManager:SetFreecameraTransform(s_Transform)
-
+		SpectatorManager:SetFreecameraTransform(s_Transform)
+		self.m_IsDefaultFreeCamSet = true
+	end
+	
 	-- If we're alive we don't allow spectating.
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-
-	if s_LocalPlayer == nil then
-		return
-	end
 
 	if s_LocalPlayer.soldier ~= nil and not s_LocalPlayer.soldier.isDead then
 		return
@@ -210,6 +208,15 @@ function SpectatorClient:Enable(p_InflictorId)
 		return
 	elseif self.m_GameState == GameStates.Plane then
 		self:SpectateGunship(true)	
+	elseif self.m_IsSpectatingGunship then
+		self:SpectateGunship(false)
+		local s_Transform = LinearTransform(
+				Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588), 
+				Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069), 
+				Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139), 
+				Vec3(98.216575622559, 889.53924560547, -815.45764160156))
+		SpectatorManager:SetFreecameraTransform(s_Transform)
+		self.m_IsDefaultFreeCamSet = true
 	end
 
 	self:SetTimer("NoPlayerFoundTimer", g_Timers:Timeout(4, self, self.ReEnable))
@@ -268,10 +275,6 @@ function SpectatorClient:ReleaseControl()
 end
 
 function SpectatorClient:CreateCameraData()
-	if self.m_Data ~= nil then
-		return
-	end
-
 	-- Create data for our camera entity.
 	-- We set the priority very high so our game gets forced to use this camera.
 	self.m_Data = CameraEntityData()
@@ -286,9 +289,15 @@ function SpectatorClient:CreateCamera()
 	if self.m_Entity ~= nil then
 		return
 	end
-
-	-- First ensure that we have create our camera data.
-	self:CreateCameraData()
+	
+	if self.m_Data == nil then
+		-- First ensure that we have create our camera data.
+		self:CreateCameraData()
+		-- Make ESC Menu accessable
+		self:EnterUIGraph()
+		-- Fix SoundState issue
+		self:ExitSoundState()
+	end
 
 	-- And then create the camera entity.
 	self.m_Entity = EntityManager:CreateEntity(self.m_Data, self.m_Data.transform)
@@ -493,6 +502,36 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	end
 	
 	return s_PreviousPlayer
+end
+
+function SpectatorClient:EnterUIGraph()
+	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
+    local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+
+    while s_UIGraphEntity do
+        if s_UIGraphEntity.data.instanceGuid == Guid("133D3825-5F17-4210-A4DB-3694FDBAD26D") then
+            s_UIGraphEntity = Entity(s_UIGraphEntity)
+            s_UIGraphEntity:FireEvent("EnterUIGraph")
+            return
+        end
+
+        s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+    end
+end
+
+function SpectatorClient:ExitSoundState()
+	local s_SoundStateEntityIterator = EntityManager:GetIterator("SoundStateEntity")
+    local s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+
+    while s_SoundStateEntity do
+        if s_SoundStateEntity.data.instanceGuid == Guid("AC7A757C-D9FA-4693-97E7-7A5C50EF29C7") then
+            s_SoundStateEntity = Entity(s_SoundStateEntity)
+            s_SoundStateEntity:FireEvent("Exit")
+            return
+        end
+
+        s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+    end
 end
 
 function SpectatorClient:IsEnabled()
