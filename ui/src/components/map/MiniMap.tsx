@@ -59,7 +59,22 @@ const MiniMap: React.FC<Props> = ({
                     <></>
                 }
             </div>
-            
+            {open &&
+                <div className="details">
+                    <div className="detail">
+                        <span className="keyboard">LMB</span>
+                        Place marker
+                    </div>
+                    <div className="detail">
+                        <span className="keyboard">RMB</span>
+                        Remove marker
+                    </div>
+                    <div className="detail">
+                        <span className="keyboard">Wheel</span>
+                        Zoom In / Out
+                    </div>
+                </div>
+            }
         </>
     );
 };

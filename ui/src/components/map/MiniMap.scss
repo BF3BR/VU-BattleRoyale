@@ -44,3 +44,41 @@
         }
     }
 }
+
+.details {
+    position: absolute;
+    top: 10vh;
+    left: calc(50% + 45vh);
+    font-size: 0.75vw;
+    text-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    display: flex;
+    flex-flow: column;
+    background: rgba(0, 0, 0, 0.6);
+    padding: .75vw 1vw;
+
+    .detail {
+        margin-bottom: 1vw;
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+
+    span {
+        &.keyboard {
+            border: .15vw solid #fff;
+            border-radius: 0.25vw;
+            margin: 0 .65vw 0 0;
+            background: rgba(255, 255, 255, 0.1);
+            height: 1.15vw;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+            padding: 0 .3vw .15vw .3vw;
+        }
+    }
+}

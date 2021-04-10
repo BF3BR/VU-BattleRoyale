@@ -77,10 +77,14 @@ const PixiViewportComponent = PixiComponent("Viewport", {
 
         const handleClick = (data: any) => {
             if (data.world !== null) {
-                sendToLua("WebUI:PingFromMap", JSON.stringify({ 
-                    x: getGamePos(data.world.x, topLeftPos.x),
-                    y: getGamePos(data.world.y, topLeftPos.z)
-                }));
+                if (data.event.data.originalEvent.which === 3) {
+                    sendToLua("WebUI:PingRemoveFromMap");
+                } else {
+                    sendToLua("WebUI:PingFromMap", JSON.stringify({ 
+                        x: getGamePos(data.world.x, topLeftPos.x),
+                        y: getGamePos(data.world.y, topLeftPos.z)
+                    }));
+                }
             }
         }
 
