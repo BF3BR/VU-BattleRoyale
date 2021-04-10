@@ -46,7 +46,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
         return
     end
 
-    -- Get the ssquad and player ids
+    -- Get the squad and player ids
     local s_TeamId = p_Player.teamId
     local s_SquadId = p_Player.squadId
 
@@ -60,7 +60,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 
     -- send only to solo player that created the ping
     if s_SquadId == SquadId.SquadNone then
-        NetEvents:SendToLocal("Ping:Notify", p_Player, s_PingId, p_Position)
+        NetEvents:SendToLocal(PingEvents.ServerPing, p_Player, s_PingId, p_Position)
         return
     end
 
@@ -73,11 +73,41 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
         end
 
         -- Send the net event to player in the same squad
-        NetEvents:SendToLocal("Ping:Notify", l_SquadPlayer, s_PingId, p_Position)
+        NetEvents:SendToLocal(PingEvents.ServerPing, l_SquadPlayer, s_PingId, p_Position)
 
         ::__on_player_ping_cont__::
     end
 
+end
+
+function PingServer:OnRemovePlayerPing(p_Player)
+    local s_PingId = self:FindPingIdByPlayerId(p_Player.id)
+    
+    -- Get the squad and player ids
+    local s_TeamId = p_Player.teamId
+    local s_SquadId = p_Player.squadId
+
+    self.m_PlayerCooldowns[s_PingId] = 0
+    
+    -- send only to solo player that created the ping
+    if s_SquadId == SquadId.SquadNone then
+        NetEvents:SendToLocal(PingEvents.RemoveServerPing, p_Player, s_PingId)
+        return
+    end
+
+    -- Get all players in the same squad and send the notification
+    local s_SquadPlayers = PlayerManager:GetPlayersBySquad(s_TeamId, s_SquadId)
+    for _, l_SquadPlayer in pairs(s_SquadPlayers) do
+        -- Validate the target player
+        if l_SquadPlayer == nil then
+            goto __on_player_ping_cont__
+        end
+
+        -- Send the net event to player in the same squad
+        NetEvents:SendToLocal(PingEvents.RemoveServerPing, l_SquadPlayer, s_PingId)
+
+        ::__on_player_ping_cont__::
+    end
 end
 
 function PingServer:OnPlayerConnected(p_Player)

@@ -54,6 +54,7 @@ function VuBattleRoyaleServer:RegisterEvents()
     NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy)
     NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw)
     NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing)
+    NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing)
     Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.OnTeamsAssigned)
 
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
@@ -200,6 +201,10 @@ end
 
 function VuBattleRoyaleServer:OnPlayerPing(p_Player, p_Position)
     m_PingServer:OnPlayerPing(p_Player, p_Position)
+end
+
+function VuBattleRoyaleServer:OnRemovePlayerPing(p_Player)
+    m_PingServer:OnRemovePlayerPing(p_Player)
 end
 
 function VuBattleRoyaleServer:OnTeamsAssigned(p_BrTeams)

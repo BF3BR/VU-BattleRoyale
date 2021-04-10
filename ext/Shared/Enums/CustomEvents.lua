@@ -31,7 +31,9 @@ DamageEvent = {
 PingEvents = {
     ClientPing = "Ping:PlayerPing",
     ServerPing = "Ping:Notify",
-    UpdateConfig = "Ping:UpdateConfig"
+    UpdateConfig = "Ping:UpdateConfig",
+    RemoveClientPing = "Ping:RemovePlayerPing",
+    RemoveServerPing = "Ping:RemoveNotify"
 }
 
 PhaseManagerNetEvent = {

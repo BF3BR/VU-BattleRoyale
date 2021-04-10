@@ -63,6 +63,10 @@ function PingClient:OnWebUIPingFromMap(p_Coordinates)
     self.m_PingMethod = PingMethod.Screen
 end
 
+function PingClient:OnWebUIPingRemoveFromMap()
+    NetEvents:SendLocal(PingEvents.RemoveClientPing)
+end
+
 function PingClient:OnPingNotify(p_PingId, p_Position)
     m_Logger:Write("pingId: " .. p_PingId .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
 
@@ -86,6 +90,14 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
         l_UpdatedCooldown = 3 * self.m_CooldownTime
     end
     self.m_SquadPings[p_PingId] = {p_Position, l_UpdatedCooldown}
+end
+
+function PingClient:OnPingRemoveNotify(p_PingId)
+    m_Logger:Write("removing ping with Id: " .. p_PingId)
+    
+    Events:Dispatch('Compass:RemoveMarker', tostring(math.floor(p_PingId)))
+    m_Hud:RemoveMarker(tostring(math.floor(p_PingId)))
+    self.m_SquadPings[p_PingId] = nil
 end
 
 function PingClient:OnPingUpdateConfig(p_CooldownTime)

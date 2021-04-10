@@ -73,6 +73,8 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
     NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
     NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
+    NetEvents:Subscribe(PingEvents.RemoveServerPing, self, self.OnPingRemoveNotify)
+    
     NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig)
 
     self:RegisterWebUIEvents()
@@ -84,6 +86,7 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
     Events:Subscribe("WebUI:ToggleLock", self, self.OnWebUIToggleLock)
     Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam)
     Events:Subscribe("WebUI:PingFromMap", self, self.OnWebUIPingFromMap)
+    Events:Subscribe("WebUI:PingRemoveFromMap", self, self.OnWebUIPingRemoveFromMap)
 end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
@@ -348,6 +351,10 @@ function VuBattleRoyaleClient:OnPingNotify(p_PingId, p_Position)
     m_Ping:OnPingNotify(p_PingId, p_Position)
 end
 
+function VuBattleRoyaleClient:OnPingRemoveNotify(p_PingId)
+    m_Ping:OnPingRemoveNotify(p_PingId)
+end
+
 function VuBattleRoyaleClient:OnPingUpdateConfig(p_CooldownTime)
     m_Ping:OnPingUpdateConfig(p_CooldownTime)
 end
@@ -387,6 +394,10 @@ end
 
 function VuBattleRoyaleClient:OnWebUIPingFromMap(p_Table)
     m_Ping:OnWebUIPingFromMap(p_Table)
+end
+
+function VuBattleRoyaleClient:OnWebUIPingRemoveFromMap()
+    m_Ping:OnWebUIPingRemoveFromMap()
 end
 
 -- =============================================
