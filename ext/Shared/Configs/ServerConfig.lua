@@ -17,6 +17,8 @@ ServerConfig =
 
     ForceParachuteHeight = 150.0,
 
+    UseOfficialImage = false,
+
     MatchStateTimes = {
         [GameStates.None] = nil,
         [GameStates.Warmup] = 20.0,

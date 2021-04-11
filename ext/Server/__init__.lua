@@ -33,7 +33,17 @@ function VuBattleRoyaleServer:__init()
     self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
 
     -- Sets the custom gamemode name
-    ServerUtils:SetCustomGameModeName("Baguette")
+    ServerUtils:SetCustomGameModeName("Battle Royale - " .. self:CurrentTeamSize())
+end
+
+function VuBattleRoyaleServer:CurrentTeamSize()
+    if ServerConfig.PlayersPerTeam == 1 then
+        return "Solo"
+    elseif ServerConfig.PlayersPerTeam == 2 then
+        return "Duo"
+    else
+        return "Squad"
+    end
 end
 
 function VuBattleRoyaleServer:OnExtensionLoaded()
@@ -398,6 +408,10 @@ function VuBattleRoyaleServer:SetupRconVariables()
         ["vu.DestructionEnabled"] = "true",
         ["vu.DesertingAllowed"] = "true",
     }
+
+    if ServerConfig.UseOfficialImage then
+        s_VariablePair["vu.ServerBanner"] = "https://i.imgur.com/jdUmPVA.jpg"
+    end
 
     -- Iterate through all of the commands and set their values via rcon
     for l_Command, l_Value in pairs(s_VariablePair) do
