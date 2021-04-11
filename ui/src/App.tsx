@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 /* Helpers */
 import Vec3 from "./helpers/Vec3Helper";
@@ -318,39 +318,40 @@ const App: React.FC = () => {
     const [selectedTeamType, setSelectedTeamType] = useState<number>(1);
 
     const [team, setTeam] = useState<Player[]>([]);
-    const [downedTeammatesCount, setDownedTeammatesCount] = useState<number>(0);
+    const [downedTeammates, setDownedTeammates] = useState<string[]>([]);
+    //const [downedTeammatesCount, setDownedTeammatesCount] = useState<number>(0);
     window.OnUpdateTeamPlayers = (p_Team: any) => {
-        let tempDownedTeammatesCount = 0;
         let tempTeam: Player[] = [];
+        let tempDowned: string[] = [];
         if (p_Team !== undefined && p_Team.length > 0) {
             p_Team.forEach((teamPlayer: any) => {
-                tempTeam.push({
+                let tempPlayer = {
                     name: teamPlayer.Name,
                     state: teamPlayer.State,
                     kill: 0,
                     isTeamLeader: teamPlayer.IsTeamLeader,
                     color: teamPlayer.Color,
                     position: {
-                        x: teamPlayer.Position?.x,
-                        y: teamPlayer.Position?.y,
-                        z: teamPlayer.Position?.z,
+                        x: teamPlayer.Position?.x ?? null,
+                        y: teamPlayer.Position?.y ?? null,
+                        z: teamPlayer.Position?.z ?? null,
                     },
                     yaw: teamPlayer.Yaw,
-                });
+                }
+                tempTeam.push(tempPlayer);
 
-                if (teamPlayer.State === 2) {
-                    tempDownedTeammatesCount++;
+                if (teamPlayer.State === 2 && teamPlayer.Name !== localPlayer?.name) {
+                    if (!downedTeammates.includes(teamPlayer.Name)) {
+                        setAlertPlaySound(Sounds.Alert);
+                        setAlertLength(4);
+                        setAlertString("Your teammate " + teamPlayer.Name + " was knocked out");
+                    }
+                    tempDowned.push(teamPlayer.Name);
                 }
             });
         }
         setTeam(tempTeam);
-
-        if (tempDownedTeammatesCount > downedTeammatesCount) {
-            setAlertPlaySound(Sounds.Alert);
-            setAlertLength(4);
-            setAlertString("One of your teammate is downed");
-        }
-        setDownedTeammatesCount(tempDownedTeammatesCount);
+        setDownedTeammates(tempDowned);
     }
 
     const CreateRandomTeam = () => {
@@ -601,18 +602,20 @@ const App: React.FC = () => {
                             />
                         }
 
+                        <AmmoAndHealthCounter
+                            playerHealth={playerHealth}
+                            playerArmor={playerArmor}
+                            playerPrimaryAmmo={playerPrimaryAmmo}
+                            playerSecondaryAmmo={playerSecondaryAmmo}
+                            playerFireLogic={playerFireLogic}
+                            playerCurrentWeapon={playerCurrentWeapon}
+                            playerIsInPlane={playerIsInPlane}
+                            spectating={spectating}
+                            spectatorTarget={spectatorTarget}
+                        />
+
                         {!spectating &&
                             <>
-                                <AmmoAndHealthCounter
-                                    playerHealth={playerHealth}
-                                    playerArmor={playerArmor}
-                                    playerPrimaryAmmo={playerPrimaryAmmo}
-                                    playerSecondaryAmmo={playerSecondaryAmmo}
-                                    playerFireLogic={playerFireLogic}
-                                    playerCurrentWeapon={playerCurrentWeapon}
-                                    playerIsInPlane={playerIsInPlane}
-                                />
-
                                 <InteractMessage
                                     message={interactiveMessage}
                                     keyboard={interactiveKey}

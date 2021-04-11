@@ -13,6 +13,8 @@ interface Props {
     playerFireLogic: string;
     playerCurrentWeapon: string;
     playerIsInPlane: boolean;
+    spectating: boolean;
+    spectatorTarget: string;
 }
 
 const AmmoAndHealthCounter: React.FC<Props> = ({ 
@@ -22,7 +24,9 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
     playerSecondaryAmmo, 
     playerFireLogic, 
     playerCurrentWeapon, 
-    playerIsInPlane
+    playerIsInPlane,
+    spectating,
+    spectatorTarget
 }) => {
     const [visible, setVisible] = useState<boolean>(false);
 
@@ -67,7 +71,7 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
     return (
         <>
             <div id="AmmoAndHealthCounter">
-                {(playerIsInPlane === false) &&
+                {(playerIsInPlane === false || (spectating && spectatorTarget !== '')) &&
                     <>
                         <div className={"WeaponName " + (visible ? 'IsVisible' : '')}>
                             {playerCurrentWeapon !== '' &&
