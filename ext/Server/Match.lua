@@ -210,7 +210,7 @@ function Match:GetRandomGunshipStart()
 
     local s_Center = Vec3(
         MapsConfig[s_LevelName]["MapTopLeftPos"].x - 1250 / 2 + MathUtils:GetRandom(-200, 200), 
-        555, 
+        MapsConfig[s_LevelName]["PlaneFlyHeight"], 
         MapsConfig[s_LevelName]["MapTopLeftPos"].z - 1250 / 2 + MathUtils:GetRandom(-200, 200)
     )
 
