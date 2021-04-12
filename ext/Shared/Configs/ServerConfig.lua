@@ -15,7 +15,7 @@ ServerConfig =
 
     ParachuteRaycastUpdateRate = 0.2,
 
-    ForceParachuteHeight = 150.0,
+    ForceParachuteHeight = 125.0,
 
     UseOfficialImage = false,
 
