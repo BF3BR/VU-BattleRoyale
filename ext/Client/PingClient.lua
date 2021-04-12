@@ -75,7 +75,7 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
     local l_Position2d = Vec2(p_Position.x, p_Position.z)
     local l_RgbaColor = self:GetRgbaColorByPingId(p_PingId)
     Events:Dispatch('Compass:CreateMarker', l_PingIdStr, l_Position2d, l_RgbaColor)
-    m_Hud:CreateMarker(l_PingIdStr, p_Position.x, p_Position.z, l_RgbaColor)
+    m_Hud:CreateMarker(l_PingIdStr, p_Position.x, p_Position.y, p_Position.z, l_RgbaColor)
 
     local s_PingInfo = self.m_SquadPings[p_PingId]
     if s_PingInfo == nil then
@@ -140,11 +140,6 @@ function PingClient:OnUIDrawHud()
             local l_Coordinates = ClientUtils:WorldToScreen(l_Position)
             if l_Coordinates ~= nil then
                 DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PingId), Vec4(1, 0, 0, 1), 1.1)
-            end
-        else
-            local l_Coordinates = ClientUtils:WorldToScreen(l_Position)
-            if l_Coordinates ~= nil then
-                -- call webui
             end
         end
         ::__on_ui_draw_hud_cont__::

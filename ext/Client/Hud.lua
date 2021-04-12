@@ -87,6 +87,8 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 end
 
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
+    -- self:PushMarkerUpdate()
+
     if self.m_BrPlayer ~= nil and self.m_BrPlayer.m_Team ~= nil then
         self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked)
         self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
@@ -445,15 +447,34 @@ function VuBattleRoyaleHud:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_P
     end
 end
 
-function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionZ, p_Color)
+function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_PositionZ, p_Color)
+    local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(p_PositionX, p_PositionY, p_PositionZ))
+    if s_WorldToScreen == nil then
+        return
+    end
+
     local s_Marker = {
         Key = p_Key,
         PositionX = p_PositionX,
+        PositionY = p_PositionY,
         PositionZ = p_PositionZ,
-        Color = p_Color
+        Color = p_Color,
+        WorldToScreenX = s_WorldToScreen.x,
+        WorldToScreenY = s_WorldToScreen.y,
     }
+
     self.m_Markers[p_Key] = s_Marker
-    WebUI:ExecuteJS(string.format('OnCreateMarker("%s", "%s", %s, %s)', s_Marker.Key, s_Marker.Color, s_Marker.PositionX, s_Marker.PositionZ))
+    WebUI:ExecuteJS(
+        string.format(
+            'OnCreateMarker("%s", "%s", %s, %s, %s, %s)', 
+            s_Marker.Key, 
+            s_Marker.Color, 
+            s_Marker.PositionX, 
+            s_Marker.PositionZ, 
+            s_Marker.WorldToScreenX,
+            s_Marker.WorldToScreenY
+        )
+    )
 end
 
 function VuBattleRoyaleHud:RemoveMarker(p_Key)
@@ -462,6 +483,21 @@ function VuBattleRoyaleHud:RemoveMarker(p_Key)
     end
     self.m_Markers[p_Key] = nil
     WebUI:ExecuteJS(string.format('OnRemoveMarker("%s")', p_Key))
+end
+
+function VuBattleRoyaleHud:PushMarkerUpdate()
+    for _, l_Marker in pairs(self.m_Markers) do
+        if l_Marker == nil then
+            return
+        end
+
+        local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(l_Marker.PositionX, l_Marker.PositionY, l_Marker.PositionZ))
+        if s_WorldToScreen == nil then
+            return
+        end
+
+        WebUI:ExecuteJS(string.format('OnUpdateMarker("%s", %s, %s)', l_Marker.Key, s_WorldToScreen.x, s_WorldToScreen.y))
+    end
 end
 
 if g_VuBattleRoyaleHud == nil then

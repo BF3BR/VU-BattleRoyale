@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 /* Helpers */
 import Vec3 from "./helpers/Vec3Helper";
@@ -21,6 +21,7 @@ import DeployScreen from "./components/DeployScreen";
 import TeamInfo from "./components/TeamInfo";
 import KillMessage from "./components/KillMessage";
 import LoadingScreen from "./components/LoadingScreen";
+import MapMarkers from "./components/MapMarkers";
 
 /* Style */
 import './App.scss';
@@ -449,7 +450,7 @@ const App: React.FC = () => {
     }
 
     const [pingsTable, setPingsTable] = useState<Array<Ping>>([]);
-    window.OnCreateMarker = (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number) => {
+    window.OnCreateMarker = (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number, p_WorldToScreenX: number, p_WorldToScreenY: number) => {
         let pings = pingsTable.filter((ping: Ping, _: number) => ping.id !== p_Key);
         pings.push({
             id: p_Key,
@@ -458,7 +459,12 @@ const App: React.FC = () => {
                 x: p_PositionX,
                 y: 0,
                 z: p_PositionZ,
-            }
+            },
+            worldPos: {
+                x: p_WorldToScreenX,
+                y: p_WorldToScreenY,
+                z: 0,
+            },
         });
         setPingsTable(pings);
     }
@@ -546,6 +552,10 @@ const App: React.FC = () => {
                     subPhaseIndex={subPhaseIndex}
                     spectating={spectating}
                     deployScreen={deployScreen}
+                />
+
+                <MapMarkers 
+                    pingsTable={pingsTable}
                 />
 
                 {team.length > 1 &&
@@ -697,7 +707,7 @@ declare global {
 
         OnSetUIState: (p_Toggle: "hidden" | "loading" | "game") => void;
 
-        OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number) => void;
+        OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
         OnRemoveMarker: (p_Key: string) => void;
     }
 }

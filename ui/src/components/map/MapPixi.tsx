@@ -19,8 +19,7 @@ PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 var airPlaneTexture = PIXI.Texture.from(airplane);
 
-const width = 1024;
-const height = 1024;
+const widthAndHeight = 1024;
 
 const stageOptions = {
     antialias: false,
@@ -29,7 +28,7 @@ const stageOptions = {
 };
 
 // Based on map config
-let textureWidthHeight: number = 2048;
+let textureWidthHeight: number = 1024;
 let worldWidthHeight: number = 1250;
 
 let topLeftPos = {
@@ -91,10 +90,10 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         viewport
             .drag()
             .pinch()
-            .wheel({ percent: 1.35, smooth: 5 }) //, center: new PIXI.Point(500, 500)
+            .wheel({ percent: 1, smooth: 4 })
             .decelerate()
-            .bounce({ sides: 'all', time: 150, ease: 'easeInOutSine', underflow: 'center'})
-            .clampZoom({ minWidth: 400, maxWidth: 2000 })
+            .bounce({ sides: 'all', time: 100, ease: 'easeInOutSine', underflow: 'center'})
+            .clampZoom({ minWidth: 200, maxWidth: 1024 })
             .on('clicked', handleClick);
 
         return viewport;
@@ -108,9 +107,6 @@ const PixiViewportComponent = PixiComponent("Viewport", {
                 viewport[p] = newProps[p];
             }
         });
-    },
-    didMount() {
-        
     }
 });
 
@@ -148,11 +144,11 @@ const MapPixi: React.FC<MapPixiProps> = ({
     const viewportRef = useRef(null);
     const followPlayer = useRef(null);
 
-    const [snapZoomHeight, setSnapZoomHeight] = useState<number>(600);
+    const [snapZoomHeight, setSnapZoomHeight] = useState<number>(300);
 
     const focus = useCallback(() => {
         const viewport = viewportRef.current;
-        const [x, y, width, height] = [1000, 1000, 2000, 2000];
+        const [x, y, width, height] = [512, 512, 1024, 1024];
 
         if (viewport == null) {
             return;
@@ -165,8 +161,8 @@ const MapPixi: React.FC<MapPixiProps> = ({
         viewport.plugins.resume('drag');
 
         // and snap to selected
-        viewport.snapZoom({ width, height, removeOnComplete: true, time: 100 });
-        viewport.snap(x, y, { removeOnComplete: true, time: 100 });
+        viewport.snapZoom({ width, height, removeOnComplete: true, time: 50 });
+        viewport.snap(x, y, { removeOnComplete: true, time: 50 });
     }, []);
 
     const follow = useCallback((snapZoomHeight: number) => {
@@ -213,24 +209,24 @@ const MapPixi: React.FC<MapPixiProps> = ({
     window.OnMapZoomChange = () => {
         if (!open) {
             switch (snapZoomHeight) {
-                case 600:
-                    setSnapZoomHeight(900);
-                    follow(900);
+                case 300:
+                    setSnapZoomHeight(500);
+                    follow(500);
                     break;
-                case 900:
-                    setSnapZoomHeight(1100);
-                    follow(1100);
+                case 500:
+                    setSnapZoomHeight(800);
+                    follow(800);
                     break;
-                case 1100:
+                case 800:
                 default:
-                    setSnapZoomHeight(600);
-                    follow(600);
+                    setSnapZoomHeight(300);
+                    follow(300);
                     break;
             }
         }
     }
 
-    const drawPlayer = React.useCallback((g: any, color: number, local: boolean) => {
+    const drawPlayer = React.useCallback((g: any, color: number) => {
         var sideLegnth = 25;
         g.clear();
         g.beginFill(color, 0.3);
@@ -276,7 +272,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
         var Py = innerCircleY + innerCircleRadius * Math.sin(theta);
 
         g.lineStyle({
-            width: 5, 
+            width: 3, 
             color: 0xffffff, 
             alpha: 1,
             join: PIXI.LINE_JOIN.MITER,
@@ -306,7 +302,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
 
                 var f = new PIXI.Graphics();
                 f.lineStyle({
-                    width: 5, 
+                    width: 3, 
                     color: 0xff9900, 
                     alpha: 1,
                     join: PIXI.LINE_JOIN.MITER,
@@ -322,7 +318,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                 g.addChild(f);
             } else {
                 g.lineStyle({
-                    width: 5, 
+                    width: 3, 
                     color: 0xffffff, 
                     alpha: 1,
                     join: PIXI.LINE_JOIN.MITER,
@@ -350,7 +346,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                 f.clear();
                 f.beginFill(color, 0.3)
                 g.lineStyle({
-                    width: 5, 
+                    width: 3, 
                     color: color, 
                     alpha: 1,
                     join: PIXI.LINE_JOIN.MITER,
@@ -359,12 +355,12 @@ const MapPixi: React.FC<MapPixiProps> = ({
                 f.drawCircle(
                     getMapPos(ping.position.x, topLeftPos.x),
                     getMapPos(ping.position.z, topLeftPos.z),
-                    15
+                    7.5
                 );
                 f.closePath();
                 f.endFill();
                 f.filters = [new GlowFilter({ 
-                    distance: 15, 
+                    distance: 7.5, 
                     outerStrength: 1.5, 
                     innerStrength: .1,
                     color: color,
@@ -380,16 +376,16 @@ const MapPixi: React.FC<MapPixiProps> = ({
     return (
         <>
             <Stage 
-                width={width} 
-                height={height} 
+                width={widthAndHeight} 
+                height={widthAndHeight} 
                 options={stageOptions}
                 style={{ transform: "rotate(-" + playerYaw + "deg)" }}
             >
                 <PixiViewport
                     ref={viewportRef}
                     plugins={["drag", "pinch", "wheel", "decelerate"]}
-                    screenWidth={width}
-                    screenHeight={height}
+                    screenWidth={widthAndHeight}
+                    screenHeight={widthAndHeight}
                     worldWidth={textureWidthHeight}
                     worldHeight={textureWidthHeight}
                 >
@@ -429,7 +425,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                                 x={getMapPos(player.position.x, topLeftPos.x)}
                                 y={getMapPos(player.position.z, topLeftPos.z)}
                                 angle={player.yaw}
-                                scale={1}
+                                scale={0.5}
                                 key={key}
                             />
                         ))
@@ -445,7 +441,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                                 x={getMapPos(planePos.x, topLeftPos.x)}
                                 y={getMapPos(planePos.z, topLeftPos.z)}
                                 angle={planeYaw}
-                                scale={open ? .35 : 0.35}
+                                scale={open ? .2 : 0.2}
                             />                        
                         </>
                     }
@@ -467,7 +463,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                         y={getMapPos(playerPos.z, topLeftPos.z)}
                         angle={playerYaw}
                         ref={followPlayer}
-                        scale={1}
+                        scale={0.5}
                         visible={!playerIsInPlane}
                     />
 
