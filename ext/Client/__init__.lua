@@ -239,20 +239,21 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
         return
     end
 
-    local s_AliveSquadCount = 1
-    if s_Player.name == l_Teammate.Name then
-        s_AliveSquadCount = 0
-    end
-
+    local s_AliveSquadCount = 0
     local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
     if s_TeamPlayers ~= nil then
         for _, l_Teammate in ipairs(s_TeamPlayers) do
             if l_Teammate ~= nil then
-                if l_Teammate.State ~= BRPlayerState.Dead and s_Player.name ~= l_Teammate.Name then
+                if l_Teammate.State ~= BRPlayerState.Dead then
                     s_AliveSquadCount = s_AliveSquadCount + 1
                 end
             end
         end
+    end
+
+    if s_Player.name == s_LocalPlayer.name and s_AliveSquadCount == 1 then
+        -- If the local player dies and the AliveSquadCount is 1 (local player doesnt update that fast)
+        s_AliveSquadCount = 0
     end
 
     if s_AliveSquadCount == 0 then
