@@ -230,18 +230,19 @@ function VuBattleRoyaleServer:OnPlayerRequestJoin(p_Hook, p_JoinMode, p_AccountG
 end
 
 function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_GiverInfo)
-    if p_Soldier == nil or p_Info == nil or p_Soldier.player == nil then
+    -- If we are in warmup we should disable all damages
+    if self.m_GameState <= GameStates.WarmupToPlane or self.m_GameState >= GameStates.EndGame then
+        -- if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
+        --     return
+        -- end
+
+        -- p_Info.damage = 0.0
+        -- p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+        p_Hook:Return()
         return
     end
 
-    -- If we are in warmup we should disable all damages
-    if self.m_GameState <= GameStates.WarmupToPlane or self.m_GameState >= GameStates.EndGame then
-        if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
-            return
-        end
-
-        p_Info.damage = 0.0
-        p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+    if p_Soldier == nil or p_Info == nil or p_Soldier.player == nil then
         return
     end
 
