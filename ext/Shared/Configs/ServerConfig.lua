@@ -24,7 +24,7 @@ ServerConfig =
         [GameStates.Warmup] = 20.0,
         [GameStates.WarmupToPlane] = 5.0,
         [GameStates.Plane] = 35.0,
-        [GameStates.PlaneToFirstCircle] = 5.0,
+        [GameStates.PlaneToFirstCircle] = 10.0,
         [GameStates.Match] = nil,
         [GameStates.EndGame] = 15.0,
     },
