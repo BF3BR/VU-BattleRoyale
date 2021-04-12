@@ -125,7 +125,15 @@ function PingClient:OnUIDrawHud()
         end
 
         local l_Color = self:GetColorByPingId(l_PingId)
-
+        
+        if l_Color == nil then
+            m_Logger:Write("invalid color for ping ID: " .. l_PingId)
+            Events:Dispatch('Compass:RemoveMarker', tostring(math.floor(l_PingId)))
+            m_Hud:RemoveMarker(tostring(math.floor(l_PingId)))
+            self.m_SquadPings[l_PingId] = nil
+            goto __on_ui_draw_hud_cont__
+        end
+        
         if self.m_Debug then
             DebugRenderer:DrawSphere(l_Position, self.m_DebugSize, l_Color, false, false)
 
