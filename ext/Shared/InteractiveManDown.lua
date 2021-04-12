@@ -111,21 +111,21 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
                                                      Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
                                                      Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE")))
 													 
-	local s_SoldierInteraction_DelayEntityData = self:CreateDelayEntityData(Guid("2854112F-E1D2-7BBE-D809-7315794B5271"))
+    local s_SoldierInteraction_DelayEntityData = self:CreateDelayEntityData(Guid("2854112F-E1D2-7BBE-D809-7315794B5271"))
     local s_SoldierInteraction_InputRestrictionEntityData = self:CreateSoldierInterationInputRestrictionEntityData()
 
     -- Create EventSplitterEntities for custom events
     local s_EventSplitterEntityDataStart = EventSplitterEntityData(Guid('34130787-22C3-0F9D-6AA7-4BC214FA1734'))
-	s_EventSplitterEntityDataStart.isEventConnectionTarget = 2
-	s_EventSplitterEntityDataStart.isPropertyConnectionTarget = 3
-	s_EventSplitterEntityDataStart.runOnce = false
-	s_EventSplitterEntityDataStart.realm = Realm.Realm_Client
+    s_EventSplitterEntityDataStart.isEventConnectionTarget = 2
+    s_EventSplitterEntityDataStart.isPropertyConnectionTarget = 3
+    s_EventSplitterEntityDataStart.runOnce = false
+    s_EventSplitterEntityDataStart.realm = Realm.Realm_Client
 	
-	local s_EventSplitterEntityDataFinish = EventSplitterEntityData(Guid('D0F06E9A-AE8B-E614-F8C3-54A47CF22565'))
-	s_EventSplitterEntityDataFinish.isEventConnectionTarget = 2
-	s_EventSplitterEntityDataFinish.isPropertyConnectionTarget = 3
-	s_EventSplitterEntityDataFinish.runOnce = false
-	s_EventSplitterEntityDataFinish.realm = Realm.Realm_Client
+    local s_EventSplitterEntityDataFinish = EventSplitterEntityData(Guid('D0F06E9A-AE8B-E614-F8C3-54A47CF22565'))
+    s_EventSplitterEntityDataFinish.isEventConnectionTarget = 2
+    s_EventSplitterEntityDataFinish.isPropertyConnectionTarget = 3
+    s_EventSplitterEntityDataFinish.runOnce = false
+    s_EventSplitterEntityDataFinish.realm = Realm.Realm_Client
 
     -- create EventConnection so it is connected to interactiveManDown
     p_Instance = SoldierEntityData(p_Instance)
@@ -138,18 +138,18 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
                                                                206074481, 3)
     local s_BeingInteractedStartedImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataStart, -1741104687,
                                                                1723395486, 2)
-	local s_BeingInteractedCancelledImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataFinish, -1025749669,
+    local s_BeingInteractedCancelledImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataFinish, -1025749669,
                                                                1723395486, 2)
-	local s_BeingInteractedFinishedImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataFinish, 1957374978,
+    local s_BeingInteractedFinishedImpulseConnection = m_EventConnections:Create(p_Instance, s_EventSplitterEntityDataFinish, 1957374978,
                                                                1723395486, 2)
     -- being interacted inputrestriction
     local s_BeingInteractedStartedInputRestrictionConnection = m_EventConnections:Create(p_Instance, s_BeingInteracted_InputRestrictionEntityData, -1741104687,
                                                                -559281700, 3)
-	local s_BeingInteractedCancelledInputRestrictionConnection = m_EventConnections:Create(p_Instance, s_BeingInteracted_InputRestrictionEntityData, -1025749669,
+    local s_BeingInteractedCancelledInputRestrictionConnection = m_EventConnections:Create(p_Instance, s_BeingInteracted_InputRestrictionEntityData, -1025749669,
                                                                1928776733, 3)
-	local s_BeingInteractedFinishedDelayConnection = m_EventConnections:Create(p_Instance, s_BeingInteracted_DelayEntityData, 1957374978,
+    local s_BeingInteractedFinishedDelayConnection = m_EventConnections:Create(p_Instance, s_BeingInteracted_DelayEntityData, 1957374978,
                                                                5862146, 3)
-	local s_BeingInteractedDelayToInputRestrictionConnection = m_EventConnections:Create(s_BeingInteracted_DelayEntityData, s_BeingInteracted_InputRestrictionEntityData, 193453899,
+    local s_BeingInteractedDelayToInputRestrictionConnection = m_EventConnections:Create(s_BeingInteracted_DelayEntityData, s_BeingInteracted_InputRestrictionEntityData, 193453899,
                                                                1928776733, 3)
     -- being interacted inputrestriction
     local s_SoldierInteractionStartedInputRestrictionConnection = m_EventConnections:Create(s_EntityInteractionComponentData, s_SoldierInteraction_InputRestrictionEntityData, 1783953429,
@@ -163,12 +163,12 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
 
     -- Region add all created to the MPSoldier and Registry of the game
     p_Instance.components:add(s_CustomizeSoldierEntityData)
-	p_Instance.components:add(s_EventSplitterEntityDataStart)
-	p_Instance.components:add(s_EventSplitterEntityDataFinish)
-	p_Instance.components:add(s_BeingInteracted_InputRestrictionEntityData)
-	p_Instance.components:add(s_BeingInteracted_DelayEntityData)
-	p_Instance.components:add(s_SoldierInteraction_InputRestrictionEntityData)
-	p_Instance.components:add(s_SoldierInteraction_DelayEntityData)
+    p_Instance.components:add(s_EventSplitterEntityDataStart)
+    p_Instance.components:add(s_EventSplitterEntityDataFinish)
+    p_Instance.components:add(s_BeingInteracted_InputRestrictionEntityData)
+    p_Instance.components:add(s_BeingInteracted_DelayEntityData)
+    p_Instance.components:add(s_SoldierInteraction_InputRestrictionEntityData)
+    p_Instance.components:add(s_SoldierInteraction_DelayEntityData)
 
     local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:FindInstanceByGuid(
                                                     Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"),
@@ -176,72 +176,76 @@ function InteractiveManDown:OnSoldierEntityData(p_Instance)
     s_SoldierBlueprint:MakeWritable()
 
     for i = #s_SoldierBlueprint.eventConnections, 1, -1 do
-        if s_SoldierBlueprint.eventConnections[i].source:Is("SoldierEntityData") and
-            s_SoldierBlueprint.eventConnections[i].target:Is("PlayerFilterEntityData") then
-            -- Remove revive sound connection 
-            -- Should be looked over again, some PlayerFilterEntityData connections might be useful
-            s_SoldierBlueprint.eventConnections:erase(i)
-        elseif s_SoldierBlueprint.eventConnections[i].target.instanceGuid ==
-            Guid("9DF212F6-73C1-4218-9110-2090EE95F730") then
-            -- Remove revive paindamage connection
-            s_SoldierBlueprint.eventConnections:erase(i)
-        elseif s_SoldierBlueprint.eventConnections[i].source:Is("SoldierEntityData") and
-            s_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("8B5295FF-8770-4587-B436-1F2E71F97F35") then
-            -- Remove inputrestriction
-            if s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then -- (OnRevived)
-                s_SoldierBlueprint.eventConnections[i].targetEvent.id = 1928776733 -- (Deactivate)
-
-            elseif s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 2030068478 then -- (OnReviveAccepted)
+        if s_SoldierBlueprint.eventConnections[i].source:Is("SoldierEntityData") then
+            if s_SoldierBlueprint.eventConnections[i].target:Is("PlayerFilterEntityData") then
+                -- Remove revive sound connection 
+                -- Should be looked over again, some PlayerFilterEntityData connections might be useful
+                s_SoldierBlueprint.eventConnections:erase(i)
+            elseif s_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("9DF212F6-73C1-4218-9110-2090EE95F730") then
+                if s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then -- (OnRevived)
+                    s_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660 -- (OnManDown)
+                elseif s_SoldierBlueprint.eventConnections[i].sourceEvent.id == -563307660 then -- (OnManDown)
+                    s_SoldierBlueprint.eventConnections:erase(i)
+                end
+            elseif s_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("48117724-9949-43B4-BFE8-5F7D9492D1EF") then
+                if s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then -- (OnRevived)
+                    s_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660 -- (OnManDown)
+                elseif s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 2030068478 then -- (OnReviveAccepted)
+                    s_SoldierBlueprint.eventConnections[i].sourceEvent.id = 901651067 -- (OnRevived)
+                end
+            elseif s_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("AD9FBC60-3ADE-42C4-80FB-647F3DD251C6") and
+            s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then -- (OnRevived)
                 s_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660 -- (OnManDown)
-                s_SoldierBlueprint.eventConnections[i].targetEvent.id = -559281700 -- (Activate)
-            else
+            elseif s_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("8B5295FF-8770-4587-B436-1F2E71F97F35") then
+                -- Adjust inputrestriction
+                if s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then -- (OnRevived)
+                    s_SoldierBlueprint.eventConnections[i].targetEvent.id = 1928776733 -- (Deactivate)
+                elseif s_SoldierBlueprint.eventConnections[i].sourceEvent.id == 2030068478 then -- (OnReviveAccepted)
+                    s_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660 -- (OnManDown)
+                    s_SoldierBlueprint.eventConnections[i].targetEvent.id = -559281700 -- (Activate)
+                else
+                    s_SoldierBlueprint.eventConnections:erase(i)
+                end
+            elseif s_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("7D3F4B44-9E51-444C-A5D7-9D33928A35C5") and
+            s_SoldierBlueprint.eventConnections[i].sourceEvent.id == -563307660 then -- (OnManDown)
+                -- Leave the damage screen when going mandown
                 s_SoldierBlueprint.eventConnections:erase(i)
             end
         end
     end
 
-    for i = #s_SoldierBlueprint.propertyConnections, 1, -1 do
-        if s_SoldierBlueprint.propertyConnections[i].source.instanceGuid == Guid("9DF212F6-73C1-4218-9110-2090EE95F730") or
-            s_SoldierBlueprint.propertyConnections[i].target.instanceGuid ==
-            Guid("9DF212F6-73C1-4218-9110-2090EE95F730") then
-            -- Remove floathub paindamage connection
-            s_SoldierBlueprint.propertyConnections:erase(i)
-
-        end
-    end
-
     s_SoldierBlueprint.eventConnections:add(s_ManDownConnection) -- add connection that equips the m9 kit when you go mandown
-	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedStartedImpulseConnection)
-	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedCancelledImpulseConnection)
+    s_SoldierBlueprint.eventConnections:add(s_BeingInteractedStartedImpulseConnection)
+    s_SoldierBlueprint.eventConnections:add(s_BeingInteractedCancelledImpulseConnection)
     s_SoldierBlueprint.eventConnections:add(s_BeingInteractedFinishedImpulseConnection)
     -- being interacted inputrestriction
-	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedStartedInputRestrictionConnection)
-	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedCancelledInputRestrictionConnection)
-	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedFinishedDelayConnection)
-	s_SoldierBlueprint.eventConnections:add(s_BeingInteractedDelayToInputRestrictionConnection)
-	s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionStartedInputRestrictionConnection)
-	s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionCancelledInputRestrictionConnection)
-	s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionFinishedDelayConnection)
-	s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionDelayToInputRestrictionConnection)
+    s_SoldierBlueprint.eventConnections:add(s_BeingInteractedStartedInputRestrictionConnection)
+    s_SoldierBlueprint.eventConnections:add(s_BeingInteractedCancelledInputRestrictionConnection)
+    s_SoldierBlueprint.eventConnections:add(s_BeingInteractedFinishedDelayConnection)
+    s_SoldierBlueprint.eventConnections:add(s_BeingInteractedDelayToInputRestrictionConnection)
+    s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionStartedInputRestrictionConnection)
+    s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionCancelledInputRestrictionConnection)
+    s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionFinishedDelayConnection)
+    s_SoldierBlueprint.eventConnections:add(s_SoldierInteractionDelayToInputRestrictionConnection)
 
     -- this causes crashes for unknown reasons but also it's not needed
-    local s_Partition = DatabasePartition((ResourceManager:FindPartitionForInstance(p_Instance)))
+    --local s_Partition = DatabasePartition((ResourceManager:FindPartitionForInstance(p_Instance)))
     --s_Partition:AddInstance(s_CustomizeSoldierEntityData) -- add entitydata to the s_Partition
-	--s_Partition:AddInstance(s_EventSplitterEntityDataStart)
+    --s_Partition:AddInstance(s_EventSplitterEntityDataStart)
     --s_Partition:AddInstance(s_EventSplitterEntityDataFinish)
     --s_Partition:AddInstance(s_BeingInteracted_InputRestrictionEntityData)
-	--s_Partition:AddInstance(s_BeingInteracted_DelayEntityData)
+    --s_Partition:AddInstance(s_BeingInteracted_DelayEntityData)
     --s_Partition:AddInstance(s_SoldierInteraction_InputRestrictionEntityData)
-	--s_Partition:AddInstance(s_SoldierInteraction_DelayEntityData)
+    --s_Partition:AddInstance(s_SoldierInteraction_DelayEntityData)
 
     local registry = RegistryContainer()
     registry.referenceObjectRegistry:add(s_CustomizeSoldierEntityData) -- add entityData to registry
-	registry.entityRegistry:add(s_EventSplitterEntityDataStart)
-	registry.entityRegistry:add(s_EventSplitterEntityDataFinish)
-	registry.entityRegistry:add(s_BeingInteracted_InputRestrictionEntityData)
-	registry.entityRegistry:add(s_BeingInteracted_DelayEntityData)
-	registry.entityRegistry:add(s_SoldierInteraction_InputRestrictionEntityData)
-	registry.entityRegistry:add(s_SoldierInteraction_DelayEntityData)
+    registry.entityRegistry:add(s_EventSplitterEntityDataStart)
+    registry.entityRegistry:add(s_EventSplitterEntityDataFinish)
+    registry.entityRegistry:add(s_BeingInteracted_InputRestrictionEntityData)
+    registry.entityRegistry:add(s_BeingInteracted_DelayEntityData)
+    registry.entityRegistry:add(s_SoldierInteraction_InputRestrictionEntityData)
+    registry.entityRegistry:add(s_SoldierInteraction_DelayEntityData)
     ResourceManager:AddRegistry(registry, ResourceCompartment.ResourceCompartment_Game)
 
     -- Add connections between EntityInteractionComponentData and InterfaceDescriptionData
@@ -356,79 +360,79 @@ end
 
 function InteractiveManDown:CreateDelayEntityData(p_Guid)
     local s_DelayEntityData = DelayEntityData(p_Guid)
-	s_DelayEntityData.delay = 0.3
-	s_DelayEntityData.realm = Realm.Realm_Server
-	s_DelayEntityData.autoStart = false
-	s_DelayEntityData.runOnce = false
-	s_DelayEntityData.removeDuplicateEvents = false
-	s_DelayEntityData.isEventConnectionTarget = 1
-	s_DelayEntityData.isPropertyConnectionTarget = 3
+    s_DelayEntityData.delay = 0.3
+    s_DelayEntityData.realm = Realm.Realm_Server
+    s_DelayEntityData.autoStart = false
+    s_DelayEntityData.runOnce = false
+    s_DelayEntityData.removeDuplicateEvents = false
+    s_DelayEntityData.isEventConnectionTarget = 1
+    s_DelayEntityData.isPropertyConnectionTarget = 3
 
     return s_DelayEntityData
 end
 
 function InteractiveManDown:CreateBeingInteractedInputRestrictionEntityData()
     local s_InputRestrictionEntityData = InputRestrictionEntityData(Guid('4FFD99D0-3E9B-2A8F-967E-3A0724A06BA7'))
-	s_InputRestrictionEntityData.overridePreviousInputRestriction = true
-	s_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
-	s_InputRestrictionEntityData.throttle = false
-	s_InputRestrictionEntityData.strafe = false
-	s_InputRestrictionEntityData.brake = false
-	s_InputRestrictionEntityData.handBrake = false
-	s_InputRestrictionEntityData.clutch = false
-	s_InputRestrictionEntityData.yaw = true
-	s_InputRestrictionEntityData.pitch = true
-	s_InputRestrictionEntityData.roll = true
-	s_InputRestrictionEntityData.fire = true
-	s_InputRestrictionEntityData.fireCountermeasure = false
-	s_InputRestrictionEntityData.altFire = false
-	s_InputRestrictionEntityData.cycleRadioChannel = false
-	s_InputRestrictionEntityData.selectMeleeWeapon = false
-	s_InputRestrictionEntityData.zoom = false
-	s_InputRestrictionEntityData.jump = false
-	s_InputRestrictionEntityData.changeVehicle = false
-	s_InputRestrictionEntityData.changeEntry = false
-	s_InputRestrictionEntityData.changePose = false
-	s_InputRestrictionEntityData.toggleParachute = false
-	s_InputRestrictionEntityData.changeWeapon = false
-	s_InputRestrictionEntityData.reload = true
-	s_InputRestrictionEntityData.toggleCamera = false
-	s_InputRestrictionEntityData.sprint = false
-	s_InputRestrictionEntityData.scoreboardMenu = true
-	s_InputRestrictionEntityData.mapZoom = false
-	s_InputRestrictionEntityData.gearUp = false
-	s_InputRestrictionEntityData.gearDown = false
-	s_InputRestrictionEntityData.threeDimensionalMap = false
-	s_InputRestrictionEntityData.giveOrder = false
-	s_InputRestrictionEntityData.prone = false
-	s_InputRestrictionEntityData.switchPrimaryInventory = true
-	s_InputRestrictionEntityData.switchPrimaryWeapon = true
-	s_InputRestrictionEntityData.grenadeLauncher = true
-	s_InputRestrictionEntityData.staticGadget = true
-	s_InputRestrictionEntityData.dynamicGadget1 = true
-	s_InputRestrictionEntityData.dynamicGadget2 = true
-	s_InputRestrictionEntityData.meleeAttack = true
-	s_InputRestrictionEntityData.throwGrenade = true
-	s_InputRestrictionEntityData.selectWeapon1 = true
-	s_InputRestrictionEntityData.selectWeapon2 = true
-	s_InputRestrictionEntityData.selectWeapon3 = true
-	s_InputRestrictionEntityData.selectWeapon4 = true
-	s_InputRestrictionEntityData.selectWeapon5 = true
-	s_InputRestrictionEntityData.selectWeapon6 = true
-	s_InputRestrictionEntityData.selectWeapon7 = true
-	s_InputRestrictionEntityData.selectWeapon8 = true
-	s_InputRestrictionEntityData.selectWeapon9 = true
-	s_InputRestrictionEntityData.enabled = true
-	s_InputRestrictionEntityData.runtimeComponentCount = 0
-	s_InputRestrictionEntityData.transform = LinearTransform(Vec3(1.000000, 0.000000, 0.000000), Vec3(0.000000, 1.000000, 0.000000), Vec3(0.000000, 0.000000, 1.000000), Vec3(0.000000, 0.000000, 0.000000))
-	s_InputRestrictionEntityData.isEventConnectionTarget = 1
+    s_InputRestrictionEntityData.overridePreviousInputRestriction = true
+    s_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
+    s_InputRestrictionEntityData.throttle = false
+    s_InputRestrictionEntityData.strafe = false
+    s_InputRestrictionEntityData.brake = false
+    s_InputRestrictionEntityData.handBrake = false
+    s_InputRestrictionEntityData.clutch = false
+    s_InputRestrictionEntityData.yaw = true
+    s_InputRestrictionEntityData.pitch = true
+    s_InputRestrictionEntityData.roll = true
+    s_InputRestrictionEntityData.fire = true
+    s_InputRestrictionEntityData.fireCountermeasure = false
+    s_InputRestrictionEntityData.altFire = false
+    s_InputRestrictionEntityData.cycleRadioChannel = false
+    s_InputRestrictionEntityData.selectMeleeWeapon = false
+    s_InputRestrictionEntityData.zoom = false
+    s_InputRestrictionEntityData.jump = false
+    s_InputRestrictionEntityData.changeVehicle = false
+    s_InputRestrictionEntityData.changeEntry = false
+    s_InputRestrictionEntityData.changePose = false
+    s_InputRestrictionEntityData.toggleParachute = false
+    s_InputRestrictionEntityData.changeWeapon = false
+    s_InputRestrictionEntityData.reload = true
+    s_InputRestrictionEntityData.toggleCamera = false
+    s_InputRestrictionEntityData.sprint = false
+    s_InputRestrictionEntityData.scoreboardMenu = true
+    s_InputRestrictionEntityData.mapZoom = false
+    s_InputRestrictionEntityData.gearUp = false
+    s_InputRestrictionEntityData.gearDown = false
+    s_InputRestrictionEntityData.threeDimensionalMap = false
+    s_InputRestrictionEntityData.giveOrder = false
+    s_InputRestrictionEntityData.prone = false
+    s_InputRestrictionEntityData.switchPrimaryInventory = true
+    s_InputRestrictionEntityData.switchPrimaryWeapon = true
+    s_InputRestrictionEntityData.grenadeLauncher = true
+    s_InputRestrictionEntityData.staticGadget = true
+    s_InputRestrictionEntityData.dynamicGadget1 = true
+    s_InputRestrictionEntityData.dynamicGadget2 = true
+    s_InputRestrictionEntityData.meleeAttack = true
+    s_InputRestrictionEntityData.throwGrenade = true
+    s_InputRestrictionEntityData.selectWeapon1 = true
+    s_InputRestrictionEntityData.selectWeapon2 = true
+    s_InputRestrictionEntityData.selectWeapon3 = true
+    s_InputRestrictionEntityData.selectWeapon4 = true
+    s_InputRestrictionEntityData.selectWeapon5 = true
+    s_InputRestrictionEntityData.selectWeapon6 = true
+    s_InputRestrictionEntityData.selectWeapon7 = true
+    s_InputRestrictionEntityData.selectWeapon8 = true
+    s_InputRestrictionEntityData.selectWeapon9 = true
+    s_InputRestrictionEntityData.enabled = true
+    s_InputRestrictionEntityData.runtimeComponentCount = 0
+    s_InputRestrictionEntityData.transform = LinearTransform(Vec3(1.000000, 0.000000, 0.000000), Vec3(0.000000, 1.000000, 0.000000), Vec3(0.000000, 0.000000, 1.000000), Vec3(0.000000, 0.000000, 0.000000))
+    s_InputRestrictionEntityData.isEventConnectionTarget = 1
     s_InputRestrictionEntityData.isPropertyConnectionTarget = 3
     
     return s_InputRestrictionEntityData
 end
 
 function InteractiveManDown:CreateSoldierInterationInputRestrictionEntityData()
-    s_InputRestrictionEntityData = InputRestrictionEntityData(Guid('3A0724A0-2A8F-3E9B-6BA7-4FFD99D0967E'))
+    local s_InputRestrictionEntityData = InputRestrictionEntityData(Guid('3A0724A0-2A8F-3E9B-6BA7-4FFD99D0967E'))
     s_InputRestrictionEntityData.overridePreviousInputRestriction = true
     s_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
     s_InputRestrictionEntityData.throttle = false
