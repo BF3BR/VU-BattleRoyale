@@ -74,7 +74,6 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
     NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
     NetEvents:Subscribe(PingEvents.RemoveServerPing, self, self.OnPingRemoveNotify)
-    
     NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig)
 
     self:RegisterWebUIEvents()
@@ -345,6 +344,7 @@ end
 
 function VuBattleRoyaleClient:OnEnableSpectate()
     m_SpectatorClient:Enable()
+    m_Hud:OnJumpOutOfGunship()
 end
 
 function VuBattleRoyaleClient:OnPingNotify(p_PingId, p_Position)
