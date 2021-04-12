@@ -28,6 +28,7 @@ end
 
 function VuBattleRoyaleShared:RegisterEvents()
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
+    Events:Subscribe('Level:RegisterEntityResources', self, self.OnLevelRegisterEntityResources)
     Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate)
 end
 
@@ -116,6 +117,16 @@ end
 
 function VuBattleRoyaleShared:RegisterHooks()
     Hooks:Install("ResourceManager:LoadBundles", 100, self, self.OnResourceManagerLoadBundles)
+end
+
+function VuBattleRoyaleShared:OnLevelRegisterEntityResources()
+    -- replace with custom registry 
+    -- only need character persistence stuff
+    local s_Registry = ResourceManager:FindInstanceByGuid(Guid("333BDB92-E69D-11DF-9B0E-AF9CA6E0236B"), Guid("2C804637-3B56-6DDB-92C8-81D094EA806B"))
+    if s_Registry ~= nil then
+        s_Registry = RegistryContainer()
+        ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
+    end
 end
 
 -- =============================================
