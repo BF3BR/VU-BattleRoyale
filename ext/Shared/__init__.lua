@@ -124,7 +124,7 @@ function VuBattleRoyaleShared:OnLevelRegisterEntityResources()
     -- only need character persistence stuff
     local s_Registry = ResourceManager:FindInstanceByGuid(Guid("333BDB92-E69D-11DF-9B0E-AF9CA6E0236B"), Guid("2C804637-3B56-6DDB-92C8-81D094EA806B"))
     if s_Registry ~= nil then
-        s_Registry = RegistryContainer()
+        s_Registry = RegistryContainer(s_Registry)
         ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
     end
 end
