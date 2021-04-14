@@ -12,6 +12,8 @@ return {
     SubWorldInstance = DC(Guid('CB9932E2-19E0-11E2-93EC-B0D4179CEA18'), Guid('FB11A0AA-BC0A-31C1-8F95-A8B8D7746908')),
     MapTopLeftPos = Vec3(667.28, 0, -290.44),
     BeforeFirstCircleDelay = 60.0,
+    PlaneFlyHeight = 755.0,
+    SkyComponentDataGuid = Guid("9159BC49-8F6C-4422-BD1E-EA76D956DFA3"),
     PhasesCount = 9,
     Phases = {
         {
