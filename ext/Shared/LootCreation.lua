@@ -5,25 +5,10 @@ require "__shared/Enums/CustomEvents"
 local m_ConnectionHelper = require("__shared/Utils/ConnectionHelper")
 local m_Logger = Logger("LootCreation", true)
 
-local m_MedkitFiringData = FrostbiteDC{
-    partitionGuid = Guid('B54E9BDA-1F2E-11E0-8602-946E2AD98284'),
-    instanceGuid = Guid('F379D6B0-4592-4DC2-9186-5863D3D69C85'),
-}
-
-local m_MedkitHealingData = FrostbiteDC{
-    partitionGuid = Guid('1D6061B2-2234-11E0-92F5-C9B649EF6972'),
-    instanceGuid = Guid('A867A678-615B-3FA6-7AF5-0DEE6ED69EA0'),
-}
-
-local m_AmmobagFiringData = FrostbiteDC{
-    partitionGuid = Guid('0343F80F-06CC-11E0-8BDF-D7443366E28A'),
-    instanceGuid = Guid('5B73C5E2-127E-419B-95FB-A69D9F5CAA7B'),
-}
-
-local m_AmmobagResupplyData = FrostbiteDC{
-    partitionGuid = Guid('04CD683B-1F1B-11E0-BBD1-F7235575FD24'),
-    instanceGuid = Guid('4AE515CE-846D-6070-5F56-1285B7E8E187'),
-}
+local m_MedkitFiringData = DC(Guid('B54E9BDA-1F2E-11E0-8602-946E2AD98284'), Guid('F379D6B0-4592-4DC2-9186-5863D3D69C85'))
+local m_MedkitHealingData = DC(Guid('1D6061B2-2234-11E0-92F5-C9B649EF6972'), Guid('A867A678-615B-3FA6-7AF5-0DEE6ED69EA0'))
+local m_AmmobagFiringData = DC(Guid('0343F80F-06CC-11E0-8BDF-D7443366E28A'), Guid('5B73C5E2-127E-419B-95FB-A69D9F5CAA7B'))
+local m_AmmobagResupplyData = DC(Guid('04CD683B-1F1B-11E0-BBD1-F7235575FD24'), Guid('4AE515CE-846D-6070-5F56-1285B7E8E187'))
 
 function LootCreation:__init()
     self:RegisterEvents()
