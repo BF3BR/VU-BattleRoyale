@@ -297,10 +297,6 @@ function ManDownModifier:CreateManDownCustomizeSoldierData()
     s_CoopManDownSoldierData.removeAllExistingWeapons = false
     s_CoopManDownSoldierData.disableDeathPickup = false
 
-    s_CoopManDownSoldierData.weapons:add(UnlockWeaponAndSlot())
-    s_CoopManDownSoldierData.weapons[1].weapon = m_M9UnlockAsset:GetInstance()
-    s_CoopManDownSoldierData.weapons[1].slot = WeaponSlot.WeaponSlot_9
-
     return s_CoopManDownSoldierData
 end
 
