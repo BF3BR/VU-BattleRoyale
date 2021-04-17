@@ -38,16 +38,42 @@ function ConnectionHelper:CreateLinkConnection(p_Source, p_Target, p_SourceField
 	return s_LinkConnection
 end
 
+-- Temporary struct crash fix
 function ConnectionHelper:AddEventConnection(p_Blueprint, p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type)
-    p_Blueprint.eventConnections:add(self:CreateEventConnection(p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type))
+    -- Normal implementation:
+    -- p_Blueprint.eventConnections:add(self:CreateEventConnection(p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type))
+
+    -- Without storing any structs in local vars:
+    p_Blueprint.eventConnections:add(EventConnection())
+    p_Blueprint.eventConnections[#p_Blueprint.eventConnections].source = p_Source
+    p_Blueprint.eventConnections[#p_Blueprint.eventConnections].target = p_Target
+    p_Blueprint.eventConnections[#p_Blueprint.eventConnections].sourceEvent.id = tonumber(p_SourceEvent) or MathUtils:FNVHash(p_SourceEvent)
+    p_Blueprint.eventConnections[#p_Blueprint.eventConnections].targetEvent.id = tonumber(p_TargetEvent) or MathUtils:FNVHash(p_TargetEvent)
+    p_Blueprint.eventConnections[#p_Blueprint.eventConnections].targetType = p_Type
 end
 
 function ConnectionHelper:AddPropertyConnection(p_Blueprint, p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
-    p_Blueprint.propertyConnections:add(self:CreatePropertyConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
+    -- Normal implementation:
+    -- p_Blueprint.propertyConnections:add(self:CreatePropertyConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
+
+    -- Without storing any structs in local vars:
+    p_Blueprint.propertyConnections:add(PropertyConnection())
+    p_Blueprint.propertyConnections[#p_Blueprint.propertyConnections].source = p_Source
+    p_Blueprint.propertyConnections[#p_Blueprint.propertyConnections].target = p_Target
+    p_Blueprint.propertyConnections[#p_Blueprint.propertyConnections].sourceFieldId = tonumber(p_SourceFieldId) or MathUtils:FNVHash(p_SourceFieldId)
+    p_Blueprint.propertyConnections[#p_Blueprint.propertyConnections].targetFieldId = tonumber(p_TargetFieldId) or MathUtils:FNVHash(p_TargetFieldId)
 end
 
 function ConnectionHelper:AddLinkConnection(p_Blueprint, p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
-    p_Blueprint.linkConnections:add(self:CreateLinkConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
+    -- Normal implementation:
+    -- p_Blueprint.linkConnections:add(self:CreateLinkConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
+
+    -- Without storing any structs in local vars:
+    p_Blueprint.linkConnections:add(LinkConnection())
+    p_Blueprint.linkConnections[#p_Blueprint.linkConnections].source = p_Source
+    p_Blueprint.linkConnections[#p_Blueprint.linkConnections].target = p_Target
+    p_Blueprint.linkConnections[#p_Blueprint.linkConnections].sourceFieldId = tonumber(p_SourceFieldId) or MathUtils:FNVHash(p_SourceFieldId)
+    p_Blueprint.linkConnections[#p_Blueprint.linkConnections].targetFieldId = tonumber(p_TargetFieldId) or MathUtils:FNVHash(p_TargetFieldId)
 end
 
 -- UI node connections

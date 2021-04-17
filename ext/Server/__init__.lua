@@ -15,7 +15,7 @@ local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
 local m_SpectatorServer = require "SpectatorServer"
 local m_Logger = Logger("VuBattleRoyaleServer", true)
-local m_InteractiveManDown = require "__shared/InteractiveManDown"
+local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
 
 function VuBattleRoyaleServer:__init()
     Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
