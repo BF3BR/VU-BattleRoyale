@@ -119,7 +119,7 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
         s_SpatialPrefabBlueprint.objects:add(s_PickupEntityData)
         s_SpatialPrefabBlueprint.objects:add(s_MapMarkerEntityData)
 
-        m_ConnectionHelper:AddEventConnection(s_SpatialPrefabBlueprint, s_PickupEntityData, s_MapMarkerEntityData, 'OnPickup', 'HideMarker', 3)
+        m_ConnectionHelper:AddEventConnection(s_SpatialPrefabBlueprint, s_PickupEntityData, s_MapMarkerEntityData, "OnPickup", "HideMarker", 3)
 
         p_Registry.blueprintRegistry:add(s_SpatialPrefabBlueprint)
         p_Registry.entityRegistry:add(s_PickupEntityData)

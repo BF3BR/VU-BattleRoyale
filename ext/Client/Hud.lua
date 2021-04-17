@@ -264,9 +264,9 @@ end
 function VuBattleRoyaleHud:RegisterOnBeingInteractedCallbacks(p_Soldier)
     for i, l_Entity in pairs(p_Soldier.bus.entities) do
         if l_Entity.data ~= nil then
-            if l_Entity.data.instanceGuid == Guid('34130787-22C3-0F9D-6AA7-4BC214FA1734') then
+            if l_Entity.data.instanceGuid == Guid("34130787-22C3-0F9D-6AA7-4BC214FA1734") then
                 l_Entity:RegisterEventCallback(self, self.OnBeingInteractedStarted)
-            elseif l_Entity.data.instanceGuid == Guid('D0F06E9A-AE8B-E614-F8C3-54A47CF22565') then
+            elseif l_Entity.data.instanceGuid == Guid("D0F06E9A-AE8B-E614-F8C3-54A47CF22565") then
                 l_Entity:RegisterEventCallback(self, self.OnBeingInteractedFinished)
             end
         end

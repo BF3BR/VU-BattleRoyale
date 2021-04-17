@@ -9,7 +9,7 @@ local m_CenterOffset = 1.2
 local m_HeightOffset = -0.5
 
 -- PhysicsBlueprint for all weapons: Weapons/M16A4/M16A4KitPickup
-local m_PhysicsBlueprint = DC(Guid('625C2806-0CE7-11E0-915B-91EB202EAE87'), Guid('B9E3B4B8-062A-1DA8-E13D-8D7095F2A610'))
+local m_PhysicsBlueprint = DC(Guid("625C2806-0CE7-11E0-915B-91EB202EAE87"), Guid("B9E3B4B8-062A-1DA8-E13D-8D7095F2A610"))
 
 -- Replace vanilla DropWeaponComponentData (drops a kit) with 5 DropWeaponComponentDatas that all drop a weapon 
 function WeaponDropModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)

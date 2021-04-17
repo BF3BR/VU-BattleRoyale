@@ -23,8 +23,8 @@ end
 
 -- Modify the free fall velocity
 function PhysicsModifier:OnCharacterStatePoseInfoLoaded(p_CharacterStatePoseInfo)
-    p_CharacterStatePoseInfo.velocity = 40.0
-    p_CharacterStatePoseInfo.accelerationGain = 0.35
+    p_CharacterStatePoseInfo.velocity = 35.0
+    p_CharacterStatePoseInfo.accelerationGain = 0.115
 end
 
 if g_PhysicsModifier == nil then

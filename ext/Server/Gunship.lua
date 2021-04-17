@@ -16,32 +16,6 @@ function Gunship:__init()
     self.m_CalculatedTime = 0.0
 
     self.m_OpenParachuteList = {}
-
-    NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
-    NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute)
-    Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
-
-    Events:Subscribe('Player:Chat', self, self.PlayerChat)
-end
-
-function Gunship:PlayerChat(p_Player, p_RecipientMask, p_Message)
-    if p_Message == "para" then
-        self:Disable()
-        self:Enable(
-            Vec3(890.631836, 700, -930.697266),
-            Vec3(-440.469727, 700, -642.854492),
-            60.0,
-            "Paradrop"
-        )
-    elseif p_Message == "air" then
-        self:Disable()
-        self:Enable(
-            Vec3(890.631836, 700, -930.697266),
-            Vec3(-440.469727, 700, -642.854492),
-            30.0,
-            "Airdrop"
-        )
-    end
 end
 
 function Gunship:OnExtensionUnloading()

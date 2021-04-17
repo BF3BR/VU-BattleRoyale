@@ -188,6 +188,18 @@ function Match:OnRestartRound()
     self.m_Server:ChangeGameState(GameStates.None)
 end
 
+function Match:OnJumpOutOfGunship(p_Player)
+    self.m_Gunship:OnJumpOutOfGunship(p_Player)
+end
+
+function Match:OnOpenParachute(p_Player)
+    self.m_Gunship:OnOpenParachute(p_Player)
+end
+
+function Match:OnPlayerUpdateInput(p_Player)
+    self.m_Gunship:OnPlayerUpdateInput(p_Player)
+end
+
 
 -- =============================================
 -- Other functions

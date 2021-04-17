@@ -76,7 +76,6 @@ function Gunship:OnInputPreUpdate(p_Hook, p_Cache, p_Dt)
 	end
 
     if p_Cache[InputConceptIdentifiers.ConceptParachute] == 1.0 then
-        print("ASDADSDSASADSADSDASSADSADAS")
         self.m_IsInFreeFall = false
     end
 end

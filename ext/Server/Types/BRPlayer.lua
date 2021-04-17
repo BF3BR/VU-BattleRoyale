@@ -301,7 +301,7 @@ function BRPlayer:GunshipSpawn(p_Trans)
 	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
 	local s_Entity = s_EntityIterator:Next()
 	while s_Entity do
-		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid('67A2C146-9CC0-E7EC-5227-B2DCB9D316C1') then
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1") then
 			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
 			s_CharacterSpawnReferenceObjectData:MakeWritable()
 			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Trans

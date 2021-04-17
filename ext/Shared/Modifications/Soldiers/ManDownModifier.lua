@@ -135,14 +135,14 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     s_Registry.entityRegistry:add(s_CustomizeSoldierEntityData)
 
     -- Create EventSplitterEntities for custom events
-    local s_StartEventSplitterEntityData = EventSplitterEntityData(Guid('34130787-22C3-0F9D-6AA7-4BC214FA1734'))
+    local s_StartEventSplitterEntityData = EventSplitterEntityData(Guid("34130787-22C3-0F9D-6AA7-4BC214FA1734"))
 	s_StartEventSplitterEntityData.isEventConnectionTarget = 2
 	s_StartEventSplitterEntityData.isPropertyConnectionTarget = 3
 	s_StartEventSplitterEntityData.runOnce = false
 	s_StartEventSplitterEntityData.realm = Realm.Realm_Client
     s_Registry.entityRegistry:add(s_StartEventSplitterEntityData)
 
-	local s_FinishEventSplitterEntityData = EventSplitterEntityData(Guid('D0F06E9A-AE8B-E614-F8C3-54A47CF22565'))
+	local s_FinishEventSplitterEntityData = EventSplitterEntityData(Guid("D0F06E9A-AE8B-E614-F8C3-54A47CF22565"))
 	s_FinishEventSplitterEntityData.isEventConnectionTarget = 2
 	s_FinishEventSplitterEntityData.isPropertyConnectionTarget = 3
 	s_FinishEventSplitterEntityData.runOnce = false
@@ -150,7 +150,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     s_Registry.entityRegistry:add(s_FinishEventSplitterEntityData)
 
     -- BeingInteracted 
-    local s_BeingInteracted_InputRestrictionEntityData = self:_GetInputRestrictionData(m_BeingInteracted_Inputs, Guid('4FFD99D0-3E9B-2A8F-967E-3A0724A06BA7'))
+    local s_BeingInteracted_InputRestrictionEntityData = self:_GetInputRestrictionData(m_BeingInteracted_Inputs, Guid("4FFD99D0-3E9B-2A8F-967E-3A0724A06BA7"))
     s_BeingInteracted_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
     s_BeingInteracted_InputRestrictionEntityData.isEventConnectionTarget = 1
     s_Registry.entityRegistry:add(s_BeingInteracted_InputRestrictionEntityData)
@@ -166,7 +166,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     s_Registry.entityRegistry:add(s_BeingInteracted_DelayEntityData)
 
     -- SoldierInteraction
-    local s_SoldierInteraction_InputRestrictionEntityData = self:_GetInputRestrictionData(m_SoldierInteraction_Inputs, Guid('3A0724A0-2A8F-3E9B-6BA7-4FFD99D0967E'))
+    local s_SoldierInteraction_InputRestrictionEntityData = self:_GetInputRestrictionData(m_SoldierInteraction_Inputs, Guid("3A0724A0-2A8F-3E9B-6BA7-4FFD99D0967E"))
     s_SoldierInteraction_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
     s_SoldierInteraction_InputRestrictionEntityData.isEventConnectionTarget = 1
     s_Registry.entityRegistry:add(s_SoldierInteraction_InputRestrictionEntityData)

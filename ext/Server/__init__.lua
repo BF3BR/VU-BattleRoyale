@@ -61,19 +61,21 @@ function VuBattleRoyaleServer:RegisterEvents()
     Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
     Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
     Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
+    Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
     Events:Subscribe("Player:ManDownRevived", self, self.OnManDownRevived)
     Events:Subscribe("Player:ChangingWeapon", self, self.OnChangingWeapon)
+    Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
+    Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
     Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
+    Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.OnTeamsAssigned)
 
     NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected)
     NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy)
     NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw)
     NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing)
     NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing)
-    Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.OnTeamsAssigned)
-
-    Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
-    Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
+    NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
+    NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute)
 end
 
 function VuBattleRoyaleServer:RegisterHooks()
@@ -196,6 +198,14 @@ function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
     m_LootManager:OnPlayerAuthenticated(p_Player)
 end
 
+function VuBattleRoyaleServer:OnPlayerUpdateInput(p_Player)
+    if p_Player == nil then
+        return
+    end
+
+    self.m_Match:OnPlayerUpdateInput(p_Player)
+end
+
 function VuBattleRoyaleServer:OnLevelLoadResources()
     m_LootManager:OnLevelLoadResources()
 end
@@ -224,6 +234,22 @@ end
 
 function VuBattleRoyaleServer:OnTeamsAssigned(p_BrTeams)
     m_PingServer:AssignPingIds(p_BrTeams)
+end
+
+function VuBattleRoyaleServer:OnJumpOutOfGunship(p_Player)
+    if p_Player == nil then
+        return
+    end
+
+    self.m_Match:OnJumpOutOfGunship(p_Player)
+end
+
+function VuBattleRoyaleServer:OnOpenParachute(p_Player)
+    if p_Player == nil then
+        return
+    end
+
+    self.m_Match:OnOpenParachute(p_Player)
 end
 
 -- =============================================
@@ -345,7 +371,7 @@ function VuBattleRoyaleServer:DisablePreRound()
 	local inputRestrictionIterator = EntityManager:GetIterator("ServerInputRestrictionEntity")
 	local inputRestrictionEntity = inputRestrictionIterator:Next()
 	while inputRestrictionEntity do
-		if inputRestrictionEntity.data.instanceGuid == Guid('E8C37E6A-0C8B-4F97-ABDD-28715376BD2D') then
+		if inputRestrictionEntity.data.instanceGuid == Guid("E8C37E6A-0C8B-4F97-ABDD-28715376BD2D") then
 			inputRestrictionEntity = Entity(inputRestrictionEntity)
 			inputRestrictionEntity:FireEvent("Disable")
 		end

@@ -74,7 +74,7 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
     local l_PingIdStr = tostring(math.floor(p_PingId))
     local l_Position2d = Vec2(p_Position.x, p_Position.z)
     local l_RgbaColor = self:GetRgbaColorByPingId(p_PingId)
-    Events:Dispatch('Compass:CreateMarker', l_PingIdStr, l_Position2d, l_RgbaColor)
+    Events:Dispatch("Compass:CreateMarker", l_PingIdStr, l_Position2d, l_RgbaColor)
     m_Hud:CreateMarker(l_PingIdStr, p_Position.x, p_Position.y, p_Position.z, l_RgbaColor)
 
     local s_PingInfo = self.m_SquadPings[p_PingId]
@@ -95,7 +95,7 @@ end
 function PingClient:OnPingRemoveNotify(p_PingId)
     m_Logger:Write("removing ping with Id: " .. p_PingId)
     
-    Events:Dispatch('Compass:RemoveMarker', tostring(math.floor(p_PingId)))
+    Events:Dispatch("Compass:RemoveMarker", tostring(math.floor(p_PingId)))
     m_Hud:RemoveMarker(tostring(math.floor(p_PingId)))
     self.m_SquadPings[p_PingId] = nil
 end
@@ -118,7 +118,7 @@ function PingClient:OnUIDrawHud()
 
         if l_Cooldown < 0.001 then
             m_Logger:Write("invalid cooldown")
-            Events:Dispatch('Compass:RemoveMarker', tostring(math.floor(l_PingId)))
+            Events:Dispatch("Compass:RemoveMarker", tostring(math.floor(l_PingId)))
             m_Hud:RemoveMarker(tostring(math.floor(l_PingId)))
             self.m_SquadPings[l_PingId] = nil
             goto __on_ui_draw_hud_cont__
@@ -128,7 +128,7 @@ function PingClient:OnUIDrawHud()
         
         if l_Color == nil then
             m_Logger:Write("invalid color for ping ID: " .. l_PingId)
-            Events:Dispatch('Compass:RemoveMarker', tostring(math.floor(l_PingId)))
+            Events:Dispatch("Compass:RemoveMarker", tostring(math.floor(l_PingId)))
             m_Hud:RemoveMarker(tostring(math.floor(l_PingId)))
             self.m_SquadPings[l_PingId] = nil
             goto __on_ui_draw_hud_cont__
@@ -262,7 +262,7 @@ function PingClient:GetRgbaColorByPingId(p_PingId)
     local s_Color = self:GetColorByPingId(p_PingId)
 
     -- Convert to rgba string
-    return string.format('rgba(%s, %s, %s, %s)', s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)
+    return string.format("rgba(%s, %s, %s, %s)", s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)
 end
 
 if g_PingClient == nil then

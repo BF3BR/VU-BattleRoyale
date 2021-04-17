@@ -39,9 +39,9 @@ function VuBattleRoyaleShared:RegisterEvents()
 end
 
 function VuBattleRoyaleShared:RegisterHooks()
-    Hooks:Install('ResourceManager:LoadBundles', 100, self, self.OnLoadBundles)
-	Hooks:Install('Terrain:Load', 100, self, self.OnTerrainLoad)
-    Hooks:Install('VisualTerrain:Load', 100, self, self.OnTerrainLoad)
+    Hooks:Install("ResourceManager:LoadBundles", 100, self, self.OnLoadBundles)
+	Hooks:Install("Terrain:Load", 100, self, self.OnTerrainLoad)
+    Hooks:Install("VisualTerrain:Load", 100, self, self.OnTerrainLoad)
 end
 
 function VuBattleRoyaleShared:RegisterCallbacks()

@@ -31,7 +31,7 @@ function Logger:Write(p_Message)
 	end
 
 	::continue::
-	if(type(p_Message) == 'table') then
+	if(type(p_Message) == "table") then
 		print("["..self.className.."]")
 		print(p_Message)
 	else

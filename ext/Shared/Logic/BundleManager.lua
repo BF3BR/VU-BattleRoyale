@@ -1,22 +1,22 @@
-class 'BundleManager'
+class "BundleManager"
 
 local m_Logger = Logger("BundleManager", true)
 
 local m_BundleConfig = {
 	--[[ {
-		SuperBundle = 'Levels/COOP_006/COOP_006',
-		Bundles = { 'Levels/COOP_006/COOP_006' },
-		Registry = DC(Guid('23535E3D-E72F-11DF-99CA-879440EEBD7A'), Guid('51C54150-0ABF-03BD-EADE-1876AAD3EC8D'))
+		SuperBundle = "Levels/COOP_006/COOP_006",
+		Bundles = { "Levels/COOP_006/COOP_006" },
+		Registry = DC(Guid("23535E3D-E72F-11DF-99CA-879440EEBD7A"), Guid("51C54150-0ABF-03BD-EADE-1876AAD3EC8D"))
 	},
 	{
-		SuperBundle = 'Levels/XP5_001/XP5_001',
-		Bundles = { 'Levels/XP5_001/XP5_001', 'Levels/XP5_001/CQL' },
-		Registry = DC(Guid('25BBF5C7-2AD0-4C4C-9AF3-57CCD9CAB017'), Guid('45977445-06C0-0441-4C91-90E41D64ECE2'))
+		SuperBundle = "Levels/XP5_001/XP5_001",
+		Bundles = { "Levels/XP5_001/XP5_001", "Levels/XP5_001/CQL" },
+		Registry = DC(Guid("25BBF5C7-2AD0-4C4C-9AF3-57CCD9CAB017"), Guid("45977445-06C0-0441-4C91-90E41D64ECE2"))
 	}, --]]
 	{
-		SuperBundle = 'Levels/COOP_010/COOP_010',
-		Bundles = { 'Levels/COOP_010/COOP_010' },
-		Registry = DC(Guid('333BDB92-E69D-11DF-9B0E-AF9CA6E0236B'), Guid('2C804637-3B56-6DDB-92C8-81D094EA806B'))
+		SuperBundle = "Levels/COOP_010/COOP_010",
+		Bundles = { "Levels/COOP_010/COOP_010" },
+		Registry = DC(Guid("333BDB92-E69D-11DF-9B0E-AF9CA6E0236B"), Guid("2C804637-3B56-6DDB-92C8-81D094EA806B"))
 	}, 
 }
 

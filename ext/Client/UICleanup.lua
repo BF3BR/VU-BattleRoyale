@@ -88,8 +88,8 @@ function UICleanup:RegisterCallbacks()
 
     -- nametag icons
     ResourceManager:RegisterInstanceLoadHandler(
-        Guid('187A8BC1-B761-11E0-B02E-AE94D7595F06'),
-        Guid('FDD01ACB-50A9-BA73-DD3A-849BE7E30144'),
+        Guid("187A8BC1-B761-11E0-B02E-AE94D7595F06"),
+        Guid("FDD01ACB-50A9-BA73-DD3A-849BE7E30144"),
         self, self.OnIconTexture
     )
 end

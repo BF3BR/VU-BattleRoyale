@@ -9,7 +9,7 @@
 
 -- XP5_003 Kiasar Railroad
 return {
-    SubWorldInstance = DC(Guid('CB9932E2-19E0-11E2-93EC-B0D4179CEA18'), Guid('FB11A0AA-BC0A-31C1-8F95-A8B8D7746908')),
+    SubWorldInstance = DC(Guid("CB9932E2-19E0-11E2-93EC-B0D4179CEA18"), Guid("FB11A0AA-BC0A-31C1-8F95-A8B8D7746908")),
     MapTopLeftPos = Vec3(667.28, 0, -290.44),
     MapWidthHeight = 1250.0,
     PlaneFlyHeight = 755.0,

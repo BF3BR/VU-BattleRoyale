@@ -9,7 +9,7 @@
 
 -- MP_001 Grand Bazar (debug)
 return {
-    SubWorldInstance = DC(Guid('8F5E0383-52A4-11DF-AC80-BC6EA2597601'), Guid('CEB62353-85BC-67BB-EB82-311402BE77AD')),
+    SubWorldInstance = DC(Guid("8F5E0383-52A4-11DF-AC80-BC6EA2597601"), Guid("CEB62353-85BC-67BB-EB82-311402BE77AD")),
     MapTopLeftPos = Vec3(248.582184, 72.001099, 250.216385),
     MapWidthHeight = 1250.0,
     PlaneFlyHeight = 755.0,
