@@ -51,13 +51,11 @@ SpectatorEvent = {
 }
 
 GunshipEvents = {
-    Camera = "Gunship:Camera",
+    Enable = "Gunship:Enable",
+    Disable = "Gunship:Disable",
     JumpOut = "Gunship:JumpOutOfGunship",
     ForceJumpOut = "Gunship:ForceJumpOufOfGunship",
-    Position = "Gunship:Position",
-    Yaw = "Gunship:Yaw",
     OpenParachute = "Gunship:OpenParachute",
-    Remove = "Gunship:Remove",
 }
 
 PlayerEvents = {

@@ -137,6 +137,10 @@ function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_Inflictor
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
+	if s_LocalPlayer == nil then
+		return
+	end
+
 	if p_OnlySquadMates then
 		if s_LocalPlayer.squadId == SquadId.SquadNone then
 			return s_PlayerToSpectate
@@ -287,7 +291,7 @@ function SpectatorClient:CreateCameraData()
 	self.m_Data = CameraEntityData()
 	self.m_Data.fov = 80
 	self.m_Data.enabled = true
-	self.m_Data.priority = 99999
+	self.m_Data.priority = 150
 	self.m_Data.nameId = "vu-battleroyale-spec-cam"
 	self.m_Data.transform = LinearTransform()
 end

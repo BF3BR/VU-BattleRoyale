@@ -24,7 +24,7 @@ function Showroom:OnShowRoomCamera(p_Instance)
     local s_Instance = CameraEntityData(p_Instance)
     s_Instance:MakeWritable()
     s_Instance.enabled = true
-    s_Instance.priority = 1
+    s_Instance.priority = 999
 end
 
 function Showroom:SetCamera(p_Enable)

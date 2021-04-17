@@ -21,7 +21,6 @@ local m_Showroom = require "Showroom"
 local m_Ping = require "PingClient"
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
-
 function VuBattleRoyaleClient:__init()
     Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
     Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
@@ -63,18 +62,17 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged)
     NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
     NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate)
-    NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
-    NetEvents:Subscribe(GunshipEvents.Camera, self, self.OnGunShipCamera)
-    NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
-    NetEvents:Subscribe(GunshipEvents.Position, self, self.OnGunshipPosition)
-    NetEvents:Subscribe(GunshipEvents.Yaw, self, self.OnGunshipYaw)
-    NetEvents:Subscribe(GunshipEvents.Remove, self, self.OnGunshipRemove)
     NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied)
     NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
     NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
     NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
     NetEvents:Subscribe(PingEvents.RemoveServerPing, self, self.OnPingRemoveNotify)
     NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig)
+    
+    NetEvents:Subscribe(GunshipEvents.Enable, self, self.OnGunshipEnable)
+    NetEvents:Subscribe(GunshipEvents.Disable, self, self.OnGunshipDisable)
+    NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
+    NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
 
     self:RegisterWebUIEvents()
 end
@@ -102,6 +100,7 @@ function VuBattleRoyaleClient:RegisterHooks()
     Hooks:Install("UI:DrawEnemyNametag", 999, self, self.OnUIDrawEnemyNametag)
     Hooks:Install("UI:DrawMoreNametags", 999, self, self.OnUIDrawMoreNametags)
     Hooks:Install("UI:RenderMinimap", 999, self, self.OnUIRenderMinimap)
+    Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate)
 end
 
 
@@ -112,6 +111,7 @@ end
 function VuBattleRoyaleClient:OnLevelDestroy()
     m_Hud:OnLevelDestroy()
     m_SpectatorClient:OnLevelDestroy()
+    m_Gunship:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
@@ -128,6 +128,7 @@ function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
     m_Hud:OnEngineUpdate(p_DeltaTime)
     m_SpectatorClient:OnEngineUpdate(p_DeltaTime)
     m_Ping:OnEngineUpdate(p_DeltaTime)
+    m_Gunship:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUIDrawHud()
@@ -285,34 +286,30 @@ function VuBattleRoyaleClient:OnOuterCircleMove(p_OuterCircle)
     m_Hud:OnOuterCircleMove(p_OuterCircle)
 end
 
-function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
-    m_Gunship:OnForceJumpOufOfGunship()
-end
-
 function VuBattleRoyaleClient:OnUpdatePassPreSim(p_DeltaTime)
-    m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
     m_Ping:OnUpdatePassPreSim(p_DeltaTime)
+    m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
 end
 
-function VuBattleRoyaleClient:OnGunShipCamera()
-    m_Gunship:OnGunShipCamera()
-    m_Hud:OnGunShipCamera()
+function VuBattleRoyaleClient:OnGunshipEnable(p_Type)
+    if p_Type == "Paradrop" then
+        m_Gunship:OnGunshipEnable(p_Type)
+        m_Hud:OnGunshipEnable()
+    end
 end
 
-function VuBattleRoyaleClient:OnGunshipPosition(p_Trans)
-    m_Hud:OnGunshipPosition(p_Trans)
-end
-
-function VuBattleRoyaleClient:OnGunshipYaw(p_Trans)
-    m_Hud:OnGunshipYaw(p_Trans)
-end
-
-function VuBattleRoyaleClient:OnGunshipRemove()
-    m_Hud:OnGunshipRemove()
+function VuBattleRoyaleClient:OnGunshipDisable()
+    m_Gunship:OnGunshipDisable()
+    m_Hud:OnGunshipDisable()
 end
 
 function VuBattleRoyaleClient:OnJumpOutOfGunship()
+    m_Gunship:OnGunshipDisable()
     m_Hud:OnJumpOutOfGunship()
+end
+
+function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
+    m_Gunship:OnForceJumpOufOfGunship()
 end
 
 function VuBattleRoyaleClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
@@ -439,6 +436,10 @@ end
 
 function VuBattleRoyaleClient:OnUIRenderMinimap(p_Hook)
     p_Hook:Return(nil)
+end
+
+function VuBattleRoyaleClient:OnInputPreUpdate(p_Hook, p_Cache, p_Dt)
+    m_Gunship:OnInputPreUpdate(p_Hook, p_Cache, p_Dt)
 end
 
 return VuBattleRoyaleClient()

@@ -2,6 +2,7 @@ MapsConfig = {
     -- Kiasar Railroad
     XP5_003 = {
         MapTopLeftPos = Vec3(667.28, 0, -290.44),
+        MapWidthHeight = 1250.0,
         BeforeFirstCircleDelay = 60.0,
         PlaneFlyHeight = 755.0,
         SkyComponentDataGuid = Guid("9159BC49-8F6C-4422-BD1E-EA76D956DFA3"),

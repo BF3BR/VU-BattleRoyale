@@ -15,8 +15,8 @@ local m_Logger = Logger("PhaseManagerServer", true)
 function PhaseManagerServer:RegisterVars()
     PhaseManagerShared.RegisterVars(self)
 
-    self.m_InnerCircle = Circle(Vec3(0, 0, 0), 4000)
-    self.m_OuterCircle = Circle(Vec3(0, 0, 0), 4000)
+    self.m_InnerCircle = Circle(Vec3(0, 0, 0), 5000)
+    self.m_OuterCircle = Circle(Vec3(0, 0, 0), 5000)
 end
 
 function PhaseManagerServer:RegisterEvents()

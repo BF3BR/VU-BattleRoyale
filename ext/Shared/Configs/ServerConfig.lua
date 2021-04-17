@@ -61,6 +61,7 @@ ServerConfig =
             "DankBoi21",
             "FoolHen",
             "beogath",
+            "lol24",
         },
     }
 }

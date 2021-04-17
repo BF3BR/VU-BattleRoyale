@@ -2,12 +2,14 @@ class "Gunship"
 
 require "__shared/Enums/CustomEvents"
 
+local m_Hud = require "Hud"
 local m_Logger = Logger("Gunship", true)
+local m_GunshipCamera = require "GunshipCamera"
 
 function Gunship:__init()
-    self.m_IsInGunship = false
+    self.m_Type = nil
     self.m_IsInFreeFall = false
-    self.m_CumulatedTime = 0
+    self.m_CumulatedTime = 0.0
 end
 
 function Gunship:RegisterCallbacks()
@@ -32,23 +34,94 @@ function Gunship:OnCameraEntityData(p_Instance)
     p_Instance.enabled = false
 end
 
-function Gunship:OnGunShipCamera()
-    self:EnableCamera(true)
+function Gunship:OnClientUpdateInput()
+    if self.m_Type ~= "Paradrop" then
+        return
+    end
+
+    if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) then
+        NetEvents:SendLocal(GunshipEvents.JumpOut)
+        self.m_IsInFreeFall = true
+        m_GunshipCamera:Disable()
+    end
+end
+
+function Gunship:OnGunshipEnable(p_Type)
+    self.m_Type = p_Type
+    m_GunshipCamera:Enable()
+end
+
+function Gunship:OnGunshipDisable()
+    self.m_Type = nil
+    m_Hud:OnGunshipPosition(nil)
+    m_Hud:OnGunshipYaw(nil)
+    m_GunshipCamera:Disable()
+end
+
+function Gunship:OnLevelDestroy()
+    m_GunshipCamera:OnLevelDestroy()
+end
+
+function Gunship:OnInputPreUpdate(p_Hook, p_Cache, p_Dt)
+    m_GunshipCamera:OnInputPreUpdate(p_Hook, p_Cache, p_Dt)
+
+    if not self.m_IsInFreeFall then
+        return
+    end
+
+    local s_Player = PlayerManager:GetLocalPlayer()
+
+	if s_Player == nil then
+		return
+	end
+
+    if p_Cache[InputConceptIdentifiers.ConceptParachute] == 1.0 then
+        print("ASDADSDSASADSADSDASSADSADAS")
+        self.m_IsInFreeFall = false
+    end
+end
+
+function Gunship:OnEngineUpdate(p_DeltaTime)
+    local s_GunshipEntity = self:GetGunshipEntity()
+
+    if s_GunshipEntity ~= nil then
+        local s_Entity = SpatialEntity(s_GunshipEntity)
+        m_Hud:OnGunshipPosition(s_Entity.transform)
+        m_Hud:OnGunshipYaw(s_Entity.transform)
+        m_GunshipCamera:OnEngineUpdate(p_DeltaTime, s_GunshipEntity)
+    end
 end
 
 function Gunship:OnForceJumpOufOfGunship()
-    if self.m_IsInGunship then
+    if self.m_Type == "Paradrop" then
         NetEvents:SendLocal(GunshipEvents.JumpOut)
-        self:EnableCamera(false)
+        self.m_IsInFreeFall = true
+        -- self:OnGunshipDisable()
     end
+end
+
+function Gunship:GetGunshipEntity()
+	local s_VehicleEntityIterator = EntityManager:GetIterator("ClientVehicleEntity")
+    local s_VehicleEntity = s_VehicleEntityIterator:Next()
+
+    while s_VehicleEntity ~= nil do
+		if s_VehicleEntity.data.partition.name == "vehicles/xp5/c130/c130" then
+			return s_VehicleEntity
+		end
+
+		s_VehicleEntity = s_VehicleEntityIterator:Next()
+	end
+
+	return nil
 end
 
 function Gunship:OnUpdatePassPreSim(p_DeltaTime)
     if not self.m_IsInFreeFall then
         return
     end
+
     self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
-    if self.m_CumulatedTime < ServerConfig.ParachuteRaycastUpdateRate then
+    if self.m_CumulatedTime < 0.2 then
         return
     end
     self.m_CumulatedTime = 0
@@ -64,43 +137,8 @@ function Gunship:OnUpdatePassPreSim(p_DeltaTime)
 
     if s_ForceParachute ~= nil then
         m_Logger:Write("Open parachute now")
-        self.m_IsInFreeFall = false
         NetEvents:SendLocal(GunshipEvents.OpenParachute)
-    end
-end
-
-function Gunship:OnClientUpdateInput()
-    if not self.m_IsInGunship then
-        return
-    end
-
-    if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) then
-        NetEvents:SendLocal(GunshipEvents.JumpOut)
-        self:EnableCamera(false)
-    end
-end
-
-function Gunship:EnableCamera(p_Enable)
-    local s_CameraEntityIterator = EntityManager:GetIterator("ClientCameraEntity")
-    local s_CameraEntity = s_CameraEntityIterator:Next()
-
-    while s_CameraEntity do
-        if s_CameraEntity.data.instanceGuid == Guid("B19E172D-24EB-4513-9844-53ECA80A4FF9") then
-            s_CameraEntity = Entity(s_CameraEntity)
-
-            if p_Enable then
-                self.m_IsInGunship = true
-                s_CameraEntity:FireEvent("TakeControl")
-            else
-                self.m_IsInGunship = false
-                self.m_IsInFreeFall = true
-                s_CameraEntity:FireEvent("ReleaseControl")
-            end
-
-            return
-        end
-
-        s_CameraEntity = s_CameraEntityIterator:Next()
+        self.m_IsInFreeFall = false
     end
 end
 

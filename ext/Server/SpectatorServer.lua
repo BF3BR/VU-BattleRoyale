@@ -7,7 +7,7 @@ function SpectatorServer:OnSpectatorRequestPitchAndYaw(p_Player, p_SpectatingId)
 
     local s_Spectating = PlayerManager:GetPlayerById(p_SpectatingId)
 
-    if s_Spectating.alive == false or s_Spectating.input == nil then
+    if s_Spectating == nil or s_Spectating.alive == false or s_Spectating.input == nil then
         return
     end
 

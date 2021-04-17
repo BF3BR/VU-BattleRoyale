@@ -19,6 +19,7 @@ local m_InteractiveManDown = require "__shared/InteractiveManDown"
 
 function VuBattleRoyaleServer:__init()
     Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
+    Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
 
     -- Holds the gamestate information
     self.m_GameState = GameStates.None
@@ -50,6 +51,10 @@ function VuBattleRoyaleServer:OnExtensionLoaded()
     self:RegisterEvents()
     self:RegisterHooks()
     self:RegisterRconCommands()
+end
+
+function VuBattleRoyaleServer:OnExtensionUnloading()
+    self.m_Match:OnExtensionUnloading()
 end
 
 function VuBattleRoyaleServer:RegisterEvents()

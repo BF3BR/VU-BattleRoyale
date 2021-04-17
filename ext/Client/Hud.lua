@@ -27,7 +27,6 @@ function VuBattleRoyaleHud:RegisterVars()
     self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
     self.m_HudOnPlanePos = CachedJsExecutor("OnPlanePos(%s)", nil)
     self.m_HudOnPlaneYaw = CachedJsExecutor("OnPlaneYaw(%s)", 0)
-
     self.m_HudOnUpdateCircles = CachedJsExecutor("OnUpdateCircles(%s)", nil)
     self.m_HudOnGameState = CachedJsExecutor("OnGameState('%s')", GameStates.None)
     self.m_HudOnPlayersInfo = CachedJsExecutor("OnPlayersInfo(%s)", nil)
@@ -73,13 +72,9 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
         return
     end
 
-    if s_LocalPlayer.soldier == nil then
-        return
-    end
-
     if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10) then
         if (self.m_GameState ~= GameStates.Match and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle)
-         or not s_LocalPlayer.soldier.alive then
+        or s_LocalPlayer.soldier == nil then
             WebUI:ExecuteJS("ToggleDeployMenu(true);")
             m_Showroom:SetCamera(true)
         end
@@ -376,7 +371,7 @@ function VuBattleRoyaleHud:OnTeamJoinDenied(p_Error)
     self.m_HudOnTeamJoinError:ForceUpdate(p_Error)
 end
 
-function VuBattleRoyaleHud:OnGunShipCamera()
+function VuBattleRoyaleHud:OnGunshipEnable()
     self.m_HudOnPlayerIsInPlane:Update(true)
     self.m_IsPlayerOnPlane = true
 end
@@ -387,8 +382,9 @@ function VuBattleRoyaleHud:OnJumpOutOfGunship()
 end
 
 function VuBattleRoyaleHud:OnGunshipPosition(p_Trans)
-    if p_Trans == nil  then
+    if p_Trans == nil then
         self.m_HudOnPlanePos:Update(nil)
+        return
     end
 
     local s_Table = {
@@ -407,19 +403,20 @@ end
 function VuBattleRoyaleHud:OnGunshipYaw(p_Trans)
     if p_Trans == nil then
         self.m_HudOnPlaneYaw:Update(nil)
+        return
     end
 
     local s_YawRad = (math.atan(p_Trans.forward.z, p_Trans.forward.x) - (math.pi / 2)) % (2 * math.pi)
     local s_Floored = math.floor((180 / math.pi) * s_YawRad)
-
-    if self.m_IsPlayerOnPlane then
-        self.m_HudOnPlayerYaw:Update(s_Floored)
-    end
-
     self.m_HudOnPlaneYaw:Update(s_Floored)
 end
 
-function VuBattleRoyaleHud:OnGunshipRemove(p_Trans)
+function VuBattleRoyaleHud:OnGunshipPlayerYaw(p_Yaw)
+    local s_Yaw = math.floor((180 / math.pi) * p_Yaw)
+    self.m_HudOnPlayerYaw:Update(s_Yaw)
+end
+
+function VuBattleRoyaleHud:OnGunshipDisable()
     self.m_HudOnPlanePos:Update(nil)
     self.m_HudOnPlaneYaw:Update(nil)
 end

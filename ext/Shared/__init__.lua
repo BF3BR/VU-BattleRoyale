@@ -28,7 +28,7 @@ end
 
 function VuBattleRoyaleShared:RegisterEvents()
     Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
-    Events:Subscribe('Level:RegisterEntityResources', self, self.OnLevelRegisterEntityResources)
+    Events:Subscribe("Level:RegisterEntityResources", self, self.OnLevelRegisterEntityResources)
     Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate)
 end
 
