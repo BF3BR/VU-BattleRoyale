@@ -1,62 +1,36 @@
 import React from "react";
+import { connect } from "react-redux";
 
 import Circle from "../../helpers/CircleHelper";
 import Ping from "../../helpers/PingHelper";
 import Player from "../../helpers/PlayerHelper";
 import Vec3 from "../../helpers/Vec3Helper";
+import { RootState } from "../../store/RootReducer";
 
 import MapPixi from "./MapPixi";
 
 import "./MiniMap.scss";
 
-interface Props {
+interface StateFromReducer {
     open: boolean;
+    showMinimap: boolean;
     playerPos: Vec3|null;
     playerYaw: number|null;
-    planePos: Vec3|null;
-    planeYaw: number|null;
-    innerCircle: Circle|null;
-    outerCircle: Circle|null;
-    playerIsInPlane: boolean;
-    pingsTable: Array<Ping>;
-    team: Player[];
-    localPlayer: Player;
-    showMinimap: boolean;
 }
+
+type Props = StateFromReducer;
 
 const MiniMap: React.FC<Props> = ({ 
     open, 
+    showMinimap,
     playerPos, 
     playerYaw, 
-    planePos, 
-    planeYaw, 
-    innerCircle, 
-    outerCircle, 
-    playerIsInPlane, 
-    pingsTable,
-    team,
-    localPlayer,
-    showMinimap
 }) => {
     return (
         <>
             <div id="miniMap" className={(showMinimap ? "showMinimap" : "hideMinimap") + " " +  (open?'open':'')}>
-                {playerPos !== null && playerYaw !== null ?
-                    <MapPixi 
-                        open={open}
-                        playerPos={playerPos} 
-                        playerYaw={playerYaw} 
-                        planePos={planePos}
-                        planeYaw={planeYaw}
-                        innerCircle={innerCircle}
-                        outerCircle={outerCircle}
-                        team={team}
-                        localPlayer={localPlayer}
-                        pingsTable={pingsTable}
-                        playerIsInPlane={playerIsInPlane}
-                    />
-                :   
-                    <></>
+                {(playerPos !== null && playerYaw !== null) &&
+                    <MapPixi />
                 }
             </div>
             {open &&
@@ -79,4 +53,17 @@ const MiniMap: React.FC<Props> = ({
     );
 };
 
-export default MiniMap;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // MapReducer
+        open: state.MapReducer.open,
+        showMinimap: state.MapReducer.show,
+        // PlayerReducer
+        playerPos: state.PlayerReducer.player.position,
+        playerYaw: state.PlayerReducer.player.yaw,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(MiniMap);

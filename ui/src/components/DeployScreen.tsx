@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import { RootState } from "../store/RootReducer";
+import { UPDATE_DEPLOY_APPEARANCE, UPDATE_DEPLOY_SCREEN, UPDATE_DEPLOY_TEAM, UPDATE_DEPLOY_TEAM_TYPE } from "../store/game/ActionTypes";
+
 import { sendToLua } from "../Helpers";
 import Player, { rgbaToRgb } from "../helpers/PlayerHelper";
 import BrSelect from "./helpers/BrSelect";
@@ -8,6 +12,8 @@ import lock from "../assets/img/lock.svg";
 import lockOpen from "../assets/img/lock-open.svg";
 
 import "./DeployScreen.scss";
+
+let isFirstLoad = true;
 
 const AppearanceArray = [
     "RU Woodland",
@@ -31,22 +37,25 @@ const TeamType = [
     },
 ];
 
-interface Props {
+interface DispatchFromReducer {
     setDeployScreen: (bool: boolean) => void;
+    setTeamJoinError: (p_Error: number|null) => void;
+    setSelectedAppearance: (data: number) => void;
+    setSelectedTeamType: (data: number) => void;
+}
+
+interface StateFromReducer {
     team: Player[];
     teamSize: number;
     teamOpen: boolean;
     isTeamLeader: boolean;
     teamCode: string|null;
     teamJoinError: number|null;
-    setTeamJoinError: (p_Error: number|null) => void;
     selectedAppearance: number;
-    setSelectedAppearance: (data: number) => void;
     selectedTeamType: number;
-    setSelectedTeamType: (data: number) => void;
 }
 
-let isFirstLoad = true;
+type Props = DispatchFromReducer & StateFromReducer;
 
 const DeployScreen: React.FC<Props> = ({ 
     setDeployScreen, 
@@ -95,7 +104,9 @@ const DeployScreen: React.FC<Props> = ({
     const [joinCode, setJoinCode] = useState<string>('');
 
     const handleJoinCodeChange = (event: any) => {
-        setTeamJoinError(null);
+        if (teamJoinError !== null) {
+            setTeamJoinError(null);
+        }
         setJoinCode(event.target.value);
     }
 
@@ -280,4 +291,55 @@ const DeployScreen: React.FC<Props> = ({
     );
 };
 
-export default DeployScreen;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // PlayerReducer
+        team: state.TeamReducer.players,
+        // GameReducer
+        teamSize: state.GameReducer.deployScreen.teamSize,
+        teamOpen: !state.GameReducer.deployScreen.teamLocked,
+        teamCode: state.GameReducer.deployScreen.teamId ?? "-",
+        teamJoinError: state.GameReducer.deployScreen.teamJoinError,
+        selectedAppearance: state.GameReducer.deployScreen.selectedAppearance,
+        selectedTeamType: state.GameReducer.deployScreen.selectedTeamType,
+        // PlayerReducer
+        isTeamLeader: state.PlayerReducer.player.isTeamLeader ?? false,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        setTeamJoinError: (p_Error: number|null) => {
+            dispatch({
+                type: UPDATE_DEPLOY_TEAM, 
+                payload: {
+                    teamJoinError: p_Error
+                }
+            });
+        },
+        setDeployScreen: (bool: boolean) => {
+            dispatch({
+                type: UPDATE_DEPLOY_SCREEN, 
+                payload: {
+                    enabled: bool
+                }
+            });
+        },
+        setSelectedAppearance: (data: number) => {
+            dispatch({
+                type: UPDATE_DEPLOY_APPEARANCE, 
+                payload: {
+                    selectedAppearance: data
+                }
+            });
+        },
+        setSelectedTeamType: (data: number) => {
+            dispatch({
+                type: UPDATE_DEPLOY_TEAM_TYPE, 
+                payload: {
+                    selectedTeamType: data
+                }
+            });
+        },
+    };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(DeployScreen);

@@ -226,7 +226,7 @@ end
 function VuBattleRoyaleHud:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
     if p_Action == UIInputAction.UIInputAction_MapSize and p_EventType ==
         UIInputActionEventType.UIInputActionEventType_Pressed then
-        WebUI:ExecuteJS("OnMapSizeChange();")
+        WebUI:ExecuteJS("OnOpenCloseMap();")
         p_Hook:Pass(UIInputAction.UIInputAction_None, p_EventType)
         return
     end

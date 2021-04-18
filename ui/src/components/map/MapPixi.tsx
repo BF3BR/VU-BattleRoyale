@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef, forwardRef } from 'react';
+import { connect } from "react-redux";
+import { RootState } from '../../store/RootReducer';
+
 import { Stage, Sprite, PixiComponent, useApp, Graphics } from '@inlet/react-pixi';
 import { Viewport } from 'pixi-viewport';
-import {GlowFilter} from '@pixi/filter-glow';
-import * as PIXI from 'pixi.js';
-import '@pixi/graphics-extras';
+import { GlowFilter } from '@pixi/filter-glow';
 
 import Vec3 from '../../helpers/Vec3Helper';
 import Circle from '../../helpers/CircleHelper';
@@ -14,6 +15,9 @@ import XP5_003 from "../../assets/img/XP5_003.jpg";
 import airplane from "../../assets/img/airplane.svg";
 import { MapsConfig } from '../../helpers/MapsConfigHelper';
 import { sendToLua } from '../../Helpers';
+
+import * as PIXI from 'pixi.js';
+import '@pixi/graphics-extras';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -114,21 +118,24 @@ const PixiViewport = forwardRef((props: any, ref: any) => (
     <PixiViewportComponent ref={ref} app={useApp()} {...props} />
 ));
 
-interface MapPixiProps {
+interface StateFromReducer {
     open: boolean;
-    playerPos: Vec3;
-    playerYaw: number;
+    playerPos: Vec3|null;
+    playerYaw: number|null;
     planePos: Vec3|null;
     planeYaw: number|null;
-    innerCircle: Circle;
-    outerCircle: Circle;
+    innerCircle: Circle|null;
+    outerCircle: Circle|null;
+    playerIsInPlane: boolean;
     pingsTable: Array<Ping>;
     team: Player[];
     localPlayer: Player;
-    playerIsInPlane: boolean;
-};
+    showMinimap: boolean;
+}
 
-const MapPixi: React.FC<MapPixiProps> = ({ 
+type Props = StateFromReducer;
+
+const MapPixi: React.FC<Props> = ({ 
     open, 
     playerPos, 
     playerYaw, 
@@ -421,7 +428,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                         .filter((player: Player) => (player.position.x !== null && player.position.z !== null))
                         .map((player: Player, key: number) => (
                             <Graphics 
-                                draw={(g: any) => drawPlayer(g, getConvertedPlayerColor(player.color), false)}
+                                draw={(g: any) => drawPlayer(g, getConvertedPlayerColor(player.color))}
                                 x={getMapPos(player.position.x, topLeftPos.x)}
                                 y={getMapPos(player.position.z, topLeftPos.z)}
                                 angle={player.yaw}
@@ -458,7 +465,7 @@ const MapPixi: React.FC<MapPixiProps> = ({
                     }
 
                     <Graphics 
-                        draw={(g: any) => drawPlayer(g, localPlayer !== null ? getConvertedPlayerColor(localPlayer.color) : 0xff0000, true)}
+                        draw={(g: any) => drawPlayer(g, localPlayer !== null ? getConvertedPlayerColor(localPlayer.color) : 0xff0000)}
                         x={getMapPos(playerPos.x, topLeftPos.x)}
                         y={getMapPos(playerPos.z, topLeftPos.z)}
                         angle={playerYaw}
@@ -476,7 +483,38 @@ const MapPixi: React.FC<MapPixiProps> = ({
     );
 };
 
-export default MapPixi;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // MapReducer
+        open: state.MapReducer.open,
+        showMinimap: state.MapReducer.show,
+        // PlayerReducer
+        playerPos: state.PlayerReducer.player.position,
+        playerYaw: state.PlayerReducer.player.yaw,
+        playerIsInPlane: state.PlayerReducer.isOnPlane,
+        localPlayer: {
+            name: state.PlayerReducer.player.name,
+            kill: state.PlayerReducer.player.kill,
+            state: state.PlayerReducer.player.state,
+            isTeamLeader: state.PlayerReducer.player.isTeamLeader,
+            color: state.PlayerReducer.player.color,
+        },
+        // PlaneReducer
+        planePos: state.PlaneReducer.position,
+        planeYaw: state.PlaneReducer.yaw,
+        // PingReducer
+        pingsTable: state.PingReducer.pings,
+        // CircleReducer
+        innerCircle: state.CircleReducer.innerCircle,
+        outerCircle: state.CircleReducer.outerCircle,
+        // TeamReducer
+        team: state.TeamReducer.players,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(MapPixi);
 
 declare global {
     interface Window {

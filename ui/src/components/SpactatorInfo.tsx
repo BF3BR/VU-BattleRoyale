@@ -1,11 +1,16 @@
 import React from "react";
+import { connect } from "react-redux";
+import { RootState } from "../store/RootReducer";
 
 import "./SpactatorInfo.scss";
 
-interface Props {
+
+interface StateFromReducer {
     spectating: boolean;
     spectatorTarget: string;
 }
+
+type Props = StateFromReducer;
 
 const SpactatorInfo: React.FC<Props> = ({ spectating, spectatorTarget }) => {
 
@@ -26,4 +31,15 @@ const SpactatorInfo: React.FC<Props> = ({ spectating, spectatorTarget }) => {
     );
 };
 
-export default SpactatorInfo;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // SpectatorReducer
+        spectating: state.SpectatorReducer.enabled,
+        spectatorTarget: state.SpectatorReducer.target,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(SpactatorInfo);
+
