@@ -7,8 +7,12 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import ReduxThunk from 'redux-thunk';
 import { RootReducer } from "./store/RootReducer";
 
-import App from './App';
 import Alert from './store/alert/Alert';
+import KillMessage from './store/killmsg/KillMessage';
+import InteractMessage from './store/interactivemsg/InteractMessage';
+
+import App from './App';
+
 
 const store = createStore(
     RootReducer,
@@ -19,7 +23,9 @@ const store = createStore(
 
 ReactDOM.render(
     <Provider store={store}>
+        <KillMessage />
         <Alert />
+        <InteractMessage />
         <App />
     </Provider>,
     document.getElementById('root')

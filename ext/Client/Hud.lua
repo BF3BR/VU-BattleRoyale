@@ -24,7 +24,7 @@ end
 function VuBattleRoyaleHud:RegisterVars()
     self.m_HudOnPlayerPos = CachedJsExecutor("OnPlayerPos(%s)", nil)
     self.m_HudOnPlayerYaw = CachedJsExecutor("OnPlayerYaw(%s)", 0)
-    self.m_HudOnPlayerIsInPlane = CachedJsExecutor("OnPlayerIsInPlane(%s)", false)
+    self.m_HudOnPlayerIsOnPlane = CachedJsExecutor("OnPlayerIsOnPlane(%s)", false)
     self.m_HudOnPlanePos = CachedJsExecutor("OnPlanePos(%s)", nil)
     self.m_HudOnPlaneYaw = CachedJsExecutor("OnPlaneYaw(%s)", 0)
     self.m_HudOnUpdateCircles = CachedJsExecutor("OnUpdateCircles(%s)", nil)
@@ -155,6 +155,7 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
     if s_LocalPlayer.alive == false then	
         return
     end
+    
     local s_LocalSoldier = s_LocalPlayer.soldier
     if s_LocalSoldier == nil then
         return
@@ -372,12 +373,12 @@ function VuBattleRoyaleHud:OnTeamJoinDenied(p_Error)
 end
 
 function VuBattleRoyaleHud:OnGunshipEnable()
-    self.m_HudOnPlayerIsInPlane:Update(true)
+    self.m_HudOnPlayerIsOnPlane:Update(true)
     self.m_IsPlayerOnPlane = true
 end
 
 function VuBattleRoyaleHud:OnJumpOutOfGunship()
-    self.m_HudOnPlayerIsInPlane:Update(false)
+    self.m_HudOnPlayerIsOnPlane:Update(false)
     self.m_IsPlayerOnPlane = false
 end
 

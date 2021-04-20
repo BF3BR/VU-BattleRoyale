@@ -9,6 +9,8 @@ import TeamReducer from "./team/Reducer";
 import SpectatorReducer from "./spectator/Reducer";
 import GameReducer from "./game/Reducer";
 import AlertReducer from "./alert/Reducer";
+import KillmsgReducer from "./killmsg/Reducer";
+import InteractivemsgReducer from "./interactivemsg/Reducer";
 
 export const RootReducer = combineReducers({
     PlayerReducer,
@@ -20,6 +22,8 @@ export const RootReducer = combineReducers({
     SpectatorReducer,
     GameReducer,
     AlertReducer,
+    KillmsgReducer,
+    InteractivemsgReducer,
 });
 
 export type RootState = ReturnType<typeof RootReducer>;

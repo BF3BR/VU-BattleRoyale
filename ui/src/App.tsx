@@ -50,6 +50,9 @@ import {
     updateTime,
     updateUiState
 } from "./store/game/Actions";
+import { addAlert } from "./store/alert/Actions";
+import { addKillmsg } from "./store/killmsg/Actions";
+import { addInteractivemsg } from "./store/interactivemsg/Actions";
 
 /* Helpers */
 import Player from "./helpers/PlayerHelper";
@@ -60,19 +63,16 @@ import { Sounds } from "./helpers/SoundsHelper";
 import MiniMap from "./components/map/MiniMap";
 import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
-import InteractMessage from "./components/InteractMessage";
 import KillAndAliveInfo from "./components/KillAndAliveInfo";
 import SpactatorInfo from "./components/SpactatorInfo";
 import Gameover from "./components/Gameover";
 import DeployScreen from "./components/DeployScreen";
 import TeamInfo from "./components/TeamInfo";
-import KillMessage from "./components/KillMessage";
 import LoadingScreen from "./components/LoadingScreen";
 import MapMarkers from "./components/MapMarkers";
 
 /* Style */
 import './App.scss';
-import { addAlert } from "./store/alert/Actions";
 
 interface StateFromReducer {
     gameState: string;
@@ -80,6 +80,7 @@ interface StateFromReducer {
     gameOverScreen: boolean;
     deployScreen: boolean;
     spectating: boolean;
+    localName: string|null;
 }
 
 type Props = StateFromReducer;
@@ -90,6 +91,7 @@ const App: React.FC<Props> = ({
     gameOverScreen,
     deployScreen,
     spectating,
+    localName,
 }) => {
     const dispatch = useDispatch();
 
@@ -211,19 +213,13 @@ const App: React.FC<Props> = ({
         // console.log(data);
     }
 
-    // TODO
-    const [interactiveMessage, setInteractiveMessage] = useState<string | null>(null);
-    const [interactiveKey, setInteractiveKey] = useState<string | null>(null);
-
     const setInteractiveMessageAndKey = (msg: string | null, key: string | null) => {
-        setInteractiveMessage(msg);
-        setInteractiveKey(key);
+        dispatch(addInteractivemsg(msg, key));
     }
 
     window.OnInteractiveMessageAndKey = (data: any) => {
         if (data !== undefined && data !== null) {
-            setInteractiveMessage(data.msg);
-            setInteractiveKey(data.key);
+            dispatch(addInteractivemsg(data.msg, data.key));
         }
     }
 
@@ -247,10 +243,8 @@ const App: React.FC<Props> = ({
         dispatch(updatePlayerIsOnPlane(isOnPlane));
 
         if (isOnPlane) {
-            // TODO
             setInteractiveMessageAndKey('Jump out of the plane', 'E');
         } else {
-            // TODO
             setInteractiveMessageAndKey(null, null);
         }
     }
@@ -341,7 +335,7 @@ const App: React.FC<Props> = ({
     */
     window.ToggleDeployMenu = (p_Toggle?: boolean) => {
         if (p_Toggle !== undefined) {
-            dispatch(updateDeployScreen(true));
+            dispatch(updateDeployScreen(p_Toggle));
         } else {
             dispatch(switchDeployScreen());
         }
@@ -383,11 +377,9 @@ const App: React.FC<Props> = ({
         ));
     }
 
-    //const [team, setTeam] = useState<Player[]>([]);
-    //const [downedTeammates, setDownedTeammates] = useState<string[]>([]);
+    const [downedTeammates, setDownedTeammates] = useState<string[]>([]);
     window.OnUpdateTeamPlayers = (p_Team: any) => {
-        // TODO
-        /*let tempTeam: Player[] = [];
+        let tempTeam: Player[] = [];
         let tempDowned: string[] = [];
         if (p_Team !== undefined && p_Team.length > 0) {
             p_Team.forEach((teamPlayer: any) => {
@@ -406,7 +398,7 @@ const App: React.FC<Props> = ({
                 }
                 tempTeam.push(tempPlayer);
 
-                if (teamPlayer.State === 2 && teamPlayer.Name !== localPlayer?.name) {
+                if (teamPlayer.State === 2 && teamPlayer.Name !== localName) {
                     if (!downedTeammates.includes(teamPlayer.Name)) {
                         dispatch(addAlert(
                             "Your teammate " + teamPlayer.Name + " was knocked out",
@@ -418,28 +410,8 @@ const App: React.FC<Props> = ({
                 }
             });
         }
-        setTeam(tempTeam);
-        setDownedTeammates(tempDowned);*/
-        let tempTeam: Player[] = [];
-        if (p_Team !== undefined && p_Team.length > 0) {
-            p_Team.forEach((teamPlayer: any) => {
-                let tempPlayer = {
-                    name: teamPlayer.Name,
-                    state: teamPlayer.State,
-                    kill: 0,
-                    isTeamLeader: teamPlayer.IsTeamLeader,
-                    color: teamPlayer.Color,
-                    position: {
-                        x: teamPlayer.Position?.x ?? null,
-                        y: teamPlayer.Position?.y ?? null,
-                        z: teamPlayer.Position?.z ?? null,
-                    },
-                    yaw: teamPlayer.Yaw,
-                }
-                tempTeam.push(tempPlayer);
-            });
-        }
         dispatch(updateTeam(tempTeam));
+        setDownedTeammates(tempDowned);
     }
 
     const CreateRandomTeam = () => {
@@ -452,7 +424,7 @@ const App: React.FC<Props> = ({
             color: "rgba(255, 187, 86, 0.3)",
             position: {
                 x: 522.175720,
-                y: 155.705505,
+                y: 158.705505,
                 z: -822.253479,
             },
             yaw: 60,
@@ -464,9 +436,22 @@ const App: React.FC<Props> = ({
             isTeamLeader: false,
             color: "rgba(158, 197, 85, 0.3)",
             position: {
-                x: 522.175720,
+                x: 521.175720,
                 y: 155.705505,
-                z: -922.253479,
+                z: -921.253479,
+            },
+            yaw: 110,
+        });
+        tempTeam.push({
+            name: "Test",
+            state: 2,
+            kill: 0,
+            isTeamLeader: false,
+            color: "rgba(0, 205, 243, 0.3)",
+            position: {
+                x: 585.175720,
+                y: 159.705505,
+                z: -920.253479,
             },
             yaw: 30,
         });
@@ -477,41 +462,23 @@ const App: React.FC<Props> = ({
             isTeamLeader: false,
             color: "rgba(255, 159, 128, 0.3)",
             position: {
-                x: 522.175720,
+                x: 422.175720,
                 y: 155.705505,
                 z: -922.253479,
             },
-            yaw: 30,
-        });
-        tempTeam.push({
-            name: "Test 4",
-            state: 2,
-            kill: 0,
-            isTeamLeader: false,
-            color: "rgba(148, 205, 243, 0.3)",
-            position: {
-                x: 522.175720,
-                y: 155.705505,
-                z: -922.253479,
-            },
-            yaw: 30,
+            yaw: 10,
         });
         dispatch(updateTeam(tempTeam));
     }
 
-    // TODO
-    const [killedMessageKilled, setKilledMessageKilled] = useState<boolean | null>(null);
-    const [killedMessageKills, setKilledMessageKills] = useState<number | null>(null);
-    const [killedMessageEnemyName, setKilledMessageEnemyName] = useState<string | null>(null);
-
-    // TODO
     const SetKilledMessage = (killed: boolean, enemyName: string, kills: number) => {
-        setKilledMessageKilled(killed);
-        setKilledMessageEnemyName(enemyName);
-        setKilledMessageKills(kills);
+        dispatch(addKillmsg(
+            killed,
+            kills,
+            enemyName
+        ));
     }
 
-    // TODO
     window.OnNotifyInflictorAboutKillOrKnock = (data: any) => {
         if (data !== undefined && data !== null) {
             SetKilledMessage(data.isKill, data.name, data.kills);
@@ -640,16 +607,6 @@ const App: React.FC<Props> = ({
 
                         {!spectating &&
                             <>
-                                <InteractMessage
-                                    message={interactiveMessage}
-                                    keyboard={interactiveKey}
-                                />
-                                <KillMessage
-                                    killed={killedMessageKilled}
-                                    enemyName={killedMessageEnemyName}
-                                    kills={killedMessageKills}
-                                    resetMessage={() => SetKilledMessage(null, null, null)}
-                                />
                                 <MiniMap />
                             </>
                         }
@@ -669,6 +626,8 @@ const mapStateToProps = (state: RootState) => {
         deployScreen: state.GameReducer.deployScreen.enabled,
         // SpectatorReducer
         spectating: state.SpectatorReducer.enabled,
+        // PlayerReducer
+        localName: state.PlayerReducer.player.name,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

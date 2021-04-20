@@ -15,12 +15,23 @@
         display: none !important;
     }
 
-    canvas {
+    #pixiRotator {
         position: absolute;
         width: 160% !important;
         height: 160% !important;
         left: -30%;
         top: -30%;
+    }
+
+    canvas {
+        /*position: absolute;
+        width: 160% !important;
+        height: 160% !important;
+        left: -30%;
+        top: -30%;*/
+        position: absolute;
+        width: 100%;
+        height: 100%;
     }
 
     &.open {
@@ -35,6 +46,7 @@
         max-height: 2048px;
         max-width: 2048px;
 
+        #pixiRotator,
         canvas {
             left: 0;
             top: 0;

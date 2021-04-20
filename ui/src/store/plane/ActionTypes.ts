@@ -1,7 +1,7 @@
 import Vec3 from "../../helpers/Vec3Helper";
 
-export const UPDATE_PLANE_POSITION = "UPDATE_PLAYER_POSITION";
-export const UPDATE_PLANE_YAW = "UPDATE_PLAYER_YAW";
+export const UPDATE_PLANE_POSITION = "UPDATE_PLANE_POSITION";
+export const UPDATE_PLANE_YAW = "UPDATE_PLANE_YAW";
 
 interface UpdatePlanePosition {
     type: typeof UPDATE_PLANE_POSITION;

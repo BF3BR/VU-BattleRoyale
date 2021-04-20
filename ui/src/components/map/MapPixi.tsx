@@ -1,35 +1,39 @@
 import React, { useState, useEffect, useCallback, useRef, forwardRef } from 'react';
-import { connect } from "react-redux";
+import { connect, ReactReduxContext } from "react-redux";
 import { RootState } from '../../store/RootReducer';
 
-import { Stage, Sprite, PixiComponent, useApp, Graphics } from '@inlet/react-pixi';
+import { Stage, Sprite, PixiComponent, useApp } from '@inlet/react-pixi';
 import { Viewport } from 'pixi-viewport';
-import { GlowFilter } from '@pixi/filter-glow';
 
 import Vec3 from '../../helpers/Vec3Helper';
-import Circle from '../../helpers/CircleHelper';
 import Player from '../../helpers/PlayerHelper';
 import Ping from '../../helpers/PingHelper';
 
 import XP5_003 from "../../assets/img/XP5_003.jpg";
-import airplane from "../../assets/img/airplane.svg";
 import { MapsConfig } from '../../helpers/MapsConfigHelper';
 import { sendToLua } from '../../Helpers';
 
 import * as PIXI from 'pixi.js';
 import '@pixi/graphics-extras';
 
+import PlayerElement from './elements/PlayerElement';
+import ContextBridge from './elements/ContextBridge';
+import CircleElement from './elements/CircleElement';
+import PlaneElement from './elements/PlaneElement';
+import PingsElement from './elements/PingsElement';
+import TeamElement from './elements/TeamElement';
+import GridElement from './elements/GridElement';
+import { getGamePos } from './elements/ElementHelpers';
+
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
-
-var airPlaneTexture = PIXI.Texture.from(airplane);
-
-const widthAndHeight = 1024;
 
 const stageOptions = {
     antialias: false,
     autoDensity: false,
     backgroundAlpha: 0
 };
+
+const widthAndHeight = 1024;
 
 // Based on map config
 let textureWidthHeight: number = 1024;
@@ -54,20 +58,6 @@ window.OnLevelFinalized = (levelName?: string) => {
     }
 }
 
-const getMapPos = (pos: number, topLeftPos: number)  => {
-    return (topLeftPos - pos) * (textureWidthHeight / worldWidthHeight);
-}
-
-const getGamePos = (pos: number, topLeftPos: number)  => {
-    return topLeftPos - (pos * (worldWidthHeight / textureWidthHeight));
-}
-
-const getConvertedPlayerColor = (color: string) => {
-    const rgba = color.replace(/^rgba?\(|\s+|\)$/g, '').split(',');
-    const hex = `0x${((1 << 24) + (parseInt(rgba[0]) << 16) + (parseInt(rgba[1]) << 8) + parseInt(rgba[2])).toString(16).slice(1)}`;
-    return parseInt(hex);
-};
-
 const PixiViewportComponent = PixiComponent("Viewport", {
     create(props: any) {
         const { app, ...viewportProps } = props;
@@ -84,8 +74,8 @@ const PixiViewportComponent = PixiComponent("Viewport", {
                     sendToLua("WebUI:PingRemoveFromMap");
                 } else {
                     sendToLua("WebUI:PingFromMap", JSON.stringify({ 
-                        x: getGamePos(data.world.x, topLeftPos.x),
-                        y: getGamePos(data.world.y, topLeftPos.z)
+                        x: getGamePos(data.world.x, topLeftPos.x, textureWidthHeight, worldWidthHeight),
+                        y: getGamePos(data.world.y, topLeftPos.z, textureWidthHeight, worldWidthHeight)
                     }));
                 }
             }
@@ -94,7 +84,7 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         viewport
             .drag()
             .pinch()
-            .wheel({ percent: 1, smooth: 4 })
+            .wheel({ percent: 2.5, smooth: 10 })
             .decelerate()
             .bounce({ sides: 'all', time: 100, ease: 'easeInOutSine', underflow: 'center'})
             .clampZoom({ minWidth: 200, maxWidth: 1024 })
@@ -120,34 +110,11 @@ const PixiViewport = forwardRef((props: any, ref: any) => (
 
 interface StateFromReducer {
     open: boolean;
-    playerPos: Vec3|null;
-    playerYaw: number|null;
-    planePos: Vec3|null;
-    planeYaw: number|null;
-    innerCircle: Circle|null;
-    outerCircle: Circle|null;
-    playerIsInPlane: boolean;
-    pingsTable: Array<Ping>;
-    team: Player[];
-    localPlayer: Player;
-    showMinimap: boolean;
 }
 
 type Props = StateFromReducer;
 
-const MapPixi: React.FC<Props> = ({ 
-    open, 
-    playerPos, 
-    playerYaw, 
-    planePos, 
-    planeYaw, 
-    innerCircle, 
-    outerCircle, 
-    pingsTable,
-    team,
-    localPlayer,
-    playerIsInPlane
-}) => {
+const MapPixi: React.FC<Props> = ({ open }) => {
     const viewportRef = useRef(null);
     const followPlayer = useRef(null);
 
@@ -166,6 +133,7 @@ const MapPixi: React.FC<Props> = ({
 
         viewport.plugins.resume('wheel');
         viewport.plugins.resume('drag');
+        viewport.plugins.resume('bounce');
 
         // and snap to selected
         viewport.snapZoom({ width, height, removeOnComplete: true, time: 50 });
@@ -181,9 +149,12 @@ const MapPixi: React.FC<Props> = ({
 
         viewport.plugins.pause('wheel');
         viewport.plugins.pause('drag');
+        viewport.plugins.pause('bounce');
 
         viewport.snapZoom({ width: snapZoomHeight, height: snapZoomHeight, time: 100 });
-        viewport.follow(followPlayer.current, { speed: 50 });
+        if (followPlayer.current !== null) {
+            viewport.follow(followPlayer.current, { speed: 50 });
+        }
     }, []);
 
     useEffect(() => {
@@ -233,253 +204,75 @@ const MapPixi: React.FC<Props> = ({
         }
     }
 
-    const drawPlayer = React.useCallback((g: any, color: number) => {
-        var sideLegnth = 25;
-        g.clear();
-        g.beginFill(color, 0.3);
-        g.lineStyle({
-            width: 4, 
-            color: color, 
-            alpha: 1,
-            join: PIXI.LINE_JOIN.MITER,
-            miterLimit: 10,
-        });
-        g.moveTo(0, 0 + sideLegnth / 2);
-        g.lineTo(0 - sideLegnth, 0 + sideLegnth);
-        g.lineTo(0, 0 - sideLegnth);
-        g.lineTo(0 + sideLegnth, 0 + sideLegnth);
-        g.lineTo(0, 0 + sideLegnth / 2);
-        g.closePath();
-        g.endFill();
-        g.filters = [new GlowFilter({ 
-            distance: 15, 
-            outerStrength: 1.5, 
-            innerStrength: .1,
-            color: color,
-        })];
-    }, []);
-
-    function isInsideTheRadius(x: number, y: number, cx: number, cy: number, r: number) {
-        var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
-        return distancesquared <= r * r;
-    }
-
-    const drawPlayerToInnerLine = React.useCallback((g: any, innerCircle: Circle, x: number, y: number) => {
-        var innerCircleX = getMapPos(innerCircle.center.x, topLeftPos.x);
-        var innerCircleY = getMapPos(innerCircle.center.z, topLeftPos.z);
-        var innerCircleRadius = innerCircle.radius * (textureWidthHeight / worldWidthHeight);
-        g.clear();
-
-        if (isInsideTheRadius(x, y, innerCircleX, innerCircleY, innerCircleRadius)) {
-            return;
-        }
-
-        var theta = Math.atan2(y - innerCircleY, x - innerCircleX);
-        var Px = innerCircleX + innerCircleRadius * Math.cos(theta);
-        var Py = innerCircleY + innerCircleRadius * Math.sin(theta);
-
-        g.lineStyle({
-            width: 3, 
-            color: 0xffffff, 
-            alpha: 1,
-            join: PIXI.LINE_JOIN.MITER,
-            miterLimit: 10,
-        });
-        g.moveTo(x, y);
-        g.lineTo(Px, Py);
-        g.filters = [new GlowFilter({ 
-            distance: 15, 
-            outerStrength: 1.5, 
-            innerStrength: .1,
-            color: 0xffffff,
-        })];
-    }, []);
-
-    function Circle(props: any) {
-        const draw = useCallback((g) => {
-            var radius = props.circle.radius ?? 100;
-            radius = radius * (textureWidthHeight / worldWidthHeight);
-
-            g.clear();
-
-            if (props.outer) {
-                g.beginFill(0xff9900, 0.3)
-                g.drawTorus(getMapPos(props.circle.center.x, topLeftPos.x), getMapPos(props.circle.center.z, topLeftPos.z), radius, textureWidthHeight * 2);
-                g.endFill();
-
-                var f = new PIXI.Graphics();
-                f.lineStyle({
-                    width: 3, 
-                    color: 0xff9900, 
-                    alpha: 1,
-                    join: PIXI.LINE_JOIN.MITER,
-                    miterLimit: 10,
-                });
-                f.drawCircle(getMapPos(props.circle.center.x, topLeftPos.x), getMapPos(props.circle.center.z, topLeftPos.z), radius);
-                f.filters = [new GlowFilter({ 
-                    distance: 20, 
-                    outerStrength: 1.5, 
-                    innerStrength: .1,
-                    color: 0xff9900,
-                })];
-                g.addChild(f);
-            } else {
-                g.lineStyle({
-                    width: 3, 
-                    color: 0xffffff, 
-                    alpha: 1,
-                    join: PIXI.LINE_JOIN.MITER,
-                    miterLimit: 10,
-                });
-                g.drawCircle(getMapPos(props.circle.center.x, topLeftPos.x), getMapPos(props.circle.center.z, topLeftPos.z), radius);
-                g.filters = [new GlowFilter({ 
-                    distance: 20, 
-                    outerStrength: 1.5, 
-                    innerStrength: .1,
-                    color: 0xffffff,
-                })];
-            }
-        }, [props]);
-      
-        return <Graphics x={0} y={0} draw={draw} />;
-    }
-
-    function Pings(props: any) {
-        const draw = useCallback((g) => {
-            g.clear();
-            pingsTable.forEach((ping: Ping) => {
-                var color = getConvertedPlayerColor(ping.color)
-                var f = new PIXI.Graphics();
-                f.clear();
-                f.beginFill(color, 0.3)
-                g.lineStyle({
-                    width: 3, 
-                    color: color, 
-                    alpha: 1,
-                    join: PIXI.LINE_JOIN.MITER,
-                    miterLimit: 10,
-                });
-                f.drawCircle(
-                    getMapPos(ping.position.x, topLeftPos.x),
-                    getMapPos(ping.position.z, topLeftPos.z),
-                    7.5
-                );
-                f.closePath();
-                f.endFill();
-                f.filters = [new GlowFilter({ 
-                    distance: 7.5, 
-                    outerStrength: 1.5, 
-                    innerStrength: .1,
-                    color: color,
-                })];
-                g.addChild(f);
-            });
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [props]);
-      
-        return <Graphics x={0} y={0} draw={draw} />;
-    }
-
     return (
-        <>
-            <Stage 
-                width={widthAndHeight} 
-                height={widthAndHeight} 
-                options={stageOptions}
-                style={{ transform: "rotate(-" + playerYaw + "deg)" }}
-            >
-                <PixiViewport
-                    ref={viewportRef}
-                    plugins={["drag", "pinch", "wheel", "decelerate"]}
-                    screenWidth={widthAndHeight}
-                    screenHeight={widthAndHeight}
-                    worldWidth={textureWidthHeight}
-                    worldHeight={textureWidthHeight}
+        <ContextBridge
+            Context={ReactReduxContext}
+            render={(children: any) => (
+                <Stage 
+                    width={widthAndHeight} 
+                    height={widthAndHeight} 
+                    options={stageOptions}
                 >
-                    {landscapeTexture !== null &&
-                        <Sprite
-                            texture={landscapeTexture}
-                            anchor={0}
-                            scale={1}
-                            width={textureWidthHeight}
-                            height={textureWidthHeight}
-                            angle={0}
-                        />
-                    }
-
-                    {innerCircle !== null &&
-                        <Circle 
-                            circle={innerCircle}
-                            outer={false}
-                        />
-                    }
-
-                    {(outerCircle !== null && outerCircle.radius < 4000) &&
-                        <Circle 
-                            circle={outerCircle}
-                            outer={true}
-                        />
-                    }
-
-                    {(team !== null && team.length > 0 && localPlayer !== null) &&
-                        team
-                        .filter((player: Player) => player.name !== localPlayer.name)
-                        .filter((player: Player) => player.state !== 3)
-                        .filter((player: Player) => (player.position.x !== null && player.position.z !== null))
-                        .map((player: Player, key: number) => (
-                            <Graphics 
-                                draw={(g: any) => drawPlayer(g, getConvertedPlayerColor(player.color))}
-                                x={getMapPos(player.position.x, topLeftPos.x)}
-                                y={getMapPos(player.position.z, topLeftPos.z)}
-                                angle={player.yaw}
-                                scale={0.5}
-                                key={key}
-                            />
-                        ))
-                    }
-
-                    {planePos !== null &&
-                        <>
-                            <Sprite
-                                texture={airPlaneTexture}
-                                anchor={0.5}
-                                width={50}
-                                height={50}
-                                x={getMapPos(planePos.x, topLeftPos.x)}
-                                y={getMapPos(planePos.z, topLeftPos.z)}
-                                angle={planeYaw}
-                                scale={open ? .2 : 0.2}
-                            />                        
-                        </>
-                    }
-
-                    {innerCircle !== null &&
-                        <Graphics 
-                            draw={(g: any) => drawPlayerToInnerLine(g, innerCircle, getMapPos(playerPos.x, topLeftPos.x), getMapPos(playerPos.z, topLeftPos.z))}
-                            x={0}
-                            y={0}
-                            angle={0}
-                            scale={1}
-                            visible={!playerIsInPlane}
-                        />
-                    }
-
-                    <Graphics 
-                        draw={(g: any) => drawPlayer(g, localPlayer !== null ? getConvertedPlayerColor(localPlayer.color) : 0xff0000)}
-                        x={getMapPos(playerPos.x, topLeftPos.x)}
-                        y={getMapPos(playerPos.z, topLeftPos.z)}
-                        angle={playerYaw}
-                        ref={followPlayer}
-                        scale={0.5}
-                        visible={!playerIsInPlane}
+                    {children}
+                </Stage>
+            )}
+        >
+            <PixiViewport
+                ref={viewportRef}
+                plugins={["drag", "pinch", "wheel", "decelerate"]}
+                screenWidth={widthAndHeight}
+                screenHeight={widthAndHeight}
+                worldWidth={textureWidthHeight}
+                worldHeight={textureWidthHeight}
+            >
+                {landscapeTexture !== null &&
+                    <Sprite
+                        texture={landscapeTexture}
+                        anchor={0}
+                        scale={1}
+                        width={textureWidthHeight}
+                        height={textureWidthHeight}
+                        angle={0}
                     />
+                }
 
-                    {(pingsTable !== null && pingsTable.length > 0) &&
-                        <Pings />
-                    }
-                </PixiViewport>
-            </Stage>
-        </>
+                <GridElement 
+                    width={widthAndHeight}
+                    height={widthAndHeight}
+                />
+
+                <CircleElement 
+                    topLeftPos={topLeftPos}
+                    textureWidthHeight={textureWidthHeight}
+                    worldWidthHeight={worldWidthHeight}
+                />
+
+                <TeamElement
+                    topLeftPos={topLeftPos}
+                    textureWidthHeight={textureWidthHeight}
+                    worldWidthHeight={worldWidthHeight}
+                />
+                
+                <PlayerElement 
+                    forwardRef={followPlayer}
+                    topLeftPos={topLeftPos}
+                    textureWidthHeight={textureWidthHeight}
+                    worldWidthHeight={worldWidthHeight}
+                />
+
+                <PlaneElement 
+                    topLeftPos={topLeftPos}
+                    textureWidthHeight={textureWidthHeight}
+                    worldWidthHeight={worldWidthHeight}
+                />
+
+                <PingsElement
+                    topLeftPos={topLeftPos}
+                    textureWidthHeight={textureWidthHeight}
+                    worldWidthHeight={worldWidthHeight}
+                />
+            </PixiViewport>
+        </ContextBridge>
     );
 };
 
@@ -487,28 +280,6 @@ const mapStateToProps = (state: RootState) => {
     return {
         // MapReducer
         open: state.MapReducer.open,
-        showMinimap: state.MapReducer.show,
-        // PlayerReducer
-        playerPos: state.PlayerReducer.player.position,
-        playerYaw: state.PlayerReducer.player.yaw,
-        playerIsInPlane: state.PlayerReducer.isOnPlane,
-        localPlayer: {
-            name: state.PlayerReducer.player.name,
-            kill: state.PlayerReducer.player.kill,
-            state: state.PlayerReducer.player.state,
-            isTeamLeader: state.PlayerReducer.player.isTeamLeader,
-            color: state.PlayerReducer.player.color,
-        },
-        // PlaneReducer
-        planePos: state.PlaneReducer.position,
-        planeYaw: state.PlaneReducer.yaw,
-        // PingReducer
-        pingsTable: state.PingReducer.pings,
-        // CircleReducer
-        innerCircle: state.CircleReducer.innerCircle,
-        outerCircle: state.CircleReducer.outerCircle,
-        // TeamReducer
-        team: state.TeamReducer.players,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {
