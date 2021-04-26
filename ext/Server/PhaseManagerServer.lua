@@ -38,7 +38,7 @@ function PhaseManagerServer:End()
     self:Finalize()
 end
 
--- 
+--
 function PhaseManagerServer:Next()
     if not self:NextSubphase() then
         if not self:NextPhase() then
@@ -115,7 +115,7 @@ function PhaseManagerServer:InitPhase()
     self:BroadcastState()
 end
 
--- 
+--
 function PhaseManagerServer:Finalize()
     self.m_Completed = true
 

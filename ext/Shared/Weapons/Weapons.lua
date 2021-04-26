@@ -126,7 +126,7 @@ g_Weapons = {
             [g_Attachments.Silencer] = DC(Guid("1CAA2BA9-3B99-11E1-98DC-BBDD3FA00C26"), Guid("E5F4DCCB-EB7D-E9BA-3EE8-3705F6BDB312")),
         }
     },
-    
+
     -- PDW
     ASVal = {
         Name = "Weapons/ASVal/ASVal",
@@ -295,7 +295,7 @@ g_Weapons = {
             [g_Attachments.Silencer] = DC(Guid("CAE5574C-489B-11E0-9AA7-C5574DB97071"), Guid("4E71AB07-984C-E889-3784-1C253A936664")),
         }
     },
-    
+
     -- AR
     AEK971 = {
         Name = "Weapons/AEK971/AEK971",
@@ -606,7 +606,7 @@ g_Weapons = {
             [g_Attachments.Acog] = DC(Guid("3955B487-9500-4476-AF3E-3F76397F36F0"), Guid("3FE0203D-EA6B-45C1-813E-ACED57B5CB5B")),
         }
     },
-    
+
     -- CARBINE
     A91 = {
         Name = "Weapons/A91/A91",
@@ -888,7 +888,7 @@ g_Weapons = {
             [g_Attachments.Bipod] = DC(Guid("26EE500C-489C-11E0-907E-DA79E000D689"), Guid("1D7AC7C8-5782-B63B-1D1D-3A5D6BD96504")),
         }
     },
-    
+
     -- LMG
     L86 = {
         Name = "Weapons/XP2_L86/L86",
@@ -1183,7 +1183,7 @@ g_Weapons = {
             [g_Attachments.Bipod] = DC(Guid("7C9AA108-3DA6-11E0-85C3-90F6942D6477"), Guid("0D167F86-19C9-7AF6-230D-5395B23A6E62")),
         }
     },
-    
+
     -- BOLT-ACTION
     JNG90 = {
         Name = "Weapons/XP2_JNG90/JNG90",
@@ -1311,7 +1311,7 @@ g_Weapons = {
             [g_Attachments.Bipod] = DC(Guid("FBD8519C-45C1-11E0-B0DF-9A3F23DD3FA0"), Guid("2E605D13-978D-716E-6BB7-ECA85946C045")),
         }
     },
-    
+
     -- DMR
     HK417 = {
         Name = "Weapons/XP2_HK417/HK417",
@@ -1465,7 +1465,7 @@ g_Weapons = {
             [g_Attachments.Bipod] = DC(Guid("2C7F5E3A-35F4-11E0-8B1E-94F09E84A385"), Guid("7A164135-3BFE-2CD2-1A67-6AD1A743AB79")),
         }
     },
-    
+
     -- SHOTGUN
     DAO_12 = {
         Name = "Weapons/DAO-12/DAO-12",
@@ -1688,7 +1688,7 @@ g_Weapons = {
             [g_Attachments.RifleScope] = DC(Guid("F852762E-43F1-11E0-A085-8237F1D12483"), Guid("709527FD-45EB-A89C-DADF-33EE1A8853A1")),
         }
     },
-    
+
     -- OTHER
     Crossbow_Scoped = {
         Name = "Weapons/XP4_Crossbow_Prototype/XP4_Crossbow_Prototype",

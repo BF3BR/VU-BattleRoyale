@@ -68,7 +68,7 @@ function VuBattleRoyaleClient:RegisterEvents()
     NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
     NetEvents:Subscribe(PingEvents.RemoveServerPing, self, self.OnPingRemoveNotify)
     NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig)
-    
+
     NetEvents:Subscribe(GunshipEvents.Enable, self, self.OnGunshipEnable)
     NetEvents:Subscribe(GunshipEvents.Disable, self, self.OnGunshipDisable)
     NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
@@ -178,7 +178,7 @@ function VuBattleRoyaleClient:OnDamageConfirmPlayerKill(p_VictimName)
     self:OnDamageConfirmPlayerKillOrDown(p_VictimName, true)
 end
 
-function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_IsKill)    
+function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_IsKill)
     if p_VictimName == nil or p_IsKill == nil then
         return
     end
@@ -386,7 +386,7 @@ function VuBattleRoyaleClient:OnWebUIJoinTeam(p_Id)
     if self.m_BrPlayer == nil or p_Id == nil or p_Id == "" then
         return
     end
-    
+
     self.m_BrPlayer:JoinTeam(p_Id)
 end
 

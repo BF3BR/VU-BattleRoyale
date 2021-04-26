@@ -88,12 +88,12 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
         self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked)
         self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
     end
-    
+
     if self.m_Ticks >= ServerConfig.HudUpdateRate then
         self.m_HudOnMinPlayersToStart:Update(self.m_MinPlayersToStart)
         self:PushUpdatePlayersInfo()
         self:PushLocalPlayerTeam()
-        
+
         self.m_Ticks = 0.0
     end
 
@@ -152,10 +152,10 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
         return
     end
 
-    if s_LocalPlayer.alive == false then	
+    if s_LocalPlayer.alive == false then
         return
     end
-    
+
     local s_LocalSoldier = s_LocalPlayer.soldier
     if s_LocalSoldier == nil then
         return
@@ -196,7 +196,7 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
         if l_Player.alive then
             l_State = 1
         end
-		table.insert(s_PlayersObject, {
+        table.insert(s_PlayersObject, {
             ["id"] = l_Player.id,
             ["name"] = l_Player.name,
             ["kill"] = 0,
@@ -251,7 +251,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
     WebUI:ExecuteJS("OnMapShow(true)")
     self:PushLocalPlayerPos()
     self:PushLocalPlayerYaw()
-    
+
     if self.m_GameState <= GameStates.Warmup then
         return
     end
@@ -304,7 +304,7 @@ function VuBattleRoyaleHud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
     end
 
     self.m_HudOnNotifyInflictorAboutKillOrKnock:ForceUpdate(json.encode({
-        ["name"] = p_VictimName, 
+        ["name"] = p_VictimName,
         ["kills"] = (self.m_BrPlayer.m_Kills or 0),
         ["isKill"] = p_IsKill,
     }))
@@ -329,7 +329,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
     if s_LocalSoldier == nil then
         return
     end
-    
+
     local s_Inventory = { }
     for l_Index, l_Weapon in pairs(s_LocalSoldier.weaponsComponent.weapons) do
         if l_Weapon ~= nil then
@@ -432,7 +432,7 @@ function VuBattleRoyaleHud:OnUpdatePlacement()
     if self.m_BrPlayer.m_Team.m_Placement == nil then
         return
     end
-    
+
     self.m_HudOnUpdatePlacement:Update(self.m_BrPlayer.m_Team.m_Placement)
 end
 
@@ -464,11 +464,11 @@ function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_Posit
     self.m_Markers[p_Key] = s_Marker
     WebUI:ExecuteJS(
         string.format(
-            'OnCreateMarker("%s", "%s", %s, %s, %s, %s)', 
-            s_Marker.Key, 
-            s_Marker.Color, 
-            s_Marker.PositionX, 
-            s_Marker.PositionZ, 
+            'OnCreateMarker("%s", "%s", %s, %s, %s, %s)',
+            s_Marker.Key,
+            s_Marker.Color,
+            s_Marker.PositionX,
+            s_Marker.PositionZ,
             s_Marker.WorldToScreenX,
             s_Marker.WorldToScreenY
         )

@@ -92,7 +92,7 @@ end
 
 -- Assigns a team to each player
 function BRTeamManager:AssignTeams()
-    -- make sure that every player that isn't in a custom team, is the only 
+    -- make sure that every player that isn't in a custom team, is the only
     -- player of his team
     for _, l_BrPlayer in pairs(self.m_Players) do
         if l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
@@ -252,7 +252,7 @@ function BRTeamManager:UnspawnAllSoldiers()
     local s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
 
     while s_HumanPlayerEntity do
-        s_HumanPlayerEntity = Entity(s_HumanPlayerEntity)	
+        s_HumanPlayerEntity = Entity(s_HumanPlayerEntity)
         s_HumanPlayerEntity:FireEvent("UnSpawnAllSoldiers")
         s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
     end
@@ -352,7 +352,7 @@ function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
             l_Killer = l_OrigKiller
         end
 
-        -- send finish message to p_Giver 
+        -- send finish message to p_Giver
         if p_Giver ~= nil and not p_Giver:Equals(l_Killer) then
             NetEvents:SendToLocal(DamageEvent.PlayerFinish, p_Giver.m_Player, p_Victim:GetName())
         end

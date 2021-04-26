@@ -12,9 +12,9 @@ function SpectatorServer:OnSpectatorRequestPitchAndYaw(p_Player, p_SpectatingId)
     end
 
     NetEvents:SendToLocal(
-        SpectatorEvents.PostPitchAndYaw, 
-        p_Player, 
-        s_Spectating.input.authoritativeAimingPitch, 
+        SpectatorEvents.PostPitchAndYaw,
+        p_Player,
+        s_Spectating.input.authoritativeAimingPitch,
         s_Spectating.input.authoritativeAimingYaw
     )
 end

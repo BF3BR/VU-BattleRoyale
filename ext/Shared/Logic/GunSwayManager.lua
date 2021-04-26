@@ -1,7 +1,7 @@
 class "GunSwayManager"
 
 function GunSwayManager:__init()
-	
+
 end
 
 -- Fix ADS accurate hipfire glitch
@@ -12,7 +12,7 @@ function GunSwayManager:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_D
 end
 
 if g_GunSwayManager == nil then
-	g_GunSwayManager = GunSwayManager()
+    g_GunSwayManager = GunSwayManager()
 end
 
 return g_GunSwayManager

@@ -1,7 +1,6 @@
 require "__shared/Enums/GameStates"
 
-ServerConfig = 
-{
+ServerConfig = {
     -- Minimum ammounts of players to start the warmup and then the match
     MinPlayersToStart = 5,
 

@@ -4,14 +4,14 @@ function Showroom:RegisterCallbacks()
     -- ShowRoomBlueprint
     ResourceManager:RegisterInstanceLoadHandler(
         Guid("51D7CE33-5181-11E0-A781-B6644A4BE024"),
-        Guid("0EF06698-B9EA-4557-AFE0-78CA4575E726"), 
+        Guid("0EF06698-B9EA-4557-AFE0-78CA4575E726"),
         self, self.OnShowRoomBlueprint
     )
 
     -- ShowRoomCamera
     ResourceManager:RegisterInstanceLoadHandler(
         Guid("08F255D1-499D-4090-B114-4CE8D1B3AC65"),
-        Guid("528655FC-2653-4D5B-B55D-E6CBF997FC19"), 
+        Guid("528655FC-2653-4D5B-B55D-E6CBF997FC19"),
         self, self.OnShowRoomCamera
     )
 end

@@ -1,5 +1,4 @@
-GameStates =
-{
+GameStates = {
     -- There is no gamestate, used for initialization
     None = 0,
 
@@ -22,8 +21,7 @@ GameStates =
     EndGame = 6,
 }
 
-GameStatesStrings = 
-{
+GameStatesStrings = {
     [GameStates.None] = "None",
     [GameStates.Warmup] = "Warmup",
     [GameStates.WarmupToPlane] = "Before Plane",

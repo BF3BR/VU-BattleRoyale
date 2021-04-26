@@ -56,7 +56,7 @@ end
 
 function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
     self.m_Gunship:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
-    
+
     if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
         if self.m_RestartQueue then
             m_Logger:Write("INFO: Restart triggered.")
@@ -67,7 +67,7 @@ function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
                     m_Logger:Write("INFO: Command: mapList.restartRound returned: " .. s_Result[1])
                 end
             end
-            
+
             self.m_RestartQueue = false
         end
     end
@@ -111,7 +111,7 @@ function Match:NextMatchState()
     if s_State ~= GameStates.None and s_State >= GameStates.EndGame then
         return
     end
-    
+
     self.m_Server:ChangeGameState(s_State + 1)
 end
 
@@ -210,7 +210,7 @@ function Match:GetRandomWarmupSpawnpoint()
     if s_LevelName == nil then
         return nil
     end
-    
+
     local s_SpawnTrans = nil
     s_SpawnTrans = MapsConfig[s_LevelName]["WarmupSpawnPoints"][ math.random( #MapsConfig[s_LevelName]["WarmupSpawnPoints"] ) ]
 
@@ -231,12 +231,12 @@ function Match:GetRandomGunshipPath()
         s_Return = {
             StartPos = Vec3(
                 MapsConfig[s_LevelName]["MapTopLeftPos"].x,
-                MapsConfig[s_LevelName]["PlaneFlyHeight"], 
+                MapsConfig[s_LevelName]["PlaneFlyHeight"],
                 MapsConfig[s_LevelName]["MapTopLeftPos"].z - MathUtils:GetRandom(0, MapsConfig[s_LevelName]["MapWidthHeight"])
             ),
             EndPos = Vec3(
                 MapsConfig[s_LevelName]["MapTopLeftPos"].x - MapsConfig[s_LevelName]["MapWidthHeight"],
-                MapsConfig[s_LevelName]["PlaneFlyHeight"], 
+                MapsConfig[s_LevelName]["PlaneFlyHeight"],
                 MapsConfig[s_LevelName]["MapTopLeftPos"].z - MathUtils:GetRandom(0, MapsConfig[s_LevelName]["MapWidthHeight"])
             )
         }
@@ -245,12 +245,12 @@ function Match:GetRandomGunshipPath()
         s_Return = {
             StartPos = Vec3(
                 MapsConfig[s_LevelName]["MapTopLeftPos"].x - MathUtils:GetRandom(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
-                MapsConfig[s_LevelName]["PlaneFlyHeight"], 
+                MapsConfig[s_LevelName]["PlaneFlyHeight"],
                 MapsConfig[s_LevelName]["MapTopLeftPos"].z
             ),
             EndPos = Vec3(
                 MapsConfig[s_LevelName]["MapTopLeftPos"].x - MathUtils:GetRandom(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
-                MapsConfig[s_LevelName]["PlaneFlyHeight"], 
+                MapsConfig[s_LevelName]["PlaneFlyHeight"],
                 MapsConfig[s_LevelName]["MapTopLeftPos"].z - MapsConfig[s_LevelName]["MapWidthHeight"]
             )
         }
@@ -322,7 +322,7 @@ end
 
 -- causes issues cause it needs params + its instantiated again in server init
 -- if g_Match == nil then
--- 	g_Match = Match()
+    -- g_Match = Match()
 -- end
 
 -- return g_Match

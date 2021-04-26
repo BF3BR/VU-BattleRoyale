@@ -46,12 +46,12 @@ function PhaseManagerShared:OnLevelLoaded()
     self.m_InitialDelay = l_MapConfig.BeforeFirstCircleDelay
 end
 
--- 
+--
 function PhaseManagerShared:GetCurrentPhase()
     return self.m_Phases[self.m_PhaseIndex]
 end
 
--- 
+--
 function PhaseManagerShared:GetCurrentDelay()
     if self.m_Completed then
         return -1

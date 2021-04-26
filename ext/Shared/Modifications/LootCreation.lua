@@ -16,7 +16,7 @@ function LootCreation:RegisterEvents()
 end
 
 function LootCreation:RegisterVars()
-    self.m_PickupBlueprints = {} 
+    self.m_PickupBlueprints = {}
     self.m_RandomLootTransforms = {}
 end
 
@@ -61,7 +61,7 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
         s_PickupEntityData.unspawnOnPickup = false
         s_PickupEntityData.forceWeaponSlotSelection = true
         s_PickupEntityData.hasAutomaticAmmoPickup = false
-        s_PickupEntityData.unspawnOnAmmoPickup = false  
+        s_PickupEntityData.unspawnOnAmmoPickup = false
         s_PickupEntityData.allowPickup = true
         s_PickupEntityData.contentIsStatic = true
         s_PickupEntityData.positionIsStatic = true
@@ -72,7 +72,7 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
         s_PickupEntityData.indexInBlueprint = 0
         s_PickupEntityData.isEventConnectionTarget = 2
         s_PickupEntityData.isPropertyConnectionTarget = 1
-        
+
         for _, l_Weapon in pairs(l_TierConfig.Weapons) do
             local s_Attachments = l_Weapon.Attachments or { g_Attachments.NoOptics }
 
@@ -92,7 +92,7 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
                 end
             end
         end
-       
+
         local s_MapMarkerEntityData = MapMarkerEntityData()
         s_MapMarkerEntityData.transform.trans = PickupsConfig.MarkerTransform
         --s_MapMarkerEntityData.baseTransform = PickupsConfig.MarkerTransform
@@ -110,7 +110,7 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
         s_MapMarkerEntityData.indexInBlueprint = 1
         s_MapMarkerEntityData.isEventConnectionTarget = 2
         s_MapMarkerEntityData.isPropertyConnectionTarget = 3
-    
+
         local s_SpatialPrefabBlueprint = SpatialPrefabBlueprint()
         s_SpatialPrefabBlueprint.needNetworkId = true
         s_SpatialPrefabBlueprint.interfaceHasConnections = false
@@ -130,7 +130,7 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
 end
 
 if g_LootCreation == nil then
-	g_LootCreation = LootCreation()
+    g_LootCreation = LootCreation()
 end
 
 return g_LootCreation

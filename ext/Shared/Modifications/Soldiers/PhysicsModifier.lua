@@ -6,7 +6,7 @@ local m_CrouchPoseInfo = DC(Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"), Guid("
 local m_PronePoseInfo = DC(Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"), Guid("64357471-E246-4FCD-B0EF-6F693FA98D71"))
 
 function PhysicsModifier:__init()
-	
+
 end
 
 function PhysicsModifier:RegisterCallbacks()
@@ -28,7 +28,7 @@ function PhysicsModifier:OnCharacterStatePoseInfoLoaded(p_CharacterStatePoseInfo
 end
 
 if g_PhysicsModifier == nil then
-	g_PhysicsModifier = PhysicsModifier()
+    g_PhysicsModifier = PhysicsModifier()
 end
 
 return g_PhysicsModifier

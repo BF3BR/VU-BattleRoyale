@@ -25,17 +25,17 @@ function ConnectionHelper:CreatePropertyConnection(p_Source, p_Target, p_SourceF
     s_PropertyConnection.sourceFieldId = tonumber(p_SourceFieldId) or MathUtils:FNVHash(p_SourceFieldId)
     s_PropertyConnection.targetFieldId = tonumber(p_TargetFieldId) or MathUtils:FNVHash(p_TargetFieldId)
 
-	return s_PropertyConnection
+    return s_PropertyConnection
 end
 
 function ConnectionHelper:CreateLinkConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
-	local s_LinkConnection = LinkConnection()
+    local s_LinkConnection = LinkConnection()
     s_LinkConnection.source = p_Source
     s_LinkConnection.target = p_Target
     s_LinkConnection.sourceFieldId = tonumber(p_SourceFieldId) or MathUtils:FNVHash(p_SourceFieldId)
     s_LinkConnection.targetFieldId = tonumber(p_TargetFieldId) or MathUtils:FNVHash(p_TargetFieldId)
 
-	return s_LinkConnection
+    return s_LinkConnection
 end
 
 -- Temporary struct crash fix
@@ -78,14 +78,14 @@ end
 
 -- UI node connections
 function ConnectionHelper:CreateNodeConnection(p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop)
-	local s_UINodeConnection = UINodeConnection()
+    local s_UINodeConnection = UINodeConnection()
     s_UINodeConnection.source = p_Source
     s_UINodeConnection.target = p_Target
     s_UINodeConnection.sourcePort = p_SourcePort
     s_UINodeConnection.targetPort = p_TargetPort
     s_UINodeConnection.numScreensToPop = p_ScreensToPop or 0
 
-	return s_UINodeConnection
+    return s_UINodeConnection
 end
 
 function ConnectionHelper:AddNodeConnection(p_GraphAsset, p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop)
@@ -112,9 +112,8 @@ function ConnectionHelper:CloneConnections(p_Blueprint, p_OriginalData, p_Custom
     end
 end
 
--- Singleton.
 if g_ConnectionHelper == nil then
-	g_ConnectionHelper = ConnectionHelper()
+    g_ConnectionHelper = ConnectionHelper()
 end
 
 return g_ConnectionHelper

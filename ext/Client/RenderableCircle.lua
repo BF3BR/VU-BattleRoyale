@@ -50,7 +50,6 @@ function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex)
     self.m_ThetaStep = arcLength / p_Radius
 end
 
--- 
 function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
     -- calculate angle to center
     local l_PlayerAngle = MathHelper:VectorAngle(self.m_Center, p_PlayerPos)
@@ -89,7 +88,6 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
     end
 end
 
--- 
 function RenderableCircle:Render(p_Renderer, p_PlayerPos)
     local l_RadiusDrawDistance = 6 * (self.m_Radius * self.m_Radius)
     local l_DoubleDrawDistance = math.min(l_RadiusDrawDistance, CircleConfig.DrawDistance * CircleConfig.DrawDistance)

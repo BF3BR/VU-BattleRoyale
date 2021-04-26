@@ -264,7 +264,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
     -- If we are in warmup we should disable all damages
     if self.m_GameState <= GameStates.WarmupToPlane or self.m_GameState >= GameStates.EndGame then
         -- if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
-        --     return
+            -- return
         -- end
 
         -- p_Info.damage = 0.0
@@ -300,7 +300,7 @@ end
 
 function VuBattleRoyaleServer:OnForceWarmupCommand(p_Command, p_Args, p_LoggedIn)
     if self.m_GameState ~= GameStates.None then
-        return { 
+        return {
             "ERROR",
             "You can only start the warmup pre-round!"
         }
@@ -309,7 +309,7 @@ function VuBattleRoyaleServer:OnForceWarmupCommand(p_Command, p_Args, p_LoggedIn
     self.m_ForcedWarmup = true
     self:ChangeGameState(GameStates.Warmup)
 
-	return { 
+	return {
         "OK",
         "Warmup started!"
     }
@@ -318,7 +318,7 @@ end
 function VuBattleRoyaleServer:OnForceEndgameCommand(p_Command, p_Args, p_LoggedIn)
 	self:ChangeGameState(GameStates.EndGame)
 
-	return { 
+	return {
         "OK",
         "Game ended!"
     }
@@ -326,7 +326,7 @@ end
 
 function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
     if p_Args[1] == nil then
-        return { 
+        return {
             "ERROR",
             "You need to specify the min players count!"
         }
@@ -335,7 +335,7 @@ function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
     local s_MinNum = tonumber(p_Args[1])
 
     if s_MinNum <= 0 or s_MinNum > 99 then
-        return { 
+        return {
             "ERROR",
             "You can only set the min players count between 0 and 99!"
         }
@@ -344,7 +344,7 @@ function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
     self.m_MinPlayersToStart = s_MinNum
     NetEvents:BroadcastLocal(PlayerEvents.MinPlayersToStartChanged, s_MinNum)
 
-	return { 
+	return {
         "OK",
         "Min players count set!"
     }
@@ -357,35 +357,35 @@ end
 
 function VuBattleRoyaleServer:DisablePreRound()
     -- Thanks to https://github.com/FlashHit/VU-Mods/blob/master/No-PreRound/ext/Server/__init__.lua
-	-- This is for Conquest tickets etc.
-	local ticketCounterIterator = EntityManager:GetIterator("ServerTicketCounterEntity")
-	
-	local ticketCounterEntity = ticketCounterIterator:Next()
-	while ticketCounterEntity do
-		ticketCounterEntity = Entity(ticketCounterEntity)
-		ticketCounterEntity:FireEvent("StartRound")
-		ticketCounterEntity = ticketCounterIterator:Next()
-	end
-	
-	-- This is needed so you are able to move
-	local inputRestrictionIterator = EntityManager:GetIterator("ServerInputRestrictionEntity")
-	local inputRestrictionEntity = inputRestrictionIterator:Next()
-	while inputRestrictionEntity do
-		if inputRestrictionEntity.data.instanceGuid == Guid("E8C37E6A-0C8B-4F97-ABDD-28715376BD2D") then
-			inputRestrictionEntity = Entity(inputRestrictionEntity)
-			inputRestrictionEntity:FireEvent("Disable")
-		end
-		inputRestrictionEntity = inputRestrictionIterator:Next()
-	end
-	
-	-- This Entity is needed so the round ends when tickets are reached
-	local roundOverIterator = EntityManager:GetIterator("ServerRoundOverEntity")
-	local roundOverEntity = roundOverIterator:Next()
-	while roundOverEntity do
-		roundOverEntity = Entity(roundOverEntity)
-		roundOverEntity:FireEvent("RoundStarted")
-		roundOverEntity = roundOverIterator:Next()
-	end
+    -- This is for Conquest tickets etc.
+    local ticketCounterIterator = EntityManager:GetIterator("ServerTicketCounterEntity")
+
+    local ticketCounterEntity = ticketCounterIterator:Next()
+    while ticketCounterEntity do
+        ticketCounterEntity = Entity(ticketCounterEntity)
+        ticketCounterEntity:FireEvent("StartRound")
+        ticketCounterEntity = ticketCounterIterator:Next()
+    end
+
+    -- This is needed so you are able to move
+    local inputRestrictionIterator = EntityManager:GetIterator("ServerInputRestrictionEntity")
+    local inputRestrictionEntity = inputRestrictionIterator:Next()
+    while inputRestrictionEntity do
+        if inputRestrictionEntity.data.instanceGuid == Guid("E8C37E6A-0C8B-4F97-ABDD-28715376BD2D") then
+            inputRestrictionEntity = Entity(inputRestrictionEntity)
+            inputRestrictionEntity:FireEvent("Disable")
+        end
+        inputRestrictionEntity = inputRestrictionIterator:Next()
+    end
+
+    -- This Entity is needed so the round ends when tickets are reached
+    local roundOverIterator = EntityManager:GetIterator("ServerRoundOverEntity")
+    local roundOverEntity = roundOverIterator:Next()
+    while roundOverEntity do
+        roundOverEntity = Entity(roundOverEntity)
+        roundOverEntity:FireEvent("RoundStarted")
+        roundOverEntity = roundOverIterator:Next()
+    end
 end
 
 function VuBattleRoyaleServer:ChangeGameState(p_GameState)
@@ -409,7 +409,7 @@ function VuBattleRoyaleServer:ChangeGameState(p_GameState)
 
     self.m_Match:InitMatch()
 
-    -- Broadcast the gamestate changes to the clients 
+    -- Broadcast the gamestate changes to the clients
     NetEvents:Broadcast(PlayerEvents.GameStateChanged, s_OldGameState, p_GameState)
 end
 

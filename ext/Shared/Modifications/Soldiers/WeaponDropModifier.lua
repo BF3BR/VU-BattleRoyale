@@ -111,7 +111,7 @@ function WeaponDropModifier:CreatePickupEntityDataForSlot(p_WeaponSlot, p_AltWea
 end
 
 if g_WeaponDropModifier == nil then
-	g_WeaponDropModifier = WeaponDropModifier()
+    g_WeaponDropModifier = WeaponDropModifier()
 end
 
 return g_WeaponDropModifier

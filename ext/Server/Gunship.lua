@@ -42,7 +42,7 @@ function Gunship:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 
         self:SetLocatorEntityTransform(s_Transform)
         self.m_CalculatedTime = self.m_CalculatedTime + p_DeltaTime / self.m_TimeToFly
-    
+
         --[[if self.m_CalculatedTime >= 1.0 then
             self:Disable()
         end]]
@@ -146,7 +146,7 @@ function Gunship:SetLocatorEntityTransform(p_Transform)
             s_LocatorEntity.transform = p_Transform
             return
         end
-        
+
         s_LocatorEntity = s_LocatorEntityIterator:Next()
     end
 end
@@ -185,7 +185,7 @@ function Gunship:OnOpenParachute(p_Player)
         return
     end
 
-    table.insert(self.m_OpenParachuteList, p_Player.id)  
+    table.insert(self.m_OpenParachuteList, p_Player.id)
 end
 
 function Gunship:OnPlayerUpdateInput(p_Player)

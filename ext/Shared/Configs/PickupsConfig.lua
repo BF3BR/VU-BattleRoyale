@@ -145,5 +145,5 @@ PickupsConfig = {
                 }
             }
         }]]
-    }   
+    }
 }

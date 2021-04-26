@@ -7,7 +7,7 @@ local m_MedkitHealingData = DC(Guid("1D6061B2-2234-11E0-92F5-C9B649EF6972"), Gui
 local m_MeleeEntityCommonData = DC(Guid("B6CDC48A-3A8C-11E0-843A-AC0656909BCB"), Guid("F21FB5EA-D7A6-EE7E-DDA2-C776D604CD2E"))
 
 function WeaponsModifier:__init()
-    
+
 end
 
 function WeaponsModifier:RegisterCallbacks()
@@ -41,7 +41,7 @@ end
 
 
 if g_WeaponsModifier == nil then
-	g_WeaponsModifier = WeaponsModifier()
+    g_WeaponsModifier = WeaponsModifier()
 end
 
 return g_WeaponsModifier

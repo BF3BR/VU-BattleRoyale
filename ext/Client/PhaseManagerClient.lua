@@ -102,7 +102,6 @@ function PhaseManagerClient:GetActivePlayerPosition()
     return l_Player.soldier.transform.trans
 end
 
--- 
 function PhaseManagerClient:OnPreSim(p_DeltaTime)
     if self:IsIdle() then
         return

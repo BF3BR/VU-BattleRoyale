@@ -15,15 +15,15 @@ end
 function Gunship:RegisterCallbacks()
     -- CameraEntityUs
     ResourceManager:RegisterInstanceLoadHandler(
-        Guid("694A231C-4439-461D-A7FF-764915FC3E7C"), 
-        Guid("6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30"), 
+        Guid("694A231C-4439-461D-A7FF-764915FC3E7C"),
+        Guid("6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30"),
         self, self.OnCameraEntityData
     )
 
     -- CameraEntityRu
     ResourceManager:RegisterInstanceLoadHandler(
-        Guid("5D4B1096-3089-45A7-9E3A-422E15E0D8F6"), 
-        Guid("A4281E60-7557-4BFF-ADD4-18D7E8780873"), 
+        Guid("5D4B1096-3089-45A7-9E3A-422E15E0D8F6"),
+        Guid("A4281E60-7557-4BFF-ADD4-18D7E8780873"),
         self, self.OnCameraEntityData
     )
 end
@@ -71,9 +71,9 @@ function Gunship:OnInputPreUpdate(p_Hook, p_Cache, p_Dt)
 
     local s_Player = PlayerManager:GetLocalPlayer()
 
-	if s_Player == nil then
-		return
-	end
+    if s_Player == nil then
+        return
+    end
 
     if p_Cache[InputConceptIdentifiers.ConceptParachute] == 1.0 then
         self.m_IsInFreeFall = false
@@ -100,18 +100,18 @@ function Gunship:OnForceJumpOufOfGunship()
 end
 
 function Gunship:GetGunshipEntity()
-	local s_VehicleEntityIterator = EntityManager:GetIterator("ClientVehicleEntity")
+    local s_VehicleEntityIterator = EntityManager:GetIterator("ClientVehicleEntity")
     local s_VehicleEntity = s_VehicleEntityIterator:Next()
 
     while s_VehicleEntity ~= nil do
-		if s_VehicleEntity.data.partition.name == "vehicles/xp5/c130/c130" then
-			return s_VehicleEntity
-		end
+        if s_VehicleEntity.data.partition.name == "vehicles/xp5/c130/c130" then
+            return s_VehicleEntity
+        end
 
-		s_VehicleEntity = s_VehicleEntityIterator:Next()
-	end
+        s_VehicleEntity = s_VehicleEntityIterator:Next()
+    end
 
-	return nil
+    return nil
 end
 
 function Gunship:OnUpdatePassPreSim(p_DeltaTime)

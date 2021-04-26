@@ -25,7 +25,6 @@ function DrawRect(p_From, p_To, p_Height, p_Opacity, p_Color)
     DebugRenderer:DrawTriangle(p_From, l_ToUp, p_To, l_Color4, l_Color4, l_Color4)
 end
 
--- 
 function InnerCircleRenderer(p_From, p_To, p_DoubleDist, p_DoubleDrawDistance)
     local l_Opacity = 0.32
     if p_DoubleDist > 200 then
@@ -35,7 +34,6 @@ function InnerCircleRenderer(p_From, p_To, p_DoubleDist, p_DoubleDrawDistance)
     DrawRect(p_From, p_To, 0.1, l_Opacity, s_WhiteColor)
 end
 
--- 
 function OuterCircleRenderer(p_From, p_To, p_DoubleDist, p_DoubleDrawDistance)
     -- calculate opacity based on distance
     local l_Opacity = CircleConfig.OuterCircleMaxOpacity

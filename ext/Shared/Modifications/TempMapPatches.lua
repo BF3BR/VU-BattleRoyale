@@ -3,7 +3,7 @@ class "TempMapPatches"
 local m_LootCreation = require "__shared/Modifications/LootCreation"
 
 function TempMapPatches:__init()
-    
+
 end
 
 function TempMapPatches:RegisterCallbacks()
@@ -15,22 +15,22 @@ function TempMapPatches:RegisterCallbacks()
 
     ResourceManager:RegisterInstanceLoadHandler(
         Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"),
-        Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"), 
+        Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"),
         self, self.OnPreRoundEntityData
     )
 
     ResourceManager:RegisterInstanceLoadHandler(
         Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"),
-        Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"), 
+        Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"),
         self, self.OnDisableCamerasOnUnspawn
     )
-    
+
     ResourceManager:RegisterInstanceLoadHandler(
         Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"),
         Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
        self, self.OnVehiclesWorldPartData
     )
-   
+
     ResourceManager:RegisterInstanceLoadHandler(
         Guid("C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4"),
         Guid("AD413546-DEAF-8115-B89C-D666E801C67A"),
@@ -51,7 +51,7 @@ function TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     s_SpatialPrefabBlueprint:MakeWritable()
     local partition = ResourceManager:FindPartitionForInstance(s_SpatialPrefabBlueprint)
     local registry = RegistryContainer()
-	
+
     local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1"))
     s_CharacterSpawnReferenceObjectData.team = TeamId.TeamNeutral
     s_CharacterSpawnReferenceObjectData.locationTextSid = "1"
@@ -63,12 +63,12 @@ function TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     s_CharacterSpawnReferenceObjectData.takeControlEntryIndex = 1
     s_CharacterSpawnReferenceObjectData.isEventConnectionTarget = 2
     s_CharacterSpawnReferenceObjectData.isPropertyConnectionTarget = 3
-    
+
     s_SpatialPrefabBlueprint.objects:add(s_CharacterSpawnReferenceObjectData)
     partition:AddInstance(s_CharacterSpawnReferenceObjectData)
     registry.referenceObjectRegistry:add(s_CharacterSpawnReferenceObjectData)
-	
-    ResourceManager:AddRegistry(registry, ResourceCompartment.ResourceCompartment_Game)  	
+
+    ResourceManager:AddRegistry(registry, ResourceCompartment.ResourceCompartment_Game)
 end
 
 -- TODO: Include in map modification system

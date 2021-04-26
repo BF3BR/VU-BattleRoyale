@@ -39,9 +39,9 @@ function Teammate:GetPosition()
         return nil
     end
 
-	if s_Player.soldier == nil then
-		return
-	end
+    if s_Player.soldier == nil then
+        return
+    end
 
     return {
         x = s_Player.soldier.transform.trans.x,
@@ -57,9 +57,9 @@ function Teammate:GetYaw()
         return nil
     end
 
-	if s_Player.soldier == nil then
-		return nil
-	end
+    if s_Player.soldier == nil then
+        return nil
+    end
 
     local s_YawRad = (math.atan(s_Player.soldier.worldTransform.forward.z, s_Player.soldier.worldTransform.forward.x) - (math.pi / 2)) % (2 * math.pi)
     return math.floor((180 / math.pi) * s_YawRad)

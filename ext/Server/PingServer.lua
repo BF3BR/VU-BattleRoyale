@@ -82,13 +82,13 @@ end
 
 function PingServer:OnRemovePlayerPing(p_Player)
     local s_PingId = self:FindPingIdByPlayerId(p_Player.id)
-    
+
     -- Get the squad and player ids
     local s_TeamId = p_Player.teamId
     local s_SquadId = p_Player.squadId
 
     self.m_PlayerCooldowns[s_PingId] = 0
-    
+
     -- send only to solo player that created the ping
     if s_SquadId == SquadId.SquadNone then
         NetEvents:SendToLocal(PingEvents.RemoveServerPing, p_Player, s_PingId)

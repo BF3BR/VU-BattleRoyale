@@ -5,14 +5,14 @@ g_Gadgets = {
             Unlock = DC(Guid("31EBAC8C-F32E-11DF-8153-F8368A2EF9E0"), Guid("9F789F05-CE7B-DADC-87D7-16E847DBDD09")),
             Attachments = {}
     },
-    
+
     C4 = {
             Name = "Weapons/Gadgets/C4/C4",
             IconPath = "ICONPATH",
             Unlock = DC(Guid("0676F396-A76B-434E-AD5D-D4C20A87355C"), Guid("1122B462-64B1-4AE6-8ED4-CEA3BF1BDFEF")),
             Attachments = {}
     },
-    
+
     Ammobag = {
             Name = "Weapons/Gadgets/Ammobag/Ammobag",
             IconPath = "ICONPATH",
@@ -25,15 +25,15 @@ g_Gadgets = {
             Unlock = DC(Guid("77DE615F-DB98-424A-93F8-F9705970CC7D"), Guid("00F16262-38F3-45F0-B577-C243CDB10A9E")),
             Attachments = {}
     },
-    
-    
+
+
     M320_HE = {
             Name = "Weapons/Gadgets/M320/M320",
             IconPath = "ICONPATH",
             Unlock = DC(Guid("4C68FAEA-A0DD-4DA5-9A59-6CA4204337F8"), Guid("283C66DE-3866-46CD-A1C0-B456A5916537")),
             Attachments = {}
     },
-    
+
     RPG7 = {
             Name = "Weapons/RPG7/RPG7",
             IconPath = "ICONPATH",
@@ -46,7 +46,7 @@ g_Gadgets = {
             Unlock = DC(Guid("3D13D88E-A591-47BA-957D-5114B658B5B6"), Guid("BFAC29DB-5193-4E69-96D9-37D4124C44C2")),
             Attachments = {}
     },
-    
+
     --[[
     M320_LVG = {
         Name = "Weapons/Gadgets/M320/M320",
@@ -74,14 +74,14 @@ g_Gadgets = {
             Unlock = DC(Guid("0A64F6B3-A1DC-4B0F-B7B9-F8E95F208D43"), Guid("4C73E401-E151-459E-BD40-C394437533EA")),
             Attachments = {}
     },
-    
+
     FGM148 = {
             Name = "Weapons/FGM148/FGM148",
             IconPath = "ICONPATH",
             Unlock = DC(Guid("74944D25-A2B1-4A43-A1C1-E24790D53354"), Guid("DC356150-2A5F-4FCA-BE6C-B993EE7F8A8B")),
             Attachments = {}
     },
-    
+
     FIM92 = {
             Name = "Weapons/FIM92A/FIM92A",
             IconPath = "ICONPATH",
@@ -101,7 +101,7 @@ g_Gadgets = {
             Unlock = DC(Guid("2CE5D40B-E30F-4D77-8896-823497B3AEB4"), Guid("7D11603B-8188-45FD-AD95-B27A4B35980E")),
             Attachments = {}
     },
-    
+
     Repairtool = {
             Name = "Weapons/Gadgets/Repairtool/Repairtool",
             IconPath = "ICONPATH",
@@ -120,7 +120,7 @@ g_Gadgets = {
             Unlock = DC(Guid("2E39A668-7F62-40AA-B0A7-710C543A93A3"), Guid("90E12AB5-CF0F-4439-AFD0-C86E6C71BB7D")),
             Attachments = {}
     },
-    
+
     UGS = {
             Name = "Weapons/Gadgets/T-UGS/T-UGS",
             IconPath = "ICONPATH",

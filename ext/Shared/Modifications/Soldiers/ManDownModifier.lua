@@ -7,62 +7,62 @@ local m_RegistryManager = require("__shared/Logic/RegistryManager")
 local m_ReviveCustomizeSoldierData = DC(Guid("4EF77C47-6512-11E0-9AE6-EF0E747BA479"), Guid("B407182A-1C98-13DE-49A3-EE7F7EADFB4D"))
 local m_M9UnlockAsset = DC(Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"), Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B"))
 
-local m_BeingInteracted_Inputs = { 
-    "throttle", 
-	"strafe", 
-	"brake", 
-	"handBrake", 
-	"clutch", 
-	"fireCountermeasure", 
-	"altFire", 
-	"cycleRadioChannel", 
-	"selectMeleeWeapon", 
-	"zoom", 
-	"jump", 
-	"changeVehicle", 
-	"changeEntry", 
-	"changePose", 
-	"toggleParachute", 
-	"changeWeapon", 
-	"toggleCamera", 
-	"sprint", 
-	"mapZoom", 
-	"gearUp", 
-	"gearDown", 
-	"threeDimensionalMap", 
-	"giveOrder", 
-	"prone" 
+local m_BeingInteracted_Inputs = {
+    "throttle",
+    "strafe",
+    "brake",
+    "handBrake",
+    "clutch",
+    "fireCountermeasure",
+    "altFire",
+    "cycleRadioChannel",
+    "selectMeleeWeapon",
+    "zoom",
+    "jump",
+    "changeVehicle",
+    "changeEntry",
+    "changePose",
+    "toggleParachute",
+    "changeWeapon",
+    "toggleCamera",
+    "sprint",
+    "mapZoom",
+    "gearUp",
+    "gearDown",
+    "threeDimensionalMap",
+    "giveOrder",
+    "prone"
 }
 
 local m_SoldierInteraction_Inputs = {
-    "throttle", 
-    "strafe", 
-    "brake", 
-    "handBrake", 
-    "clutch", 
-    "yaw", 
-    "pitch", 
-    "roll", 
-    "fire", 
-    "fireCountermeasure", 
-    "altFire", 
-    "cycleRadioChannel", 
-    "selectMeleeWeapon", 
-    "zoom", 
-    "jump", 
-    "changeVehicle", 
-    "changeEntry", 
-    "changePose", 
-    "toggleParachute", 
-    "changeWeapon", 
-    "reload", 
-    "toggleCamera", 
-    "sprint", 
-    "mapZoom", 
-    "gearUp", 
-    "gearDown", 
-    "threeDimensionalMap", 
-    "giveOrder", 
+    "throttle",
+    "strafe",
+    "brake",
+    "handBrake",
+    "clutch",
+    "yaw",
+    "pitch",
+    "roll",
+    "fire",
+    "fireCountermeasure",
+    "altFire",
+    "cycleRadioChannel",
+    "selectMeleeWeapon",
+    "zoom",
+    "jump",
+    "changeVehicle",
+    "changeEntry",
+    "changePose",
+    "toggleParachute",
+    "changeWeapon",
+    "reload",
+    "toggleCamera",
+    "sprint",
+    "mapZoom",
+    "gearUp",
+    "gearDown",
+    "threeDimensionalMap",
+    "giveOrder",
     "prone"
 }
 
@@ -86,7 +86,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     for i = #p_SoldierBlueprint.eventConnections, 1, -1 do
         if p_SoldierBlueprint.eventConnections[i].source:Is("SoldierEntityData") then
             if p_SoldierBlueprint.eventConnections[i].target:Is("PlayerFilterEntityData") then
-                -- Remove revive sound connection 
+                -- Remove revive sound connection
                 -- Should be looked over again, some PlayerFilterEntityData connections might be useful
                 p_SoldierBlueprint.eventConnections:erase(i)
             elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("9DF212F6-73C1-4218-9110-2090EE95F730") then
@@ -136,33 +136,33 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 
     -- Create EventSplitterEntities for custom events
     local s_StartEventSplitterEntityData = EventSplitterEntityData(Guid("34130787-22C3-0F9D-6AA7-4BC214FA1734"))
-	s_StartEventSplitterEntityData.isEventConnectionTarget = 2
-	s_StartEventSplitterEntityData.isPropertyConnectionTarget = 3
-	s_StartEventSplitterEntityData.runOnce = false
-	s_StartEventSplitterEntityData.realm = Realm.Realm_Client
+    s_StartEventSplitterEntityData.isEventConnectionTarget = 2
+    s_StartEventSplitterEntityData.isPropertyConnectionTarget = 3
+    s_StartEventSplitterEntityData.runOnce = false
+    s_StartEventSplitterEntityData.realm = Realm.Realm_Client
     s_Registry.entityRegistry:add(s_StartEventSplitterEntityData)
 
-	local s_FinishEventSplitterEntityData = EventSplitterEntityData(Guid("D0F06E9A-AE8B-E614-F8C3-54A47CF22565"))
-	s_FinishEventSplitterEntityData.isEventConnectionTarget = 2
-	s_FinishEventSplitterEntityData.isPropertyConnectionTarget = 3
-	s_FinishEventSplitterEntityData.runOnce = false
-	s_FinishEventSplitterEntityData.realm = Realm.Realm_Client
+    local s_FinishEventSplitterEntityData = EventSplitterEntityData(Guid("D0F06E9A-AE8B-E614-F8C3-54A47CF22565"))
+    s_FinishEventSplitterEntityData.isEventConnectionTarget = 2
+    s_FinishEventSplitterEntityData.isPropertyConnectionTarget = 3
+    s_FinishEventSplitterEntityData.runOnce = false
+    s_FinishEventSplitterEntityData.realm = Realm.Realm_Client
     s_Registry.entityRegistry:add(s_FinishEventSplitterEntityData)
 
-    -- BeingInteracted 
+    -- BeingInteracted
     local s_BeingInteracted_InputRestrictionEntityData = self:_GetInputRestrictionData(m_BeingInteracted_Inputs, Guid("4FFD99D0-3E9B-2A8F-967E-3A0724A06BA7"))
     s_BeingInteracted_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
     s_BeingInteracted_InputRestrictionEntityData.isEventConnectionTarget = 1
     s_Registry.entityRegistry:add(s_BeingInteracted_InputRestrictionEntityData)
 
     local s_BeingInteracted_DelayEntityData = DelayEntityData(Guid("ED2D8D65-D942-60BC-20F2-0EE10307F6BC"))
-	s_BeingInteracted_DelayEntityData.delay = 0.3
-	s_BeingInteracted_DelayEntityData.realm = Realm.Realm_Server
-	s_BeingInteracted_DelayEntityData.autoStart = false
-	s_BeingInteracted_DelayEntityData.runOnce = false
-	s_BeingInteracted_DelayEntityData.removeDuplicateEvents = false
-	s_BeingInteracted_DelayEntityData.isEventConnectionTarget = 1
-	s_BeingInteracted_DelayEntityData.isPropertyConnectionTarget = 3
+    s_BeingInteracted_DelayEntityData.delay = 0.3
+    s_BeingInteracted_DelayEntityData.realm = Realm.Realm_Server
+    s_BeingInteracted_DelayEntityData.autoStart = false
+    s_BeingInteracted_DelayEntityData.runOnce = false
+    s_BeingInteracted_DelayEntityData.removeDuplicateEvents = false
+    s_BeingInteracted_DelayEntityData.isEventConnectionTarget = 1
+    s_BeingInteracted_DelayEntityData.isPropertyConnectionTarget = 3
     s_Registry.entityRegistry:add(s_BeingInteracted_DelayEntityData)
 
     -- SoldierInteraction
@@ -173,7 +173,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 
     local s_SoldierInteraction_DelayEntityData = DelayEntityData(s_BeingInteracted_DelayEntityData:Clone(Guid("2854112F-E1D2-7BBE-D809-7315794B5271")))
     s_Registry.entityRegistry:add(s_SoldierInteraction_DelayEntityData)
-    
+
     -- Add custom EntityData to SoldierEntity components
     local s_SoldierEntityData = SoldierEntityData(p_SoldierBlueprint.object)
     s_SoldierEntityData:MakeWritable()
@@ -182,9 +182,9 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     s_SoldierEntityData.components:add(s_StartEventSplitterEntityData)
     s_SoldierEntityData.components:add(s_FinishEventSplitterEntityData)
     s_SoldierEntityData.components:add(s_BeingInteracted_InputRestrictionEntityData)
-	s_SoldierEntityData.components:add(s_BeingInteracted_DelayEntityData)
-	s_SoldierEntityData.components:add(s_SoldierInteraction_InputRestrictionEntityData)
-	s_SoldierEntityData.components:add(s_SoldierInteraction_DelayEntityData)
+    s_SoldierEntityData.components:add(s_BeingInteracted_DelayEntityData)
+    s_SoldierEntityData.components:add(s_SoldierInteraction_InputRestrictionEntityData)
+    s_SoldierEntityData.components:add(s_SoldierInteraction_DelayEntityData)
 
     local s_InteractionComponentData = EntityInteractionComponentData(s_Partition:FindInstance(Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE")))
     s_InteractionComponentData:MakeWritable()
@@ -192,7 +192,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 
     local s_InterfaceDescriptorData = InterfaceDescriptorData(s_Partition:FindInstance(Guid("9C158C06-AFDA-4CE5-8323-F41D356B2971")))
     s_InterfaceDescriptorData:MakeWritable()
-    
+
     -- Add dynamicEvent outputs to InterfaceDescriptorData
     s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(-1956653754))  -- OnSoldierInteractionFinished
     s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(1783953429))   -- OnSoldierInteractionStarted
@@ -203,7 +203,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(-1025749669))  -- OnBeingInteractedCancelled
     s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(1957374978))   -- OnBeingInteractedFinished
     s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(901651067))    -- OnRevived
-                                
+
     -- Add connections between EntityInteractionComponentData and InterfaceDescriptionData
     m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, -1956653754, -1956653754, 3)
     m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, 1783953429, 1783953429, 3)
@@ -251,7 +251,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
     s_CollisionData.damageAtVerticalVelocity:add(ValueAtX())
     s_CollisionData.damageAtVerticalVelocity[#s_CollisionData.damageAtVerticalVelocity].x = 70
     s_CollisionData.damageAtVerticalVelocity[#s_CollisionData.damageAtVerticalVelocity].value = 300
-  
+
     local s_VeniceSoldierHealthModuleData = VeniceSoldierHealthModuleData(s_Partition:FindInstance(Guid("705967EE-66D3-4440-88B9-FEEF77F53E77")))
     s_VeniceSoldierHealthModuleData:MakeWritable()
     s_VeniceSoldierHealthModuleData.interactiveManDown = true

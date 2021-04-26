@@ -6,7 +6,7 @@ function BaseMixin:__init()
 end
 
 function BaseMixin:RegisterVars()
-    
+
 end
 
 function BaseMixin:RegisterEvents()
