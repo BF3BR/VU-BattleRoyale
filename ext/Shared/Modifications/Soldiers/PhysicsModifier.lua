@@ -10,25 +10,25 @@ function PhysicsModifier:__init()
 end
 
 function PhysicsModifier:RegisterCallbacks()
-    m_InAirStateData:RegisterLoadHandler(self, self.OnInAirStateDataLoaded)
-    m_StandPoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)
-    m_CrouchPoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)
-    m_PronePoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)
+	m_InAirStateData:RegisterLoadHandler(self, self.OnInAirStateDataLoaded)
+	m_StandPoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)
+	m_CrouchPoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)
+	m_PronePoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)
 end
 
 -- Change the free fall velocity so free fall state kicks in earlier
 function PhysicsModifier:OnInAirStateDataLoaded(p_InAirStateData)
-    p_InAirStateData.freeFallVelocity = 14.0
+	p_InAirStateData.freeFallVelocity = 14.0
 end
 
 -- Modify the free fall velocity
 function PhysicsModifier:OnCharacterStatePoseInfoLoaded(p_CharacterStatePoseInfo)
-    p_CharacterStatePoseInfo.velocity = 35.0
-    p_CharacterStatePoseInfo.accelerationGain = 0.115
+	p_CharacterStatePoseInfo.velocity = 35.0
+	p_CharacterStatePoseInfo.accelerationGain = 0.115
 end
 
 if g_PhysicsModifier == nil then
-    g_PhysicsModifier = PhysicsModifier()
+	g_PhysicsModifier = PhysicsModifier()
 end
 
 return g_PhysicsModifier

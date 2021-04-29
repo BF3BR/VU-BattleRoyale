@@ -11,37 +11,37 @@ function WeaponsModifier:__init()
 end
 
 function WeaponsModifier:RegisterCallbacks()
-    m_AmmobagFiringData:RegisterLoadHandler(self, self.DisableAutoReplenish)
-    m_AmmobagResupplyData:RegisterLoadHandler(self, self.SetResupplyCapacity)
-    m_MedkitFiringData:RegisterLoadHandler(self, self.DisableAutoReplenish)
-    m_MedkitHealingData:RegisterLoadHandler(self, self.SetHealingCapacity)
-    m_MeleeEntityCommonData:RegisterLoadHandler(self, self.DisableKnifeTakedownAnimation)
+	m_AmmobagFiringData:RegisterLoadHandler(self, self.DisableAutoReplenish)
+	m_AmmobagResupplyData:RegisterLoadHandler(self, self.SetResupplyCapacity)
+	m_MedkitFiringData:RegisterLoadHandler(self, self.DisableAutoReplenish)
+	m_MedkitHealingData:RegisterLoadHandler(self, self.SetHealingCapacity)
+	m_MeleeEntityCommonData:RegisterLoadHandler(self, self.DisableKnifeTakedownAnimation)
 end
 
 -- Disable infinite medkit and ammobag capacity
 function WeaponsModifier:DisableAutoReplenish(p_FiringData)
-    p_FiringData.ammo.autoReplenishMagazine = false
+	p_FiringData.ammo.autoReplenishMagazine = false
 end
 
 function WeaponsModifier:SetHealingCapacity(p_HealingData)
-    p_HealingData.supplyData.healing.infiniteCapacity = false
-    p_HealingData.supplyData.healing.supplyPointsCapacity = PickupsConfig.MedkitCapacity
+	p_HealingData.supplyData.healing.infiniteCapacity = false
+	p_HealingData.supplyData.healing.supplyPointsCapacity = PickupsConfig.MedkitCapacity
 end
 
 function WeaponsModifier:SetResupplyCapacity(p_ResupplyData)
-    p_ResupplyData.supplyData.ammo.infiniteCapacity = false
-    p_ResupplyData.supplyData.ammo.supplyPointsCapacity = PickupsConfig.AmmobagCapacity
+	p_ResupplyData.supplyData.ammo.infiniteCapacity = false
+	p_ResupplyData.supplyData.ammo.supplyPointsCapacity = PickupsConfig.AmmobagCapacity
 end
 
 -- Disable canned knife takedown animation
 function WeaponsModifier:DisableKnifeTakedownAnimation(p_MeleeEntityCommonData)
-    p_MeleeEntityCommonData.meleeAttackDistance = 0
-    p_MeleeEntityCommonData.maxAttackHeightDifference = 0
+	p_MeleeEntityCommonData.meleeAttackDistance = 0
+	p_MeleeEntityCommonData.maxAttackHeightDifference = 0
 end
 
 
 if g_WeaponsModifier == nil then
-    g_WeaponsModifier = WeaponsModifier()
+	g_WeaponsModifier = WeaponsModifier()
 end
 
 return g_WeaponsModifier
