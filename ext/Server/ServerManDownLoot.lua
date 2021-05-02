@@ -45,8 +45,6 @@ function ServerManDownLoot:OnRegisterKill(p_Victim)
 			self.m_ManDownLootTable[s_IndexInBlueprint][i] = l_Weapon.name
 		end
 	end
-
-	self:CreateObject(s_Transform)
 end
 
 function ServerManDownLoot:OnInteractionFinished(p_Entity, p_Event)
@@ -68,10 +66,6 @@ function ServerManDownLoot:RegisterLootInteractionCallback()
 		end
 		s_Entity = s_EntityIterator:Next()
 	end
-end
-
-function ServerManDownLoot:CreateObject(p_Transform)
-	-- create/spawn an object/ loot box
 end
 
 if g_ServerManDownLoot == nil then

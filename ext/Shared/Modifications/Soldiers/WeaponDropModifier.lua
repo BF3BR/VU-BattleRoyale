@@ -1,6 +1,12 @@
 class "WeaponDropModifier"
 
+local m_LootBoxRigid = DC(Guid('2A3E4EB5-DE56-11DD-AE2C-D53D253AEF63'), Guid('3EDE3952-DE56-11DD-AE2C-D53D253AEF63'))
+
 local m_Logger = Logger("WeaponDropModifier", true)
+
+function WeaponDropModifier:RegisterCallbacks()
+	m_LootBoxRigid:RegisterLoadHandler(self, self.OnLootBoxRigid)
+end
 
 -- =============================================
 -- Events
@@ -11,7 +17,7 @@ function WeaponDropModifier:OnRegisterEntityResources()
 	local s_WorldPartData = WorldPartData(ResourceManager:SearchForInstanceByGuid(MapsConfig[LevelNameHelper:GetLevelName()].ConquestGameplayGuid))
 	s_WorldPartData:MakeWritable()
 	local s_Registry = RegistryContainer()
-	for i = 100, 1, -1  do
+	for i = 100, 1, -1 do
 		local s_ParentRepresentative = self:AddGameInteractionEntityData(s_Blueprint, i)
 		s_WorldPartData.objects:add(s_ParentRepresentative)
 		s_Registry.referenceObjectRegistry:add(s_ParentRepresentative)
@@ -37,6 +43,12 @@ function WeaponDropModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	s_SoldierBodyComponent.components:erase(11)
 
 	m_Logger:Write("WeaponDropComponents removed from SoldierBlueprint")
+end
+
+function WeaponDropModifier:OnLootBoxRigid(p_Instance)
+	p_Instance = RigidBodyData(p_Instance)
+	p_Instance:MakeWritable()
+	p_Instance.motionType = RigidBodyMotionType.RigidBodyMotionType_Fixed
 end
 
 -- =============================================
