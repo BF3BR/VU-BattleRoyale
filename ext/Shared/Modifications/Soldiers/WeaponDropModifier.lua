@@ -8,7 +8,7 @@ local m_Logger = Logger("WeaponDropModifier", true)
 
 function WeaponDropModifier:OnRegisterEntityResources()
 	local s_Blueprint = self:CreateBlueprint()
-	local s_WorldPartData = WorldPartData(ResourceManager:SearchForInstanceByGuid(MapsConfig.XP5_003.ConquestGameplayGuid))
+	local s_WorldPartData = WorldPartData(ResourceManager:SearchForInstanceByGuid(MapsConfig[LevelNameHelper:GetLevelName()].ConquestGameplayGuid))
 	s_WorldPartData:MakeWritable()
 	local s_Registry = RegistryContainer()
 	for i = 100, 1, -1  do

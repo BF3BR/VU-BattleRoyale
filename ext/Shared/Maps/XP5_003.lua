@@ -9,6 +9,23 @@
 
 -- XP5_003 Kiasar Railroad
 return {
+	SuperBundles = {
+		"XP1Chunks",
+		"Levels/XP1_004/XP1_004",
+		"XP3Chunks",
+		"Levels/XP3_Shield/XP3_Shield",
+		"Levels/XP3_Alborz/XP3_Alborz",
+		"Levels/COOP_010/COOP_010"
+	},
+	Bundles = {
+		"Levels/XP1_004/XP1_004",
+		"Levels/XP3_Shield/XP3_Shield",
+		"Levels/XP3_Alborz/XP3_Alborz",
+		"Levels/COOP_010/COOP_010"
+	},
+	BundleRegistries = {
+		DC(Guid("333BDB92-E69D-11DF-9B0E-AF9CA6E0236B"), Guid("2C804637-3B56-6DDB-92C8-81D094EA806B"))
+	},
 	SubWorldInstance = DC(Guid("CB9932E2-19E0-11E2-93EC-B0D4179CEA18"), Guid("FB11A0AA-BC0A-31C1-8F95-A8B8D7746908")),
 	MapTopLeftPos = Vec3(667.28, 0, -290.44),
 	MapWidthHeight = 1250.0,
@@ -288,5 +305,6 @@ return {
 		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(258.686188, 145.658493, -734.752075)),
 		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(291.867676, 149.186737, -708.180542)),
 		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(258.730042, 144.261169, -669.988403))
-	}
+	},
+	MapPreset = require "__shared/Maps/XP5_003_MapPreset"
 }
