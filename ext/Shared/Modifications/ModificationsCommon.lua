@@ -36,6 +36,10 @@ function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 end
 
+function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
+	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
+end
+
 -- TODO: Implement generic map and gamemode modification system (that works)
 --[[
 function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)

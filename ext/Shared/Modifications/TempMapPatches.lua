@@ -137,14 +137,14 @@ function TempMapPatches:OnGameModeSettings(p_Instance)
 	local s_GameModeTeamSize = GameModeTeamSize()
 	s_GameModeTeamSize.playerCount = 127
 	s_GameModeTeamSize.squadSize = 4
-	for i=1, 14 do
+	for i = 3, 16 do
 		settings.information[1].sizes[3].teams:add(s_GameModeTeamSize)
 	end
 end
 
 -- TODO: Include in map modification system
 function TempMapPatches:OnTeamEntityData(p_Instance)
-	for i=3, 16, 1 do
+	for i = 3, 16 do
 		local s_NewTeamId = TeamEntityData(MathUtils:RandomGuid())
 		s_NewTeamId.isEventConnectionTarget = 3
 		s_NewTeamId.isPropertyConnectionTarget  = 3

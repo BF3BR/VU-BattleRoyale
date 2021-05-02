@@ -10,6 +10,7 @@ require "__shared/Enums/CustomEvents"
 require "Match"
 
 local m_Whitelist = require "Whitelist"
+local m_ServerManDownLoot = require "ServerManDownLoot"
 local m_PingServer = require "PingServer"
 local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
@@ -111,6 +112,7 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
 	self.m_WaitForStart = false
 	self.m_ForcedWarmup = false
 	m_PingServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
+	m_ServerManDownLoot:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
@@ -184,7 +186,7 @@ function VuBattleRoyaleServer:OnChangingWeapon(p_Player)
 	if p_Player == nil or p_Player.soldier == nil or p_Player.soldier.isInteractiveManDown == false then
 		return
 	end
-	p_Player.soldier:ApplyCustomization(m_InteractiveManDown:CreateManDownCustomizeSoldierData())
+	p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
 end
 
 function VuBattleRoyaleServer:OnManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)

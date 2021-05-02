@@ -60,6 +60,7 @@ end
 
 function VuBattleRoyaleShared:OnRegisterEntityResources(p_LevelData)
 	m_BundleManager:OnRegisterEntityResources(p_LevelData)
+	m_ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 end
 
 function VuBattleRoyaleShared:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)

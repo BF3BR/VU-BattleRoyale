@@ -76,3 +76,8 @@ SpectatorEvents = {
 LMS = {
 	RLT = "LMS:RLT",
 }
+
+ManDownLootEvents = {
+	UpdateLootPosition = "ManDownLoot:UpdateLootPosition",
+	OnInteractionFinished = "ManDownLoot:OnInteractionFinished"
+}

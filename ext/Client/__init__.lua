@@ -19,6 +19,7 @@ local m_Hud = require "Hud"
 local m_SpectatorClient = require "SpectatorClient"
 local m_Showroom = require "Showroom"
 local m_Ping = require "PingClient"
+local m_ClientManDownLoot = require "ClientManDownLoot"
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
 function VuBattleRoyaleClient:__init()
@@ -68,6 +69,9 @@ function VuBattleRoyaleClient:RegisterEvents()
 
 	Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate)
 	Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove)
+
+	NetEvents:Subscribe(ManDownLootEvents.UpdateLootPosition, self, self.OnUpdateLootPosition)
+	NetEvents:Subscribe(ManDownLootEvents.OnInteractionFinished, self, self.OnLootInteractionFinished)
 
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied)
 	NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
@@ -312,6 +316,18 @@ end
 
 function VuBattleRoyaleClient:OnOuterCircleMove(p_OuterCircle)
 	m_Hud:OnOuterCircleMove(p_OuterCircle)
+end
+
+-- =============================================
+	-- ManDownLoot Events
+-- =============================================
+
+function VuBattleRoyaleClient:OnUpdateLootPosition(p_IndexInBlueprint, p_Transform)
+	m_ClientManDownLoot:OnUpdateLootPosition(p_IndexInBlueprint, p_Transform)
+end
+
+function VuBattleRoyaleClient:OnLootInteractionFinished(p_ManDownLootTable)
+	m_ClientManDownLoot:OnLootInteractionFinished(p_ManDownLootTable)
 end
 
 -- =============================================

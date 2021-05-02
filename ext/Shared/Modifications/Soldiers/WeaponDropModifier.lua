@@ -1,113 +1,152 @@
 class "WeaponDropModifier"
 
 local m_Logger = Logger("WeaponDropModifier", true)
-local m_ConnectionHelper = require("__shared/Utils/ConnectionHelper")
-local m_RegistryManager = require("__shared/Logic/RegistryManager")
 
--- Weapon drop offsets from the origin of the soldier
-local m_CenterOffset = 1.2
-local m_HeightOffset = -0.5
+-- =============================================
+-- Events
+-- =============================================
 
--- PhysicsBlueprint for all weapons: Weapons/M16A4/M16A4KitPickup
-local m_PhysicsBlueprint = DC(Guid("625C2806-0CE7-11E0-915B-91EB202EAE87"), Guid("B9E3B4B8-062A-1DA8-E13D-8D7095F2A610"))
+function WeaponDropModifier:OnRegisterEntityResources()
+	local s_Blueprint = self:CreateBlueprint()
+	local s_WorldPartData = WorldPartData(ResourceManager:SearchForInstanceByGuid(MapsConfig.XP5_003.ConquestGameplayGuid))
+	s_WorldPartData:MakeWritable()
+	local s_Registry = RegistryContainer()
+	for i = 100, 1, -1  do
+		local s_ParentRepresentative = self:AddGameInteractionEntityData(s_Blueprint, i)
+		s_WorldPartData.objects:add(s_ParentRepresentative)
+		s_Registry.referenceObjectRegistry:add(s_ParentRepresentative)
+	end
+	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
+end
 
--- Replace vanilla DropWeaponComponentData (drops a kit) with 5 DropWeaponComponentDatas that all drop a weapon 
+-- =============================================
+-- Callbacks
+-- =============================================
+
+-- Replace vanilla DropWeaponComponentData (drops a kit) with 5 DropWeaponComponentDatas that all drop a weapon
 function WeaponDropModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
-	-- Drop weapons in WeaponSlot 0 and 1 as pickups for slot 0 or 1
-	local s_PrimaryWeaponPickupAsset = PickupEntityAsset()
-	s_PrimaryWeaponPickupAsset.data = self:CreatePickupEntityDataForSlot(0, 1)
 
-	local s_PrimaryWeaponDropComponent = DropWeaponComponentData()
-	s_PrimaryWeaponDropComponent.deathPickup = s_PrimaryWeaponPickupAsset
-	s_PrimaryWeaponDropComponent.transform.trans = Vec3(m_CenterOffset, m_HeightOffset, 0)
-
-	local s_SecondaryWeaponPickupAsset = PickupEntityAsset()
-	s_SecondaryWeaponPickupAsset.data = self:CreatePickupEntityDataForSlot(1, 0)
-
-	local s_SecondaryWeaponDropComponent = DropWeaponComponentData()
-	s_SecondaryWeaponDropComponent.deathPickup = s_SecondaryWeaponPickupAsset
-	s_SecondaryWeaponDropComponent.transform.trans = Vec3(-m_CenterOffset, m_HeightOffset, 0)
-
-	-- Drop gadgets in WeaponSlot 2 and 5 as pickups for slot 2 or 5
-	local s_PrimaryGadgetPickupAsset = PickupEntityAsset()
-	s_PrimaryGadgetPickupAsset.data = self:CreatePickupEntityDataForSlot(2, 5)
-
-	local s_PrimaryGadgetDropComponent = DropWeaponComponentData()
-	s_PrimaryGadgetDropComponent.deathPickup = s_PrimaryGadgetPickupAsset
-	s_PrimaryGadgetDropComponent.transform.trans = Vec3(0, m_HeightOffset, m_CenterOffset)
-
-	local s_SecondaryGadgetPickupAsset = PickupEntityAsset()
-	s_SecondaryGadgetPickupAsset.data = self:CreatePickupEntityDataForSlot(5, 2)
-
-	local s_SecondaryGadgetDropComponent = DropWeaponComponentData()
-	s_SecondaryGadgetDropComponent.deathPickup = s_SecondaryGadgetPickupAsset
-	s_SecondaryGadgetDropComponent.transform.trans = Vec3(0, m_HeightOffset, -m_CenterOffset)
-
-	-- Drop grenades in WeaponSlot 6 and 8 as pickups for slot 6 or 8
-	local s_GrenadePickupAsset = PickupEntityAsset()
-	s_GrenadePickupAsset.data = self:CreatePickupEntityDataForSlot(6, 8)
-
-	local s_GrenadeDropComponent = DropWeaponComponentData()
-	s_GrenadeDropComponent.deathPickup = s_GrenadePickupAsset
-	s_GrenadeDropComponent.transform.trans = Vec3(0, m_HeightOffset, -m_CenterOffset * 2)
-
-	-- Update runtimeComponentCount (the client will crash if this is wrong), erasing 1 component and adding 5 new ones
+	-- Update runtimeComponentCount (the client will crash if this is wrong), erasing 1 component
 	local s_SoldierEntityData = SoldierEntityData(p_SoldierBlueprint.object)
 	s_SoldierEntityData:MakeWritable()
-	s_SoldierEntityData.runtimeComponentCount = s_SoldierEntityData.runtimeComponentCount + 4
+	s_SoldierEntityData.runtimeComponentCount = s_SoldierEntityData.runtimeComponentCount - 1
 
 	local s_SoldierBodyComponent = SoldierBodyComponentData(s_SoldierEntityData.components[1])
 	s_SoldierBodyComponent:MakeWritable()
-
-	-- The vanilla MP soldier DropWeaponComponent (using KitPickupEntityData, drops a kit instead of weapons)
-	local s_DropWeaponComponent = DropWeaponComponentData(s_SoldierBodyComponent.components[11])
-	m_ConnectionHelper:CloneConnections(p_SoldierBlueprint, s_DropWeaponComponent, s_PrimaryWeaponDropComponent)
-	m_ConnectionHelper:CloneConnections(p_SoldierBlueprint, s_DropWeaponComponent, s_SecondaryWeaponDropComponent)
-	m_ConnectionHelper:CloneConnections(p_SoldierBlueprint, s_DropWeaponComponent, s_PrimaryGadgetDropComponent)
-	m_ConnectionHelper:CloneConnections(p_SoldierBlueprint, s_DropWeaponComponent, s_SecondaryGadgetDropComponent)
-	m_ConnectionHelper:CloneConnections(p_SoldierBlueprint, s_DropWeaponComponent, s_GrenadeDropComponent)
-
-	-- Erase the kit DropWeaponComponent and add the custom ones
+	-- Erase the kit DropWeaponComponent
 	s_SoldierBodyComponent.components:erase(11)
-	s_SoldierBodyComponent.components:add(s_PrimaryWeaponDropComponent)
-	s_SoldierBodyComponent.components:add(s_SecondaryWeaponDropComponent)
-	s_SoldierBodyComponent.components:add(s_PrimaryGadgetDropComponent)
-	s_SoldierBodyComponent.components:add(s_SecondaryGadgetDropComponent)
-	s_SoldierBodyComponent.components:add(s_GrenadeDropComponent)
 
-	-- Add the created entityData to the registry
-	local s_Registry = m_RegistryManager:GetRegistry()
-	s_Registry.entityRegistry:add(s_PrimaryWeaponPickupAsset.data)
-	s_Registry.entityRegistry:add(s_SecondaryWeaponPickupAsset.data)
-	s_Registry.entityRegistry:add(s_PrimaryGadgetPickupAsset.data)
-	s_Registry.entityRegistry:add(s_SecondaryGadgetPickupAsset.data)
-	s_Registry.entityRegistry:add(s_GrenadePickupAsset.data)
-
-	m_Logger:Write("WeaponDropComponents added to SoldierBlueprint")
+	m_Logger:Write("WeaponDropComponents removed from SoldierBlueprint")
 end
 
-function WeaponDropModifier:CreatePickupEntityDataForSlot(p_WeaponSlot, p_AltWeaponSlot)
-	local s_DynamicWeaponPickupSlotData = DynamicWeaponPickupSlotData()
-	s_DynamicWeaponPickupSlotData.weaponSlot = p_WeaponSlot
-	s_DynamicWeaponPickupSlotData.altWeaponSlot = p_AltWeaponSlot
-	s_DynamicWeaponPickupSlotData.linkedToWeaponSlot = -1
+-- =============================================
+-- Functions
+-- =============================================
 
-	local s_DynamicWeaponPickupEntityData = DynamicWeaponPickupEntityData()
-	s_DynamicWeaponPickupEntityData.physicsBlueprint = m_PhysicsBlueprint:GetInstance()
-	s_DynamicWeaponPickupEntityData.useWeaponMesh = true
-	s_DynamicWeaponPickupEntityData.preferredWeaponSlot = -1
-	s_DynamicWeaponPickupEntityData.allowPickup = true
-	s_DynamicWeaponPickupEntityData.ignoreNullWeaponSlots = true
-	s_DynamicWeaponPickupEntityData.forceWeaponSlotSelection = false
-	s_DynamicWeaponPickupEntityData.displayInMiniMap = true
-	s_DynamicWeaponPickupEntityData.interactionRadius = 2.5
-	s_DynamicWeaponPickupEntityData.replaceAllContent = false
-	s_DynamicWeaponPickupEntityData.removeWeaponOnDrop = false
-	s_DynamicWeaponPickupEntityData.keepAmmoState = true
-	s_DynamicWeaponPickupEntityData.positionIsStatic = false
-	s_DynamicWeaponPickupEntityData.weaponSlots:add(s_DynamicWeaponPickupSlotData)
+function WeaponDropModifier:AddGameInteractionEntityData(p_Blueprint, i)
+	local s_ParentRepresentative = ReferenceObjectData(MathUtils:RandomGuid())
+	s_ParentRepresentative.blueprintTransform = LinearTransform()
+	s_ParentRepresentative.blueprint = p_Blueprint
+	s_ParentRepresentative.streamRealm = StreamRealm.StreamRealm_None
+	s_ParentRepresentative.castSunShadowEnable = true
+	s_ParentRepresentative.excluded = false
+	s_ParentRepresentative.isEventConnectionTarget = 3
+	s_ParentRepresentative.isPropertyConnectionTarget = 3
+	s_ParentRepresentative.indexInBlueprint = 5555 + i
 
-	return s_DynamicWeaponPickupEntityData
+	return s_ParentRepresentative
+end
+
+function WeaponDropModifier:CreateBlueprint()
+	local s_GameInteractionEntityData = GameInteractionEntityData(Guid('07E16744-D9BC-DC08-E2CC-D64E52D5CE0F'))
+	s_GameInteractionEntityData.useWithinRadius = 3.0
+	s_GameInteractionEntityData.useWithinAngle = 360
+	s_GameInteractionEntityData.testIfOccluded = false
+	s_GameInteractionEntityData.maxUses = 0
+	s_GameInteractionEntityData.allowInteractionViaRemoteEntry = false
+	s_GameInteractionEntityData.delayBetweenUses = 0.1
+	s_GameInteractionEntityData.teamId = TeamId.TeamNeutral
+	s_GameInteractionEntityData.inputAction = EntryInputActionEnum.EIAInteract
+	s_GameInteractionEntityData.holdToInteractTime = 0.0
+	s_GameInteractionEntityData.interactionEntityType = InteractionEntityType.IET_None
+	s_GameInteractionEntityData.interactionSid = "TO LOOT"
+	s_GameInteractionEntityData.nameSid = " "
+	s_GameInteractionEntityData.interactionVerticalOffset = 0.0
+	s_GameInteractionEntityData.friendlyTextSid = "PICKUP LOOT"
+	s_GameInteractionEntityData.enemyTextSid =  "PICKUP LOOT"
+	s_GameInteractionEntityData.shrinkSnap = false
+	s_GameInteractionEntityData.showAsCapturePoint = false
+	s_GameInteractionEntityData.capturepointVerticalOffset = 0.2
+	s_GameInteractionEntityData.isEventConnectionTarget = 2
+	s_GameInteractionEntityData.isPropertyConnectionTarget = 3
+	s_GameInteractionEntityData.indexInBlueprint = 0
+	s_GameInteractionEntityData.transform = LinearTransform()
+
+	local s_EventSplitterEntityData_OnInteraction = EventSplitterEntityData(Guid('1E1023F4-EACC-7E35-048B-58B3D32D51D0'))
+	s_EventSplitterEntityData_OnInteraction.realm = Realm.Realm_ClientAndServer
+	s_EventSplitterEntityData_OnInteraction.runOnce = false
+	s_EventSplitterEntityData_OnInteraction.isEventConnectionTarget = 2
+	s_EventSplitterEntityData_OnInteraction.isPropertyConnectionTarget = 3
+	s_EventSplitterEntityData_OnInteraction.indexInBlueprint = 1
+
+	local s_EventSplitterEntityData_OnInteractionInitiated = EventSplitterEntityData(Guid('9AB700BA-94F7-DBF6-362C-607316DC0C31'))
+	s_EventSplitterEntityData_OnInteractionInitiated.realm = Realm.Realm_ClientAndServer
+	s_EventSplitterEntityData_OnInteractionInitiated.runOnce = false
+	s_EventSplitterEntityData_OnInteractionInitiated.isEventConnectionTarget = 0
+	s_EventSplitterEntityData_OnInteractionInitiated.isPropertyConnectionTarget = 3
+	s_EventSplitterEntityData_OnInteractionInitiated.indexInBlueprint = 2
+
+	local s_EventSplitterEntityData_OnInteractionInterrupted = EventSplitterEntityData(Guid('0B8E9A4F-4E38-BE79-3EEA-B050909565B6'))
+	s_EventSplitterEntityData_OnInteractionInterrupted.realm = Realm.Realm_ClientAndServer
+	s_EventSplitterEntityData_OnInteractionInterrupted.runOnce = false
+	s_EventSplitterEntityData_OnInteractionInterrupted.isEventConnectionTarget = 0
+	s_EventSplitterEntityData_OnInteractionInterrupted.isPropertyConnectionTarget = 3
+	s_EventSplitterEntityData_OnInteractionInterrupted.indexInBlueprint = 3
+
+	local s_EventConnection_OnInteraction = EventConnection()
+	s_EventConnection_OnInteraction.source = s_GameInteractionEntityData
+	s_EventConnection_OnInteraction.target = s_EventSplitterEntityData_OnInteraction
+	EventSpec(s_EventConnection_OnInteraction.sourceEvent).id = MathUtils:FNVHash("OnInteraction")
+	EventSpec(s_EventConnection_OnInteraction.targetEvent).id = MathUtils:FNVHash("Impulse")
+	s_EventConnection_OnInteraction.targetType = EventConnectionTargetType.EventConnectionTargetType_NetworkedClientAndServer
+
+	local s_EventConnection_OnInteractionInitiated = EventConnection()
+	s_EventConnection_OnInteractionInitiated.source = s_GameInteractionEntityData
+	s_EventConnection_OnInteractionInitiated.target = s_EventSplitterEntityData_OnInteractionInitiated
+	EventSpec(s_EventConnection_OnInteractionInitiated.sourceEvent).id = MathUtils:FNVHash("OnInteractionInitiated")
+	EventSpec(s_EventConnection_OnInteractionInitiated.targetEvent).id = MathUtils:FNVHash("Impulse")
+	s_EventConnection_OnInteractionInitiated.targetType = EventConnectionTargetType.EventConnectionTargetType_NetworkedClientAndServer
+
+	local s_EventConnection_OnInteractionInterrupted = EventConnection()
+	s_EventConnection_OnInteractionInterrupted.source = s_GameInteractionEntityData
+	s_EventConnection_OnInteractionInterrupted.target = s_EventSplitterEntityData_OnInteractionInterrupted
+	EventSpec(s_EventConnection_OnInteractionInterrupted.sourceEvent).id = MathUtils:FNVHash("OnInteractionInterrupted")
+	EventSpec(s_EventConnection_OnInteractionInterrupted.targetEvent).id = MathUtils:FNVHash("Impulse")
+	s_EventConnection_OnInteractionInterrupted.targetType = EventConnectionTargetType.EventConnectionTargetType_NetworkedClientAndServer
+
+	local s_Blueprint = SpatialPrefabBlueprint(Guid('D5430E64-CA34-6AC5-8279-C2263C4D2E5A'))
+	s_Blueprint.needNetworkId = true
+	s_Blueprint.interfaceHasConnections = false
+	s_Blueprint.alwaysCreateEntityBusClient = true
+	s_Blueprint.alwaysCreateEntityBusServer = true
+	s_Blueprint.objects:add(s_GameInteractionEntityData)
+	s_Blueprint.objects:add(s_EventSplitterEntityData_OnInteraction)
+	s_Blueprint.objects:add(s_EventSplitterEntityData_OnInteractionInitiated)
+	s_Blueprint.objects:add(s_EventSplitterEntityData_OnInteractionInterrupted)
+	s_Blueprint.eventConnections:add(s_EventConnection_OnInteraction)
+	s_Blueprint.eventConnections:add(s_EventConnection_OnInteractionInitiated)
+	s_Blueprint.eventConnections:add(s_EventConnection_OnInteractionInterrupted)
+
+	local s_Registry = RegistryContainer()
+	s_Registry.entityRegistry:add(s_GameInteractionEntityData)
+	s_Registry.entityRegistry:add(s_EventSplitterEntityData_OnInteraction)
+	s_Registry.entityRegistry:add(s_EventSplitterEntityData_OnInteractionInitiated)
+	s_Registry.entityRegistry:add(s_EventSplitterEntityData_OnInteractionInterrupted)
+	s_Registry.blueprintRegistry:add(s_Blueprint)
+
+	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
+
+	return s_Blueprint
 end
 
 if g_WeaponDropModifier == nil then
