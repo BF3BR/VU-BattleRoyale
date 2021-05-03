@@ -14,6 +14,8 @@ function VuBattleRoyaleHud:__init()
 	self.m_BrPlayer = nil
 	self.m_IsPlayerOnPlane = false
 
+	self.m_IsLevelLoaded = false
+
 	self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
 
 	self.m_Markers = {}
@@ -61,18 +63,21 @@ function VuBattleRoyaleHud:OnExtensionLoaded()
 	WebUI:Show()
 end
 
-function VuBattleRoyaleHud:OnLevelFinalized(p_LevelName, p_GameMode)
-	self.m_HudOnSetUIState:Update(UiStates.Game)
-	WebUI:ExecuteJS("OnLevelFinalized('" .. p_LevelName .. "');")
+function VuBattleRoyaleHud:OnExtensionUnloading()
+	self.m_IsLevelLoaded = false
+	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 end
 
 function VuBattleRoyaleHud:OnLevelDestroy()
+	self.m_IsLevelLoaded = false
 	self.m_HudOnSetUIState:Update(UiStates.Loading)
 end
 
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 	-- self:PushMarkerUpdate()
-
+	if not self.m_IsLevelLoaded then
+		return
+	end
 	if self.m_BrPlayer ~= nil and self.m_BrPlayer.m_Team ~= nil then
 		self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked)
 		self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
@@ -90,6 +95,9 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
+	if not self.m_IsLevelLoaded then
+		return
+	end
 	if self.m_BrPlayer == nil then
 		if p_BrPlayer == nil then
 			return
@@ -105,6 +113,9 @@ function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
 end
 
 function VuBattleRoyaleHud:OnClientUpdateInput()
+	if not self.m_IsLevelLoaded then
+		return
+	end
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 	if s_LocalPlayer == nil then
 		return
@@ -148,6 +159,10 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 	end
 
 	self.m_GameState = p_GameState
+
+	if not self.m_IsLevelLoaded then
+		return
+	end
 
 	if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
 		self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
@@ -347,6 +362,20 @@ end
 
 function VuBattleRoyaleHud:OnBeingInteractedFinished(p_Entity, p_Event)
 	m_Logger:Write("The interaction with the local player ended")
+end
+
+-- =============================================
+	-- Custom Level Finalized 'Event'
+-- =============================================
+
+function VuBattleRoyaleHud:OnLevelFinalized()
+	if self.m_IsLevelLoaded then
+		return
+	end
+	self.m_IsLevelLoaded = true
+	self.m_HudOnSetUIState:Update(UiStates.Game)
+	WebUI:ExecuteJS("OnLevelFinalized('" .. SharedUtils:GetLevelName() .. "');")
+	self:OnGameStateChanged(self.m_GameState)
 end
 
 -- =============================================

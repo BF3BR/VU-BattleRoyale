@@ -49,7 +49,6 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
 
 	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-	Events:Subscribe("Level:Finalized", self, self.OnLevelFinalized)
 	Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
 
 	Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
@@ -120,6 +119,7 @@ end
 
 function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_SpectatorClient:OnExtensionUnloading()
+	m_Hud:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -130,10 +130,6 @@ function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
 	m_Showroom:SetCamera(true)
 	WebUI:ExecuteJS("ToggleDeployMenu(true);")
 	m_Ping:OnLevelLoaded()
-end
-
-function VuBattleRoyaleClient:OnLevelFinalized(p_LevelName, p_GameMode)
-	m_Hud:OnLevelFinalized(p_LevelName, p_GameMode)
 end
 
 function VuBattleRoyaleClient:OnLevelDestroy()
@@ -185,6 +181,7 @@ function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
 	end
 
 	if p_Player == s_LocalPlayer then
+		m_Hud:OnLevelFinalized()
 		-- Tell the server that the local player is connected
 		NetEvents:Send(PlayerEvents.PlayerConnected)
 	end
@@ -511,15 +508,13 @@ function VuBattleRoyaleClient:OnHotReload()
 	if not self.m_IsHotReload then
 		return
 	end
-	local s_LevelName = SharedUtils:GetLevelName()
-	if s_LevelName == nil then
+	if SharedUtils:GetLevelName() == nil then
 		return
 	end
-	local s_GameMode = SharedUtils:GetCurrentGameMode()
 	-- This was a hot reload, and the game is already loaded
 	-- So we dispatch all Level / Connection events
 	self:OnLevelLoaded()
-	self:OnLevelFinalized(s_LevelName, s_GameMode)
+	m_Hud:OnLevelFinalized()
 
 	-- OnPlayerConnected
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()

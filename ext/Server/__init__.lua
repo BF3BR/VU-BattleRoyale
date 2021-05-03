@@ -65,7 +65,6 @@ function VuBattleRoyaleServer:RegisterEvents()
 	Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived)
 	Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
 	Events:Subscribe("Player:Left", self, self.OnPlayerLeft)
-	Events:Subscribe("Player:Destroyed", self, self.OnPlayerDestroyed)
 
 	Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.OnTeamsAssigned)
 
@@ -212,11 +211,7 @@ function VuBattleRoyaleServer:OnPlayerKilled(p_Player, p_Inflictor, p_Position, 
 end
 
 function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
-	m_TeamManager:OnPlayerLeft(p_Player)
-end
-
-function VuBattleRoyaleServer:OnPlayerDestroyed(p_Player)
-	-- For bots only
+	m_Logger:Write(p_Player.name .. " left")
 	m_TeamManager:OnPlayerLeft(p_Player)
 end
 
@@ -427,12 +422,11 @@ function VuBattleRoyaleServer:OnHotReload()
 
 	-- OnPlayerAuthenticated
 	local s_Players = PlayerManager:GetPlayers()
-	if s_Players == nil or #s_Players == 0 then
-		return
-	end
-	for _, l_Player in pairs(s_Players) do
-		if l_Player ~= nil then
-			m_TeamManager:OnPlayerAuthenticated(l_Player)
+	if s_Players ~= nil and #s_Players == 0 then
+		for _, l_Player in pairs(s_Players) do
+			if l_Player ~= nil then
+				m_TeamManager:OnPlayerAuthenticated(l_Player)
+			end
 		end
 	end
 
@@ -443,7 +437,7 @@ function VuBattleRoyaleServer:OnHotReload()
 	-- This was a hot reload, and the game is already loaded
 	-- So we dispatch all Level / Connection events
 
-	self.m_WaitForStart = false
+	--self.m_WaitForStart = false
 	m_LootManager:OnModReload()
 	--self:OnLevelLoadResources()
 	self:OnLevelLoaded()
