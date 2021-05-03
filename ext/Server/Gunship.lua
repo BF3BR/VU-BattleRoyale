@@ -134,11 +134,7 @@ function Gunship:Disable()
 		return
 	end
 
-	self.m_CalculatedTime = 0.0
-	self.m_StartPos = nil
-	self.m_EndPos = nil
-	self.m_TimeToFly = nil
-	self.m_Enabled = false
+	self:RegisterVars()
 
 	self:Destroy()
 	NetEvents:BroadcastLocal(GunshipEvents.Disable)

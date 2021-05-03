@@ -21,13 +21,6 @@ function BRTeamManager:RegisterVars()
 end
 
 function BRTeamManager:RegisterEvents()
-	Events:Subscribe("Level:Destroy", self, self.OnEndOfRound)
-
-	Events:Subscribe("Player:Created", self, self.OnVanillaPlayerCreated)
-	Events:Subscribe("Player:Authenticated", self, self.OnVanillaPlayerCreated)
-	Events:Subscribe("Player:Left", self, self.OnVanillaPlayerDestroyed)
-	Events:Subscribe("Player:Killed", self, self.OnSendPlayerState)
-
 	NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnSendPlayerState)
 
 	Events:Subscribe(TeamManagerEvent.PutOnATeam, self, self.OnPutOnATeam)
@@ -38,6 +31,50 @@ function BRTeamManager:RegisterEvents()
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamLeave, self, self.OnLeaveTeam)
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamToggleLock, self, self.OnLockToggle)
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinStrategy, self, self.OnTeamJoinStrategy)
+end
+
+-- =============================================
+-- Events
+-- =============================================
+
+function BRTeamManager:OnLevelDestroy()
+	-- put non custom team players back to their own teams
+	for _, l_BrPlayer in pairs(self.m_Players) do
+		if l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
+			if l_BrPlayer:LeaveTeam() then
+				self:CreateTeamWithPlayer(l_BrPlayer)
+			end
+		end
+
+		-- reset BrPlayer state
+		l_BrPlayer:Reset()
+	end
+
+	-- reset BrTeam state
+	for _, l_BrTeam in pairs(self.m_Teams) do
+		l_BrTeam:Reset()
+	end
+end
+
+function BRTeamManager:OnPlayerAuthenticated(p_Player)
+	m_Logger:Write(string.format("TM: Creating BRPlayer for '%s'", p_Player.name))
+	self:CreatePlayer(p_Player)
+end
+
+function BRTeamManager:OnPlayerKilled(p_Player)
+	self:OnSendPlayerState(p_Player)
+end
+
+function BRTeamManager:OnPlayerLeft(p_Player)
+	m_Logger:Write(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
+
+	-- update player's team placement if needed
+	local l_BrPlayer = self:GetPlayer(p_Player)
+	if l_BrPlayer ~= nil then
+		self:UpdateTeamPlacement(l_BrPlayer.m_Team)
+	end
+
+	self:RemovePlayer(p_Player)
 end
 
 -- Returns the BRPlayer instance of a player
@@ -294,42 +331,6 @@ function BRTeamManager:GetAliveTeamCount()
 	end
 
 	return l_Count
-end
-
-function BRTeamManager:OnEndOfRound()
-	-- put non custom team players back to their own teams
-	for _, l_BrPlayer in pairs(self.m_Players) do
-		if l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
-			if l_BrPlayer:LeaveTeam() then
-				self:CreateTeamWithPlayer(l_BrPlayer)
-			end
-		end
-
-		-- reset BrPlayer state
-		l_BrPlayer:Reset()
-	end
-
-	-- reset BrTeam state
-	for _, l_BrTeam in pairs(self.m_Teams) do
-		l_BrTeam:Reset()
-	end
-end
-
-function BRTeamManager:OnVanillaPlayerCreated(p_Player)
-	m_Logger:Write(string.format("TM: Creating BRPlayer for '%s'", p_Player.name))
-	self:CreatePlayer(p_Player)
-end
-
-function BRTeamManager:OnVanillaPlayerDestroyed(p_Player)
-	m_Logger:Write(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
-
-	-- update player's team placement if needed
-	local l_BrPlayer = self:GetPlayer(p_Player)
-	if l_BrPlayer ~= nil then
-		self:UpdateTeamPlacement(l_BrPlayer.m_Team)
-	end
-
-	self:RemovePlayer(p_Player)
 end
 
 -- Puts the requested player to a newly created team

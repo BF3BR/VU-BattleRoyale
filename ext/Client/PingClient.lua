@@ -51,7 +51,7 @@ end
 -- Events
 -- =============================================
 
-function PingClient:OnLevelLoaded(p_LevelName, p_GameMode)
+function PingClient:OnLevelLoaded()
 	self.m_SquadPings = {}
 	self.m_ShouldPing = false
 end

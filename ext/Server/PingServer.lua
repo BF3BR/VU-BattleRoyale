@@ -27,7 +27,7 @@ end
 -- Events
 -- =============================================
 
-function PingServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
+function PingServer:OnLevelLoaded()
 	-- Clear out the player ping ids
 	self.m_PlayerPingIds = {}
 
@@ -221,6 +221,10 @@ function PingServer:AssignPingIds(p_BrTeams)
 			::__assign_ping_ids_cont::
 		end
 	end
+end
+
+function PingServer:GetPingDisplayCooldownTime()
+	return self.m_PingDisplayCooldownTime
 end
 
 if g_PingServer == nil then

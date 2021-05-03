@@ -68,6 +68,29 @@ function LootManagerServer:EnableMatchPickups()
 	end
 end
 
+function LootManagerServer:OnModReload()
+	self.m_RandomSpawnTransforms = {}
+
+	local s_Iterator = EntityManager:GetIterator("ServerPickupEntity")
+	local s_Entity = s_Iterator:Next()
+	while s_Entity do
+		if s_Entity.data:Is("WeaponUnlockPickupEntityData") then
+			local s_Transform = ReferenceObjectData(s_Entity.bus.parentRepresentative).blueprintTransform
+			local s_HudIcon = MapMarkerEntityData(s_Entity.bus.entities[2].data).hudIcon
+			local s_Tier = nil
+			if s_HudIcon == UIHudIcon.UIHudIcon_WeaponPickupTier1 then
+				s_Tier = 1
+			elseif s_HudIcon == UIHudIcon.UIHudIcon_WeaponPickupTier2 then
+				s_Tier = 2
+			elseif s_HudIcon == UIHudIcon.UIHudIcon_WeaponPickupTier3 then
+				s_Tier = 3
+			end
+			table.insert(self.m_RandomSpawnTransforms, { tier = s_Tier - 1, transform = s_Transform})
+		end
+		s_Entity = s_Iterator:Next()
+	end
+end
+
 if g_LootManagerServer == nil then
 	g_LootManagerServer = LootManagerServer()
 end

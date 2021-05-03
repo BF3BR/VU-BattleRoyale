@@ -12,7 +12,7 @@ end
 -- Events
 -- =============================================
 
-function ServerManDownLoot:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
+function ServerManDownLoot:OnLevelLoaded()
 	self:RegisterLootInteractionCallback()
 end
 -- =============================================

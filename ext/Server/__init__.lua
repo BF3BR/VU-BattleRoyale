@@ -20,8 +20,18 @@ local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifi
 
 function VuBattleRoyaleServer:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
-	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
+end
 
+function VuBattleRoyaleServer:OnExtensionLoaded()
+	self:RegisterVars()
+	self:RegisterEvents()
+	self:RegisterHooks()
+	self:RegisterRconCommands()
+	self:OnHotReload()
+end
+
+function VuBattleRoyaleServer:RegisterVars()
+	self.m_IsHotReload = self:GetIsHotReload()
 	-- Holds the gamestate information
 	self.m_GameState = GameStates.None
 
@@ -38,23 +48,9 @@ function VuBattleRoyaleServer:__init()
 	ServerUtils:SetCustomGameModeName("Battle Royale - " .. self:CurrentTeamSize())
 end
 
-function VuBattleRoyaleServer:CurrentTeamSize()
-	if ServerConfig.PlayersPerTeam == 1 then
-		return "Solo"
-	elseif ServerConfig.PlayersPerTeam == 2 then
-		return "Duo"
-	else
-		return "Squad"
-	end
-end
-
-function VuBattleRoyaleServer:OnExtensionLoaded()
-	self:RegisterEvents()
-	self:RegisterHooks()
-	self:RegisterRconCommands()
-end
-
 function VuBattleRoyaleServer:RegisterEvents()
+	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
+
 	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
 	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
 	Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
@@ -63,9 +59,13 @@ function VuBattleRoyaleServer:RegisterEvents()
 	Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
 
 	Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
+	Events:Subscribe("Player:Created", self, self.OnPlayerCreated)
 	Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
-	Events:Subscribe("Player:ChangingWeapon", self, self.OnChangingWeapon)
-	Events:Subscribe("Player:ManDownRevived", self, self.OnManDownRevived)
+	Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon)
+	Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived)
+	Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
+	Events:Subscribe("Player:Left", self, self.OnPlayerLeft)
+	Events:Subscribe("Player:Destroyed", self, self.OnPlayerDestroyed)
 
 	Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.OnTeamsAssigned)
 
@@ -111,13 +111,14 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
 	self.m_Match:OnRestartRound()
 	self.m_WaitForStart = false
 	self.m_ForcedWarmup = false
-	m_PingServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
-	m_ServerManDownLoot:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
+	m_PingServer:OnLevelLoaded()
+	m_ServerManDownLoot:OnLevelLoaded()
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
 	self.m_WaitForStart = true
 	self.m_ForcedWarmup = false
+	m_TeamManager:OnLevelDestroy()
 end
 
 -- =============================================
@@ -172,6 +173,15 @@ function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
 	end
 
 	m_LootManager:OnPlayerAuthenticated(p_Player)
+	m_TeamManager:OnPlayerAuthenticated(p_Player)
+end
+
+function VuBattleRoyaleServer:OnPlayerCreated(p_Player)
+	if p_Player == nil then
+		return
+	end
+	-- Event for bots
+	m_TeamManager:OnPlayerAuthenticated(p_Player)
 end
 
 function VuBattleRoyaleServer:OnPlayerUpdateInput(p_Player)
@@ -182,19 +192,32 @@ function VuBattleRoyaleServer:OnPlayerUpdateInput(p_Player)
 	self.m_Match:OnPlayerUpdateInput(p_Player)
 end
 
-function VuBattleRoyaleServer:OnChangingWeapon(p_Player)
+function VuBattleRoyaleServer:OnPlayerChangingWeapon(p_Player)
 	if p_Player == nil or p_Player.soldier == nil or p_Player.soldier.isInteractiveManDown == false then
 		return
 	end
 	p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
 end
 
-function VuBattleRoyaleServer:OnManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
+function VuBattleRoyaleServer:OnPlayerManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
 	if p_Reviver ~= nil then
 		p_Player.soldier.health = 130
 	else
 		p_Player.soldier.health = 0.0001
 	end
+end
+
+function VuBattleRoyaleServer:OnPlayerKilled(p_Player, p_Inflictor, p_Position, p_Weapon, p_IsRoadKill, p_IsHeadShot)
+	m_TeamManager:OnPlayerKilled(p_Player)
+end
+
+function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
+	m_TeamManager:OnPlayerLeft(p_Player)
+end
+
+function VuBattleRoyaleServer:OnPlayerDestroyed(p_Player)
+	-- For bots only
+	m_TeamManager:OnPlayerLeft(p_Player)
 end
 
 -- =============================================
@@ -385,41 +408,91 @@ function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
 	}
 end
 
-
 -- =============================================
 -- Functions
 -- =============================================
 
+function VuBattleRoyaleServer:GetIsHotReload()
+    if #SharedUtils:GetContentPackages() == 0 then
+        return false
+    else
+        return true
+    end
+end
+
+function VuBattleRoyaleServer:OnHotReload()
+	if not self.m_IsHotReload then
+		return
+	end
+
+	-- OnPlayerAuthenticated
+	local s_Players = PlayerManager:GetPlayers()
+	if s_Players == nil or #s_Players == 0 then
+		return
+	end
+	for _, l_Player in pairs(s_Players) do
+		if l_Player ~= nil then
+			m_TeamManager:OnPlayerAuthenticated(l_Player)
+		end
+	end
+
+	if SharedUtils:GetLevelName() == nil then
+		self.m_WaitForStart = true
+		return
+	end
+	-- This was a hot reload, and the game is already loaded
+	-- So we dispatch all Level / Connection events
+
+	self.m_WaitForStart = false
+	m_LootManager:OnModReload()
+	--self:OnLevelLoadResources()
+	self:OnLevelLoaded()
+	-- OnPlayerConnected
+	NetEvents:BroadcastLocal(PingEvents.UpdateConfig, m_PingServer:GetPingDisplayCooldownTime())
+	NetEvents:Broadcast(PlayerEvents.GameStateChanged, GameStates.None, self.m_GameState)
+	PlayerManager:FadeInAll(1.0)
+end
+
+function VuBattleRoyaleServer:CurrentTeamSize()
+	if ServerConfig.PlayersPerTeam == 1 then
+		return "Solo"
+	elseif ServerConfig.PlayersPerTeam == 2 then
+		return "Duo"
+	else
+		return "Squad"
+	end
+end
+
 function VuBattleRoyaleServer:DisablePreRound()
 	-- Thanks to https://github.com/FlashHit/VU-Mods/blob/master/No-PreRound/ext/Server/__init__.lua
 	-- This is for Conquest tickets etc.
-	local ticketCounterIterator = EntityManager:GetIterator("ServerTicketCounterEntity")
+	local s_TicketCounterIterator = EntityManager:GetIterator("ServerTicketCounterEntity")
 
-	local ticketCounterEntity = ticketCounterIterator:Next()
-	while ticketCounterEntity do
-		ticketCounterEntity = Entity(ticketCounterEntity)
-		ticketCounterEntity:FireEvent("StartRound")
-		ticketCounterEntity = ticketCounterIterator:Next()
+	local s_TicketCounterEntity = s_TicketCounterIterator:Next()
+	while s_TicketCounterEntity do
+		s_TicketCounterEntity = Entity(s_TicketCounterEntity)
+		s_TicketCounterEntity:FireEvent("StartRound")
+		s_TicketCounterEntity = s_TicketCounterIterator:Next()
 	end
 
 	-- This is needed so you are able to move
-	local inputRestrictionIterator = EntityManager:GetIterator("ServerInputRestrictionEntity")
-	local inputRestrictionEntity = inputRestrictionIterator:Next()
-	while inputRestrictionEntity do
-		if inputRestrictionEntity.data.instanceGuid == Guid("E8C37E6A-0C8B-4F97-ABDD-28715376BD2D") then
-			inputRestrictionEntity = Entity(inputRestrictionEntity)
-			inputRestrictionEntity:FireEvent("Disable")
+	local s_InputRestrictionIterator = EntityManager:GetIterator("ServerInputRestrictionEntity")
+	local s_InputRestrictionEntity = s_InputRestrictionIterator:Next()
+	while s_InputRestrictionEntity do
+		if s_InputRestrictionEntity.data.instanceGuid == Guid("E8C37E6A-0C8B-4F97-ABDD-28715376BD2D") then
+			s_InputRestrictionEntity = Entity(s_InputRestrictionEntity)
+			s_InputRestrictionEntity:FireEvent("Disable")
 		end
-		inputRestrictionEntity = inputRestrictionIterator:Next()
+		s_InputRestrictionEntity = s_InputRestrictionIterator:Next()
 	end
 
 	-- This Entity is needed so the round ends when tickets are reached
-	local roundOverIterator = EntityManager:GetIterator("ServerRoundOverEntity")
-	local roundOverEntity = roundOverIterator:Next()
-	while roundOverEntity do
-		roundOverEntity = Entity(roundOverEntity)
-		roundOverEntity:FireEvent("RoundStarted")
-		roundOverEntity = roundOverIterator:Next()
+	local s_RoundOverIterator = EntityManager:GetIterator("ServerRoundOverEntity")
+	local s_RoundOverEntity = s_RoundOverIterator:Next()
+	while s_RoundOverEntity do
+		s_RoundOverEntity = Entity(s_RoundOverEntity)
+		s_RoundOverEntity:FireEvent("RoundStarted")
+		s_RoundOverEntity = s_RoundOverIterator:Next()
 	end
 end
 

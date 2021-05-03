@@ -24,7 +24,6 @@ function ModifyDatabase(p_Instance)
 		local s_MeshConfig = TreeConfig[l_Entry.mesh.instanceGuid:ToString('D')]
 
 		if s_MeshConfig ~= nil then
-            print(p_Instance.instanceGuid)
 			if l_Entry.variationAssetNameHash == (s_MeshConfig.VARIATION_HASH or 0) then
 				ModifyEntry(l_Entry, s_MeshConfig)
 			end
