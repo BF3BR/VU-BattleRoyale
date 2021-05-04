@@ -8,6 +8,7 @@ local m_WeaponSwitchingModifier = require "__shared/Modifications/Soldiers/Weapo
 local m_PhysicsModifier = require "__shared/Modifications/Soldiers/PhysicsModifier"
 local m_WeaponsModifier = require "__shared/Modifications/WeaponsModifier"
 local m_DropShipModifier = require "__shared/Modifications/DropShipModifier"
+local m_VanillaUIModifier = require "__shared/Modifications/VanillaUIModifier"
 local m_LootCreation = require "__shared/Modifications/LootCreation"
 local m_2dTreeRemoving = require "__shared/Modifications/2dTreeRemoving"
 local m_TempMapPatches = require "__shared/Modifications/TempMapPatches"
@@ -24,6 +25,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_WeaponSwitchingModifier:RegisterCallbacks()
 	m_WeaponsModifier:RegisterCallbacks()
 	m_DropShipModifier:RegisterCallbacks()
+	m_VanillaUIModifier:RegisterCallbacks()
 	m_TempMapPatches:RegisterCallbacks()
 	m_PhysicsModifier:RegisterCallbacks()
 	m_WeaponDropModifier:RegisterCallbacks()

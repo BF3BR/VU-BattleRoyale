@@ -79,8 +79,8 @@ end
 -- UI node connections
 function ConnectionHelper:CreateNodeConnection(p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop)
 	local s_UINodeConnection = UINodeConnection()
-	s_UINodeConnection.source = p_Source
-	s_UINodeConnection.target = p_Target
+	s_UINodeConnection.sourceNode = p_Source
+	s_UINodeConnection.targetNode = p_Target
 	s_UINodeConnection.sourcePort = p_SourcePort
 	s_UINodeConnection.targetPort = p_TargetPort
 	s_UINodeConnection.numScreensToPop = p_ScreensToPop or 0
@@ -92,22 +92,41 @@ function ConnectionHelper:AddNodeConnection(p_GraphAsset, p_Source, p_Target, p_
 	p_GraphAsset.connections:add(self:CreateNodeConnection(p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop))
 end
 
+function ConnectionHelper:GetNode(p_TypeName, p_ParentGraphAsset, p_FieldsToPopulate)
+	local s_Node = _G[p_TypeName]()
+	s_Node.parentGraph = p_ParentGraphAsset
 
--- TODO: Add other connection types
+	for _, l_Field in ipairs(p_FieldsToPopulate or {}) do
+		s_Node[l_Field] = UINodePort()
+	end
+
+	p_ParentGraphAsset.nodes:add(s_Node)
+
+	return s_Node
+end
+
+local m_FieldAndType = {
+	eventConnections = "EventConnection",
+	propertyConnections = "PropertyConnection",
+	linkConnections = "LinkConnection",
+}
+
 function ConnectionHelper:CloneConnections(p_Blueprint, p_OriginalData, p_CustomData)
-	for _, l_Connection in pairs(p_Blueprint.eventConnections) do
-		if l_Connection.source == p_OriginalData then
-			local s_Clone = EventConnection(l_Connection:Clone())
-			s_Clone.source = p_CustomData
+	for l_Field, l_Type in pairs(m_FieldAndType) do
+		for _, l_Connection in pairs(p_Blueprint[l_Field]) do
+			if l_Connection.source.instanceGuid == p_OriginalData.instanceGuid then
+				local s_Clone = _G[l_Type](l_Connection:Clone())
+				s_Clone.source = p_CustomData
 
-			p_Blueprint.eventConnections:add(s_Clone)
-		end
+				p_Blueprint[l_Field]:add(s_Clone)
+			end
 
-		if l_Connection.target == p_OriginalData then
-			local s_Clone = EventConnection(l_Connection:Clone())
-			s_Clone.target = p_CustomData
+			if l_Connection.target.instanceGuid == p_OriginalData.instanceGuid then
+				local s_Clone = _G[l_Type](l_Connection:Clone())
+				s_Clone.target = p_CustomData
 
-			p_Blueprint.eventConnections:add(s_Clone)
+				p_Blueprint[l_Field]:add(s_Clone)
+			end
 		end
 	end
 end

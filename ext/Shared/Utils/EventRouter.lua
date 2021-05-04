@@ -9,9 +9,9 @@ local UpdateManagerMap = {
 	[UpdatePass.UpdatePass_PreFrame] = {"UpdatePass_PreFrame", EventRouterEvents.UIDrawHudCustom},
 	[UpdatePass.UpdatePass_Count] = {"UpdatePass_Count"}
 }
---[[
+
 Events:Subscribe("UpdateManager:Update", function(deltaTime, updatePass)
 	for _, eventName in ipairs(UpdateManagerMap[updatePass]) do
 		Events:DispatchLocal(eventName, deltaTime)
 	end
-end)]]
+end)

@@ -6,6 +6,7 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/UiStates"
 
 local m_Showroom = require "Showroom"
+local m_VanillaUIManager = require "VanillaUIManager"
 local m_Logger = Logger("VuBattleRoyaleHud", true)
 
 function VuBattleRoyaleHud:__init()
@@ -128,6 +129,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 		or s_LocalPlayer.soldier == nil then
 			WebUI:ExecuteJS("ToggleDeployMenu(true);")
 			m_Showroom:SetCamera(true)
+			m_VanillaUIManager:EnableShowroomSoldier(true)
 		end
 	end
 end
@@ -396,11 +398,12 @@ end
 
 function VuBattleRoyaleHud:RegisterEscMenuCallbacks()
 	-- REMOVE these lines when the custom UI is done
-	----------------
-	if removeThis == nil then
+	-- --------------
+	local removeThis = true
+	if removeThis then
 		return
 	end
-	----------------
+	-- --------------
 	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 	local s_Entity = s_EntityIterator:Next()
 	while s_Entity do

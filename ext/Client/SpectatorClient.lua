@@ -5,6 +5,8 @@ require "__shared/Mixins/TimersMixin"
 
 class("SpectatorClient", TimersMixin)
 
+local m_Logger = Logger("SpectatorClient", true)
+
 function SpectatorClient:__init()
 	-- call TimersMixin's constructor
 	TimersMixin.__init(self)
@@ -175,10 +177,11 @@ end
 -- =============================================
 
 function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
+	m_Logger:Write("OnPlayerKilled")
 	if p_PlayerId == nil then
 		return
 	end
-
+	m_Logger:Write("p_PlayerId " .. p_PlayerId)
 	local s_Player = PlayerManager:GetLocalPlayer()
 
 	if s_Player == nil then
@@ -186,6 +189,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 	end
 
 	if s_Player.id == p_PlayerId then
+		m_Logger:Write("you died. enabling spec in 5 secs")
 		g_Timers:Timeout(5, p_InflictorId, function()
 			if self.m_GameState ~= GameStates.EndGame and self.m_GameState ~= GameStates.None and self.m_GameState ~= GameStates.Warmup then
 				self:Enable(p_InflictorId)
@@ -194,9 +198,11 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 		return
 	-- Handle death of player being spectated.
 	elseif self.m_SpectatedPlayerId == nil then
+		m_Logger:Write("SpectateNextPlayer")
 		self:SpectateNextPlayer()
 		return
 	elseif p_PlayerId == self.m_SpectatedPlayerId then
+		m_Logger:Write("SpectatedPlayer died")
 		if p_InflictorId ~= nil then
 			local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
 			if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
@@ -279,6 +285,7 @@ end
 
 function SpectatorClient:Enable(p_InflictorId)
 	if self:IsEnabled() then
+		m_Logger:Write("Is already enabled")
 		return
 	end
 
@@ -300,9 +307,10 @@ function SpectatorClient:Enable(p_InflictorId)
 	end
 
 	if s_LocalPlayer.soldier ~= nil and not s_LocalPlayer.soldier.isDead then
+		m_Logger:Write("You are not dead :o")
 		return
 	end
-
+	m_Logger:Write("Spectating should work at this point")
 	self:CreateCamera()
 	self:TakeControl()
 
