@@ -12,8 +12,7 @@ require "__shared/Enums/CustomEvents"
 require "PhaseManagerClient"
 require "BRPlayer"
 
-local m_UICleanup = require "UICleanup"
-local m_UIManager = require "UIManager"
+local m_VanillaUIManager = require "VanillaUIManager"
 local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
 local m_SpectatorClient = require "SpectatorClient"
@@ -89,7 +88,6 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
-    m_UICleanup:RegisterCallbacks()
     m_Gunship:RegisterCallbacks()
     m_Showroom:RegisterCallbacks()
 end
@@ -112,11 +110,13 @@ end
 function VuBattleRoyaleClient:OnLevelDestroy()
     m_Hud:OnLevelDestroy()
     m_SpectatorClient:OnLevelDestroy()
+    m_VanillaUIManager:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
-    m_Showroom:SetCamera(true)
     WebUI:ExecuteJS("ToggleDeployMenu(true);")
+    m_Showroom:SetCamera(true)
+    g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
     m_Ping:OnLevelLoaded(p_LevelName, p_GameMode)
 end
 
@@ -366,6 +366,7 @@ end
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
     m_Showroom:SetCamera(false)
+    m_VanillaUIManager:EnableShowroomSoldier(false)
     NetEvents:Send(PlayerEvents.PlayerDeploy)
 end
 
@@ -411,7 +412,7 @@ end
 
 function VuBattleRoyaleClient:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
     m_Hud:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
-    m_UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
+    m_VanillaUIManager:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
 end
 
 function VuBattleRoyaleClient:OnUICreateKillMessage(p_Hook)

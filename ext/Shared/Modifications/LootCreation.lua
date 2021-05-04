@@ -3,7 +3,7 @@ class "LootCreation"
 require "__shared/Enums/CustomEvents"
 
 local m_ConnectionHelper = require("__shared/Utils/ConnectionHelper")
-local m_Logger = Logger("LootCreation", true)
+local m_Logger = Logger("LootCreation", false)
 
 function LootCreation:__init()
     self:RegisterEvents()

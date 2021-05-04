@@ -7,7 +7,7 @@ function DropShipModifier:__init()
 end
 
 function DropShipModifier:RegisterCallbacks()
-    --m_AmmobagFiringData:RegisterLoadHandler(self, self.Something)
+    --m_Something:RegisterLoadHandler(self, self.Something)
 end
 
 function DropShipModifier:Something(p_Something)

@@ -6,6 +6,7 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/UiStates"
 
 local m_Showroom = require "Showroom"
+local m_VanillaUIManager = require "VanillaUIManager"
 local m_Logger = Logger("VuBattleRoyaleHud", true)
 
 function VuBattleRoyaleHud:__init()
@@ -82,6 +83,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
          or not s_LocalPlayer.soldier.alive then
             WebUI:ExecuteJS("ToggleDeployMenu(true);")
             m_Showroom:SetCamera(true)
+            m_VanillaUIManager:EnableShowroomSoldier(true)
         end
     end
 end

@@ -137,7 +137,7 @@ function VuBattleRoyaleServer:OnChangingWeapon(p_Player)
     if p_Player == nil or p_Player.soldier == nil or p_Player.soldier.isInteractiveManDown == false then
         return
     end
-    p_Player.soldier:ApplyCustomization(m_InteractiveManDown:CreateManDownCustomizeSoldierData())
+    p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
 end
 
 function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
