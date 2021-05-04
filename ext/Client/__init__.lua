@@ -453,43 +453,43 @@ end
 -- Hooks
 -- =============================================
 
-function VuBattleRoyaleClient:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
-	m_Hud:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
+function VuBattleRoyaleClient:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
+	m_Hud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 end
 
-function VuBattleRoyaleClient:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
-	m_Hud:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
-	m_UICleanup:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
+function VuBattleRoyaleClient:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
+	m_Hud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
+	m_UICleanup:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
 end
 
-function VuBattleRoyaleClient:OnUICreateKillMessage(p_Hook)
-	p_Hook:Return()
+function VuBattleRoyaleClient:OnUICreateKillMessage(p_HookCtx)
+	p_HookCtx:Return()
 end
 
-function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_Hook)
+function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_HookCtx)
 	if not ServerConfig.Debug.ShowAllNametags then
-		p_Hook:Return()
+		p_HookCtx:Return()
 	end
 end
 
-function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_Hook)
+function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_HookCtx)
 	if not ServerConfig.Debug.ShowAllNametags then
-		p_Hook:Return()
+		p_HookCtx:Return()
 	end
 end
 
-function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_Hook)
+function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_HookCtx)
 	if not ServerConfig.Debug.ShowAllNametags then
-		--p_Hook:Return()
+		--p_HookCtx:Return()
 	end
 end
 
-function VuBattleRoyaleClient:OnUIRenderMinimap(p_Hook)
-	p_Hook:Return()
+function VuBattleRoyaleClient:OnUIRenderMinimap(p_HookCtx)
+	p_HookCtx:Return()
 end
 
-function VuBattleRoyaleClient:OnInputPreUpdate(p_Hook, p_Cache, p_DeltaTime)
-	m_Gunship:OnInputPreUpdate(p_Hook, p_Cache, p_DeltaTime)
+function VuBattleRoyaleClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
+	m_Gunship:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
 end
 
 -- =============================================

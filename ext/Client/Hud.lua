@@ -20,6 +20,8 @@ function VuBattleRoyaleHud:__init()
 
 	self.m_Markers = {}
 
+	self.m_IsInEscMenu = false
+
 	self:RegisterVars()
 end
 
@@ -304,25 +306,34 @@ end
 -- Hooks
 -- =============================================
 
-function VuBattleRoyaleHud:OnInputConceptEvent(p_Hook, p_EventType, p_Action)
+function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_Action == UIInputAction.UIInputAction_MapSize and p_EventType ==
 		UIInputActionEventType.UIInputActionEventType_Pressed then
 		WebUI:ExecuteJS("OnOpenCloseMap();")
-		p_Hook:Pass(UIInputAction.UIInputAction_None, p_EventType)
+		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
 
 	if p_Action == UIInputAction.UIInputAction_MapZoom and p_EventType ==
 		UIInputActionEventType.UIInputActionEventType_Pressed then
 		WebUI:ExecuteJS("OnMapZoomChange();")
-		p_Hook:Pass(UIInputAction.UIInputAction_None, p_EventType)
+		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
 
 	if p_Action == UIInputAction.UIInputAction_Tab and p_EventType ==
 		UIInputActionEventType.UIInputActionEventType_Pressed then
 		WebUI:ExecuteJS("OnMapEnableMouse();")
-		p_Hook:Pass(UIInputAction.UIInputAction_None, p_EventType)
+		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
+		return
+	end
+
+	-- Will be replaced with a custom chat anyways
+	-- Info: If you write in chat the gameinput gets reenabled, that's why we need to avoid the vanilla chat while being in the menu
+	if (p_Action == UIInputAction.UIInputAction_SayAllChat or p_Action == UIInputAction.UIInputAction_TeamChat
+	or p_Action == UIInputAction.UIInputAction_SquadChat)
+	and p_EventType == UIInputActionEventType.UIInputActionEventType_Pressed and self.m_IsInEscMenu then
+		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
 end
@@ -376,6 +387,348 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 	self.m_HudOnSetUIState:Update(UiStates.Game)
 	WebUI:ExecuteJS("OnLevelFinalized('" .. SharedUtils:GetLevelName() .. "');")
 	self:OnGameStateChanged(self.m_GameState)
+	self:RegisterEscMenuCallbacks()
+end
+
+-- =============================================
+	-- Esc Menu Callbacks
+-- =============================================
+
+function VuBattleRoyaleHud:RegisterEscMenuCallbacks()
+	-- REMOVE these lines when the custom UI is done
+	----------------
+	if removeThis == nil then
+		return
+	end
+	----------------
+	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+	local s_Entity = s_EntityIterator:Next()
+	while s_Entity do
+		s_Entity = Entity(s_Entity)
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("B9437F95-2EBC-4F22-A5F6-F4D0F1331A5E") then
+			s_Entity:RegisterEventCallback(self, self.OnEscapeMenuCallback)
+		end
+		s_Entity = s_EntityIterator:Next()
+	end
+end
+
+function VuBattleRoyaleHud:OnEscapeMenuCallback(p_Entity, p_EntityEvent)
+	if p_EntityEvent.eventId == MathUtils:FNVHash("EnterFromGame") then
+		self:OnOpenEscapeMenu()
+		return false
+	elseif p_EntityEvent.eventId == MathUtils:FNVHash("ExitUIGraph") then
+		self:OnResume()
+	end
+end
+
+
+-- =============================================
+	-- Open Escape Menu
+-- =============================================
+
+function VuBattleRoyaleHud:OnOpenEscapeMenu()
+	local s_DataMouse = self:GetEnableMouseEntityData()
+	local s_EnableMouseGraphEntity = EntityManager:CreateEntity(s_DataMouse, LinearTransform())
+	s_EnableMouseGraphEntity:FireEvent('EnableMouseInput')
+
+	local s_DataGameInput = self:GetDisableGameInputEntityData()
+	local s_DisableGameInputGraphEntity = EntityManager:CreateEntity(s_DataGameInput, LinearTransform())
+	s_DisableGameInputGraphEntity:FireEvent('DisableGameInput')
+
+	self:ShowCrosshair(false)
+	self.m_IsInEscMenu = true
+
+	self.m_HudOnSetUIState:Update(UiStates.Hidden)
+	-- Add WebUI
+end
+
+function VuBattleRoyaleHud:GetEnableMouseEntityData()
+	local s_MousePopupGraphAsset = UIGraphAsset()
+	s_MousePopupGraphAsset.modal = false
+	s_MousePopupGraphAsset.protectScreens = true
+	s_MousePopupGraphAsset.isWin32UIGraphAsset = true
+	s_MousePopupGraphAsset.isXenonUIGraphAsset = true
+	s_MousePopupGraphAsset.isPs3UIGraphAsset = true
+
+	local s_InputNode = InstanceInputNode()
+	s_InputNode.parentGraph = s_MousePopupGraphAsset
+	s_InputNode.name = 'EnableMouseInput'
+	s_InputNode.isRootNode = false
+	s_InputNode.parentIsScreen = false
+	s_MousePopupGraphAsset.nodes:add(s_InputNode)
+
+	local s_ActionNode = ActionNode()
+	s_ActionNode.actionKey = -1254356014
+	s_ActionNode.inValue = UINodePort()
+	s_ActionNode.out = UINodePort()
+	s_ActionNode.appendIncomingParams = false
+	s_ActionNode.name = 'EnableMouseInput'
+	s_ActionNode.params:add("True")
+	s_ActionNode.isRootNode = false
+	s_ActionNode.parentGraph = s_MousePopupGraphAsset
+	s_ActionNode.parentIsScreen = false
+	s_MousePopupGraphAsset.nodes:add(s_ActionNode)
+
+	local s_InputToDialogNodeConnection = UINodeConnection()
+	s_InputToDialogNodeConnection.sourceNode = s_InputNode
+	s_InputToDialogNodeConnection.targetNode = s_ActionNode
+	s_InputToDialogNodeConnection.sourcePort = s_InputNode.out
+	s_InputToDialogNodeConnection.targetPort = s_ActionNode.inValue
+	s_InputToDialogNodeConnection.numScreensToPop = 0
+	s_MousePopupGraphAsset.connections:add(s_InputToDialogNodeConnection)
+
+	local s_OutputNode = InstanceOutputNode()
+	s_OutputNode.inValue = UINodePort()
+	s_OutputNode.id = -1072000798
+	s_OutputNode.destroyGraph = true
+	s_OutputNode.name = "exitIngameMenuMP"
+	s_OutputNode.isRootNode = false
+	s_OutputNode.parentGraph = s_MousePopupGraphAsset
+	s_OutputNode.parentIsScreen = false
+	s_MousePopupGraphAsset.nodes:add(s_OutputNode)
+
+	local s_ActionToOutputNodeConnection = UINodeConnection()
+	s_ActionToOutputNodeConnection.sourceNode = s_ActionNode
+	s_ActionToOutputNodeConnection.targetNode = s_OutputNode
+	s_ActionToOutputNodeConnection.sourcePort = s_ActionNode.out
+	s_ActionToOutputNodeConnection.targetPort = s_OutputNode.inValue
+	s_ActionToOutputNodeConnection.numScreensToPop = 1
+	s_MousePopupGraphAsset.connections:add(s_ActionToOutputNodeConnection)
+
+	local s_MousePopupGraphEntityData = UIGraphEntityData()
+	s_MousePopupGraphEntityData.graphAsset = s_MousePopupGraphAsset
+	s_MousePopupGraphEntityData.popPreviousGraph = false
+
+	return s_MousePopupGraphEntityData
+end
+
+function VuBattleRoyaleHud:GetDisableGameInputEntityData()
+	local s_DisableGameInputGraphAsset = UIGraphAsset()
+	s_DisableGameInputGraphAsset.modal = false
+	s_DisableGameInputGraphAsset.protectScreens = true
+	s_DisableGameInputGraphAsset.isWin32UIGraphAsset = true
+	s_DisableGameInputGraphAsset.isXenonUIGraphAsset = true
+	s_DisableGameInputGraphAsset.isPs3UIGraphAsset = true
+
+	local s_InputNode = InstanceInputNode()
+	s_InputNode.parentGraph = s_DisableGameInputGraphAsset
+	s_InputNode.name = 'DisableGameInput'
+	s_InputNode.isRootNode = false
+	s_InputNode.parentIsScreen = false
+	s_DisableGameInputGraphAsset.nodes:add(s_InputNode)
+
+	local s_ActionNode = ActionNode()
+	s_ActionNode.actionKey = -368863171
+	s_ActionNode.inValue = UINodePort()
+	s_ActionNode.out = UINodePort()
+	s_ActionNode.appendIncomingParams = false
+	s_ActionNode.name = 'DisableGameInput'
+	s_ActionNode.params:add("False")
+	s_ActionNode.isRootNode = false
+	s_ActionNode.parentGraph = s_DisableGameInputGraphAsset
+	s_ActionNode.parentIsScreen = false
+	s_DisableGameInputGraphAsset.nodes:add(s_ActionNode)
+
+	local s_InputToDialogNodeConnection = UINodeConnection()
+	s_InputToDialogNodeConnection.sourceNode = s_InputNode
+	s_InputToDialogNodeConnection.targetNode = s_ActionNode
+	s_InputToDialogNodeConnection.sourcePort = s_InputNode.out
+	s_InputToDialogNodeConnection.targetPort = s_ActionNode.inValue
+	s_InputToDialogNodeConnection.numScreensToPop = 0
+	s_DisableGameInputGraphAsset.connections:add(s_InputToDialogNodeConnection)
+
+	local s_OutputNode = InstanceOutputNode()
+	s_OutputNode.inValue = UINodePort()
+	s_OutputNode.id = -1072000798
+	s_OutputNode.destroyGraph = true
+	s_OutputNode.name = "exitIngameMenuMP"
+	s_OutputNode.isRootNode = false
+	s_OutputNode.parentGraph = s_DisableGameInputGraphAsset
+	s_OutputNode.parentIsScreen = false
+	s_DisableGameInputGraphAsset.nodes:add(s_OutputNode)
+
+	local s_ActionToOutputNodeConnection = UINodeConnection()
+	s_ActionToOutputNodeConnection.sourceNode = s_ActionNode
+	s_ActionToOutputNodeConnection.targetNode = s_OutputNode
+	s_ActionToOutputNodeConnection.sourcePort = s_ActionNode.out
+	s_ActionToOutputNodeConnection.targetPort = s_OutputNode.inValue
+	s_ActionToOutputNodeConnection.numScreensToPop = 1
+	s_DisableGameInputGraphAsset.connections:add(s_ActionToOutputNodeConnection)
+
+	local s_DisableGameInputGraphEntityData = UIGraphEntityData()
+	s_DisableGameInputGraphEntityData.graphAsset = s_DisableGameInputGraphAsset
+	s_DisableGameInputGraphEntityData.popPreviousGraph = false
+
+	return s_DisableGameInputGraphEntityData
+end
+
+-- =============================================
+	-- Close Escape Menu
+-- =============================================
+
+function VuBattleRoyaleHud:OnResume()
+	self:DisableMenuVisualEnv()
+	self:ExitSoundState()
+	self:HUDEnterUIGraph()
+	self:ShowCrosshair(true)
+	self:EnableTabScoreboard()
+	self.m_IsInEscMenu = false
+	self.m_HudOnSetUIState:Update(UiStates.Game)
+end
+
+function VuBattleRoyaleHud:DisableMenuVisualEnv()
+	local s_Iterator = EntityManager:GetIterator("LogicVisualEnvironmentEntity")
+	local s_Entity = s_Iterator:Next()
+	while s_Entity do
+		if s_Entity.data.instanceGuid == Guid("A17FCE78-E904-4833-98F8-50BE77EFCC41") then
+			s_Entity = Entity(s_Entity)
+			s_Entity:FireEvent("Disable")
+			return
+		end
+		s_Entity = s_Iterator:Next()
+	end
+end
+
+function VuBattleRoyaleHud:ExitSoundState()
+	local s_SoundStateEntityIterator = EntityManager:GetIterator("SoundStateEntity")
+	local s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+	while s_SoundStateEntity do
+		if s_SoundStateEntity.data.instanceGuid == Guid("AC7A757C-D9FA-4693-97E7-7A5C50EF29C7") then
+			s_SoundStateEntity = Entity(s_SoundStateEntity)
+			s_SoundStateEntity:FireEvent("Exit")
+			return
+		end
+		s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+	end
+end
+
+function VuBattleRoyaleHud:HUDEnterUIGraph()
+	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
+	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	while s_UIGraphEntity do
+		if s_UIGraphEntity.data.instanceGuid == Guid("133D3825-5F17-4210-A4DB-3694FDBAD26D") then
+			s_UIGraphEntity = Entity(s_UIGraphEntity)
+			s_UIGraphEntity:FireEvent("EnterUIGraph")
+			return
+		end
+		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	end
+end
+
+function VuBattleRoyaleHud:ShowCrosshair(p_Enable)
+	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
+	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	while s_UIGraphEntity do
+		if s_UIGraphEntity.data.instanceGuid == Guid('9F8D5FCA-9B2A-484F-A085-AFF309DC5B7A') then
+			s_UIGraphEntity = Entity(s_UIGraphEntity)
+			if p_Enable then
+				s_UIGraphEntity:FireEvent('ShowCrosshair')
+			else
+				s_UIGraphEntity:FireEvent('HideCrosshair')
+			end
+			return
+		end
+		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	end
+end
+
+function VuBattleRoyaleHud:EnableTabScoreboard()
+	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
+	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	while s_UIGraphEntity do
+		if s_UIGraphEntity.data.instanceGuid == Guid('BD1ED7AE-31AE-495C-9133-DC25ACA30CE4') then
+			s_UIGraphEntity = Entity(s_UIGraphEntity)
+			s_UIGraphEntity:FireEvent('Startup and hide')
+			return
+		end
+		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	end
+end
+
+-- =============================================
+	-- Open Options
+-- =============================================
+
+function VuBattleRoyaleHud:OnOptions()
+	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
+	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	while s_UIGraphEntity do
+		if s_UIGraphEntity.data.instanceGuid == Guid("EDF20470-4AD7-44BC-96E1-9DF61989BE58") then
+			s_UIGraphEntity = Entity(s_UIGraphEntity)
+			s_UIGraphEntity:FireEvent("EnterOptions")
+			return
+		end
+		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	end
+end
+
+-- =============================================
+	-- Quit the game (Custom popup is missing)
+-- =============================================
+
+function VuBattleRoyaleHud:OnQuit()
+	local s_Data = self:GetQuitEntityData()
+	local s_QuitPopupGraphEntity = EntityManager:CreateEntity(s_Data, LinearTransform())
+	s_QuitPopupGraphEntity:FireEvent('Quit')
+end
+
+function VuBattleRoyaleHud:GetQuitEntityData()
+	local s_QuitPopupGraphAsset = UIGraphAsset()
+	s_QuitPopupGraphAsset.modal = false
+	s_QuitPopupGraphAsset.protectScreens = true
+	s_QuitPopupGraphAsset.isWin32UIGraphAsset = true
+	s_QuitPopupGraphAsset.isXenonUIGraphAsset = true
+	s_QuitPopupGraphAsset.isPs3UIGraphAsset = true
+
+	local s_InputNode = InstanceInputNode()
+	s_InputNode.parentGraph = s_QuitPopupGraphAsset
+	s_InputNode.name = 'Quit'
+	s_InputNode.isRootNode = false
+	s_InputNode.parentIsScreen = false
+	s_QuitPopupGraphAsset.nodes:add(s_InputNode)
+
+	local s_ActionNode = ActionNode()
+	s_ActionNode.actionKey = 702328210
+	s_ActionNode.inValue = UINodePort()
+	s_ActionNode.out = UINodePort()
+	s_ActionNode.appendIncomingParams = false
+	s_ActionNode.name = 'Quit'
+	s_ActionNode.isRootNode = false
+	s_ActionNode.parentGraph = s_QuitPopupGraphAsset
+	s_ActionNode.parentIsScreen = false
+	s_QuitPopupGraphAsset.nodes:add(s_ActionNode)
+
+	local s_InputToDialogNodeConnection = UINodeConnection()
+	s_InputToDialogNodeConnection.sourceNode = s_InputNode
+	s_InputToDialogNodeConnection.targetNode = s_ActionNode
+	s_InputToDialogNodeConnection.sourcePort = s_InputNode.out
+	s_InputToDialogNodeConnection.targetPort = s_ActionNode.inValue
+	s_InputToDialogNodeConnection.numScreensToPop = 0
+	s_QuitPopupGraphAsset.connections:add(s_InputToDialogNodeConnection)
+
+	local s_OutputNode = InstanceOutputNode()
+	s_OutputNode.inValue = UINodePort()
+	s_OutputNode.id = 1905656325
+	s_OutputNode.destroyGraph = true
+	s_OutputNode.name = "QuitOrSuicide"
+	s_OutputNode.isRootNode = false
+	s_OutputNode.parentGraph = s_QuitPopupGraphAsset
+	s_OutputNode.parentIsScreen = false
+	s_QuitPopupGraphAsset.nodes:add(s_OutputNode)
+
+	local s_ActionToOutputNodeConnection = UINodeConnection()
+	s_ActionToOutputNodeConnection.sourceNode = s_ActionNode
+	s_ActionToOutputNodeConnection.targetNode = s_OutputNode
+	s_ActionToOutputNodeConnection.sourcePort = s_ActionNode.out
+	s_ActionToOutputNodeConnection.targetPort = s_OutputNode.inValue
+	s_ActionToOutputNodeConnection.numScreensToPop = 1
+	s_QuitPopupGraphAsset.connections:add(s_ActionToOutputNodeConnection)
+
+	local s_QuitPopupGraphEntityData = UIGraphEntityData()
+	s_QuitPopupGraphEntityData.graphAsset = s_QuitPopupGraphAsset
+	s_QuitPopupGraphEntityData.popPreviousGraph = false
+
+	return s_QuitPopupGraphEntityData
 end
 
 -- =============================================
