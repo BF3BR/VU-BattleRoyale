@@ -1,4 +1,4 @@
 TeamManagerErrors = {
-    InvalidTeamId = 1,
-    TeamIsFull = 2
+	InvalidTeamId = 1,
+	TeamIsFull = 2
 }

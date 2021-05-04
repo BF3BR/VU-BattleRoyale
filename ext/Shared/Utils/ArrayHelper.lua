@@ -2,41 +2,41 @@ class "ArrayHelper"
 
 -- Returns the first index at which a given value can be found in the array
 function ArrayHelper:IndexOf(p_Array, p_Value)
-    for l_Index, l_Value in ipairs(p_Array) do
-        if l_Value == p_Value then
-            return l_Index
-        end
-    end
+	for l_Index, l_Value in ipairs(p_Array) do
+		if l_Value == p_Value then
+			return l_Index
+		end
+	end
 
-    return nil
+	return nil
 end
 
 -- Checks if the array contains a given value
 function ArrayHelper:Contains(p_Array, p_Value)
-    return ArrayHelper:IndexOf(p_Array, p_Value) ~= nil
+	return ArrayHelper:IndexOf(p_Array, p_Value) ~= nil
 end
 
 -- Removes an entry of the array by its value
 function ArrayHelper:RemoveByValue(p_Array, p_Value)
-    local l_Index = ArrayHelper:IndexOf(p_Array, p_Value)
+	local l_Index = ArrayHelper:IndexOf(p_Array, p_Value)
 
-    -- check if the value doesn't exist
-    if l_Index == nil then
-        return false
-    end
+	-- check if the value doesn't exist
+	if l_Index == nil then
+		return false
+	end
 
-    table.remove(p_Array, l_Index)
-    return true
+	table.remove(p_Array, l_Index)
+	return true
 end
 
 -- Converts an array to a map using the values as the keys
 function ArrayHelper:ToMap(p_Array, p_Value)
-    p_Value = (p_Value == nil and true) or p_Value
+	p_Value = (p_Value == nil and true) or p_Value
 
-    local l_Map = {}
-    for _, l_Value in ipairs(p_Array) do
-        l_Map[l_Value] = p_Value
-    end
+	local l_Map = {}
+	for _, l_Value in ipairs(p_Array) do
+		l_Map[l_Value] = p_Value
+	end
 
-    return l_Map
+	return l_Map
 end

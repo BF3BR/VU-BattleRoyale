@@ -1,12 +1,13 @@
 import React from "react";
+import { connect } from "react-redux";
+import { RootState } from "../store/RootReducer";
 
 import Timer from "./helpers/Timer";
-
 import Player from "../helpers/PlayerHelper";
 
 import "./MatchInfo.scss";
 
-interface Props {
+interface StateFromReducer {
     state: string;
     time: number|null;
     noMap: boolean;
@@ -17,8 +18,18 @@ interface Props {
     deployScreen: boolean;
 }
 
-const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToStart, subPhaseIndex, spectating, deployScreen }) => {
+type Props = StateFromReducer;
 
+const MatchInfo: React.FC<Props> = ({
+    state,
+    time,
+    noMap,
+    players,
+    minPlayersToStart,
+    subPhaseIndex,
+    spectating,
+    deployScreen
+}) => {
     const getStateString = (state: string, subPhaseIndex: number) => {
         switch (state) {
             default:
@@ -53,7 +64,7 @@ const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToS
                             {(state === 'None')
                             ?
                                 <span>
-                                    {players !== null ? players.length : 0} / {minPlayersToStart??0}
+                                    {players??0} / {minPlayersToStart??0}
                                 </span> 
                             :
                                 <Timer time={time} />
@@ -66,4 +77,23 @@ const MatchInfo: React.FC<Props> = ({ state, time, noMap, players, minPlayersToS
     );
 };
 
-export default MatchInfo;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // MapReducer
+        noMap: state.MapReducer.open || !state.MapReducer.show,
+        // GameReducer
+        state: state.GameReducer.gameState,
+        time: state.GameReducer.time,
+        players: state.GameReducer.players.all,
+        minPlayersToStart: state.GameReducer.players.minPlayersToStart,
+        deployScreen: state.GameReducer.deployScreen.enabled,
+        // SpectatorReducer
+        spectating: state.SpectatorReducer.enabled,
+        // CircleReducer
+        subPhaseIndex: state.CircleReducer.subPhaseIndex,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(MatchInfo);

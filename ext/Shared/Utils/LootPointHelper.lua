@@ -5,45 +5,44 @@ require "__shared/Utils/EventRouter"
 require "__shared/Configs/MapsConfig"
 
 function LootPointHelper:__init()
-    self.m_Points = {}
-    self.m_Center = ClientUtils:GetWindowSize() / 2
+	self.m_Points = {}
+	self.m_Center = ClientUtils:GetWindowSize() / 2
 
-    self.m_SelectedIndex = nil
-    self.m_ActiveIndex = nil
-    self.m_SavedPosition = nil
+	self.m_SelectedIndex = nil
+	self.m_ActiveIndex = nil
+	self.m_SavedPosition = nil
 
-    if ServerConfig["Debug"]["EnableLootPointSpheres"] then
-        Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-        Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUIDrawHud)
-        Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
-        Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
-    end
+	if ServerConfig["Debug"]["EnableLootPointSpheres"] then
+		Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
+		Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUIDrawHud)
+		Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
+		Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
+	end
 end
 
-
 function LootPointHelper:OnLevelLoaded()
-    local s_LevelName = LevelNameHelper:GetLevelName()
-    if s_LevelName == nil then
-        return
-    end
+	local s_LevelName = LevelNameHelper:GetLevelName()
+	if s_LevelName == nil then
+		return
+	end
 
-    self.m_Points = MapsConfig[s_LevelName]["LootSpawnPoints"]
+	self.m_Points = MapsConfig[s_LevelName]["LootSpawnPoints"]
 end
 
 function LootPointHelper:OnUIDrawHud()
-    for i, point in pairs(self.m_Points) do
+	for i, point in pairs(self.m_Points) do
 		if i ~= self.m_ActiveIndex then
-            DebugRenderer:DrawSphere(point.trans, 0.3, Vec4(1, 1, 1, 0.5), true, false)
+			DebugRenderer:DrawSphere(point.trans, 0.3, Vec4(1, 1, 1, 0.5), true, false)
 		end
 	end
 
 	-- Draw red SpawnPoint on the active point
 	if self.m_ActiveIndex then
-        DebugRenderer:DrawSphere(self.m_Points[self.m_ActiveIndex].trans, 0.3, Vec4(1, 0, 0, 0.5), true, false)
+		DebugRenderer:DrawSphere(self.m_Points[self.m_ActiveIndex].trans, 0.3, Vec4(1, 0, 0, 0.5), true, false)
 
 	-- Draw blue SpawnPoint on the selected point
 	elseif self.m_SelectedIndex then
-        DebugRenderer:DrawSphere(self.m_Points[self.m_SelectedIndex].trans, 0.3, Vec4(0, 0, 1, 0.5), true, false)
+		DebugRenderer:DrawSphere(self.m_Points[self.m_SelectedIndex].trans, 0.3, Vec4(0, 0, 1, 0.5), true, false)
 	end
 end
 
@@ -59,17 +58,17 @@ function LootPointHelper:OnPlayerUpdateInput()
 	end
 
 	-- Press F5 to start or stop moving points
-    if InputManager:WentKeyDown(InputDeviceKeys.IDK_F5) then
-        
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F5) then
+
 		-- If the active point is the last, and unconfirmed, remove it
 		if self.m_ActiveIndex == #self.m_Points and not self.m_SavedPosition then
-	
+
 			self.m_Points[self.m_ActiveIndex] = nil
 			self.m_ActiveIndex = nil
 
 		-- If a previous point was being moved, revert it back to the saved position
 		elseif self.m_SavedPosition then
-	
+
 			self.m_Points[self.m_ActiveIndex] = self.m_SavedPosition:Clone()
 			self.m_ActiveIndex = nil
 			self.m_SavedPosition = nil
@@ -93,15 +92,15 @@ function LootPointHelper:OnPlayerUpdateInput()
 		if self.m_ActiveIndex then
 
 			table.remove(self.m_Points, self.m_ActiveIndex)
-			
+
 		-- If theres a point selected, clear only it
 		elseif self.m_SelectedIndex then
 
 			table.remove(self.m_Points, self.m_SelectedIndex)
-			
+
 		-- Otherwise, clear all points
 		else
-			self.m_Points = {}	
+			self.m_Points = {}
 		end
 
 		self.m_ActiveIndex = nil
@@ -153,7 +152,7 @@ function LootPointHelper:OnUpdateManagerUpdate(delta, pass)
 		return
 	end
 
-	raycastHit = self:Raycast()
+	local raycastHit = self:Raycast()
 
 	if raycastHit == nil then
 		return
@@ -167,7 +166,7 @@ function LootPointHelper:OnUpdateManagerUpdate(delta, pass)
 	if self.m_ActiveIndex and raycastHit then
 
 		self.m_Points[self.m_ActiveIndex].trans = hitPosition
-		
+
 	-- If theres no active point, check to see if the POA is near a point
 	else
 		for index, point in pairs(self.m_Points) do
@@ -217,7 +216,7 @@ function LootPointHelper:Raycast()
 	-- Perform raycast, returns a RayCastHit object.
 	local raycastHit = RaycastManager:Raycast(castStart, castEnd, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter | RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
 
-	return raycastHit	
+	return raycastHit
 end
 
 function LootPointHelper:PrintPointsAsLinearTransforms()

@@ -21,7 +21,7 @@ const LoadingScreen: React.FC = () => {
                         <ul>
                             <li>Find the best gear available</li>
                             <li>Always move inside the circle</li>
-                            <li>Be the last survival</li>
+                            <li>Be the last survivor</li>
                         </ul>
                     </div>
                 </div>

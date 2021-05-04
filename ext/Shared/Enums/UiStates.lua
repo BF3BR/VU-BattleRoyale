@@ -1,6 +1,5 @@
-UiStates =
-{
-    Hidden = "hidden",
-    Loading = "loading",
-    Game = "game",
+UiStates = {
+	Hidden = "hidden",
+	Loading = "loading",
+	Game = "game",
 }
