@@ -147,6 +147,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 		or s_LocalPlayer.soldier == nil then
 			WebUI:ExecuteJS("ToggleDeployMenu(true);")
 			m_Showroom:SetCamera(true)
+			self:ShowCrosshair(false)
 			m_VanillaUIManager:EnableShowroomSoldier(true)
 		end
 	end
@@ -156,6 +157,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	WebUI:ExecuteJS("OnMapShow(true)")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
+	self:ShowCrosshair(true)
 
 	if self.m_GameState <= GameStates.Warmup then
 		return

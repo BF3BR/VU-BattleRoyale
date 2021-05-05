@@ -127,6 +127,7 @@ end
 function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
 	WebUI:ExecuteJS("ToggleDeployMenu(true);")
 	m_Showroom:SetCamera(true)
+	m_Hud:ShowCrosshair(false)
 	g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
 	m_Ping:OnLevelLoaded()
 end
@@ -414,6 +415,7 @@ end
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
 	m_Showroom:SetCamera(false)
+	m_Hud:ShowCrosshair(true)
 	m_VanillaUIManager:EnableShowroomSoldier(false)
 	NetEvents:Send(PlayerEvents.PlayerDeploy)
 end
@@ -525,6 +527,7 @@ function VuBattleRoyaleClient:OnHotReload()
 	if s_LocalPlayer.soldier ~= nil then
 		self:OnPlayerRespawn(s_LocalPlayer)
 	end
+	m_Hud:ShowCrosshair(false)
 end
 
 return VuBattleRoyaleClient()

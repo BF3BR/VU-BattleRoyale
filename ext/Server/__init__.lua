@@ -422,7 +422,7 @@ function VuBattleRoyaleServer:OnHotReload()
 
 	-- OnPlayerAuthenticated
 	local s_Players = PlayerManager:GetPlayers()
-	if s_Players ~= nil and #s_Players == 0 then
+	if s_Players ~= nil and #s_Players > 0 then
 		for _, l_Player in pairs(s_Players) do
 			if l_Player ~= nil then
 				m_TeamManager:OnPlayerAuthenticated(l_Player)
