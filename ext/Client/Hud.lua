@@ -148,6 +148,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 			WebUI:ExecuteJS("ToggleDeployMenu(true);")
 			m_Showroom:SetCamera(true)
 			self:ShowCrosshair(false)
+			self:OnEnableMouse()
 			m_VanillaUIManager:EnableShowroomSoldier(true)
 		end
 	end
@@ -203,6 +204,9 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 		}))
 
 		WebUI:ExecuteJS("ToggleDeployMenu(false);")
+		m_Showroom:SetCamera(false)
+		m_VanillaUIManager:EnableShowroomSoldier(false)
+		self:HUDEnterUIGraph()
 
 		self.m_HudOnSetUIState:Update(UiStates.Loading)
 	elseif self.m_GameState == GameStates.Plane then
