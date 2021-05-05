@@ -70,6 +70,7 @@ import DeployScreen from "./components/DeployScreen";
 import TeamInfo from "./components/TeamInfo";
 import LoadingScreen from "./components/LoadingScreen";
 import MapMarkers from "./components/MapMarkers";
+import Inventory from "./components/Inventory";
 
 /* Style */
 import './App.scss';
@@ -383,7 +384,7 @@ const App: React.FC<Props> = ({
         let tempDowned: string[] = [];
         if (p_Team !== undefined && p_Team.length > 0) {
             p_Team.forEach((teamPlayer: any) => {
-                let tempPlayer = {
+                tempTeam.push({
                     name: teamPlayer.Name,
                     state: teamPlayer.State,
                     kill: 0,
@@ -395,8 +396,7 @@ const App: React.FC<Props> = ({
                         z: teamPlayer.Position?.z ?? null,
                     },
                     yaw: teamPlayer.Yaw,
-                }
-                tempTeam.push(tempPlayer);
+                });
 
                 if (teamPlayer.State === 2 && teamPlayer.Name !== localName) {
                     if (!downedTeammates.includes(teamPlayer.Name)) {
@@ -493,6 +493,7 @@ const App: React.FC<Props> = ({
         p_WorldToScreenX: number,
         p_WorldToScreenY: number
     ) => {
+        dispatch(removePing(p_Key));
         dispatch(addPing({
             id: p_Key,
             color: p_Color,
@@ -512,6 +513,7 @@ const App: React.FC<Props> = ({
     window.OnRemoveMarker = (p_Key: string) => {
         dispatch(removePing(p_Key));
     }
+    
 
     return (
         <>
@@ -608,6 +610,7 @@ const App: React.FC<Props> = ({
                         {!spectating &&
                             <>
                                 <MiniMap />
+                                {/*<Inventory />*/}
                             </>
                         }
                     </>
@@ -681,5 +684,6 @@ declare global {
 
         OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
         OnRemoveMarker: (p_Key: string) => void;
+        OnUpdateMarker: (p_Key: string, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
     }
 }

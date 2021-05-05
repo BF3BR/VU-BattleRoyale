@@ -32,7 +32,7 @@ const PingsElement: React.FC<Props> = ({
         const draw = useCallback((g) => {
             g.clear();
             pingsTable.forEach((ping: Ping) => {
-                var color = getConvertedPlayerColor(ping.color)
+                var color = getConvertedPlayerColor(ping.color);
                 var f = new PIXI.Graphics();
                 f.clear();
                 f.beginFill(color, 0.3)
