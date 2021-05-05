@@ -134,23 +134,6 @@ const DeployScreen: React.FC<Props> = ({
         )
     }
 
-    useEffect(() => {
-        if (!navigator.userAgent.includes('VeniceUnleashed')) {
-            if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
-                return;
-            }
-        }
-        
-        WebUI.Call('EnableKeyboard');
-        WebUI.Call('EnableMouse');
-
-        return () => {
-            WebUI.Call('ResetKeyboard');
-            WebUI.Call('ResetMouse');
-        }
-    }, []);
-
-
     const [btnDisabled, setBtnDisabled] = useState<boolean>(isFirstLoad);
     useEffect(() => {
         setTimeout(() => {

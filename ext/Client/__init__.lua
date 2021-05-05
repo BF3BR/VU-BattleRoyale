@@ -93,6 +93,7 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 	Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam)
 	Events:Subscribe("WebUI:PingFromMap", self, self.OnWebUIPingFromMap)
 	Events:Subscribe("WebUI:PingRemoveFromMap", self, self.OnWebUIPingRemoveFromMap)
+	Events:Subscribe("WebUI:TriggerMenuFunction", self, self.OnWebUITriggerMenuFunction)
 end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
@@ -451,6 +452,19 @@ end
 function VuBattleRoyaleClient:OnWebUIPingRemoveFromMap()
 	m_Ping:OnWebUIPingRemoveFromMap()
 end
+
+function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
+	if p_Function == "resume" then
+		m_Hud:OnResume()
+	elseif p_Function == "inventory" then
+		m_Logger:Write("INFO: Inventory is missing.")
+	elseif p_Function == "options" then
+		m_Hud:OnOptions()
+	elseif p_Function == "quit" then
+		m_Hud:OnQuit()
+	end
+end
+
 
 -- =============================================
 -- Hooks

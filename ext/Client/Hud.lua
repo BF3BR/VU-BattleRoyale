@@ -418,13 +418,6 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:RegisterEscMenuCallbacks()
-	-- REMOVE these lines when the custom UI is done
-	-- --------------
-	local removeThis = true
-	if removeThis then
-		return
-	end
-	-- --------------
 	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 	local s_Entity = s_EntityIterator:Next()
 	while s_Entity do
@@ -458,7 +451,7 @@ function VuBattleRoyaleHud:OnOpenEscapeMenu()
 	self:EnableBlurEffect(true)
 	self.m_IsInEscMenu = true
 
-	self.m_HudOnSetUIState:Update(UiStates.Hidden)
+	self.m_HudOnSetUIState:Update(UiStates.Menu)
 	-- Add WebUI
 end
 

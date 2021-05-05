@@ -6,7 +6,7 @@ export interface GameState {
         minPlayersToStart: number;
     };
     gameState: string|null;
-    uiState: "hidden" | "loading" | "game";
+    uiState: "hidden" | "loading" | "game" | "menu";
     time: number|null;
     gameOver: {
         enabled: boolean;
