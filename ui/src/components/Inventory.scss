@@ -1,0 +1,225 @@
+#Inventory {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    z-index: 9999;
+    display: none;
+
+    &.open {
+        display: block;
+
+        .InventoryWrapper {
+            width: 25vw;
+            background: rgba(0, 0, 0, 0.35);
+            height: 100vh;
+            padding: 5vw 2vw;
+        }
+
+        .itemDrop {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 71vw;
+            background: rgba(0, 0, 0, 0.15);
+            height: 100vh;
+
+            .item-slot {
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        .gear-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: .1vw;
+        }
+    }
+
+    .card {
+        margin-bottom: 0.5vw;
+
+        .card-header {
+            h1 {
+                font-size: 0.65vw;
+            }
+        }
+
+        .card-content {
+            padding: 0;
+            background: transparent;
+        }
+
+        .weapon-grid {
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: .1vw;
+
+            .weapon-holder {
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 1.25vw 6vw 1.25vw 1vw;
+                grid-column: span 3 / auto;
+
+                img {
+                    width: 9vw;
+                }
+
+                &.tier3 {
+                    background: rgb(255, 153, 0);
+                    background: linear-gradient(90deg, rgba(255, 153, 0, 0.3) 0%, rgba(255, 153, 0, 0) 30%);
+
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        height: 100%;
+                        width: 0.125vw;
+                        background: rgb(255, 153, 0);
+                    }
+                }
+
+                &.tier2 {
+                    background: rgb(82, 176, 223);
+                    background: linear-gradient(90deg, rgba(82, 176, 223, 0.3) 0%, rgba(255, 153, 0, 0) 30%);
+
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        height: 100%;
+                        width: 0.125vw;
+                        background: #52b0df;
+                    }
+                }
+
+                span {
+                    text-transform: uppercase;
+                    margin: 0;
+                    font-style: normal;
+                    font-weight: 600;
+                    font-size: 1vw;
+                    line-height: 1vw;
+
+                    &.name {
+                        position: absolute;
+                        top: 0.75vw;
+                        right: 0.75vw;
+                        color: #d5dde5;
+                    }
+
+                    &.ammoType {
+                        position: absolute;
+                        bottom: 0.75vw;
+                        right: 0.75vw;
+                        font-size: 0.85vw;
+
+                        &.ammo556mm {
+                            color: #ff9f80;
+                        }
+
+                        &.ammo9mm {
+                            color: #52b0df;
+                        }
+                    }
+                }
+            }
+
+            /*.attachment-holder {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.75vw 0.5vw;
+                border-right: 1px solid rgba(255, 255, 255, 0.25);
+
+                img {
+                    max-width: 1.25vw;
+                }
+
+                &:last-of-type {
+                    border: 0;
+                }
+            }*/
+        }
+
+        &.BackpackBox {
+            margin: 2vw 0 0;
+
+            .backpack-grid {
+                padding: 0;
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                grid-gap: .1vw;
+            }
+        }
+        
+        &.AmmoBox {
+            margin: 1vw 0 0;
+
+            .ammo-grid {
+                padding: 0;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                grid-gap: .1vw;
+            }
+        }
+    }
+
+    .draggable {
+        z-index: 999999;
+    }
+
+    .item-slot {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(7, 7, 7, 0.5);
+        padding: 0;
+        height: 3vw;
+
+        img {
+            max-width: 2vw;
+        }
+
+        /*&:nth-child(-n + 3) {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        &:nth-child(3n + 1) {
+            border-right: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        &:nth-child(3n) {
+            border-left: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        &:nth-child(n + 7) {
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+        }*/
+
+        span {
+            text-transform: uppercase;
+            margin: 0;
+            font-style: normal;
+            font-weight: 600;
+            font-size: .75vw;
+            line-height: 1vw;
+            position: absolute;
+            bottom: 0.5vw;
+            right: 0.5vw;
+            color: #d5dde5;
+        }
+    }
+}

@@ -8,7 +8,7 @@ const initialState: TeamState = {
     players: [],
 };
 
-const PlaneReducer = (
+const TeamReducer = (
     state = initialState,
     action: TeamActionTypes
 ): TeamState => {
@@ -23,4 +23,4 @@ const PlaneReducer = (
     }
 };
 
-export default PlaneReducer;
+export default TeamReducer;

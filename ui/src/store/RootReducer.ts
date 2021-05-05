@@ -11,6 +11,7 @@ import GameReducer from "./game/Reducer";
 import AlertReducer from "./alert/Reducer";
 import KillmsgReducer from "./killmsg/Reducer";
 import InteractivemsgReducer from "./interactivemsg/Reducer";
+import InventoryReducer from "./inventory/Reducer";
 
 export const RootReducer = combineReducers({
     PlayerReducer,
@@ -24,6 +25,7 @@ export const RootReducer = combineReducers({
     AlertReducer,
     KillmsgReducer,
     InteractivemsgReducer,
+    InventoryReducer,
 });
 
 export type RootState = ReturnType<typeof RootReducer>;
