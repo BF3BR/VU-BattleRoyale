@@ -52,7 +52,7 @@ function VanillaUIModifier:RegisterCallbacks()
 	m_TeamSupportTagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	--m_InteractionCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_ColorCorrectionCompData:RegisterLoadHandler(self, self.OnBlurredBlueScreen)
-	--m_DofComponentData:RegisterLoadHandler(self, self.OnBlurredBlueScreen)
+	m_DofComponentData:RegisterLoadHandler(self, self.OnBlurredBlueScreen)
 
 	m_IconTextureAtlas:RegisterLoadHandler(self, self.OnIconTexture)
 

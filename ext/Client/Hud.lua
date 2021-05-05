@@ -23,6 +23,12 @@ function VuBattleRoyaleHud:__init()
 
 	self.m_IsInEscMenu = false
 
+	self.m_MouseGraphEntityInstanceId = nil
+	self.m_DisableGameInputGraphEntityInstanceId = nil
+	self.m_BlurInstanceId = nil
+
+	self.m_IsMapOpened = false
+
 	self:RegisterVars()
 end
 
@@ -69,10 +75,22 @@ end
 function VuBattleRoyaleHud:OnExtensionUnloading()
 	self.m_IsLevelLoaded = false
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
+	self:DestroyEntities()
+	self.m_MouseGraphEntityInstanceId = nil
+	self.m_DisableGameInputGraphEntityInstanceId = nil
+	self.m_BlurInstanceId = nil
+	self.m_IsMapOpened = false
+	WebUI:ExecuteJS("OnOpenCloseMap(false);")
 end
 
 function VuBattleRoyaleHud:OnLevelDestroy()
 	self.m_IsLevelLoaded = false
+	self:DestroyEntities()
+	self.m_MouseGraphEntityInstanceId = nil
+	self.m_DisableGameInputGraphEntityInstanceId = nil
+	self.m_BlurInstanceId = nil
+	self.m_IsMapOpened = false
+	WebUI:ExecuteJS("OnOpenCloseMap(false);")
 	self.m_HudOnSetUIState:Update(UiStates.Loading)
 end
 
@@ -311,7 +329,16 @@ end
 function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_Action == UIInputAction.UIInputAction_MapSize and p_EventType ==
 		UIInputActionEventType.UIInputActionEventType_Pressed then
-		WebUI:ExecuteJS("OnOpenCloseMap();")
+		if self.m_IsMapOpened then
+			self.m_IsMapOpened = false
+			WebUI:ExecuteJS("OnOpenCloseMap(false);")
+			self:HUDEnterUIGraph()
+			self:ShowCrosshair(true)
+		else
+			self.m_IsMapOpened = true
+			WebUI:ExecuteJS("OnOpenCloseMap(true);")
+			self:OnEnableMouse()
+		end
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
@@ -319,13 +346,6 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_Action == UIInputAction.UIInputAction_MapZoom and p_EventType ==
 		UIInputActionEventType.UIInputActionEventType_Pressed then
 		WebUI:ExecuteJS("OnMapZoomChange();")
-		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
-		return
-	end
-
-	if p_Action == UIInputAction.UIInputAction_Tab and p_EventType ==
-		UIInputActionEventType.UIInputActionEventType_Pressed then
-		WebUI:ExecuteJS("OnMapEnableMouse();")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
@@ -340,11 +360,10 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	end
 end
 
-function VuBattleRoyaleHud:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
-	local s_Screen = UIGraphAsset(p_Screen)
-	if s_Screen.name == "UI/Flow/Screen/IngameMenuMP" then
+function VuBattleRoyaleHud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
+	if p_Screen.name == "UI/Flow/Screen/IngameMenuMP" then
 		self.m_HudOnSetUIState:Update(UiStates.Hidden)
-	elseif s_Screen.name == "UI/Flow/Screen/HudScreen" then
+	elseif p_Screen.name == "UI/Flow/Screen/HudScreen" then
 		self.m_HudOnSetUIState:Update(UiStates.Game)
 	end
 end
@@ -386,7 +405,7 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 		return
 	end
 	self.m_IsLevelLoaded = true
-	self.m_HudOnSetUIState:Update(UiStates.Game)
+	self:OnResume()
 	WebUI:ExecuteJS("OnLevelFinalized('" .. SharedUtils:GetLevelName() .. "');")
 	self:OnGameStateChanged(self.m_GameState)
 	self:RegisterEscMenuCallbacks()
@@ -409,6 +428,7 @@ function VuBattleRoyaleHud:RegisterEscMenuCallbacks()
 	while s_Entity do
 		s_Entity = Entity(s_Entity)
 		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("B9437F95-2EBC-4F22-A5F6-F4D0F1331A5E") then
+			-- Registering the EventCallback on modreload => crash on first call
 			s_Entity:RegisterEventCallback(self, self.OnEscapeMenuCallback)
 		end
 		s_Entity = s_EntityIterator:Next()
@@ -430,19 +450,54 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnOpenEscapeMenu()
-	local s_DataMouse = self:GetEnableMouseEntityData()
-	local s_EnableMouseGraphEntity = EntityManager:CreateEntity(s_DataMouse, LinearTransform())
-	s_EnableMouseGraphEntity:FireEvent('EnableMouseInput')
-
-	local s_DataGameInput = self:GetDisableGameInputEntityData()
-	local s_DisableGameInputGraphEntity = EntityManager:CreateEntity(s_DataGameInput, LinearTransform())
-	s_DisableGameInputGraphEntity:FireEvent('DisableGameInput')
-
+	self:OnEnableMouse()
+	self:OnDisableGameInput()
 	self:ShowCrosshair(false)
+	self:EnableBlurEffect(true)
 	self.m_IsInEscMenu = true
 
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 	-- Add WebUI
+end
+
+function VuBattleRoyaleHud:OnEnableMouse()
+	if self.m_MouseGraphEntityInstanceId == nil then
+		local s_DataMouse = self:GetEnableMouseEntityData()
+		local s_EnableMouseGraphEntity = EntityManager:CreateEntity(s_DataMouse, LinearTransform())
+		s_EnableMouseGraphEntity:FireEvent('EnableMouseInput')
+		self.m_MouseGraphEntityInstanceId = s_EnableMouseGraphEntity.instanceId
+	else
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_MouseGraphEntityInstanceId == s_Entity.instanceId then
+				s_Entity:FireEvent("EnableMouseInput")
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+end
+
+function VuBattleRoyaleHud:OnDisableGameInput()
+	if self.m_DisableGameInputGraphEntityInstanceId == nil then
+		local s_DataGameInput = self:GetDisableGameInputEntityData()
+		local s_DisableGameInputGraphEntity = EntityManager:CreateEntity(s_DataGameInput, LinearTransform())
+		s_DisableGameInputGraphEntity:FireEvent('DisableGameInput')
+		self.m_DisableGameInputGraphEntityInstanceId = s_DisableGameInputGraphEntity.instanceId
+	else
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_DisableGameInputGraphEntityInstanceId == s_Entity.instanceId then
+				s_Entity:FireEvent("DisableGameInput")
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
 end
 
 function VuBattleRoyaleHud:GetEnableMouseEntityData()
@@ -565,6 +620,101 @@ function VuBattleRoyaleHud:GetDisableGameInputEntityData()
 	return s_DisableGameInputGraphEntityData
 end
 
+function VuBattleRoyaleHud:EnableBlurEffect(p_Enable)
+	if self.m_BlurInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_BlurInstanceId == s_Entity.instanceId then
+				if p_Enable then
+					s_Entity:FireEvent("Enable")
+				else
+					s_Entity:FireEvent("Disable")
+				end
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	elseif p_Enable then
+		self:CreateBlurEffect()
+	end
+end
+
+function VuBattleRoyaleHud:StartupChat()
+	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+	local s_Entity = s_EntityIterator:Next()
+	while s_Entity do
+		s_Entity = Entity(s_Entity)
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("7DE28082-B1A7-4C7A-8C6D-8FFB9049F91E") then
+			s_Entity:FireEvent("Startup")
+		end
+		s_Entity = s_EntityIterator:Next()
+	end
+end
+
+function VuBattleRoyaleHud:DestroyEntities()
+	if self.m_BlurInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_BlurInstanceId == s_Entity.instanceId then
+				s_Entity:Destroy()
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+	if self.m_DisableGameInputGraphEntityInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_DisableGameInputGraphEntityInstanceId == s_Entity.instanceId then
+				s_Entity:FireEvent("DisableGameInput")
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+	if self.m_MouseGraphEntityInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_MouseGraphEntityInstanceId == s_Entity.instanceId then
+				s_Entity:FireEvent("EnableMouseInput")
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+end
+
+function VuBattleRoyaleHud:CreateBlurEffect()
+	local s_DofComponentData = ResourceManager:FindInstanceByGuid(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"))
+	if s_DofComponentData == nil then
+		m_Logger:Error("DofComponentData not found")
+	end
+	local s_ClonedDofCompData = DofComponentData(s_DofComponentData):Clone()
+	s_ClonedDofCompData.excluded = false
+
+	local s_VisualEnvEntityData = VisualEnvironmentEntityData()
+	s_VisualEnvEntityData.enabled = true
+	s_VisualEnvEntityData.visibility = 1
+	s_VisualEnvEntityData.priority = 99999
+	s_VisualEnvEntityData.components:add(s_ClonedDofCompData)
+	s_VisualEnvEntityData.runtimeComponentCount = 1
+
+	local s_Entity = EntityManager:CreateEntity(s_VisualEnvEntityData, LinearTransform())
+	if s_Entity == nil then
+		m_Logger:Error("Blurred Entity creation failed")
+	end
+	s_Entity:Init(Realm.Realm_Client, true)
+	self.m_BlurInstanceId = s_Entity.instanceId
+end
+
 -- =============================================
 	-- Close Escape Menu
 -- =============================================
@@ -575,6 +725,8 @@ function VuBattleRoyaleHud:OnResume()
 	self:HUDEnterUIGraph()
 	self:ShowCrosshair(true)
 	self:EnableTabScoreboard()
+	self:EnableBlurEffect(false)
+	self:StartupChat()
 	self.m_IsInEscMenu = false
 	self.m_HudOnSetUIState:Update(UiStates.Game)
 end
