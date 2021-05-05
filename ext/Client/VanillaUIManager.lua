@@ -77,17 +77,15 @@ function VanillaUIManager:EnableShowroomSoldier(p_Enable)
 	m_Logger:Write("Fired "..s_Event.." at UI control entity")
 end
 
-function VanillaUIManager:OnUIPushScreen(p_Hook, p_Screen, p_GraphPriority, p_ParentGraph)
-	local s_Screen = UIGraphAsset(p_Screen)
-
-	if s_Screen.name == "UI/Flow/Screen/SpawnScreenPC"
-	or s_Screen.name == "UI/Flow/Screen/SpawnScreenTicketCounterConquestScreen"
-	or s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen"
-	or s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen"
-	or s_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD64Screen"
-	or s_Screen.name == "UI/Flow/Screen/KillScreen"
-	or s_Screen.name == "UI/Flow/Screen/SpawnButtonScreen" then
-		p_Hook:Return()
+function VanillaUIManager:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
+	if p_Screen.name == "UI/Flow/Screen/SpawnScreenPC"
+	or p_Screen.name == "UI/Flow/Screen/SpawnScreenTicketCounterConquestScreen"
+	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen"
+	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen"
+	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD64Screen"
+	or p_Screen.name == "UI/Flow/Screen/KillScreen"
+	or p_Screen.name == "UI/Flow/Screen/SpawnButtonScreen" then
+		p_HookCtx:Return()
 	end
 end
 

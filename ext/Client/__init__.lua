@@ -459,6 +459,7 @@ function VuBattleRoyaleClient:OnInputConceptEvent(p_HookCtx, p_EventType, p_Acti
 end
 
 function VuBattleRoyaleClient:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
+	p_Screen = Asset(p_Screen)
 	m_Hud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
 	m_VanillaUIManager:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
 end
@@ -516,7 +517,6 @@ function VuBattleRoyaleClient:OnHotReload()
 	-- So we dispatch all Level / Connection events
 	self:OnLevelLoaded()
 	m_Hud:OnLevelFinalized()
-
 	-- OnPlayerConnected
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 	if s_LocalPlayer == nil then
