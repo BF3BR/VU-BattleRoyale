@@ -804,6 +804,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnOptions()
+	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	while s_UIGraphEntity do
