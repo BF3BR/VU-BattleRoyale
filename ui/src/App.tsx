@@ -21,7 +21,7 @@ import {
 } from "./store/ping/Actions";
 import {
     showMap,
-    switchOpenMap
+    openMap
 } from "./store/map/Actions";
 import {
     updatePlanePosition,
@@ -286,8 +286,8 @@ const App: React.FC<Props> = ({
         }
     }
 
-    window.OnOpenCloseMap = () => {
-        dispatch(switchOpenMap());
+    window.OnOpenCloseMap = (open: boolean) => {
+        dispatch(openMap(open));
     }
 
     window.OnMapShow = (show: boolean) => {
@@ -548,7 +548,7 @@ const App: React.FC<Props> = ({
 
             <div id="debug">
                 <button onClick={() => window.OnMapShow(true)}>Show Map</button>
-                <button onClick={() => window.OnOpenCloseMap()}>Open Map</button>
+                <button onClick={() => window.OnOpenCloseMap(true)}>Open Map</button>
                 <button onClick={() => window.OnPlayerPos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Player Pos</button>
                 <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
                 <button onClick={() => window.OnPlanePos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Plane Pos</button>
@@ -645,7 +645,7 @@ declare global {
         OnPlanePos: (p_DataJson: any) => void;
         OnPlaneYaw: (p_Yaw: number | null) => void;
 
-        OnOpenCloseMap: () => void;
+        OnOpenCloseMap: (open: boolean) => void;
         OnMapShow: (show: boolean) => void;
         OnUpdateCircles: (data: any) => void;
         OnGameState: (state: string) => void;
