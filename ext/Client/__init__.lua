@@ -416,8 +416,9 @@ end
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
 	m_Showroom:SetCamera(false)
-	m_Hud:ShowCrosshair(true)
 	m_VanillaUIManager:EnableShowroomSoldier(false)
+	m_Hud:HUDEnterUIGraph()
+	m_Hud:ShowCrosshair(true)
 	NetEvents:Send(PlayerEvents.PlayerDeploy)
 end
 
@@ -464,7 +465,6 @@ function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
 		m_Hud:OnQuit()
 	end
 end
-
 
 -- =============================================
 -- Hooks
