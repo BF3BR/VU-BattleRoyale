@@ -122,6 +122,7 @@ function BRTeamManager:GetWinningTeam()
 
 	if l_Winner ~= nil then
 		l_Winner:SetPlacement(1)
+		l_Winner:RevivePlayers()
 	end
 
 	return l_Winner
