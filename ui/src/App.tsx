@@ -71,10 +71,12 @@ import TeamInfo from "./components/TeamInfo";
 import LoadingScreen from "./components/LoadingScreen";
 import MapMarkers from "./components/MapMarkers";
 import Inventory from "./components/Inventory";
+import MenuScreen from "./components/MenuScreen";
+import Chat from "./components/chat/Chat";
+import InteractProgress from "./components/InteractProgress";
 
 /* Style */
 import './App.scss';
-import MenuScreen from "./components/MenuScreen";
 
 interface StateFromReducer {
     gameState: string;
@@ -112,7 +114,7 @@ const App: React.FC<Props> = ({
         if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
             debugMode = true;
             if (uiState !== "game") {
-                dispatch(updateUiState("menu"));
+                dispatch(updateUiState("game"));
             }
         }
     }
@@ -611,10 +613,15 @@ const App: React.FC<Props> = ({
                                 <SpactatorInfo />
                                 <AmmoAndHealthCounter />
                                 <Gameover />
+                                <Chat />
 
                                 {!spectating &&
                                     <>
                                         <MiniMap />
+                                        {/*<InteractProgress 
+                                            timeout={10}
+                                            clearTimeout={() => alert('clear')}
+                                        />*/}
                                         {/*<Inventory />*/}
                                     </>
                                 }

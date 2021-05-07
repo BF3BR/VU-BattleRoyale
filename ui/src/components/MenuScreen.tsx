@@ -35,12 +35,12 @@ const MenuScreen: React.FC = () => {
     const handleKeyDown = useCallback(
         e => {
             if (!showQuitModal) {
-                if (e.keyCode === 40) {
-                    // Down arrow
+                if (e.keyCode === 40 || e.keyCode === 83) {
+                    // Down arrow / S 
                     e.preventDefault();
                     setCurrentFocus(currentFocus === buttons.length - 1 ? 0 : currentFocus + 1);
-                } else if (e.keyCode === 38) {
-                    // Up arrow
+                } else if (e.keyCode === 38 || e.keyCode === 87) {
+                    // Up arrow / W
                     e.preventDefault();
                     setCurrentFocus(currentFocus === 0 ? buttons.length - 1 : currentFocus - 1);
                 } else if (e.keyCode === 13) {

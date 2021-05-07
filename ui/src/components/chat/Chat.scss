@@ -1,0 +1,328 @@
+
+:root {
+    --team: #94cdf3;
+    --all: #ffffff;
+    --enemy: #ff9f80;
+    --squad: #9EC555;
+}
+
+::-webkit-scrollbar {
+    width: .2vw;
+    transition: width .25s ease;
+}
+
+*:hover::-webkit-scrollbar {
+    width: .6vw;
+    transition: width .25s ease;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #cecece; 
+}
+
+#VuChat {
+    color: #fff;
+    position: absolute;
+    width: 25.2vw;
+    height: 23.15vh;
+    top: 5vw;
+    left: 2.5vw;
+
+
+    .chatWindow {
+        overflow-x: hidden;
+        overflow-y: hidden;
+        transition: background 0.1s ease;
+        width: 25vw;
+        height: 23.15vh;
+
+        .chatWindowInner {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            grid-gap: 2px;
+        }
+    }
+    
+    &.isTypingActive,
+    &.hasMouse:hover {
+        .chatWindow {
+            overflow-y: scroll;
+            width: 25.2vw;
+            background: rgba(0,0,0,0.15);
+            transition: background 0.1s ease;
+        }
+    }
+
+    &:hover {
+        .chatWindow {
+            width: 25.6vw;
+        }
+    }
+
+    &.showChat {
+        opacity: 1;
+    }
+
+    &.hideChat {
+        opacity: 0;
+    }
+
+    .chatItem {
+        display: inline-block;
+        margin: 0;
+        font-size: 1.5vh;
+        line-height: 1.35;
+        font-weight: 400;
+        max-width: 24vw;
+        width: 100%;
+        padding: 0 0.5vw;
+        position: relative;
+        border-left: 0.2vw solid var(--all);
+        word-break: break-word;
+        text-shadow: 0 0 .2vh rgba(0,0,0,1);
+
+        &:last-of-type {
+            margin: 0;
+        }
+
+        .chatMessageTarget {
+            margin: 0 0.2vw 0 0;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-shadow: 0 0 .2vh rgba(0,0,0,1);
+        }
+
+        .chatSender {
+            margin: 0 0.2vw 0 0;
+            font-weight: 600;
+            text-shadow: 0 0 .2vh rgba(0,0,0,1);
+        }
+
+        .chatMessage {
+            .highlight {
+                background: rgba(255, 251, 0, 0.8);
+            }
+        }
+        
+        &.chatTypeEnemy {
+            border-color: var(--enemy);
+
+            &::before {
+                content: '';
+                position: absolute;
+                background: var(--enemy-gradient);
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .chatSender,
+            .chatMessageTarget {
+                color: var(--enemy);
+            }
+        }
+
+        &.chatTypeAll {
+            border-color: var(--all);
+            
+            &::before {
+                content: '';
+                position: absolute;
+                background: var(--all-gradient);
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .chatSender,
+            .chatMessageTarget {
+                color: var(--team);
+            }
+        }
+
+        &.chatTypeTeam {
+            border-color: var(--team);
+            
+            &::before {
+                content: '';
+                position: absolute;
+                background: var(--team-gradient);
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .chatSender,
+            .chatMessageTarget {
+                color: var(--team);
+            }
+        }
+
+        &.chatTypeSquad {
+            border-color: var(--squad);
+
+            &::before {
+                content: '';
+                position: absolute;
+                background: var(--squad-gradient);
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .chatSender,
+            .chatMessageTarget {
+                color: var(--squad);
+            }
+        }
+
+        &.chatTypeAdmin {
+            border-color: var(--admin);
+
+            &::before {
+                content: '';
+                position: absolute;
+                background: var(--admin-gradient);
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .chatSender,
+            .chatMessageTarget {
+                color: var(--admin) !important;
+            }
+        }
+
+        &.chatTypeLeaders {
+            border-color: var(--leader);
+
+            &::before {
+                content: '';
+                position: absolute;
+                background: var(--leader-gradient);
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .chatSender,
+            .chatMessageTarget {
+                color: var(--leader);
+            }
+        }
+
+        &.chatTypeSpectator {
+            border-color: var(--team);
+
+            &::before {
+                content: '';
+                position: absolute;
+                background: var(--team-gradient);
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .chatSender,
+            .chatMessageTarget {
+                color: var(--team);
+            }
+        }
+
+        &.chatTypePlayer {
+            border-color: var(--spectator);
+
+            &::before {
+                content: '';
+                position: absolute;
+                background: var(--spectator-gradient);
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+
+            .chatSender,
+            .chatMessageTarget {
+                color: var(--spectator) !important;
+            }
+        }
+
+        &.chatTeammate {
+            .chatSender {
+                color: var(--team);
+            }
+        }
+
+        &.chatSquadmate {
+            .chatSender {
+                color: var(--squad);
+            }
+        }
+
+        &.chatSpectator {
+            .chatSender {
+                color: var(--team);
+            }
+        }
+
+        &.chatLocalPlayer {
+            .chatSender {
+                color: var(--all) !important;
+            }
+        }
+    }
+}
+
+#VuChatStatePopup {
+    color: #fff;
+    position: absolute;
+    left: 2.5vw;
+    top: 38vh;
+    width: 25.2vw;
+    height: 3vh;
+    font-size: .75vw;
+    text-transform: uppercase;
+}
+
+@media only screen and (min-width: 719px) {
+    #VuChat .chatWindow .chatWindowInner {
+        grid-gap: 2px;
+    }
+}
+
+@media only screen and (min-width: 1079px) {
+    #VuChat .chatWindow .chatWindowInner {
+        grid-gap: 4px;
+    }
+}
+
+@media only screen and (min-width: 2159px) {
+    #VuChat .chatWindow .chatWindowInner {
+        grid-gap: 6px;
+    }
+}
