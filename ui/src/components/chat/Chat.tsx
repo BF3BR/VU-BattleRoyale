@@ -9,8 +9,17 @@ import ChatState from "../../helpers/chat/ChatState";
 
 import './Chat.scss';
 import { sendToLua } from "../../Helpers";
+import { RootState } from "../../store/RootReducer";
+import { connect } from "react-redux";
 
-const Chat: React.FC = () => {
+interface StateFromReducer {
+    uiState: "hidden" | "loading" | "game" | "menu";
+    deployScreen: boolean;
+}
+
+type Props = StateFromReducer;
+
+const Chat: React.FC<Props> = ({ uiState, deployScreen }) => {
     /*
     * Debug
     */
@@ -171,40 +180,54 @@ const Chat: React.FC = () => {
 
     return (
         <>
-            <div id="debug">
-                <button onClick={() => setRandomMessages()}>Random messages</button>
-                <button onClick={() =>  window.OnFocus(MessageTarget.CctSayAll)}>isTypingActive</button>
-                <button onClick={() =>  window.OnChangeType()}>OnChangeType</button>
-                <button onClick={() =>  window.OnClearChat()}>OnClearChat</button>
-                <button onClick={() =>  window.OnCloseChat()}>OnCloseChat</button>
-            </div>
-
-            <div id="VuChat" className={(showChat ? "showChat" : "hideChat") + ((isTypingActive || chatState === ChatState.Always) ? " isTypingActive": "") + (hasMouse ? " hasMouse":"")}>
-                <div className="chatWindow" ref={messageEl}>
-                    <div className="chatWindowInner">
-                        {messages.map((message: Message, index: number) => (
-                            <div className={getChatItemClasses(message)} key={index}>
-                                <span className="chatMessageTarget">
-                                    [{getChatItemTarget(message)}]
-                                </span>
-                                <span className="chatSender">
-                                    {message.senderName}:
-                                </span>
-                                <span className="chatMessage">
-                                    {message.message}
-                                </span>
-                            </div>
-                        ))}
+            {(uiState === "menu" || uiState === "game") &&
+                <>
+                    <div id="debugChat">
+                        <button onClick={() => setRandomMessages()}>Random messages</button>
+                        <button onClick={() =>  window.OnFocus(MessageTarget.CctSayAll)}>isTypingActive</button>
+                        <button onClick={() =>  window.OnChangeType()}>OnChangeType</button>
+                        <button onClick={() =>  window.OnClearChat()}>OnClearChat</button>
+                        <button onClick={() =>  window.OnCloseChat()}>OnCloseChat</button>
                     </div>
-                </div>
-                <ChatForm target={chatTarget} isTypingActive={isTypingActive} doneTypeing={() => setCloseChat()} />
-            </div>
-            <ChatStatePopup chatState={chatState} />
+
+                    <div id="VuChat" className={(showChat ? "showChat" : "hideChat") + ((isTypingActive || chatState === ChatState.Always) ? " isTypingActive": "") + (hasMouse ? " hasMouse":"") + ((deployScreen || uiState === "menu") ? " isDeploy":"")}>
+                        <div className="chatWindow" ref={messageEl}>
+                            <div className="chatWindowInner">
+                                {messages.map((message: Message, index: number) => (
+                                    <div className={getChatItemClasses(message)} key={index}>
+                                        <span className="chatMessageTarget">
+                                            [{getChatItemTarget(message)}]
+                                        </span>
+                                        <span className="chatSender">
+                                            {message.senderName}:
+                                        </span>
+                                        <span className="chatMessage">
+                                            {message.message}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <ChatForm target={chatTarget} isTypingActive={isTypingActive} doneTypeing={() => setCloseChat()} />
+                    </div>
+                    <ChatStatePopup chatState={chatState} deployScreen={(deployScreen || uiState === "menu")} />
+                </>
+            }
         </>
     );
 };
 
-export default Chat;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // GameReducer
+        uiState: state.GameReducer.uiState,
+        deployScreen: state.GameReducer.deployScreen.enabled,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);
 
 declare global {
     interface Window {

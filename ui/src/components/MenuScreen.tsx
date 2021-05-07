@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { sendToLua } from "../Helpers";
 
 import Modal from "./Modal";
@@ -6,7 +6,7 @@ import Modal from "./Modal";
 import "./MenuScreen.scss";
 
 const MenuScreen: React.FC = () => {
-    const [currentFocus, setCurrentFocus] = useState(-1);
+    const [currentFocus, setCurrentFocus] = useState(0);
     const [showQuitModal, setShowQuitModal] = useState(false);
 
     const buttons = [
@@ -31,44 +31,24 @@ const MenuScreen: React.FC = () => {
             onClick: () => setShowQuitModal(true),
         },
     ];
+    
+    window.OnMenuArrowDown = () => {
+        if (!showQuitModal) {
+            setCurrentFocus(currentFocus === buttons.length - 1 ? 0 : currentFocus + 1);
+        }
+    }
 
-    const handleKeyDown = useCallback(
-        e => {
-            if (!showQuitModal) {
-                if (e.keyCode === 40 || e.keyCode === 83) {
-                    // Down arrow / S 
-                    e.preventDefault();
-                    setCurrentFocus(currentFocus === buttons.length - 1 ? 0 : currentFocus + 1);
-                } else if (e.keyCode === 38 || e.keyCode === 87) {
-                    // Up arrow / W
-                    e.preventDefault();
-                    setCurrentFocus(currentFocus === 0 ? buttons.length - 1 : currentFocus - 1);
-                } else if (e.keyCode === 13) {
-                    // Enter
-                    e.preventDefault();
-                    buttons[currentFocus].onClick();
-                } else if (e.keyCode === 27) {
-                    // Esc
-                    e.preventDefault();
-                    sendToLua("WebUI:TriggerMenuFunction", "resume");
-                }
-            } else {
-                if (e.keyCode === 27) {
-                    // Esc
-                    e.preventDefault();
-                    setShowQuitModal(false);
-                }
-            }
-        },
-        [buttons.length, currentFocus, setCurrentFocus, showQuitModal]
-    );
+    window.OnMenuArrowUp = () => {
+        if (!showQuitModal) {
+            setCurrentFocus(currentFocus === 0 ? buttons.length - 1 : currentFocus - 1);
+        }
+    }
 
-    useEffect(() => {
-        document.addEventListener("keydown", handleKeyDown, false);
-        return () => {
-            document.removeEventListener("keydown", handleKeyDown, false);
-        };
-    }, [handleKeyDown]);
+    window.OnMenuEnter = () => {
+        if (!showQuitModal) {
+            buttons[currentFocus].onClick();
+        }
+    }
     
     return (
         <div id="MenuScreen">
@@ -137,3 +117,11 @@ const MenuScreen: React.FC = () => {
 };
 
 export default MenuScreen;
+
+declare global {
+    interface Window {
+        OnMenuArrowUp: () => void;
+        OnMenuArrowDown: () => void;
+        OnMenuEnter: () => void;
+    }
+}

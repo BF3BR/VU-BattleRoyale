@@ -28,21 +28,33 @@
     background: #cecece; 
 }
 
+#debugChat {
+    position: absolute;
+    top: 2vw;
+    right: 0;
+    z-index: 99999999;
+}
+
 #VuChat {
     color: #fff;
     position: absolute;
     width: 25.2vw;
-    height: 23.15vh;
+    height: 13.15vh;
     top: 5vw;
     left: 2.5vw;
+    z-index: 9999;
 
+    &.isDeploy {
+        right: 2.5vw;
+        left: auto;
+    }
 
     .chatWindow {
         overflow-x: hidden;
         overflow-y: hidden;
         transition: background 0.1s ease;
         width: 25vw;
-        height: 23.15vh;
+        height: 13.15vh;
 
         .chatWindowInner {
             display: grid;
@@ -302,11 +314,17 @@
     color: #fff;
     position: absolute;
     left: 2.5vw;
-    top: 38vh;
+    top: 28vh;
     width: 25.2vw;
     height: 3vh;
     font-size: .75vw;
     text-transform: uppercase;
+    z-index: 9999;
+
+    &.deployScreen {
+        right: 2.5vw;
+        left: auto;
+    }
 }
 
 @media only screen and (min-width: 719px) {

@@ -3,9 +3,10 @@ import { ChatState, ChatStateString } from "../../helpers/chat/ChatState";
 
 interface Props {
     chatState: ChatState;
+    deployScreen: boolean;
 }
 
-const BombPlantInfoBox: React.FC<Props> = ({ chatState }) => {
+const BombPlantInfoBox: React.FC<Props> = ({ chatState, deployScreen }) => {
     const [firstRun, setFirstRun] = useState<boolean>(true);
     const [visible, setVisible] = useState<boolean>(false);
 
@@ -26,7 +27,7 @@ const BombPlantInfoBox: React.FC<Props> = ({ chatState }) => {
     return (
         <>
             {visible &&
-                <div id="VuChatStatePopup">
+                <div id="VuChatStatePopup" className={deployScreen ? "deployScreen": ""}>
                     Chat mode: {ChatStateString[chatState]??''}
                 </div>
             }

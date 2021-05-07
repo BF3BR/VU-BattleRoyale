@@ -613,7 +613,6 @@ const App: React.FC<Props> = ({
                                 <SpactatorInfo />
                                 <AmmoAndHealthCounter />
                                 <Gameover />
-                                <Chat />
 
                                 {!spectating &&
                                     <>
@@ -630,6 +629,7 @@ const App: React.FC<Props> = ({
                     </div>
                 </>
             }
+            <Chat />
         </>
     );
 };
