@@ -333,8 +333,10 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
-	if p_Action == UIInputAction.UIInputAction_MapSize and p_EventType ==
-		UIInputActionEventType.UIInputActionEventType_Pressed then
+	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed then
+		return
+	end
+	if p_Action == UIInputAction.UIInputAction_MapSize then
 		if self.m_IsMapOpened then
 			self.m_IsMapOpened = false
 			WebUI:ExecuteJS("OnOpenCloseMap(false);")
@@ -349,18 +351,8 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		return
 	end
 
-	if p_Action == UIInputAction.UIInputAction_MapZoom and p_EventType ==
-		UIInputActionEventType.UIInputActionEventType_Pressed then
+	if p_Action == UIInputAction.UIInputAction_MapZoom then
 		WebUI:ExecuteJS("OnMapZoomChange();")
-		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
-		return
-	end
-
-	-- Will be replaced with a custom chat anyways
-	-- Info: If you write in chat the gameinput gets reenabled, that's why we need to avoid the vanilla chat while being in the menu
-	if (p_Action == UIInputAction.UIInputAction_SayAllChat or p_Action == UIInputAction.UIInputAction_TeamChat
-	or p_Action == UIInputAction.UIInputAction_SquadChat)
-	and p_EventType == UIInputActionEventType.UIInputActionEventType_Pressed and self.m_IsInEscMenu then
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
