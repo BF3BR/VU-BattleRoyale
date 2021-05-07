@@ -561,8 +561,10 @@ function VuBattleRoyaleClient:OnHotReload()
 	if s_LocalPlayer.soldier ~= nil then
 		self:OnPlayerRespawn(s_LocalPlayer)
 	end
-	m_Hud:ShowCrosshair(false)
-	m_Hud:OnEnableMouse()
+	g_Timers:Timeout(1, function()
+		m_Hud:ShowCrosshair(false)
+		m_Hud:OnEnableMouse()
+	end)
 end
 
 return VuBattleRoyaleClient()

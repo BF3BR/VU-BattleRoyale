@@ -152,13 +152,29 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 			m_VanillaUIManager:EnableShowroomSoldier(true)
 		end
 	end
+
+	if self.m_IsInEscMenu then
+		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
+			self:OnResume()
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowUp)
+		or InputManager:WentDown(InputConceptIdentifiers.ConceptMoveForward) then
+			WebUI:ExecuteJS("OnMenuArrowUp()")
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowDown)
+		or InputManager:WentDown(InputConceptIdentifiers.ConceptMoveBackward) then
+			WebUI:ExecuteJS("OnMenuArrowUp()")
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_Enter) then
+			WebUI:ExecuteJS("OnMenuEnter()")
+		end
+	end
 end
 
 function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	WebUI:ExecuteJS("OnMapShow(true)")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
-	self:ShowCrosshair(true)
+	g_Timers:Timeout(1, function()
+		self:ShowCrosshair(true)
+	end)
 
 	if self.m_GameState <= GameStates.Warmup then
 		return
@@ -407,6 +423,7 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 	WebUI:ExecuteJS("OnLevelFinalized('" .. SharedUtils:GetLevelName() .. "');")
 	self:OnGameStateChanged(self.m_GameState)
 	self:RegisterEscMenuCallbacks()
+	self:OnEnableMouse()
 end
 
 -- =============================================
@@ -448,7 +465,6 @@ function VuBattleRoyaleHud:OnOpenEscapeMenu()
 	self.m_IsInEscMenu = true
 
 	self.m_HudOnSetUIState:Update(UiStates.Menu)
-	WebUI:EnableKeyboard()
 	-- Add WebUI
 end
 
@@ -721,7 +737,6 @@ function VuBattleRoyaleHud:OnResume()
 	self:StartupChat()
 	self.m_IsInEscMenu = false
 	self.m_HudOnSetUIState:Update(UiStates.Game)
-	WebUI:ResetKeyboard()
 end
 
 function VuBattleRoyaleHud:DisableMenuVisualEnv()
@@ -798,6 +813,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnOptions()
+	self.m_IsInEscMenu = false
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
@@ -809,7 +825,6 @@ function VuBattleRoyaleHud:OnOptions()
 		end
 		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	end
-	WebUI:ResetKeyboard()
 end
 
 -- =============================================
