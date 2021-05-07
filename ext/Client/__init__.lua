@@ -457,6 +457,8 @@ end
 function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
 	if p_Function == "resume" then
 		m_Hud:OnResume()
+	elseif p_Function == "team" then
+		m_Logger:Write("INFO: Team / Squad is missing.")
 	elseif p_Function == "inventory" then
 		m_Logger:Write("INFO: Inventory is missing.")
 	elseif p_Function == "options" then

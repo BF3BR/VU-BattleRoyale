@@ -1,29 +1,99 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { sendToLua } from "../Helpers";
+
+import Modal from "./Modal";
 
 import "./MenuScreen.scss";
 
 const MenuScreen: React.FC = () => {
+    const [currentFocus, setCurrentFocus] = useState(-1);
+    const [showQuitModal, setShowQuitModal] = useState(false);
+
+    const buttons = [
+        {
+            label: "Resume",
+            onClick: () => sendToLua("WebUI:TriggerMenuFunction", "resume"),
+        },
+        {
+            label: "Team / Squad",
+            onClick: () => sendToLua("WebUI:TriggerMenuFunction", "team"),
+        },
+        {
+            label: "Inventory",
+            onClick: () => sendToLua("WebUI:TriggerMenuFunction", "inventory"),
+        },
+        {
+            label: "Options",
+            onClick: () => sendToLua("WebUI:TriggerMenuFunction", "options"),
+        },
+        {
+            label: "Quit",
+            onClick: () => setShowQuitModal(true),
+        },
+    ];
+
+    const handleKeyDown = useCallback(
+        e => {
+            if (!showQuitModal) {
+                if (e.keyCode === 40) {
+                    // Down arrow
+                    e.preventDefault();
+                    setCurrentFocus(currentFocus === buttons.length - 1 ? 0 : currentFocus + 1);
+                } else if (e.keyCode === 38) {
+                    // Up arrow
+                    e.preventDefault();
+                    setCurrentFocus(currentFocus === 0 ? buttons.length - 1 : currentFocus - 1);
+                } else if (e.keyCode === 13) {
+                    // Enter
+                    e.preventDefault();
+                    buttons[currentFocus].onClick();
+                }
+            }
+        },
+        [buttons.length, currentFocus, setCurrentFocus, showQuitModal]
+    );
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleKeyDown, false);
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown, false);
+        };
+    }, [handleKeyDown]);
+    
     return (
         <div id="MenuScreen">
             <div className="MenuBox">
                 <h3 className="ModeType">Battle Royale</h3>
 
                 <div className="buttonsHolder">
-                    <button className="btn" onClick={() => sendToLua("WebUI:TriggerMenuFunction", "resume")}>
-                        Resume
-                    </button>
-                    <button className="btn" onClick={() => sendToLua("WebUI:TriggerMenuFunction", "inventory")}>
-                        Inventory
-                    </button>
-                    <button className="btn" onClick={() => sendToLua("WebUI:TriggerMenuFunction", "options")}>
-                        Options
-                    </button>
-                    <button className="btn" onClick={() => sendToLua("WebUI:TriggerMenuFunction", "quit")}>
-                        Quit
-                    </button>
+                    {buttons.map((button: any, key: number) => (
+                        <button 
+                            key={key}
+                            onClick={button.onClick}
+                            className={"btn" + (currentFocus === key ? " active" : "")}
+                        >
+                            {button.label??""}
+                        </button>
+                    ))}
                 </div>
             </div>
+
+            <Modal 
+                show={showQuitModal}
+                buttons={[
+                    {
+                        text: "OK", 
+                        handler: () => sendToLua("WebUI:TriggerMenuFunction", "quit"),
+                    },
+                    {
+                        text: "Cancel", 
+                        handler: () => setShowQuitModal(false),
+                    },
+                ]}
+                title="Are you sure?"
+                text="Are you sure you want to quit? Any unsaved progress will be lost."
+                dismiss={() => setShowQuitModal(false)}
+            />
 
             <div className="card CommunityBox">
                 <div className="card-header">
