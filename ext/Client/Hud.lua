@@ -456,6 +456,7 @@ function VuBattleRoyaleHud:OnOpenEscapeMenu()
 	self.m_IsInEscMenu = true
 
 	self.m_HudOnSetUIState:Update(UiStates.Menu)
+	WebUI:EnableKeyboard()
 	-- Add WebUI
 end
 
@@ -728,6 +729,7 @@ function VuBattleRoyaleHud:OnResume()
 	self:StartupChat()
 	self.m_IsInEscMenu = false
 	self.m_HudOnSetUIState:Update(UiStates.Game)
+	WebUI:ResetKeyboard()
 end
 
 function VuBattleRoyaleHud:DisableMenuVisualEnv()
@@ -815,6 +817,7 @@ function VuBattleRoyaleHud:OnOptions()
 		end
 		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	end
+	WebUI:ResetKeyboard()
 end
 
 -- =============================================
