@@ -47,6 +47,16 @@ const MenuScreen: React.FC = () => {
                     // Enter
                     e.preventDefault();
                     buttons[currentFocus].onClick();
+                } else if (e.keyCode === 27) {
+                    // Esc
+                    e.preventDefault();
+                    sendToLua("WebUI:TriggerMenuFunction", "resume");
+                }
+            } else {
+                if (e.keyCode === 27) {
+                    // Esc
+                    e.preventDefault();
+                    setShowQuitModal(false);
                 }
             }
         },
