@@ -162,7 +162,9 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowDown)
 		or InputManager:WentKeyDown(InputDeviceKeys.IDK_S) then
 			WebUI:ExecuteJS("OnMenuArrowDown()")
-		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_Enter) then
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_Enter)
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_NumpadEnter)
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) then
 			WebUI:ExecuteJS("OnMenuEnter()")
 		end
 	end
