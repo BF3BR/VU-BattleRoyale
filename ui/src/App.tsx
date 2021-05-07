@@ -17,7 +17,8 @@ import {
 } from "./store/player/Actions";
 import {
     addPing,
-    removePing
+    removePing,
+    updatePing
 } from "./store/ping/Actions";
 import {
     showMap,
@@ -516,7 +517,18 @@ const App: React.FC<Props> = ({
     window.OnRemoveMarker = (p_Key: string) => {
         dispatch(removePing(p_Key));
     }
-    
+
+    window.OnUpdateMarker = (
+        p_Key: string,
+        p_WorldToScreenX: number,
+        p_WorldToScreenY: number
+    ) => {
+        dispatch(updatePing(
+            p_Key,
+            p_WorldToScreenX,
+            p_WorldToScreenY
+        ));
+    }
 
     return (
         <>
@@ -528,6 +540,7 @@ const App: React.FC<Props> = ({
                         background-size: cover;
                     }
 
+                    #debugChat,
                     #debug {
                         display: flex !important;
                         opacity: 0.1;
@@ -598,12 +611,19 @@ const App: React.FC<Props> = ({
                         <button onClick={CreateRandomTeam}>CreateRandomTeam</button>
                         <button onClick={() => window.OnPlayerIsOnPlane(true)}>OnPlayerIsOnPlane true</button>
                         <button onClick={() => window.OnPlayerIsOnPlane(false)}>OnPlayerIsOnPlane false</button>
+                        <button onClick={() => window.OnCreateMarker(
+                            "test",
+                            "rgb(0,0,0)",
+                            50,
+                            50,
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight
+                        )}>OnCreateMarker</button>
                     </div>
 
                     <div id="VUBattleRoyale">
                         <MatchInfo />
                         <TeamInfo />
-                        {/*<MapMarkers />*/}
 
                         {deployScreen ?
                             <DeployScreen />
@@ -613,6 +633,7 @@ const App: React.FC<Props> = ({
                                 <SpactatorInfo />
                                 <AmmoAndHealthCounter />
                                 <Gameover />
+                                {/*<MapMarkers />*/}
 
                                 {!spectating &&
                                     <>

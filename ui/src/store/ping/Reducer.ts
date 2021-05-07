@@ -2,7 +2,8 @@ import { PingState } from "./Types";
 import { 
     PingActionTypes,
     ADD_PING,
-    REMOVE_PING
+    REMOVE_PING,
+    UPDATE_PING
 } from "./ActionTypes";
 import Ping from "../../helpers/PingHelper";
 
@@ -28,6 +29,22 @@ const PingReducer = (
                 ...state,
                 pings: state.pings.filter((ping: Ping, _: number) => ping.id !== action.payload.id),
             };
+        case UPDATE_PING:
+            return { 
+                ...state, 
+                pings: state.pings.map((ping: Ping, _: number) => ping.id === action.payload.id ? 
+                    {
+                        ...ping,
+                        worldPos: {
+                            ...ping.worldPos,
+                            x: action.payload.x,
+                            y: action.payload.y,
+                        }
+                    }
+                : 
+                    ping
+                )
+             }
         default:
             return state;
     }

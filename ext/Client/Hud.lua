@@ -95,7 +95,6 @@ function VuBattleRoyaleHud:OnLevelDestroy()
 end
 
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
-	-- self:PushMarkerUpdate()
 	if not self.m_IsLevelLoaded then
 		return
 	end
@@ -127,6 +126,7 @@ function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
 		self.m_BrPlayer = p_BrPlayer
 	end
 
+	--self:PushMarkerUpdate()
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
 	self:PushLocalPlayerAmmoArmorAndHealth()
