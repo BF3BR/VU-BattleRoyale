@@ -255,6 +255,9 @@ function SpectatorClient:Enable(p_InflictorId)
 		return
 	end
 	m_Logger:Write("Spectating should work at this point")
+	if not SpectatorManager:GetSpectating() then
+		SpectatorManager:SetSpectating(true)
+	end
 
 	local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
 	if s_PlayerToSpectate == nil then
@@ -266,22 +269,17 @@ function SpectatorClient:Enable(p_InflictorId)
 		if self.m_IsSpectatingGunship then
 			self:SpectateGunship(false)
 		end
-		if not SpectatorManager:GetSpectating() then
-			SpectatorManager:SetSpectating(true)
-		end
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
 	elseif self.m_GameState == GameStates.Plane then
+		SpectatorManager:SetCameraMode(SpectatorCameraMode.Disabled)
 		self:SpectateGunship(true)
 	else
 		if self.m_IsSpectatingGunship then
 			self:SpectateGunship(false)
 		end
-		if not SpectatorManager:GetSpectating() then
-			SpectatorManager:SetSpectating(true)
-		end
+		SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
 		if not self.m_IsDefaultFreeCamSet then
-			SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
 			local s_Transform = LinearTransform(
 					Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588),
 					Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069),
@@ -308,10 +306,6 @@ function SpectatorClient:Disable()
 
 	WebUI:ExecuteJS("SpectatorTarget('');")
 	WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(false) .. ");")
-
-	self.m_SpectatedPlayerId = nil
-	-- Dispatch a local event for phasemanager
-	Events:DispatchLocal(SpectatorEvent.PlayerChanged)
 end
 
 -- =============================================
@@ -340,7 +334,6 @@ function SpectatorClient:SpectatePlayer(p_Player)
 
 	-- Dispatch a local event so phasemanager can toggle the OOC visuals
 	SpectatorManager:SpectatePlayer(p_Player, false)
-	Events:DispatchLocal(SpectatorEvent.PlayerChanged, p_Player)
 end
 
 function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_InflictorId)
@@ -423,8 +416,9 @@ function SpectatorClient:SpectateNextPlayer()
 		return
 	end
 
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 	-- If we are not spectating anyone just find the first player to spectate.
-	if self.m_SpectatedPlayerId == nil then
+	if s_LocalPlayer == SpectatorManager:GetSpectatedPlayer() then
 		local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
 
 		if s_PlayerToSpectate == nil then
@@ -474,7 +468,7 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	end
 
 	for i, l_Player in pairs(s_Players) do
-		if l_Player.id == self.m_SpectatedPlayerId then
+		if l_Player == SpectatorManager:GetSpectatedPlayer() then
 			s_CurrentIndex = i
 			break
 		end
@@ -517,8 +511,9 @@ function SpectatorClient:SpectatePreviousPlayer()
 		return
 	end
 
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 	-- If we are not spectating anyone just find the first player to spectate.
-	if self.m_SpectatedPlayerId == nil then
+	if s_LocalPlayer == SpectatorManager:GetSpectatedPlayer() then
 		local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
 
 		if s_PlayerToSpectate == nil then
@@ -563,7 +558,7 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	end
 
 	for i, l_Player in pairs(s_Players) do
-		if l_Player.id == self.m_SpectatedPlayerId then
+		if l_Player == SpectatorManager:GetSpectatedPlayer() then
 			s_CurrentIndex = i
 			break
 		end
