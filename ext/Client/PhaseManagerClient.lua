@@ -19,7 +19,6 @@ function PhaseManagerClient:RegisterVars()
 	self.m_OuterCircle = RenderableCircle()
 
 	self.m_RenderInnerCircle = CircleConfig.RenderInnerCircle
-	self.m_SpectatedPlayer = nil
 
 	-- events/hooks
 	self.m_LevelLoadedEvent = nil
@@ -32,7 +31,6 @@ function PhaseManagerClient:RegisterEvents()
 		self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
 	end
 
-	Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted)
 	Events:Subscribe("UpdatePass_PreSim", self, self.OnPreSim)
 	Events:Subscribe(SpectatorEvent.PlayerChanged, self, self.OnSpectatingPlayer)
 	Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnRender)
@@ -80,18 +78,10 @@ function PhaseManagerClient:OnUpdateState(p_State)
 	Events:DispatchLocal(PhaseManagerEvent.Update, p_State)
 end
 
--- Update spectating player's object
-function PhaseManagerClient:OnSpectatingPlayer(p_Player)
-	self.m_SpectatedPlayer = p_Player
-end
-
 -- Returns the position of the local or the spectated player
 function PhaseManagerClient:GetActivePlayerPosition()
-	-- pick local or spectated player
-	local l_Player = PlayerManager:GetLocalPlayer()
-	if (l_Player == nil or not l_Player.alive) and self.m_SpectatedPlayer ~= nil then
-		l_Player = self.m_SpectatedPlayer
-	end
+	-- pick local or spectated player -- default is local player
+	local l_Player = SpectatorManager:GetSpectatedPlayer()
 
 	-- ensure soldier exists
 	if l_Player == nil or l_Player.soldier == nil then
@@ -143,12 +133,6 @@ function PhaseManagerClient:OnRender()
 	self.m_OuterCircle:Render(OuterCircleRenderer, l_PlayerPos)
 	if self.m_RenderInnerCircle and not self.m_Completed then
 		self.m_InnerCircle:Render(InnerCircleRenderer, l_PlayerPos)
-	end
-end
-
-function PhaseManagerClient:OnPlayerDeleted(p_Player)
-	if self.m_SpectatedPlayer ~= nil and self.m_SpectatedPlayer.name == p_Player.name then
-		self.m_SpectatedPlayer = nil
 	end
 end
 

@@ -351,7 +351,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
-	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed then
+	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed or SpectatorManager:GetSpectating() then
 		return
 	end
 	if p_Action == UIInputAction.UIInputAction_MapSize then
