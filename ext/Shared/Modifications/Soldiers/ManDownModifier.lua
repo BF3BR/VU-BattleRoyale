@@ -219,9 +219,9 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, 901651067, 901651067, 3)
 
 	-- Add connections between SoldierEntityData and the custom EventSplitterEntityDatas
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_EventSplitterEntityDataStart, -1741104687, 1723395486, 2)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_EventSplitterEntityDataFinish, -1025749669, 1723395486, 2)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_EventSplitterEntityDataFinish, 1957374978, 1723395486, 2)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_StartEventSplitterEntityData, -1741104687, 1723395486, 2)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, -1025749669, 1723395486, 2)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, 1957374978, 1723395486, 2)
 
 	-- BeingInteracted inputrestriction
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_InputRestrictionEntityData, -1741104687, -559281700, 3)

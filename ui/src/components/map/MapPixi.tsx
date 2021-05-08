@@ -162,27 +162,9 @@ const MapPixi: React.FC<Props> = ({ open }) => {
             focus();
         } else {
             follow(snapZoomHeight);
-
-            if (!navigator.userAgent.includes('VeniceUnleashed')) {
-                if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
-                    return;
-                }
-            }
-            WebUI.Call('ResetMouse');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
-
-    window.OnMapEnableMouse = () => {
-        if (open) {
-            if (!navigator.userAgent.includes('VeniceUnleashed')) {
-                if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
-                    return;
-                }
-            }
-            WebUI.Call('EnableMouse');
-        }
-    }
 
     window.OnMapZoomChange = () => {
         if (!open) {
@@ -290,7 +272,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(MapPixi);
 declare global {
     interface Window {
         OnMapZoomChange: () => void;
-        OnMapEnableMouse: () => void;
         OnLevelFinalized: (levelName?: any) => void;
     }
 }

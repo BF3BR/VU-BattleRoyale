@@ -15,6 +15,7 @@ require "BRPlayer"
 local m_VanillaUIManager = require "VanillaUIManager"
 local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
+local m_Chat = require "UI/Chat"
 local m_SpectatorClient = require "SpectatorClient"
 local m_Showroom = require "Showroom"
 local m_Ping = require "PingClient"
@@ -93,6 +94,9 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 	Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam)
 	Events:Subscribe("WebUI:PingFromMap", self, self.OnWebUIPingFromMap)
 	Events:Subscribe("WebUI:PingRemoveFromMap", self, self.OnWebUIPingRemoveFromMap)
+	Events:Subscribe("WebUI:TriggerMenuFunction", self, self.OnWebUITriggerMenuFunction)
+	Events:Subscribe('WebUI:OutgoingChatMessage', self, self.OnWebUIOutgoingChatMessage)
+	Events:Subscribe('WebUI:SetCursor', self, self.OnWebUISetCursor)
 end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
@@ -103,6 +107,7 @@ end
 function VuBattleRoyaleClient:RegisterHooks()
 	Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent)
 	Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen)
+	Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage)
 	Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage)
 	Hooks:Install("UI:DrawFriendlyNametag", 999, self, self.OnUIDrawFriendlyNametag)
 	Hooks:Install("UI:DrawEnemyNametag", 999, self, self.OnUIDrawEnemyNametag)
@@ -137,6 +142,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_SpectatorClient:OnLevelDestroy()
 	m_Gunship:OnLevelDestroy()
 	m_VanillaUIManager:OnLevelDestroy()
+	m_Chat:OnLevelDestroy()
 end
 
 -- =============================================
@@ -156,7 +162,7 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
 		m_Hud:OnUIDrawHud(self.m_BrPlayer)
-		m_Ping:OnUIDrawHud()
+		m_Ping:OnUIDrawHud(self.m_BrPlayer)
 	end
 end
 
@@ -273,12 +279,12 @@ function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_Is
 	m_Hud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
 end
 
-function VuBattleRoyaleClient:OnPingNotify(p_PingId, p_Position)
-	m_Ping:OnPingNotify(p_PingId, p_Position)
+function VuBattleRoyaleClient:OnPingNotify(p_PlayerName, p_Position)
+	m_Ping:OnPingNotify(p_PlayerName, p_Position)
 end
 
-function VuBattleRoyaleClient:OnPingRemoveNotify(p_PingId)
-	m_Ping:OnPingRemoveNotify(p_PingId)
+function VuBattleRoyaleClient:OnPingRemoveNotify(p_PlayerName)
+	m_Ping:OnPingRemoveNotify(p_PlayerName)
 end
 
 function VuBattleRoyaleClient:OnPingUpdateConfig(p_CooldownTime)
@@ -415,8 +421,9 @@ end
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
 	m_Showroom:SetCamera(false)
-	m_Hud:ShowCrosshair(true)
 	m_VanillaUIManager:EnableShowroomSoldier(false)
+	m_Hud:HUDEnterUIGraph()
+	m_Hud:ShowCrosshair(true)
 	NetEvents:Send(PlayerEvents.PlayerDeploy)
 end
 
@@ -452,18 +459,45 @@ function VuBattleRoyaleClient:OnWebUIPingRemoveFromMap()
 	m_Ping:OnWebUIPingRemoveFromMap()
 end
 
+function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
+	if p_Function == "resume" then
+		m_Hud:OnResume()
+	elseif p_Function == "team" then
+		m_Logger:Write("INFO: Team / Squad is missing.")
+	elseif p_Function == "inventory" then
+		m_Logger:Write("INFO: Inventory is missing.")
+	elseif p_Function == "options" then
+		m_Hud:OnOptions()
+	elseif p_Function == "quit" then
+		m_Hud:OnQuit()
+	end
+end
+
+function VuBattleRoyaleClient:OnWebUIOutgoingChatMessage(p_JsonData)
+	m_Chat:OnWebUIOutgoingChatMessage(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnWebUISetCursor()
+	m_Chat:OnWebUISetCursor()
+end
+
 -- =============================================
 -- Hooks
 -- =============================================
 
 function VuBattleRoyaleClient:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	m_Hud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
+	m_Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 end
 
 function VuBattleRoyaleClient:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
 	p_Screen = Asset(p_Screen)
 	m_Hud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
 	m_VanillaUIManager:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
+end
+
+function VuBattleRoyaleClient:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
+	m_Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
 end
 
 function VuBattleRoyaleClient:OnUICreateKillMessage(p_HookCtx)
@@ -527,7 +561,10 @@ function VuBattleRoyaleClient:OnHotReload()
 	if s_LocalPlayer.soldier ~= nil then
 		self:OnPlayerRespawn(s_LocalPlayer)
 	end
-	m_Hud:ShowCrosshair(false)
+	g_Timers:Timeout(1, function()
+		m_Hud:ShowCrosshair(false)
+		m_Hud:OnEnableMouse()
+	end)
 end
 
 return VuBattleRoyaleClient()

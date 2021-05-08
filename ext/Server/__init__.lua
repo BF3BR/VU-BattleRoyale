@@ -66,8 +66,6 @@ function VuBattleRoyaleServer:RegisterEvents()
 	Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
 	Events:Subscribe("Player:Left", self, self.OnPlayerLeft)
 
-	Events:Subscribe("BRTeamManager:TeamsAssigned", self, self.OnTeamsAssigned)
-
 	NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected)
 	NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy)
 	NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw)
@@ -280,10 +278,6 @@ end
 
 function VuBattleRoyaleServer:OnRemovePlayerPing(p_Player)
 	m_PingServer:OnRemovePlayerPing(p_Player)
-end
-
-function VuBattleRoyaleServer:OnTeamsAssigned(p_BrTeams)
-	m_PingServer:AssignPingIds(p_BrTeams)
 end
 
 -- =============================================

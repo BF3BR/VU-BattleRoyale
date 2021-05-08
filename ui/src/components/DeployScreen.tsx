@@ -107,7 +107,7 @@ const DeployScreen: React.FC<Props> = ({
         if (teamJoinError !== null) {
             setTeamJoinError(null);
         }
-        setJoinCode(event.target.value);
+        setJoinCode("" + event.target.value.toUpperCase());
     }
 
     const handleFocus = () => {
@@ -133,23 +133,6 @@ const DeployScreen: React.FC<Props> = ({
             <div className="TeamPlayer empty" key={index}>No player...</div>
         )
     }
-
-    useEffect(() => {
-        if (!navigator.userAgent.includes('VeniceUnleashed')) {
-            if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
-                return;
-            }
-        }
-        
-        WebUI.Call('EnableKeyboard');
-        WebUI.Call('EnableMouse');
-
-        return () => {
-            WebUI.Call('ResetKeyboard');
-            WebUI.Call('ResetMouse');
-        }
-    }, []);
-
 
     const [btnDisabled, setBtnDisabled] = useState<boolean>(isFirstLoad);
     useEffect(() => {

@@ -18,7 +18,7 @@ export function updateGameState(gameState: string): GameActionTypes {
     };
 }
 
-export function updateUiState(uiState: "hidden" | "loading" | "game"): GameActionTypes {
+export function updateUiState(uiState: "hidden" | "loading" | "game" | "menu"): GameActionTypes {
     return {
         type: UPDATE_UI_STATE,
         payload: { uiState },

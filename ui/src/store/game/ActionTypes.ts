@@ -17,7 +17,7 @@ interface UpdateGameState {
 
 interface UpdateUiState {
     type: typeof UPDATE_UI_STATE;
-    payload: { uiState: "hidden" | "loading" | "game" };
+    payload: { uiState: "hidden" | "loading" | "game" | "menu" };
 }
 
 interface UpdateGameover {

@@ -240,6 +240,15 @@ function BRTeam:FinishPlayers(p_PlayerToIgnore)
 	end
 end
 
+function BRTeam:RevivePlayers()
+	for _, l_BrPlayer in pairs(self.m_Players) do
+		if l_BrPlayer.m_Player ~= nil and l_BrPlayer.m_Player.soldier ~= nil and l_BrPlayer.m_Player.soldier.isInteractiveManDown then
+			l_BrPlayer.m_Player.soldier:FireEvent("Revive")
+			l_BrPlayer.m_Player.soldier:SetPose(CharacterPoseTypeCharacterPoseType_Stand, false, true)
+		end
+	end
+end
+
 -- Broadcasts the state of the team to all of its members
 function BRTeam:BroadcastState()
 	local l_TeamData = self:AsTable()

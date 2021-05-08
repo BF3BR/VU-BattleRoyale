@@ -95,7 +95,6 @@ function VuBattleRoyaleHud:OnLevelDestroy()
 end
 
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
-	-- self:PushMarkerUpdate()
 	if not self.m_IsLevelLoaded then
 		return
 	end
@@ -127,6 +126,7 @@ function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
 		self.m_BrPlayer = p_BrPlayer
 	end
 
+	--self:PushMarkerUpdate()
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
 	self:PushLocalPlayerAmmoArmorAndHealth()
@@ -152,13 +152,31 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 			m_VanillaUIManager:EnableShowroomSoldier(true)
 		end
 	end
+
+	if self.m_IsInEscMenu then
+		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
+			self:OnResume()
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowUp)
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_W) then
+			WebUI:ExecuteJS("OnMenuArrowUp()")
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowDown)
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_S) then
+			WebUI:ExecuteJS("OnMenuArrowDown()")
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_Enter)
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_NumpadEnter)
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) then
+			WebUI:ExecuteJS("OnMenuEnter()")
+		end
+	end
 end
 
 function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	WebUI:ExecuteJS("OnMapShow(true)")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
-	self:ShowCrosshair(true)
+	g_Timers:Timeout(1, function()
+		self:ShowCrosshair(true)
+	end)
 
 	if self.m_GameState <= GameStates.Warmup then
 		return
@@ -333,8 +351,10 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
-	if p_Action == UIInputAction.UIInputAction_MapSize and p_EventType ==
-		UIInputActionEventType.UIInputActionEventType_Pressed then
+	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed then
+		return
+	end
+	if p_Action == UIInputAction.UIInputAction_MapSize then
 		if self.m_IsMapOpened then
 			self.m_IsMapOpened = false
 			WebUI:ExecuteJS("OnOpenCloseMap(false);")
@@ -349,18 +369,14 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		return
 	end
 
-	if p_Action == UIInputAction.UIInputAction_MapZoom and p_EventType ==
-		UIInputActionEventType.UIInputActionEventType_Pressed then
+	if p_Action == UIInputAction.UIInputAction_MapZoom then
 		WebUI:ExecuteJS("OnMapZoomChange();")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
 
-	-- Will be replaced with a custom chat anyways
-	-- Info: If you write in chat the gameinput gets reenabled, that's why we need to avoid the vanilla chat while being in the menu
-	if (p_Action == UIInputAction.UIInputAction_SayAllChat or p_Action == UIInputAction.UIInputAction_TeamChat
-	or p_Action == UIInputAction.UIInputAction_SquadChat)
-	and p_EventType == UIInputActionEventType.UIInputActionEventType_Pressed and self.m_IsInEscMenu then
+	if p_Action == UIInputAction.UIInputAction_ToggleMinimapType then
+		WebUI:ExecuteJS("OnMapSwitchRotation();")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
@@ -415,6 +431,7 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 	WebUI:ExecuteJS("OnLevelFinalized('" .. SharedUtils:GetLevelName() .. "');")
 	self:OnGameStateChanged(self.m_GameState)
 	self:RegisterEscMenuCallbacks()
+	self:OnEnableMouse()
 end
 
 -- =============================================
@@ -422,13 +439,6 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:RegisterEscMenuCallbacks()
-	-- REMOVE these lines when the custom UI is done
-	-- --------------
-	local removeThis = true
-	if removeThis then
-		return
-	end
-	-- --------------
 	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 	local s_Entity = s_EntityIterator:Next()
 	while s_Entity do
@@ -462,7 +472,7 @@ function VuBattleRoyaleHud:OnOpenEscapeMenu()
 	self:EnableBlurEffect(true)
 	self.m_IsInEscMenu = true
 
-	self.m_HudOnSetUIState:Update(UiStates.Hidden)
+	self.m_HudOnSetUIState:Update(UiStates.Menu)
 	-- Add WebUI
 end
 
@@ -811,6 +821,8 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnOptions()
+	self.m_IsInEscMenu = false
+	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	while s_UIGraphEntity do
@@ -1048,10 +1060,10 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_PositionZ, p_Color)
-	local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(p_PositionX, p_PositionY, p_PositionZ))
+	--[[local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(p_PositionX, p_PositionY, p_PositionZ))
 	if s_WorldToScreen == nil then
 		return
-	end
+	end]]
 
 	local s_Marker = {
 		Key = p_Key,
@@ -1059,9 +1071,11 @@ function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_Posit
 		PositionY = p_PositionY,
 		PositionZ = p_PositionZ,
 		Color = p_Color,
-		WorldToScreenX = s_WorldToScreen.x,
-		WorldToScreenY = s_WorldToScreen.y,
+		WorldToScreenX = 0,
+		WorldToScreenY = 0,
 	}
+
+	print("CreateMarker: " .. p_Key)
 
 	self.m_Markers[p_Key] = s_Marker
 	WebUI:ExecuteJS(

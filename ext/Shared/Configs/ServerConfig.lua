@@ -37,6 +37,8 @@ ServerConfig = {
 
 	-- DEBUG STUFF
 	Debug = {
+		EnableAllChat = true,
+
 		EnableLootPointSpheres = false,
 
 		Logger_Enabled = true,

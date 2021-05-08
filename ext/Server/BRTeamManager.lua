@@ -122,6 +122,7 @@ function BRTeamManager:GetWinningTeam()
 
 	if l_Winner ~= nil then
 		l_Winner:SetPlacement(1)
+		l_Winner:RevivePlayers()
 	end
 
 	return l_Winner
@@ -197,8 +198,6 @@ function BRTeamManager:AssignTeams()
 
 		l_BrTeam:ApplyTeamSquadIds()
 	end
-
-	Events:DispatchLocal("BRTeamManager:TeamsAssigned", self.m_Teams)
 end
 
 -- Creates a BRTeam

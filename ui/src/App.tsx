@@ -17,11 +17,13 @@ import {
 } from "./store/player/Actions";
 import {
     addPing,
-    removePing
+    removePing,
+    updatePing
 } from "./store/ping/Actions";
 import {
     showMap,
-    openMap
+    openMap,
+    switchRotation
 } from "./store/map/Actions";
 import {
     updatePlanePosition,
@@ -71,13 +73,16 @@ import TeamInfo from "./components/TeamInfo";
 import LoadingScreen from "./components/LoadingScreen";
 import MapMarkers from "./components/MapMarkers";
 import Inventory from "./components/Inventory";
+import MenuScreen from "./components/MenuScreen";
+import Chat from "./components/chat/Chat";
+import InteractProgress from "./components/InteractProgress";
 
 /* Style */
 import './App.scss';
 
 interface StateFromReducer {
     gameState: string;
-    uiState: "hidden" | "loading" | "game";
+    uiState: "hidden" | "loading" | "game" | "menu";
     gameOverScreen: boolean;
     deployScreen: boolean;
     spectating: boolean;
@@ -99,7 +104,7 @@ const App: React.FC<Props> = ({
     /*
     * UI State
     */
-    window.OnSetUIState = (p_Toggle: "hidden" | "loading" | "game") => {
+    window.OnSetUIState = (p_Toggle: "hidden" | "loading" | "game" | "menu") => {
         dispatch(updateUiState(p_Toggle));
     }
 
@@ -293,6 +298,11 @@ const App: React.FC<Props> = ({
     window.OnMapShow = (show: boolean) => {
         dispatch(showMap(show));
     }
+
+    window.OnMapSwitchRotation = () => {
+        dispatch(switchRotation());
+    }
+
 
     window.OnUpdateCircles = (data: any) => {
         if (data.InnerCircle) {
@@ -513,7 +523,18 @@ const App: React.FC<Props> = ({
     window.OnRemoveMarker = (p_Key: string) => {
         dispatch(removePing(p_Key));
     }
-    
+
+    window.OnUpdateMarker = (
+        p_Key: string,
+        p_WorldToScreenX: number,
+        p_WorldToScreenY: number
+    ) => {
+        dispatch(updatePing(
+            p_Key,
+            p_WorldToScreenX,
+            p_WorldToScreenY
+        ));
+    }
 
     return (
         <>
@@ -525,6 +546,7 @@ const App: React.FC<Props> = ({
                         background-size: cover;
                     }
 
+                    #debugChat,
                     #debug {
                         display: flex !important;
                         opacity: 0.1;
@@ -545,77 +567,96 @@ const App: React.FC<Props> = ({
             {uiState === "loading" &&
                 <LoadingScreen />
             }
+            
+            {uiState === "menu" ?
+                <MenuScreen />
+            :
+                <>
+                    <div id="debug">
+                        <button onClick={() => window.OnMapShow(true)}>Show Map</button>
+                        <button onClick={() => window.OnOpenCloseMap(true)}>Open Map</button>
+                        <button onClick={() => window.OnPlayerPos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Player Pos</button>
+                        <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
+                        <button onClick={() => window.OnPlanePos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Plane Pos</button>
+                        <button onClick={() => window.OnPlaneYaw(Math.random() * 100)}>Set Random Plane Yaw</button>
+                        <button onClick={() => window.OnUpdateTimer(3)}>Random Timer</button>
+                        <button onClick={() => dispatch(addAlert(
+                            "Test alert",
+                            5,
+                            Sounds.Alert
+                        ))}>Set alert</button>
+                        <button onClick={() => dispatch(updateSpectatorEnabled(true))}>Set Spectator</button>
+                        <button onClick={() => dispatch(updateGameover(true))}>Set Gameover Screen</button>
+                        <button onClick={() => window.OnLocalPlayerInfo({
+                            name: 'KVN',
+                            kill: 15,
+                            state: 1,
+                            isTeamLeader: true,
+                            color: "rgba(255, 0, 0, 0.3)",
+                        })}>SetDummyLocalPlayer</button>
+                        <button onClick={() => {
+                            dispatch(updateInnerCircle({
+                                center: {
+                                    x: 148,
+                                    y: 555,
+                                    z: -864,
+                                },
+                                radius: 150,
+                            }));
+                            dispatch(updateOuterCircle({
+                                center: {
+                                    x: 148,
+                                    y: 555,
+                                    z: -864,
+                                },
+                                radius: 250,
+                            }));
+                        }}>setRandomCircle</button>
+                        <button onClick={() => SetKilledMessage(false, 'TestUser', 3)}>SetKillMsg</button>
+                        <button onClick={() => dispatch(switchDeployScreen())}>setDeployScreen</button>
+                        <button onClick={CreateRandomTeam}>CreateRandomTeam</button>
+                        <button onClick={() => window.OnPlayerIsOnPlane(true)}>OnPlayerIsOnPlane true</button>
+                        <button onClick={() => window.OnPlayerIsOnPlane(false)}>OnPlayerIsOnPlane false</button>
+                        <button onClick={() => window.OnCreateMarker(
+                            "test",
+                            "rgb(0,0,0)",
+                            50,
+                            50,
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight
+                        )}>OnCreateMarker</button>
+                    </div>
 
-            <div id="debug">
-                <button onClick={() => window.OnMapShow(true)}>Show Map</button>
-                <button onClick={() => window.OnOpenCloseMap(true)}>Open Map</button>
-                <button onClick={() => window.OnPlayerPos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Player Pos</button>
-                <button onClick={() => window.OnPlayerYaw(Math.random() * 100)}>Set Random Player Yaw</button>
-                <button onClick={() => window.OnPlanePos({ x: 667.28 - (Math.random() * 1000), y: 0, z: -290.44 - (Math.random() * 1000) })}>Set Random Plane Pos</button>
-                <button onClick={() => window.OnPlaneYaw(Math.random() * 100)}>Set Random Plane Yaw</button>
-                <button onClick={() => window.OnUpdateTimer(3)}>Random Timer</button>
-                <button onClick={() => dispatch(addAlert(
-                    "Test alert",
-                    5,
-                    Sounds.Alert
-                ))}>Set alert</button>
-                <button onClick={() => dispatch(updateSpectatorEnabled(true))}>Set Spectator</button>
-                <button onClick={() => dispatch(updateGameover(true))}>Set Gameover Screen</button>
-                <button onClick={() => window.OnLocalPlayerInfo({
-                    name: 'KVN',
-                    kill: 15,
-                    state: 1,
-                    isTeamLeader: true,
-                    color: "rgba(255, 0, 0, 0.3)",
-                })}>SetDummyLocalPlayer</button>
-                <button onClick={() => {
-                    dispatch(updateInnerCircle({
-                        center: {
-                            x: 148,
-                            y: 555,
-                            z: -864,
-                        },
-                        radius: 150,
-                    }));
-                    dispatch(updateOuterCircle({
-                        center: {
-                            x: 148,
-                            y: 555,
-                            z: -864,
-                        },
-                        radius: 250,
-                    }));
-                }}>setRandomCircle</button>
-                <button onClick={() => SetKilledMessage(false, 'TestUser', 3)}>SetKillMsg</button>
-                <button onClick={() => dispatch(switchDeployScreen())}>setDeployScreen</button>
-                <button onClick={CreateRandomTeam}>CreateRandomTeam</button>
-                <button onClick={() => window.OnPlayerIsOnPlane(true)}>OnPlayerIsOnPlane true</button>
-                <button onClick={() => window.OnPlayerIsOnPlane(false)}>OnPlayerIsOnPlane false</button>
-            </div>
+                    <div id="VUBattleRoyale">
+                        <MatchInfo />
+                        <TeamInfo />
 
-            <div id="VUBattleRoyale">
-                <MatchInfo />
-                <TeamInfo />
-                {/*<MapMarkers />*/}
-
-                {deployScreen ?
-                    <DeployScreen />
-                :
-                    <>
-                        <KillAndAliveInfo />
-                        <SpactatorInfo />
-                        <AmmoAndHealthCounter />
-                        <Gameover />
-
-                        {!spectating &&
+                        {deployScreen ?
+                            <DeployScreen />
+                        :
                             <>
-                                <MiniMap />
-                                {/*<Inventory />*/}
+                                <KillAndAliveInfo />
+                                <SpactatorInfo />
+                                <AmmoAndHealthCounter />
+                                <Gameover />
+                                {/*<MapMarkers />*/}
+
+                                {!spectating &&
+                                    <>
+                                        <MiniMap />
+                                        {/*<InteractProgress 
+                                            timeout={10}
+                                            clearTimeout={() => alert('clear')}
+                                        />*/}
+                                        {/*<Inventory />*/}
+                                    </>
+                                }
                             </>
                         }
-                    </>
-                }
-            </div>
+                    </div>
+                </>
+            }
+            <Chat />
         </>
     );
 };
@@ -647,6 +688,7 @@ declare global {
 
         OnOpenCloseMap: (open: boolean) => void;
         OnMapShow: (show: boolean) => void;
+        OnMapSwitchRotation: () => void;
         OnUpdateCircles: (data: any) => void;
         OnGameState: (state: string) => void;
         OnUpdateTimer: (time: number) => void;
@@ -680,7 +722,7 @@ declare global {
         OnNotifyInflictorAboutKillOrKnock: (data: any) => void;
         OnInteractiveMessageAndKey: (data: any) => void;
 
-        OnSetUIState: (p_Toggle: "hidden" | "loading" | "game") => void;
+        OnSetUIState: (p_Toggle: "hidden" | "loading" | "game" | "menu") => void;
 
         OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
         OnRemoveMarker: (p_Key: string) => void;
