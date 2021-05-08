@@ -15,13 +15,8 @@ function SpectatorClient:__init()
 end
 
 function SpectatorClient:RegisterVars()
-	self.m_SpectatedPlayerId = nil
-
 	self.m_Distance = 2.0
 	self.m_Height = 1.75
-	self.m_Data = nil
-	self.m_Entity = nil
-	self.m_Active = false
 	self.m_LookAtPos = nil
 
 	self.m_SpectatingPlayerPitch = 0.0
@@ -46,22 +41,21 @@ end
 
 function SpectatorClient:OnLevelDestroy()
 	self:Disable()
-	self.m_SpectatedPlayerId = nil
 	self.m_SpectatingPlayerPitch = 0.0
 	self.m_SpectatingPlayerYaw = 0.0
 end
 
 function SpectatorClient:OnEngineUpdate(p_DeltaTime)
-	if not self:IsEnabled() then
+	if not SpectatorManager:GetSpectating() then
 		return
 	end
 
-	if self.m_SpectatedPlayerId == nil then
+	if SpectatorManager:GetCameraMode() ~= SpectatorCameraMode.ThirdPerson then
 		return
 	end
 
 	-- Don't update if we don't have a player with an alive soldier.
-	local s_Player = PlayerManager:GetPlayerById(self.m_SpectatedPlayerId)
+	local s_Player = SpectatorManager:GetSpectatedPlayer()
 
 	if s_Player == nil then
 		return
@@ -123,25 +117,28 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 		s_CameraLocation = s_CameraLocation + (direction * 0.1)
 	end
 
-	self.m_Data.transform:LookAtTransform(s_CameraLocation, self.m_LookAtPos)
-	self.m_Data.transform.left = self.m_Data.transform.left * -1
-	self.m_Data.transform.forward = self.m_Data.transform.forward * -1
+	local s_Transform = LinearTransform()
+	s_Transform:LookAtTransform(s_CameraLocation, self.m_LookAtPos)
+	s_Transform.left = s_Transform.left * -1
+	s_Transform.forward = s_Transform.forward * -1
+	SpectatorManager:SetFreecameraTransform(s_Transform)
 end
 
 function SpectatorClient:OnClientUpdateInput()
-	if self:IsEnabled() then
-		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight) then
-			self:SpectateNextPlayer()
-		end
+	if not SpectatorManager:GetSpectating() then
+		return
+	end
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight) then
+		self:SpectateNextPlayer()
+	end
 
-		if InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft) then
-			self:SpectatePreviousPlayer()
-		end
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft) then
+		self:SpectatePreviousPlayer()
 	end
 end
 
 function SpectatorClient:OnPlayerRespawn(p_Player)
-	if not self:IsEnabled() then
+	if not SpectatorManager:GetSpectating() then
 		return
 	end
 
@@ -155,19 +152,18 @@ function SpectatorClient:OnPlayerRespawn(p_Player)
 
 	-- If we have nobody to spectate and this player is spectatable
 	-- then switch to them.
-	if self.m_SpectatedPlayerId == nil then
+	if s_LocalPlayer == SpectatorManager:GetSpectatedPlayer() or SpectatorManager:GetCameraMode() ~= SpectatorCameraMode.ThirdPerson then
 		self:SpectatePlayer(p_Player)
 	end
 end
 
 function SpectatorClient:OnPlayerDeleted(p_Player)
-	if not self:IsEnabled() then
+	if not SpectatorManager:GetSpectating() then
 		return
 	end
 
 	-- Handle disconnection of player being spectated.
-	if p_Player.id == self.m_SpectatedPlayerId then
-		self.m_SpectatedPlayerId = nil
+	if p_Player == SpectatorManager:GetSpectatedPlayer() or SpectatorManager:GetCameraMode() ~= SpectatorCameraMode.ThirdPerson then
 		self:SpectateNextPlayer()
 	end
 end
@@ -197,21 +193,24 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 		end)
 		return
 	-- Handle death of player being spectated.
-	elseif self.m_SpectatedPlayerId == nil then
-		m_Logger:Write("SpectateNextPlayer")
-		self:SpectateNextPlayer()
-		return
-	elseif p_PlayerId == self.m_SpectatedPlayerId then
-		m_Logger:Write("SpectatedPlayer died")
-		if p_InflictorId ~= nil then
-			local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
-			if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
-				self:SpectatePlayer(s_Inflictor)
-				return
+	elseif SpectatorManager:GetSpectating() then
+		local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
+		if SpectatorManager:GetCameraMode() ~= SpectatorCameraMode.ThirdPerson then
+			m_Logger:Write("SpectateNextPlayer")
+			self:SpectateNextPlayer()
+			return
+		elseif p_PlayerId == s_SpectatedPlayer.id then
+			m_Logger:Write("SpectatedPlayer died")
+			if p_InflictorId ~= nil then
+				local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
+				if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
+					self:SpectatePlayer(s_Inflictor)
+					return
+				end
 			end
 		end
+		self:SpectateNextPlayer()
 	end
-	self:SpectateNextPlayer()
 end
 
 function SpectatorClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
@@ -235,68 +234,13 @@ end
 -- =============================================
 
 -- =============================================
-	-- Create / Destroy Camera
--- =============================================
-
-function SpectatorClient:CreateCameraData()
-	-- Create data for our camera entity.
-	-- We set the priority very high so our game gets forced to use this camera.
-	self.m_Data = CameraEntityData()
-	self.m_Data.fov = 80
-	self.m_Data.enabled = true
-	self.m_Data.priority = 150
-	self.m_Data.nameId = "vu-battleroyale-spec-cam"
-	self.m_Data.transform = LinearTransform()
-end
-
-function SpectatorClient:CreateCamera()
-	if self.m_Entity ~= nil then
-		return
-	end
-
-	if self.m_Data == nil then
-		-- First ensure that we have create our camera data.
-		self:CreateCameraData()
-		-- Make ESC Menu accessable
-		self:EnterUIGraph()
-		-- Fix SoundState issue
-		self:ExitSoundState()
-	end
-
-	-- And then create the camera entity.
-	self.m_Entity = EntityManager:CreateEntity(self.m_Data, self.m_Data.transform)
-	self.m_Entity:Init(Realm.Realm_Client, true)
-end
-
-function SpectatorClient:DestroyCamera()
-	if self.m_Entity == nil then
-		return
-	end
-
-	-- Destroy the camera entity.
-	self.m_Entity:Destroy()
-	self.m_Entity = nil
-	self.m_LookAtPos = nil
-end
-
--- =============================================
 	-- (Re-)Enable / Disable Camera
 -- =============================================
 
 function SpectatorClient:Enable(p_InflictorId)
-	if self:IsEnabled() then
+	if SpectatorManager:GetSpectating() and SpectatorManager:GetCameraMode() == SpectatorCameraMode.ThirdPerson then
 		m_Logger:Write("Is already enabled")
 		return
-	end
-
-	if self.m_IsDefaultFreeCamSet == false then
-		local s_Transform = LinearTransform(
-				Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588),
-				Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069),
-				Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139),
-				Vec3(98.216575622559, 889.53924560547, -815.45764160156))
-		SpectatorManager:SetFreecameraTransform(s_Transform)
-		self.m_IsDefaultFreeCamSet = true
 	end
 
 	-- If we're alive we don't allow spectating.
@@ -311,8 +255,9 @@ function SpectatorClient:Enable(p_InflictorId)
 		return
 	end
 	m_Logger:Write("Spectating should work at this point")
-	self:CreateCamera()
-	self:TakeControl()
+	if not SpectatorManager:GetSpectating() then
+		SpectatorManager:SetSpectating(true)
+	end
 
 	local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
 	if s_PlayerToSpectate == nil then
@@ -327,22 +272,29 @@ function SpectatorClient:Enable(p_InflictorId)
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
 	elseif self.m_GameState == GameStates.Plane then
+		SpectatorManager:SetCameraMode(SpectatorCameraMode.Disabled)
 		self:SpectateGunship(true)
-	elseif self.m_IsSpectatingGunship then
-		self:SpectateGunship(false)
-		local s_Transform = LinearTransform(
-				Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588),
-				Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069),
-				Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139),
-				Vec3(98.216575622559, 889.53924560547, -815.45764160156))
-		SpectatorManager:SetFreecameraTransform(s_Transform)
-		self.m_IsDefaultFreeCamSet = true
+		WebUI:ExecuteJS("SpectatorTarget('');")
+		WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
+	else
+		if self.m_IsSpectatingGunship then
+			self:SpectateGunship(false)
+		end
+		WebUI:ExecuteJS("SpectatorTarget('');")
+		WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
+		SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
+		if not self.m_IsDefaultFreeCamSet then
+			local s_Transform = LinearTransform(
+					Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588),
+					Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069),
+					Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139),
+					Vec3(98.216575622559, 889.53924560547, -815.45764160156))
+			SpectatorManager:SetFreecameraTransform(s_Transform)
+			self.m_IsDefaultFreeCamSet = true
+		end
 	end
 
 	self:SetTimer("NoPlayerFoundTimer", g_Timers:Timeout(4, self, self.ReEnable))
-
-	-- If we found no player to spectate we just disable the spectator mode
-	self:Disable()
 end
 
 function SpectatorClient:ReEnable()
@@ -350,40 +302,14 @@ function SpectatorClient:ReEnable()
 end
 
 function SpectatorClient:Disable()
-	if not self:IsEnabled() then
+	if not SpectatorManager:GetSpectating() then
 		return
 	end
+	SpectatorManager:SetCameraMode(SpectatorCameraMode.Disabled)
+	SpectatorManager:SetSpectating(false)
 
 	WebUI:ExecuteJS("SpectatorTarget('');")
 	WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(false) .. ");")
-
-	self.m_SpectatedPlayerId = nil
-	-- Dispatch a local event for phasemanager
-	Events:DispatchLocal(SpectatorEvent.PlayerChanged)
-
-	self:ReleaseControl()
-	self:DestroyCamera()
-end
-
--- =============================================
-	-- Take- / ReleaseControl Camera
--- =============================================
-
-function SpectatorClient:TakeControl()
-	-- By firing the "TakeControl" event on the camera entity we make the
-	-- current player switch to this camera from their first person camera.
-	self.m_Active = true
-	self.m_Entity:FireEvent("TakeControl")
-end
-
-function SpectatorClient:ReleaseControl()
-	-- By firing the "ReleaseControl" event on the camera entity we return
-	-- the player to whatever camera they were supposed to be using.
-	self.m_Active = false
-
-	if self.m_Entity ~= nil then
-		self.m_Entity:FireEvent("ReleaseControl")
-	end
 end
 
 -- =============================================
@@ -391,7 +317,7 @@ end
 -- =============================================
 
 function SpectatorClient:SpectatePlayer(p_Player)
-	if not self:IsEnabled() then
+	if not SpectatorManager:GetSpectating() then
 		return
 	end
 
@@ -411,8 +337,7 @@ function SpectatorClient:SpectatePlayer(p_Player)
 	WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
 
 	-- Dispatch a local event so phasemanager can toggle the OOC visuals
-	Events:DispatchLocal(SpectatorEvent.PlayerChanged, p_Player)
-	self.m_SpectatedPlayerId = p_Player.id
+	SpectatorManager:SpectatePlayer(p_Player, false)
 end
 
 function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_InflictorId)
@@ -491,12 +416,13 @@ end
 -- =============================================
 
 function SpectatorClient:SpectateNextPlayer()
-	if not self:IsEnabled() then
+	if not SpectatorManager:GetSpectating() then
 		return
 	end
 
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 	-- If we are not spectating anyone just find the first player to spectate.
-	if self.m_SpectatedPlayerId == nil then
+	if s_LocalPlayer == SpectatorManager:GetSpectatedPlayer() then
 		local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
 
 		if s_PlayerToSpectate == nil then
@@ -507,22 +433,18 @@ function SpectatorClient:SpectateNextPlayer()
 			self:SpectatePlayer(s_PlayerToSpectate)
 		end
 
-		-- If no players found we just reset the spectator mode
-		self:Disable()
-		self:Enable()
+		m_Logger:Write("No Player found, stay in freecam")
 		return
 	end
-
 	local s_NextPlayer = self:GetNextPlayer(true)
 	if s_NextPlayer == nil then
 		s_NextPlayer = self:GetNextPlayer(false)
 	end
-
 	-- If we didn't find any players to spectate then switch to freecam.
-	if s_NextPlayer == nil then
-		self:Disable()
-	else
+	if s_NextPlayer ~= nil then
 		self:SpectatePlayer(s_NextPlayer)
+	else
+		WebUI:ExecuteJS("SpectatorTarget('');")
 	end
 end
 
@@ -546,7 +468,7 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	end
 
 	for i, l_Player in pairs(s_Players) do
-		if l_Player.id == self.m_SpectatedPlayerId then
+		if l_Player == SpectatorManager:GetSpectatedPlayer() then
 			s_CurrentIndex = i
 			break
 		end
@@ -585,12 +507,13 @@ end
 -- =============================================
 
 function SpectatorClient:SpectatePreviousPlayer()
-	if not self:IsEnabled() then
+	if not SpectatorManager:GetSpectating() then
 		return
 	end
 
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 	-- If we are not spectating anyone just find the first player to spectate.
-	if self.m_SpectatedPlayerId == nil then
+	if s_LocalPlayer == SpectatorManager:GetSpectatedPlayer() then
 		local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
 
 		if s_PlayerToSpectate == nil then
@@ -601,6 +524,7 @@ function SpectatorClient:SpectatePreviousPlayer()
 			self:SpectatePlayer(s_PlayerToSpectate)
 		end
 
+		m_Logger:Write("No Player found, stay in freecam")
 		return
 	end
 	local s_PreviousPlayer = self:GetPreviousPlayer(true)
@@ -608,10 +532,10 @@ function SpectatorClient:SpectatePreviousPlayer()
 		s_PreviousPlayer = self:GetPreviousPlayer(false)
 	end
 	-- If we didn't find any players to spectate then switch to freecam.
-	if s_PreviousPlayer == nil then
-		self:Disable()
-	else
+	if s_PreviousPlayer ~= nil then
 		self:SpectatePlayer(s_PreviousPlayer)
+	else
+		WebUI:ExecuteJS("SpectatorTarget('');")
 	end
 end
 
@@ -635,7 +559,7 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	end
 
 	for i, l_Player in pairs(s_Players) do
-		if l_Player.id == self.m_SpectatedPlayerId then
+		if l_Player == SpectatorManager:GetSpectatedPlayer() then
 			s_CurrentIndex = i
 			break
 		end
@@ -701,14 +625,6 @@ function SpectatorClient:ExitSoundState()
 
 		s_SoundStateEntity = s_SoundStateEntityIterator:Next()
 	end
-end
-
--- =============================================
-	-- Get Functions
--- =============================================
-
-function SpectatorClient:IsEnabled()
-	return self.m_Active
 end
 
 if g_SpectatorClient == nil then
