@@ -119,8 +119,8 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 
 	local s_Transform = LinearTransform()
 	s_Transform:LookAtTransform(s_CameraLocation, self.m_LookAtPos)
-	s_Transform.left = self.m_Data.transform.left * -1
-	s_Transform.forward = self.m_Data.transform.forward * -1
+	s_Transform.left = s_Transform.left * -1
+	s_Transform.forward = s_Transform.forward * -1
 	SpectatorManager:SetFreecameraTransform(s_Transform)
 end
 
@@ -274,10 +274,14 @@ function SpectatorClient:Enable(p_InflictorId)
 	elseif self.m_GameState == GameStates.Plane then
 		SpectatorManager:SetCameraMode(SpectatorCameraMode.Disabled)
 		self:SpectateGunship(true)
+		WebUI:ExecuteJS("SpectatorTarget('');")
+		WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
 	else
 		if self.m_IsSpectatingGunship then
 			self:SpectateGunship(false)
 		end
+		WebUI:ExecuteJS("SpectatorTarget('');")
+		WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
 		SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
 		if not self.m_IsDefaultFreeCamSet then
 			local s_Transform = LinearTransform(
@@ -429,22 +433,18 @@ function SpectatorClient:SpectateNextPlayer()
 			self:SpectatePlayer(s_PlayerToSpectate)
 		end
 
-		-- If no players found we just reset the spectator mode
-		self:Disable()
-		self:Enable()
+		m_Logger:Write("No Player found, stay in freecam")
 		return
 	end
-
 	local s_NextPlayer = self:GetNextPlayer(true)
 	if s_NextPlayer == nil then
 		s_NextPlayer = self:GetNextPlayer(false)
 	end
-
 	-- If we didn't find any players to spectate then switch to freecam.
-	if s_NextPlayer == nil then
-		self:Disable()
-	else
+	if s_NextPlayer ~= nil then
 		self:SpectatePlayer(s_NextPlayer)
+	else
+		WebUI:ExecuteJS("SpectatorTarget('');")
 	end
 end
 
@@ -524,6 +524,7 @@ function SpectatorClient:SpectatePreviousPlayer()
 			self:SpectatePlayer(s_PlayerToSpectate)
 		end
 
+		m_Logger:Write("No Player found, stay in freecam")
 		return
 	end
 	local s_PreviousPlayer = self:GetPreviousPlayer(true)
@@ -531,10 +532,10 @@ function SpectatorClient:SpectatePreviousPlayer()
 		s_PreviousPlayer = self:GetPreviousPlayer(false)
 	end
 	-- If we didn't find any players to spectate then switch to freecam.
-	if s_PreviousPlayer == nil then
-		self:Disable()
-	else
+	if s_PreviousPlayer ~= nil then
 		self:SpectatePlayer(s_PreviousPlayer)
+	else
+		WebUI:ExecuteJS("SpectatorTarget('');")
 	end
 end
 
