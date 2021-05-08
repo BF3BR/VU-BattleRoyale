@@ -328,6 +328,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 	if p_GiverInfo == nil or p_GiverInfo.giver == nil then
 		if p_Soldier.health <= p_Info.damage then
 			-- TODO add placement check
+			Events:DispatchLocal(TeamManagerEvent.RegisterKill, m_TeamManager:GetPlayer(p_Soldier.player), nil)
 			p_Soldier:ForceDead()
 		end
 
