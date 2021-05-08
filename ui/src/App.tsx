@@ -22,7 +22,8 @@ import {
 } from "./store/ping/Actions";
 import {
     showMap,
-    openMap
+    openMap,
+    switchRotation
 } from "./store/map/Actions";
 import {
     updatePlanePosition,
@@ -297,6 +298,11 @@ const App: React.FC<Props> = ({
     window.OnMapShow = (show: boolean) => {
         dispatch(showMap(show));
     }
+
+    window.OnMapSwitchRotation = () => {
+        dispatch(switchRotation());
+    }
+
 
     window.OnUpdateCircles = (data: any) => {
         if (data.InnerCircle) {
@@ -682,6 +688,7 @@ declare global {
 
         OnOpenCloseMap: (open: boolean) => void;
         OnMapShow: (show: boolean) => void;
+        OnMapSwitchRotation: () => void;
         OnUpdateCircles: (data: any) => void;
         OnGameState: (state: string) => void;
         OnUpdateTimer: (time: number) => void;

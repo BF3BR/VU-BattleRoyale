@@ -3,12 +3,14 @@ import {
     MapActionTypes,
     OPEN_MAP,
     SWITCH_OPEN_MAP,
-    SHOW_MAP
+    SHOW_MAP,
+    SWITCH_ROTATION
 } from "./ActionTypes";
 
 const initialState: MapState = {
     show: false,
     open: false,
+    minimapRotation: true,
 };
 
 const MapReducer = (
@@ -30,6 +32,11 @@ const MapReducer = (
             return {
                 ...state,
                 show: action.payload.show,
+            };
+        case SWITCH_ROTATION:
+            return {
+                ...state,
+                minimapRotation: !state.minimapRotation,
             };
         default:
             return state;

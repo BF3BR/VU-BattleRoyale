@@ -374,6 +374,12 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
+
+	if p_Action == UIInputAction.UIInputAction_ToggleMinimapType then
+		WebUI:ExecuteJS("OnMapSwitchRotation();")
+		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
+		return
+	end
 end
 
 function VuBattleRoyaleHud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
