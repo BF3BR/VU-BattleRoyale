@@ -6,9 +6,6 @@ require "__shared/Enums/CustomEvents"
 local m_Logger = Logger("PingServer", true)
 
 function PingServer:__init()
-	-- Table of playerId, pingId
-	self.m_PlayerPingIds = {}
-
 	-- Cooldown of each player for pinging
 	-- This is a table of playerId, cooldown
 	self.m_PlayerCooldowns = {}
@@ -29,7 +26,7 @@ end
 
 function PingServer:OnLevelLoaded()
 	-- Clear out the player ping ids
-	self.m_PlayerPingIds = {}
+	self.m_Players = {}
 
 	-- Clear out all of the player cooldowns
 	self.m_PlayerCooldowns = {}
@@ -75,18 +72,12 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 		return
 	end
 
-	local s_PingId = self:FindPingIdByPlayerId(s_PlayerId)
-	if s_PingId == -1 then
-		m_Logger:Write("invalid ping id")
-		return
-	end
-
 	-- Get the squad and player ids
 	local s_TeamId = p_Player.teamId
 	local s_SquadId = p_Player.squadId
 
 	if self.m_Debug then
-		m_Logger:Write("Player: " .. p_Player.name .. " pingId: " .. s_PingId .. " pinged " .. p_Position.x .. ", " ..
+		m_Logger:Write("Player: " .. p_Player.name  .. " pinged " .. p_Position.x .. ", " ..
 				   p_Position.y .. ", " .. p_Position.z)
 	end
 
@@ -95,7 +86,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 
 	-- send only to solo player that created the ping
 	if s_SquadId == SquadId.SquadNone then
-		NetEvents:SendToLocal(PingEvents.ServerPing, p_Player, s_PingId, p_Position)
+		NetEvents:SendToLocal(PingEvents.ServerPing, p_Player, p_Player.name, p_Position)
 		return
 	end
 
@@ -108,7 +99,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 		end
 
 		-- Send the net event to player in the same squad
-		NetEvents:SendToLocal(PingEvents.ServerPing, l_SquadPlayer, s_PingId, p_Position)
+		NetEvents:SendToLocal(PingEvents.ServerPing, l_SquadPlayer, p_Player.name, p_Position)
 
 		::__on_player_ping_cont__::
 	end
@@ -116,17 +107,15 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 end
 
 function PingServer:OnRemovePlayerPing(p_Player)
-	local s_PingId = self:FindPingIdByPlayerId(p_Player.id)
-
 	-- Get the squad and player ids
 	local s_TeamId = p_Player.teamId
 	local s_SquadId = p_Player.squadId
 
-	self.m_PlayerCooldowns[s_PingId] = 0
+	self.m_PlayerCooldowns[p_Player.name] = 0
 
 	-- send only to solo player that created the ping
 	if s_SquadId == SquadId.SquadNone then
-		NetEvents:SendToLocal(PingEvents.RemoveServerPing, p_Player, s_PingId)
+		NetEvents:SendToLocal(PingEvents.RemoveServerPing, p_Player, p_Player.name)
 		return
 	end
 
@@ -139,7 +128,7 @@ function PingServer:OnRemovePlayerPing(p_Player)
 		end
 
 		-- Send the net event to player in the same squad
-		NetEvents:SendToLocal(PingEvents.RemoveServerPing, l_SquadPlayer, s_PingId)
+		NetEvents:SendToLocal(PingEvents.RemoveServerPing, l_SquadPlayer, p_Player.name)
 
 		::__on_player_ping_cont__::
 	end
@@ -148,18 +137,6 @@ end
 -- =============================================
 -- Functions
 -- =============================================
-
--- Finds the player ping id by their player id
--- Returns -1 on error
-function PingServer:FindPingIdByPlayerId(p_PlayerId)
-	local s_Result = self.m_PlayerPingIds[p_PlayerId]
-	if s_Result == nil then
-		return -1
-	end
-
-	return s_Result
-end
-
 function PingServer:FindPlayerCooldownByPlayerId(p_PlayerId)
 	-- Get the result
 	local s_Result = self.m_PlayerCooldowns[p_PlayerId]
@@ -184,43 +161,6 @@ function PingServer:AddPlayerCooldown(p_PlayerId, p_CooldownTime)
 
 	-- If no result was found
 	self.m_PlayerCooldowns[p_PlayerId] = p_CooldownTime
-end
-
--- This will assign all player ping ids
--- NOTE: The teams will need to have already been assigned/sorted/locked in before calling this
-function PingServer:AssignPingIds(p_BrTeams)
-	-- Clear all previous entries
-	self.m_PlayerPingIds = {}
-
-	for _, l_BrTeam in pairs(p_BrTeams) do
-		-- Hold our player ping id per squad
-		local l_PlayerPingId = 1
-
-		-- Iterate all players and assign a number
-		for _, l_BrPlayer in pairs(l_BrTeam.m_Players) do
-			-- Get vanilla player
-			local l_Player = l_BrPlayer.m_Player
-
-			-- Validate our player
-			if l_Player == nil then
-				goto __assign_ping_ids_cont
-			end
-
-			-- Get the player id
-			local l_PlayerId = l_Player.id
-
-			-- Assign to our table at key of the player id
-			self.m_PlayerPingIds[l_PlayerId] = l_PlayerPingId
-
-			-- Debug logging output
-			m_Logger:Write("Player: " .. l_Player.name .. " ping id: " .. tostring(l_PlayerPingId))
-
-			-- Increment our player ping id
-			l_PlayerPingId = l_PlayerPingId + 1
-
-			::__assign_ping_ids_cont::
-		end
-	end
 end
 
 function PingServer:GetPingDisplayCooldownTime()

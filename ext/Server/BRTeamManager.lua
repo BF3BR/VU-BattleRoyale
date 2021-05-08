@@ -198,8 +198,6 @@ function BRTeamManager:AssignTeams()
 
 		l_BrTeam:ApplyTeamSquadIds()
 	end
-
-	Events:DispatchLocal("BRTeamManager:TeamsAssigned", self.m_Teams)
 end
 
 -- Creates a BRTeam

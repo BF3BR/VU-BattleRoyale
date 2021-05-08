@@ -1054,10 +1054,10 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_PositionZ, p_Color)
-	local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(p_PositionX, p_PositionY, p_PositionZ))
+	--[[local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(p_PositionX, p_PositionY, p_PositionZ))
 	if s_WorldToScreen == nil then
 		return
-	end
+	end]]
 
 	local s_Marker = {
 		Key = p_Key,
@@ -1065,9 +1065,11 @@ function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_Posit
 		PositionY = p_PositionY,
 		PositionZ = p_PositionZ,
 		Color = p_Color,
-		WorldToScreenX = s_WorldToScreen.x,
-		WorldToScreenY = s_WorldToScreen.y,
+		WorldToScreenX = 0,
+		WorldToScreenY = 0,
 	}
+
+	print("CreateMarker: " .. p_Key)
 
 	self.m_Markers[p_Key] = s_Marker
 	WebUI:ExecuteJS(

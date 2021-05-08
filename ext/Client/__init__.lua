@@ -162,7 +162,7 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
 		m_Hud:OnUIDrawHud(self.m_BrPlayer)
-		m_Ping:OnUIDrawHud()
+		m_Ping:OnUIDrawHud(self.m_BrPlayer)
 	end
 end
 
@@ -279,12 +279,12 @@ function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_Is
 	m_Hud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
 end
 
-function VuBattleRoyaleClient:OnPingNotify(p_PingId, p_Position)
-	m_Ping:OnPingNotify(p_PingId, p_Position)
+function VuBattleRoyaleClient:OnPingNotify(p_PlayerName, p_Position)
+	m_Ping:OnPingNotify(p_PlayerName, p_Position)
 end
 
-function VuBattleRoyaleClient:OnPingRemoveNotify(p_PingId)
-	m_Ping:OnPingRemoveNotify(p_PingId)
+function VuBattleRoyaleClient:OnPingRemoveNotify(p_PlayerName)
+	m_Ping:OnPingRemoveNotify(p_PlayerName)
 end
 
 function VuBattleRoyaleClient:OnPingUpdateConfig(p_CooldownTime)

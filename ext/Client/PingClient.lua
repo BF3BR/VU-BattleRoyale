@@ -12,11 +12,13 @@ function PingClient:__init()
 end
 
 function PingClient:RegisterVars()
+	self.m_BrPlayer = nil
+
 	self.m_LastPing = Vec3(0, 0, 0)
 	self.m_Color = Vec3(0, 0, 0)
 
 	-- Pings for squadmates
-	-- This is pingId, { position, cooldownTime }
+	-- This is playerName, { position, cooldownTime }
 	self.m_SquadPings = {}
 
 	self.m_Opacity = 0.4
@@ -57,8 +59,12 @@ function PingClient:OnLevelLoaded()
 end
 
 function PingClient:OnEngineUpdate(p_DeltaTime)
+	if self.m_BrPlayer == nil then
+		return
+	end
+
 	-- Update all of the cooldowns
-	for l_PingId, l_Info in pairs(self.m_SquadPings) do
+	for l_PlayerName, l_Info in pairs(self.m_SquadPings) do
 		if l_Info == nil then
 			goto __on_engine_update_cont__
 		end
@@ -74,8 +80,16 @@ function PingClient:OnEngineUpdate(p_DeltaTime)
 	end
 end
 
-function PingClient:OnUIDrawHud()
-	for l_PingId, l_PingInfo in pairs(self.m_SquadPings) do
+function PingClient:OnUIDrawHud(p_BrPlayer)
+	if self.m_BrPlayer == nil then
+		if p_BrPlayer == nil then
+			return
+		end
+
+		self.m_BrPlayer = p_BrPlayer
+	end
+
+	for l_PlayerName, l_PingInfo in pairs(self.m_SquadPings) do
 		if l_PingInfo == nil then
 			m_Logger:Write("invalid ping info")
 			goto __on_ui_draw_hud_cont__
@@ -86,19 +100,19 @@ function PingClient:OnUIDrawHud()
 
 		if l_Cooldown < 0.001 then
 			m_Logger:Write("invalid cooldown")
-			Events:Dispatch("Compass:RemoveMarker", tostring(math.floor(l_PingId)))
-			m_Hud:RemoveMarker(tostring(math.floor(l_PingId)))
-			self.m_SquadPings[l_PingId] = nil
+			Events:Dispatch("Compass:RemoveMarker", tostring(l_PlayerName))
+			m_Hud:RemoveMarker(tostring(l_PlayerName))
+			self.m_SquadPings[l_PlayerName] = nil
 			goto __on_ui_draw_hud_cont__
 		end
 
-		local l_Color = self:GetColorByPingId(l_PingId)
+		local l_Color = self:GetColorByPlayerName(l_PlayerName)
 
 		if l_Color == nil then
-			m_Logger:Write("invalid color for ping ID: " .. l_PingId)
-			Events:Dispatch("Compass:RemoveMarker", tostring(math.floor(l_PingId)))
-			m_Hud:RemoveMarker(tostring(math.floor(l_PingId)))
-			self.m_SquadPings[l_PingId] = nil
+			m_Logger:Write("invalid color for ping ID: " .. tostring(l_PlayerName))
+			Events:Dispatch("Compass:RemoveMarker", tostring(l_PlayerName))
+			m_Hud:RemoveMarker(tostring(l_PlayerName))
+			self.m_SquadPings[l_PlayerName] = nil
 			goto __on_ui_draw_hud_cont__
 		end
 
@@ -107,7 +121,7 @@ function PingClient:OnUIDrawHud()
 
 			local l_Coordinates = ClientUtils:WorldToScreen(l_Position)
 			if l_Coordinates ~= nil then
-				DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PingId), Vec4(1, 0, 0, 1), 1.1)
+				DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PlayerName), Vec4(1, 0, 0, 1), 1.1)
 			end
 		end
 		::__on_ui_draw_hud_cont__::
@@ -115,6 +129,10 @@ function PingClient:OnUIDrawHud()
 end
 
 function PingClient:OnClientUpdateInput()
+	if self.m_BrPlayer == nil then
+		return
+	end
+
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Q) then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
@@ -130,7 +148,6 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 	m_Logger:Write("raycasting...")
 
 	local s_RaycastHit = nil
-
 	if self.m_PingMethod == PingMethod.World then
 		s_RaycastHit = self:RaycastWorld()
 	else
@@ -138,7 +155,6 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 	end
 
 	self.m_ShouldPing = false
-
 	if s_RaycastHit == nil then
 		m_Logger:Write("no raycast")
 		return
@@ -152,20 +168,26 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
-function PingClient:OnPingNotify(p_PingId, p_Position)
-	m_Logger:Write("pingId: " .. p_PingId .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
+function PingClient:OnPingNotify(p_PlayerName, p_Position)
+	if self.m_BrPlayer == nil then
+		return
+	end
+	
+	m_Logger:Write("playerName: " .. tostring(p_PlayerName) .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
 
 	-- Send ping to compass
-	local l_PingIdStr = tostring(math.floor(p_PingId))
-	local l_Position2d = Vec2(p_Position.x, p_Position.z)
-	local l_RgbaColor = self:GetRgbaColorByPingId(p_PingId)
-	Events:Dispatch("Compass:CreateMarker", l_PingIdStr, l_Position2d, l_RgbaColor)
-	m_Hud:CreateMarker(l_PingIdStr, p_Position.x, p_Position.y, p_Position.z, l_RgbaColor)
+	local s_RgbaColor = self:GetRgbaColorByPlayerName(p_PlayerName)
 
-	local s_PingInfo = self.m_SquadPings[p_PingId]
+	Events:Dispatch("Compass:CreateMarker", tostring(p_PlayerName), Vec2(p_Position.x, p_Position.z), s_RgbaColor)
+	m_Hud:CreateMarker(tostring(p_PlayerName), p_Position.x, p_Position.y, p_Position.z, s_RgbaColor)
+
+	local s_PingInfo = self.m_SquadPings[p_PlayerName]
 	if s_PingInfo == nil then
 		-- No information currently exists
-		self.m_SquadPings[p_PingId] = {p_Position, self.m_CooldownTime}
+		self.m_SquadPings[p_PlayerName] = {
+			p_Position,
+			self.m_CooldownTime
+		}
 		return
 	end
 
@@ -174,15 +196,19 @@ function PingClient:OnPingNotify(p_PingId, p_Position)
 	if l_UpdatedCooldown > 3 * self.m_CooldownTime then
 		l_UpdatedCooldown = 3 * self.m_CooldownTime
 	end
-	self.m_SquadPings[p_PingId] = {p_Position, l_UpdatedCooldown}
+
+	self.m_SquadPings[p_PlayerName] = {
+		p_Position,
+		l_UpdatedCooldown
+	}
 end
 
-function PingClient:OnPingRemoveNotify(p_PingId)
-	m_Logger:Write("removing ping with Id: " .. p_PingId)
+function PingClient:OnPingRemoveNotify(p_PlayerName)
+	m_Logger:Write("removing ping for player: " .. tostring(p_PlayerName))
 
-	Events:Dispatch("Compass:RemoveMarker", tostring(math.floor(p_PingId)))
-	m_Hud:RemoveMarker(tostring(math.floor(p_PingId)))
-	self.m_SquadPings[p_PingId] = nil
+	Events:Dispatch("Compass:RemoveMarker", tostring(math.floor(p_PlayerName)))
+	m_Hud:RemoveMarker(tostring(p_PlayerName))
+	self.m_SquadPings[p_PlayerName] = nil
 end
 
 function PingClient:OnPingUpdateConfig(p_CooldownTime)
@@ -201,7 +227,6 @@ function PingClient:OnWebUIPingFromMap(p_Coordinates)
 		return
 	end
 	local s_Coordinates = json.decode(p_Coordinates)
-	m_Logger:Write(s_Coordinates)
 	self.m_Position_X = s_Coordinates.x
 	self.m_Position_Z = s_Coordinates.y
 	self.m_ShouldPing = true
@@ -258,28 +283,38 @@ function PingClient:RaycastScreen()
 	return s_RaycastHit
 end
 
-function PingClient:GetColorByPingId(p_PingId)
-	-- Validate ping id
-	if p_PingId == -1 then
+function PingClient:GetColorByPlayerName(p_PlayerName)
+	-- Validate player name
+	if p_PlayerName == nil and self.m_BrPlayer == nil then
 		return
 	end
 
-	local s_Color = self.m_PingColors[math.fmod(p_PingId, #self.m_PingColors)]
+	local s_Teammates = self.m_BrPlayer.m_Team:PlayersTable()
+
+	local s_Color = nil
+	for _, l_Teammate in pairs(s_Teammates) do
+		if l_Teammate.Name == p_PlayerName then
+			s_Color = l_Teammate.ColorVec
+			break
+		end
+	end
+
 	if s_Color == nil then
-		return Vec3(0, 0, 0)
+		m_Logger:Write("Color not found!")
+		return Vec4(0, 0, 0, 1)
 	end
 
 	return s_Color
 end
 
-function PingClient:GetRgbaColorByPingId(p_PingId)
-	-- Validate ping id
-	if p_PingId == -1 then
+function PingClient:GetRgbaColorByPlayerName(p_PlayerName)
+	-- Validate player name
+	if p_PlayerName == nil then
 		return
 	end
 
 	-- Get original color
-	local s_Color = self:GetColorByPingId(p_PingId)
+	local s_Color = self:GetColorByPlayerName(p_PlayerName)
 
 	-- Convert to rgba string
 	return string.format("rgba(%s, %s, %s, %s)", s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)

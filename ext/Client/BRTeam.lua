@@ -80,6 +80,7 @@ function Teammate:AsTable()
 		IsTeamLeader = self.m_IsTeamLeader,
 		PosInSquad = self.m_PosInSquad,
 		Color = self:GetColor(true),
+		ColorVec = self:GetColor(false),
 		Position = self:GetPosition(),
 		Yaw = self:GetYaw(),
 	}
