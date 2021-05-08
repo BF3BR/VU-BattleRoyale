@@ -107,7 +107,7 @@ const DeployScreen: React.FC<Props> = ({
         if (teamJoinError !== null) {
             setTeamJoinError(null);
         }
-        setJoinCode(event.target.value);
+        setJoinCode("" + event.target.value.toUpperCase());
     }
 
     const handleFocus = () => {
