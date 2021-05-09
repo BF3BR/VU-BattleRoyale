@@ -3,7 +3,7 @@ require "__shared/Enums/CustomEvents"
 require "__shared/Utils/Timers"
 require "__shared/Utils/EventRouter"
 require "__shared/Types/Circle"
-require "__shared/PhaseManagerShared"
+require "__shared/Logic/PhaseManagerShared"
 require "Visuals/CircleRenderers"
 require "RenderableCircle"
 

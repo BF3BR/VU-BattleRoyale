@@ -4,7 +4,7 @@ require "__shared/Enums/SubphaseTypes"
 require "__shared/Utils/MathHelper"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/Timers"
-require "__shared/PhaseManagerShared"
+require "__shared/Logic/PhaseManagerShared"
 require "__shared/Types/Circle"
 
 class("PhaseManagerServer", PhaseManagerShared)
