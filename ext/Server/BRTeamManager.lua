@@ -57,7 +57,7 @@ function BRTeamManager:OnLevelDestroy()
 end
 
 function BRTeamManager:OnPlayerAuthenticated(p_Player)
-	m_Logger:Write(string.format("TM: Creating BRPlayer for '%s'", p_Player.name))
+	m_Logger:Write(string.format("Creating BRPlayer for '%s'", p_Player.name))
 	self:CreatePlayer(p_Player)
 end
 
@@ -66,7 +66,7 @@ function BRTeamManager:OnPlayerKilled(p_Player)
 end
 
 function BRTeamManager:OnPlayerLeft(p_Player)
-	m_Logger:Write(string.format("TM: Destroying BRPlayer for '%s'", p_Player.name))
+	m_Logger:Write(string.format("Destroying BRPlayer for '%s'", p_Player.name))
 
 	-- update player's team placement if needed
 	local l_BrPlayer = self:GetPlayer(p_Player)
@@ -223,7 +223,7 @@ end
 -- @return BRPlayer|nil
 function BRTeamManager:CreatePlayer(p_Player)
 	if p_Player == nil then
-		m_Logger:Error("could not create BRPlayer")
+		m_Logger:Error("Cannot create BRPlayer")
 		return nil
 	end
 

@@ -219,7 +219,7 @@ function PhaseManagerServer:DebugMessage()
 
 	-- check if PhaseManager's work is completed
 	if l_Delay < 0 then
-		m_Logger:Write("PM: Completed")
+		m_Logger:Write("Completed")
 		return
 	end
 
@@ -230,5 +230,5 @@ function PhaseManagerServer:DebugMessage()
 		[SubphaseType.Moving] = "Circle is moving"
 	}
 
-	m_Logger:Write(string.format("PM: [%d] %s for %.2f seconds", self.m_PhaseIndex, l_Messages[self.m_SubphaseIndex], l_Delay))
+	m_Logger:Write(string.format("[%d] %s for %.2f seconds", self.m_PhaseIndex, l_Messages[self.m_SubphaseIndex], l_Delay))
 end
