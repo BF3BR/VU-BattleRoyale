@@ -144,6 +144,9 @@ function SpectatorClient:OnPlayerRespawn(p_Player)
 
 	-- Disable spectator when the local player spawns.
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer == nil then
+		return
+	end
 
 	if s_LocalPlayer == p_Player then
 		self:Disable()
@@ -327,6 +330,9 @@ function SpectatorClient:SpectatePlayer(p_Player)
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer == nil then
+		return
+	end
 
 	-- We can't spectate the local player.
 	if s_LocalPlayer == p_Player then
@@ -421,6 +427,10 @@ function SpectatorClient:SpectateNextPlayer()
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer == nil then
+		return
+	end
+
 	-- If we are not spectating anyone just find the first player to spectate.
 	if s_LocalPlayer == SpectatorManager:GetSpectatedPlayer() then
 		local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
@@ -453,6 +463,9 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	local s_CurrentIndex = 0
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer == nil then
+		return
+	end
 
 	if p_OnlySquadMates then
 		if s_LocalPlayer.squadId == SquadId.SquadNone then
@@ -512,6 +525,10 @@ function SpectatorClient:SpectatePreviousPlayer()
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer == nil then
+		return
+	end
+
 	-- If we are not spectating anyone just find the first player to spectate.
 	if s_LocalPlayer == SpectatorManager:GetSpectatedPlayer() then
 		local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
@@ -544,6 +561,9 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	local s_CurrentIndex = 0
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer == nil then
+		return
+	end
 
 	if p_OnlySquadMates then
 		if s_LocalPlayer.squadId == SquadId.SquadNone then
