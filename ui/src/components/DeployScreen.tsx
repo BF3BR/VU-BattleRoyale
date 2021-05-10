@@ -186,6 +186,8 @@ const DeployScreen: React.FC<Props> = ({
                                             disabled={!isTeamLeader}
                                             checked={teamOpen}
                                             onChange={OnTeamOpenClose}
+                                            spellCheck={false}
+                                            maxLength={4}
                                         />
                                         {teamOpen ?
                                             <>
