@@ -206,7 +206,7 @@ end
 function PingClient:OnPingRemoveNotify(p_PlayerName)
 	m_Logger:Write("removing ping for player: " .. tostring(p_PlayerName))
 
-	Events:Dispatch("Compass:RemoveMarker", tostring(math.floor(p_PlayerName)))
+	Events:Dispatch("Compass:RemoveMarker", tostring(p_PlayerName))
 	m_Hud:RemoveMarker(tostring(p_PlayerName))
 	self.m_SquadPings[p_PlayerName] = nil
 end
