@@ -39,6 +39,7 @@ function Showroom:SetCamera(p_Enable)
 				s_CameraEntity:FireEvent("TakeControl")
 			else
 				s_CameraEntity:FireEvent("ReleaseControl")
+				WebUI:ResetKeyboard()
 			end
 			return
 		end
