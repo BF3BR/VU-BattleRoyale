@@ -20,6 +20,9 @@ end
 -- =============================================
 
 function ServerManDownLoot:OnRegisterKill(p_Victim)
+	if p_Victim == nil or p_Victim.m_Player == nil or p_Victim.m_Player.corpse == nil then
+		return
+	end
 	self.m_ManDownLootCount = self.m_ManDownLootCount + 1
 	local s_Transform = nil
 	local s_IndexInBlueprint = nil
