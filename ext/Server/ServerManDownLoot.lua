@@ -2,6 +2,8 @@ class 'ServerManDownLoot'
 
 require "Types/BRPlayer"
 
+local m_Logger = Logger("ServerManDownLoot", true)
+
 function ServerManDownLoot:__init()
 	self.m_ManDownLootTable = {}
 	self.m_ManDownLootCount = 0

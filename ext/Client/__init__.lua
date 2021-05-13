@@ -85,6 +85,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 	NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
 	NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate)
 	NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
+	NetEvents:Subscribe("UpdateSpectatorCount", self, self.OnUpdateSpectatorCount)
 end
 
 function VuBattleRoyaleClient:RegisterWebUIEvents()
@@ -233,14 +234,26 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
 
 	local s_AliveSquadCount = 0
 	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+	local s_TeamMateDied = false
 	if s_TeamPlayers ~= nil then
 		for _, l_Teammate in ipairs(s_TeamPlayers) do
 			if l_Teammate ~= nil then
 				if l_Teammate.State ~= BRPlayerState.Dead then
 					s_AliveSquadCount = s_AliveSquadCount + 1
+					if s_AliveSquadCount == 2 or s_LocalPlayer.name ~= l_Teammate.Name then
+						-- Your squad is still playing; cancel
+						return
+					end
+					if s_Player.name == l_Teammate.Name then
+						s_TeamMateDied = true
+					end
 				end
 			end
 		end
+	end
+
+	if not s_TeamMateDied then
+		return
 	end
 
 	if s_Player.name == s_LocalPlayer.name and s_AliveSquadCount == 1 then
@@ -386,6 +399,10 @@ function VuBattleRoyaleClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
 	m_SpectatorClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
 end
 
+function VuBattleRoyaleClient:OnUpdateSpectatorCount(p_SpectatorCount)
+	m_SpectatorClient:OnUpdateSpectatorCount(p_SpectatorCount)
+end
+
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
 	m_Hud.m_MinPlayersToStart = p_MinPlayersToStart
 end
@@ -469,6 +486,7 @@ function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
 	elseif p_Function == "options" then
 		m_Hud:OnOptions()
 	elseif p_Function == "quit" then
+		m_SpectatorClient:Disable()
 		m_Hud:OnQuit()
 	end
 end

@@ -781,6 +781,9 @@ function VuBattleRoyaleHud:HUDEnterUIGraph()
 end
 
 function VuBattleRoyaleHud:ShowCrosshair(p_Enable)
+	if SpectatorManager:GetSpectating() then
+		return
+	end
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	while s_UIGraphEntity do

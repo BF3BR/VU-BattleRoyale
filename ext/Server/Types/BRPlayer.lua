@@ -5,6 +5,8 @@ require "__shared/Items/Armor"
 
 class "BRPlayer"
 
+local m_Logger = Logger("BRPlayer", true)
+
 function BRPlayer:__init(p_Player)
 	-- the vanilla player instance of the player
 	self.m_Player = p_Player
@@ -17,6 +19,10 @@ function BRPlayer:__init(p_Player)
 
 	-- the name of the player who killed this BRPlayer
 	self.m_KillerName = nil
+
+	-- the names of players who spectate this BRPlayer
+	self.m_SpectatedPlayerName = nil
+	self.m_SpectatorNames = {}
 
 	-- the position of the player in the squad
 	self.m_PosInSquad = 1
@@ -45,19 +51,19 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 		NetEvents:SendToLocal(DamageEvent.Hit, p_Giver.m_Player, p_Damage)
 	end
 
-	local l_Soldier = self:GetSoldier()
-	if l_Soldier == nil then
+	local s_Soldier = self:GetSoldier()
+	if s_Soldier == nil then
 		return p_Damage
 	end
 
-	local health = l_Soldier.health
-	if l_Soldier.isInteractiveManDown and p_Damage >= health then
+	local s_Health = s_Soldier.health
+	if s_Soldier.isInteractiveManDown and p_Damage >= s_Health then
 		self:Kill(true)
 		Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
 
-		return health
-	elseif not l_Soldier.isInteractiveManDown then
-		health = health - 100
+		return s_Health
+	elseif not s_Soldier.isInteractiveManDown then
+		s_Health = s_Health - 100
 
 		-- apply damage to the armor
 		if not p_IgnoreProtection then
@@ -65,7 +71,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 			self:SendState()
 		end
 
-		if p_Damage >= health then
+		if p_Damage >= s_Health then
 			-- kill instantly if no teammates left
 			if self:HasAliveTeammates() then
 				if p_Giver ~= nil then
@@ -87,7 +93,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 				Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
 			end
 
-			return health
+			return s_Health
 		end
 	end
 
@@ -149,13 +155,11 @@ function BRPlayer:Kill(p_Forced)
 	end
 
 	-- TODO removed ForceDead(), it causes crashes
-	-- if p_Forced then
-		-- l_Soldier:ForceDead()
-	-- else
-		-- l_Soldier:Kill()
-	-- end
-	l_Soldier:Kill()
-
+	if p_Forced then
+		l_Soldier:ForceDead()
+	else
+		l_Soldier:Kill()
+	end
 	return true
 end
 
@@ -286,6 +290,31 @@ function BRPlayer:CreateCustomizeSoldierData()
 end
 
 -- =============================================
+	-- Spectator Functions
+-- =============================================
+
+function BRPlayer:SpectatePlayer(p_PlayerName)
+	self.m_SpectatedPlayerName = p_PlayerName
+end
+
+function BRPlayer:AddSpectator(p_PlayerName)
+	if self.m_SpectatorNames[p_PlayerName] == nil then
+		table.insert(self.m_SpectatorNames, p_PlayerName)
+	end
+	NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
+end
+
+function BRPlayer:RemoveSpectator(p_PlayerName)
+	for i, l_PlayerName in pairs(self.m_SpectatorNames) do
+		if l_PlayerName == p_PlayerName then
+			table.remove(self.m_SpectatorNames, i)
+			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
+			return
+		end
+	end
+end
+
+-- =============================================
 	-- Other Functions
 -- =============================================
 
@@ -338,6 +367,15 @@ end
 function BRPlayer:SetArmor(p_Armor)
 	self.m_Armor = p_Armor
 	NetEvents:SendToLocal(BRPlayerNetEvents.ArmorState, self.m_Player, self.m_Armor:AsTable())
+	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
+		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
+		if s_Spectator ~= nil then
+			NetEvents:SendToLocal("SpectatedPlayerArmor", s_Spectator, self.m_Armor:AsTable())
+		else
+			table.remove(self.m_SpectatorNames, i)
+			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
+		end
+	end
 end
 
 function BRPlayer:SetTeamJoinStrategy(p_Strategy)

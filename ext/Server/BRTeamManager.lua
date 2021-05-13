@@ -31,6 +31,7 @@ function BRTeamManager:RegisterEvents()
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamLeave, self, self.OnLeaveTeam)
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamToggleLock, self, self.OnLockToggle)
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinStrategy, self, self.OnTeamJoinStrategy)
+	NetEvents:Subscribe("UpdateSpectator", self, self.OnUpdateSpectator)
 end
 
 -- =============================================
@@ -72,6 +73,13 @@ function BRTeamManager:OnPlayerLeft(p_Player)
 	local l_BrPlayer = self:GetPlayer(p_Player)
 	if l_BrPlayer ~= nil then
 		self:UpdateTeamPlacement(l_BrPlayer.m_Team)
+		if l_BrPlayer.m_SpectatedPlayerName ~= nil then
+			local s_SpectatedBRPlayer = self:GetPlayer(l_BrPlayer.m_SpectatedPlayerName)
+			if s_SpectatedBRPlayer ~= nil then
+				s_SpectatedBRPlayer:RemoveSpectator(p_Player.name)
+			end
+			l_BrPlayer.m_SpectatedPlayerName = nil
+		end
 	end
 
 	self:RemovePlayer(p_Player)
@@ -419,6 +427,28 @@ function BRTeamManager:OnTeamJoinStrategy(p_Player, p_Strategy)
 
 	if l_BrPlayer ~= nil then
 		l_BrPlayer:SetTeamJoinStrategy(p_Strategy)
+	end
+end
+
+function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayerName)
+	local s_BRPlayer = self:GetPlayer(p_Player)
+	if s_BRPlayer ~= nil then
+		s_BRPlayer:SpectatePlayer(nil)
+	end
+	if p_LastPlayerName ~= nil then
+		local s_LastSpectatedBRPlayer = self:GetPlayer(p_LastPlayerName)
+		if s_LastSpectatedBRPlayer ~= nil then
+			s_LastSpectatedBRPlayer:RemoveSpectator(p_Player.name)
+		end
+	end
+	if p_NewPlayerName ~= nil then
+		local s_BRPlayerToSpectate = self:GetPlayer(p_NewPlayerName)
+		if s_BRPlayerToSpectate ~= nil then
+			s_BRPlayerToSpectate:AddSpectator(p_Player.name)
+			if s_BRPlayer ~= nil then
+				s_BRPlayer:SpectatePlayer(p_NewPlayerName)
+			end
+		end
 	end
 end
 

@@ -325,18 +325,20 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 		return
 	end
 
-	if p_GiverInfo == nil or p_GiverInfo.giver == nil then
-		if p_Soldier.health <= p_Info.damage then
-			-- TODO add placement check
-			Events:DispatchLocal(TeamManagerEvent.RegisterKill, m_TeamManager:GetPlayer(p_Soldier.player), nil)
-			p_Soldier:ForceDead()
-		end
+	if p_GiverInfo == nil then
+		return
+	end
 
+	if p_Soldier.player == nil then
+		-- already dead
 		return
 	end
 
 	local l_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
-	local l_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
+	local l_BrGiver = nil
+	if p_GiverInfo.giver ~= nil then
+		l_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
+	end
 
 	p_Info.damage = l_BrPlayer:OnDamaged(p_Info.damage, l_BrGiver)
 	p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
