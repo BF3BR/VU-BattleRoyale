@@ -127,7 +127,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	-- M9 kit for ManDownModifier
 	local s_CustomizeSoldierData = self:CreateManDownCustomizeSoldierData()
 
-	local s_CustomizeSoldierEntityData = CustomizeSoldierEntityData()
+	local s_CustomizeSoldierEntityData = CustomizeSoldierEntityData(Guid("9A576250-D263-39C2-3ADC-693356004B78"))
 	s_CustomizeSoldierEntityData.isEventConnectionTarget = Realm.Realm_Server
 	s_CustomizeSoldierEntityData.isPropertyConnectionTarget = Realm.Realm_None
 	s_CustomizeSoldierEntityData.realm = Realm.Realm_Server
@@ -215,7 +215,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, -1741104687, -1741104687, 3)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, -1025749669, -1025749669, 3)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, 1957374978, 1957374978, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, 1957374978, -1001523010, 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_SoldierEntityData, 1957374978, -1001523010, 3)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, 901651067, 901651067, 3)
 
 	-- Add connections between SoldierEntityData and the custom EventSplitterEntityDatas
@@ -288,7 +288,7 @@ end
 
 function ManDownModifier:CreateManDownCustomizeSoldierData()
 	-- TODO: check default values
-	local s_CoopManDownSoldierData = CustomizeSoldierData()
+	local s_CoopManDownSoldierData = CustomizeSoldierData(Guid("951F6BA2-6C36-AE64-38F8-15DB2FE3A7B4"))
 	s_CoopManDownSoldierData.restoreToOriginalVisualState = false
 	s_CoopManDownSoldierData.clearVisualState = false
 	s_CoopManDownSoldierData.overrideMaxHealth = -1.0

@@ -536,6 +536,16 @@ const App: React.FC<Props> = ({
         ));
     }
 
+    const [interactTimeout, setInteractTimeout] = useState<number|null>(null);
+
+    window.OnInteractStart = (p_Time: number) => {
+        setInteractTimeout(p_Time);
+    }
+
+    window.OnInteractEnd = () => {
+        setInteractTimeout(null);
+    }
+
     return (
         <>
             {debugMode &&
@@ -644,10 +654,10 @@ const App: React.FC<Props> = ({
                                 {!spectating &&
                                     <>
                                         <MiniMap />
-                                        {/*<InteractProgress 
-                                            timeout={10}
-                                            clearTimeout={() => alert('clear')}
-                                        />*/}
+                                        <InteractProgress 
+                                            timeout={interactTimeout}
+                                            clearTimeout={() => setInteractTimeout(null)}
+                                        />
                                         {/*<Inventory />*/}
                                     </>
                                 }
@@ -727,5 +737,8 @@ declare global {
         OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
         OnRemoveMarker: (p_Key: string) => void;
         OnUpdateMarker: (p_Key: string, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
+
+        OnInteractStart: (p_Time: number) => void;
+        OnInteractEnd: () => void;
     }
 }

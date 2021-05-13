@@ -31,7 +31,7 @@ const InteractProgress: React.FC<Props> = ({ timeout }) => {
 
     return (
         <>
-            {timeout !== null &&
+            {(timeout !== null && time !== null)  &&
                 <div className="InteractProgress">
                     <CircularProgressbar
                         value={time / timeout * 100}

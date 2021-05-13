@@ -382,14 +382,6 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	end
 end
 
-function VuBattleRoyaleHud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
-	if p_Screen.name == "UI/Flow/Screen/IngameMenuMP" then
-		self.m_HudOnSetUIState:Update(UiStates.Hidden)
-	elseif p_Screen.name == "UI/Flow/Screen/HudScreen" then
-		self.m_HudOnSetUIState:Update(UiStates.Game)
-	end
-end
-
 -- =============================================
 -- Functions
 -- =============================================
@@ -412,10 +404,12 @@ end
 
 function VuBattleRoyaleHud:OnBeingInteractedStarted(p_Entity, p_Event)
 	m_Logger:Write("The interaction with the local player started")
+	WebUI:ExecuteJS("OnInteractStart(5);")
 end
 
 function VuBattleRoyaleHud:OnBeingInteractedFinished(p_Entity, p_Event)
 	m_Logger:Write("The interaction with the local player ended")
+	WebUI:ExecuteJS("OnInteractEnd();")
 end
 
 -- =============================================

@@ -69,20 +69,12 @@ function Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId,
 		goto continue
 	end
 
-	-- Region target: spectator, enemy, all, team, squad
-	-- Player is a spectator.
-	if s_OtherPlayer.teamId == 0 then
-		s_Target = "spectator"
-	-- Player is on a different team; display enemy message.
-	elseif (s_LocalPlayer.teamId == 0 and s_OtherPlayer.teamId == 2) or (s_LocalPlayer.teamId ~= 0 and s_OtherPlayer.teamId ~= s_LocalPlayer.teamId) then
-		s_Target = "enemy"
-	-- Player is in the same team.
-	-- Display global message.
-	elseif p_Channel == ChatChannelType.CctSayAll then
+	-- Region target: all, squad
+	if p_Channel == ChatChannelType.CctSayAll then
 		s_Target = "all"
 	-- Display team message.
 	elseif p_Channel == ChatChannelType.CctTeam then
-		s_Target = "team"
+		s_Target = "squad"
 	-- Display squad message.
 	elseif p_Channel == ChatChannelType.CctSquad then
 		s_Target = "squad"
