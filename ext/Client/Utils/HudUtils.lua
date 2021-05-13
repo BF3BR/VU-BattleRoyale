@@ -3,6 +3,7 @@ class "HudUtils"
 local m_Logger = Logger("HudUtils", true)
 
 function HudUtils:__init()
+	self.m_DisabledFreecamMovement = false
 	self.m_EnableMouseInstanceId = nil
 	self.m_DisableGameInputInstanceId = nil
 	self.m_BlurInstanceId = nil
@@ -14,6 +15,7 @@ end
 
 function HudUtils:OnExtensionUnloading()
 	self:DestroyEntities()
+	self.m_DisabledFreecamMovement = false
 	self.m_EnableMouseInstanceId = nil
 	self.m_DisableGameInputInstanceId = nil
 	self.m_BlurInstanceId = nil
@@ -21,6 +23,7 @@ end
 
 function HudUtils:OnLevelDestroy()
 	self:DestroyEntities()
+	self.m_DisabledFreecamMovement = false
 	self.m_EnableMouseInstanceId = nil
 	self.m_DisableGameInputInstanceId = nil
 	self.m_BlurInstanceId = nil
@@ -29,6 +32,14 @@ end
 -- =============================================
 -- Functions
 -- =============================================
+
+function HudUtils:SetDisabledFreecamMovement(p_Enable)
+	self.m_DisabledFreecamMovement = p_Enable
+end
+
+function HudUtils:GetDisabledFreecamMovement()
+	return self.m_DisabledFreecamMovement
+end
 
 function HudUtils:ShowCrosshair(p_Enable)
 	if SpectatorManager:GetSpectating() then
@@ -104,9 +115,12 @@ function HudUtils:HUDEnterUIGraph()
 		if s_UIGraphEntity.data.instanceGuid == Guid("133D3825-5F17-4210-A4DB-3694FDBAD26D") then
 			s_UIGraphEntity = Entity(s_UIGraphEntity)
 			s_UIGraphEntity:FireEvent("EnterUIGraph")
-			return
+			break
 		end
 		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	end
+	if self.m_DisabledFreecamMovement then
+		self:OnDisableGameInput()
 	end
 end
 

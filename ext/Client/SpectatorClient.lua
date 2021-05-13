@@ -5,6 +5,7 @@ require "__shared/Mixins/TimersMixin"
 
 class("SpectatorClient", TimersMixin)
 
+local m_HudUtils = require "Utils/HudUtils"
 local m_Logger = Logger("SpectatorClient", true)
 
 function SpectatorClient:__init()
@@ -29,6 +30,8 @@ function SpectatorClient:RegisterVars()
 	self.m_IsSpectatingGunship = false
 
 	self.m_IsDefaultFreeCamSet = false
+
+	self.m_DisabledFreecamMovement = false
 end
 
 -- =============================================
@@ -134,6 +137,17 @@ function SpectatorClient:OnClientUpdateInput()
 
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft) then
 		self:SpectatePreviousPlayer()
+	end
+
+	local s_CameraMode = SpectatorManager:GetCameraMode()
+	if s_CameraMode == SpectatorCameraMode.ThirdPerson and not m_HudUtils:GetDisabledFreecamMovement() then
+		m_HudUtils:OnDisableGameInput()
+		m_HudUtils:SetDisabledFreecamMovement(true)
+		m_Logger:Write("Disabled FreecamMovement")
+	elseif s_CameraMode ~= SpectatorCameraMode.ThirdPerson and m_HudUtils:GetDisabledFreecamMovement() then
+		m_HudUtils:SetDisabledFreecamMovement(false)
+		m_HudUtils:HUDEnterUIGraph()
+		m_Logger:Write("Enabled FreecamMovement")
 	end
 end
 
