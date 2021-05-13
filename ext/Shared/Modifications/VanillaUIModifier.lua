@@ -20,6 +20,7 @@ local m_TeamSupportTagCompData = DC(Guid("4EA75D30-765F-11E0-A82A-C41FAD23BE85")
 local m_InteractionCompData = DC(Guid("35DF1891-EB38-11DF-9230-E11388AEEF3E"), Guid("F159BE6E-611C-C1D7-2E49-DC50AD11A42A"))
 local m_ColorCorrectionCompData = DC(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), Guid("9CDAC6C3-9D3E-48F1-B8D9-737DB28AE936"))
 local m_DofComponentData = DC(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"))
+local m_ShowRoomCameraData = DC(Guid("08F255D1-499D-4090-B114-4CE8D1B3AC65"), Guid("528655FC-2653-4D5B-B55D-E6CBF997FC19"))
 
 local m_IconTextureAtlas = DC(Guid('187A8BC1-B761-11E0-B02E-AE94D7595F06'), Guid('FDD01ACB-50A9-BA73-DD3A-849BE7E30144'))
 
@@ -53,6 +54,8 @@ function VanillaUIModifier:RegisterCallbacks()
 	--m_InteractionCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_ColorCorrectionCompData:RegisterLoadHandler(self, self.OnBlurredBlueScreen)
 	m_DofComponentData:RegisterLoadHandler(self, self.OnBlurredBlueScreen)
+
+	m_ShowRoomCameraData:RegisterLoadHandler(self, self.OnShowRoomCamera)
 
 	m_IconTextureAtlas:RegisterLoadHandler(self, self.OnIconTexture)
 
@@ -91,6 +94,11 @@ end
 
 function VanillaUIModifier:OnBlurredBlueScreen(p_UIComponentData)
 	p_UIComponentData.excluded = true
+end
+
+function VanillaUIModifier:OnShowRoomCamera(p_Instance)
+	p_Instance.enabled = true
+	p_Instance.priority = 999
 end
 
 function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)

@@ -12,12 +12,12 @@ require "__shared/Enums/CustomEvents"
 require "PhaseManagerClient"
 require "BRPlayer"
 
+local m_HudUtils = require "Utils/HudUtils"
 local m_VanillaUIManager = require "VanillaUIManager"
 local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
 local m_Chat = require "UI/Chat"
 local m_SpectatorClient = require "SpectatorClient"
-local m_Showroom = require "Showroom"
 local m_Ping = require "PingClient"
 local m_ClientManDownLoot = require "ClientManDownLoot"
 local m_Logger = Logger("VuBattleRoyaleClient", true)
@@ -102,7 +102,6 @@ end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
 	m_Gunship:RegisterCallbacks()
-	m_Showroom:RegisterCallbacks()
 end
 
 function VuBattleRoyaleClient:RegisterHooks()
@@ -124,6 +123,7 @@ end
 function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_SpectatorClient:OnExtensionUnloading()
 	m_Hud:OnExtensionUnloading()
+	m_HudUtils:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -132,14 +132,15 @@ end
 
 function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
 	WebUI:ExecuteJS("ToggleDeployMenu(true);")
-	m_Showroom:SetCamera(true)
-	m_Hud:ShowCrosshair(false)
+	m_HudUtils:ShowroomCamera(true)
+	m_HudUtils:ShowCrosshair(false)
 	g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
 	m_Ping:OnLevelLoaded()
 end
 
 function VuBattleRoyaleClient:OnLevelDestroy()
 	m_Hud:OnLevelDestroy()
+	m_HudUtils:OnExtensionUnloading()
 	m_SpectatorClient:OnLevelDestroy()
 	m_Gunship:OnLevelDestroy()
 	m_VanillaUIManager:OnLevelDestroy()
@@ -437,10 +438,13 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
-	m_Showroom:SetCamera(false)
+	m_HudUtils:ShowroomCamera(false)
 	m_VanillaUIManager:EnableShowroomSoldier(false)
-	m_Hud:HUDEnterUIGraph()
-	m_Hud:ShowCrosshair(true)
+	m_HudUtils:HUDEnterUIGraph()
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer ~= nil and s_LocalPlayer.soldier ~= nil then
+		m_HudUtils:ShowCrosshair(true)
+	end
 	NetEvents:Send(PlayerEvents.PlayerDeploy)
 end
 
@@ -553,10 +557,10 @@ end
 
 function VuBattleRoyaleClient:GetIsHotReload()
 	if SharedUtils:GetLevelName() == "Levels/Web_Loading/Web_Loading" then
-        return false
-    else
-        return true
-    end
+		return false
+	else
+		return true
+	end
 end
 
 function VuBattleRoyaleClient:OnHotReload()
@@ -579,8 +583,8 @@ function VuBattleRoyaleClient:OnHotReload()
 		self:OnPlayerRespawn(s_LocalPlayer)
 	end
 	g_Timers:Timeout(1, function()
-		m_Hud:ShowCrosshair(false)
-		m_Hud:OnEnableMouse()
+		m_HudUtils:ShowCrosshair(false)
+		m_HudUtils:OnEnableMouse()
 	end)
 end
 

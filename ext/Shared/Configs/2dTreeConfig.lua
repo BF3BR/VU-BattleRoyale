@@ -1,12 +1,12 @@
 local EMPTY_SHADER_CONFIG = {
-    MATERIALS = {
-        [1] = {
-            SHADER = {
-                NAME = "",
-                TYPE = ParameterModificationType.ReplaceParameters,
-            },
-        },
-    }
+	MATERIALS = {
+		[1] = {
+			SHADER = {
+				NAME = "",
+				TYPE = ParameterModificationType.ReplaceParameters,
+			},
+		},
+	}
 }
 
 local TreeConfig = {

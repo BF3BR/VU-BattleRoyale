@@ -8,13 +8,13 @@ local m_XP5_003 = DC(Guid('2155927F-76C7-84F2-0BAF-4862CD442CF8'), Guid('2155927
 local m_XP3_Shield = DC(Guid('601D5D72-9EA2-820C-180A-28856102D3A8'), Guid('601D5D72-9EA2-820C-180A-28856102D3A8'))
 
 function TreeRemoving:RegisterCallbacks()
-    m_XP5_003:RegisterLoadHandler(self, self.OnMeshVariationDatabase)
-    m_XP3_Shield:RegisterLoadHandler(self, self.OnMeshVariationDatabase)
+	m_XP5_003:RegisterLoadHandler(self, self.OnMeshVariationDatabase)
+	m_XP3_Shield:RegisterLoadHandler(self, self.OnMeshVariationDatabase)
 end
 
 function TreeRemoving:OnMeshVariationDatabase(p_Instance)
-    p_Instance = MeshVariationDatabase(p_Instance)
-    ModifyDatabase(p_Instance)
+	p_Instance = MeshVariationDatabase(p_Instance)
+	ModifyDatabase(p_Instance)
 end
 
 function ModifyDatabase(p_Instance)
@@ -129,7 +129,7 @@ function CreateParamaterIndexMap(p_Parameters)
 end
 
 if g_TreeRemoving == nil then
-    g_TreeRemoving = TreeRemoving()
+	g_TreeRemoving = TreeRemoving()
 end
 
 return g_TreeRemoving

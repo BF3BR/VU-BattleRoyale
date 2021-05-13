@@ -405,11 +405,11 @@ end
 -- =============================================
 
 function VuBattleRoyaleServer:GetIsHotReload()
-    if #SharedUtils:GetContentPackages() == 0 then
-        return false
-    else
-        return true
-    end
+	if #SharedUtils:GetContentPackages() == 0 then
+		return false
+	else
+		return true
+	end
 end
 
 function VuBattleRoyaleServer:OnHotReload()

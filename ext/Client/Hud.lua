@@ -5,8 +5,8 @@ require "__shared/Utils/Timers"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/UiStates"
 
-local m_Showroom = require "Showroom"
 local m_VanillaUIManager = require "VanillaUIManager"
+local m_HudUtils = require "Utils/HudUtils"
 local m_Logger = Logger("VuBattleRoyaleHud", true)
 
 function VuBattleRoyaleHud:__init()
@@ -22,11 +22,6 @@ function VuBattleRoyaleHud:__init()
 	self.m_Markers = {}
 
 	self.m_IsInEscMenu = false
-
-	self.m_MouseGraphEntityInstanceId = nil
-	self.m_DisableGameInputGraphEntityInstanceId = nil
-	self.m_BlurInstanceId = nil
-
 	self.m_IsMapOpened = false
 
 	self:RegisterVars()
@@ -74,21 +69,13 @@ end
 
 function VuBattleRoyaleHud:OnExtensionUnloading()
 	self.m_IsLevelLoaded = false
-	self.m_HudOnSetUIState:Update(UiStates.Hidden)
-	self:DestroyEntities()
-	self.m_MouseGraphEntityInstanceId = nil
-	self.m_DisableGameInputGraphEntityInstanceId = nil
-	self.m_BlurInstanceId = nil
 	self.m_IsMapOpened = false
 	WebUI:ExecuteJS("OnOpenCloseMap(false);")
+	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 end
 
 function VuBattleRoyaleHud:OnLevelDestroy()
 	self.m_IsLevelLoaded = false
-	self:DestroyEntities()
-	self.m_MouseGraphEntityInstanceId = nil
-	self.m_DisableGameInputGraphEntityInstanceId = nil
-	self.m_BlurInstanceId = nil
 	self.m_IsMapOpened = false
 	WebUI:ExecuteJS("OnOpenCloseMap(false);")
 	self.m_HudOnSetUIState:Update(UiStates.Loading)
@@ -146,9 +133,9 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 		if (self.m_GameState ~= GameStates.Match and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle)
 		or s_LocalPlayer.soldier == nil then
 			WebUI:ExecuteJS("ToggleDeployMenu(true);")
-			m_Showroom:SetCamera(true)
-			self:ShowCrosshair(false)
-			self:OnEnableMouse()
+			m_HudUtils:ShowroomCamera(true)
+			m_HudUtils:ShowCrosshair(false)
+			m_HudUtils:OnEnableMouse()
 			m_VanillaUIManager:EnableShowroomSoldier(true)
 		end
 	end
@@ -171,21 +158,21 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 end
 
 function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer ~= p_Player or p_Player.soldier == nil then
+		return
+	end
 	WebUI:ExecuteJS("OnMapShow(true)")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
 	g_Timers:Timeout(1, function()
-		self:ShowCrosshair(true)
+		m_HudUtils:ShowCrosshair(true)
 	end)
 
 	if self.m_GameState <= GameStates.Warmup then
 		return
 	end
-
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-	if s_LocalPlayer == p_Player and p_Player.soldier ~= nil then
-		self:RegisterOnBeingInteractedCallbacks(p_Player.soldier)
-	end
+	self:RegisterOnBeingInteractedCallbacks(p_Player.soldier)
 end
 
 -- =============================================
@@ -222,9 +209,9 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 		}))
 
 		WebUI:ExecuteJS("ToggleDeployMenu(false);")
-		m_Showroom:SetCamera(false)
+		m_HudUtils:ShowroomCamera(false)
 		m_VanillaUIManager:EnableShowroomSoldier(false)
-		self:HUDEnterUIGraph()
+		m_HudUtils:HUDEnterUIGraph()
 
 		self.m_HudOnSetUIState:Update(UiStates.Loading)
 	elseif self.m_GameState == GameStates.Plane then
@@ -358,12 +345,12 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		if self.m_IsMapOpened then
 			self.m_IsMapOpened = false
 			WebUI:ExecuteJS("OnOpenCloseMap(false);")
-			self:HUDEnterUIGraph()
-			self:ShowCrosshair(true)
+			m_HudUtils:HUDEnterUIGraph()
+			m_HudUtils:ShowCrosshair(true)
 		else
 			self.m_IsMapOpened = true
 			WebUI:ExecuteJS("OnOpenCloseMap(true);")
-			self:OnEnableMouse()
+			m_HudUtils:OnEnableMouse()
 		end
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
@@ -421,11 +408,14 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 		return
 	end
 	self.m_IsLevelLoaded = true
-	self:OnResume()
+	m_HudUtils:HUDEnterUIGraph()
+	m_HudUtils:EnableTabScoreboard()
+	m_HudUtils:EnableBlurEffect(false)
+	m_HudUtils:StartupChat()
 	WebUI:ExecuteJS("OnLevelFinalized('" .. SharedUtils:GetLevelName() .. "');")
 	self:OnGameStateChanged(self.m_GameState)
 	self:RegisterEscMenuCallbacks()
-	self:OnEnableMouse()
+	m_HudUtils:OnEnableMouse()
 end
 
 -- =============================================
@@ -460,357 +450,30 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnOpenEscapeMenu()
-	self:OnEnableMouse()
-	self:OnDisableGameInput()
-	self:ShowCrosshair(false)
-	self:EnableBlurEffect(true)
+	m_HudUtils:OnEnableMouse()
+	m_HudUtils:OnDisableGameInput()
+	m_HudUtils:ShowCrosshair(false)
+	m_HudUtils:EnableBlurEffect(true)
 	self.m_IsInEscMenu = true
 
 	self.m_HudOnSetUIState:Update(UiStates.Menu)
 	-- Add WebUI
 end
 
-function VuBattleRoyaleHud:OnEnableMouse()
-	if self.m_MouseGraphEntityInstanceId == nil then
-		local s_DataMouse = self:GetEnableMouseEntityData()
-		local s_EnableMouseGraphEntity = EntityManager:CreateEntity(s_DataMouse, LinearTransform())
-		s_EnableMouseGraphEntity:FireEvent('EnableMouseInput')
-		self.m_MouseGraphEntityInstanceId = s_EnableMouseGraphEntity.instanceId
-	else
-		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
-		local s_Entity = s_EntityIterator:Next()
-		while s_Entity do
-			s_Entity = Entity(s_Entity)
-			if self.m_MouseGraphEntityInstanceId == s_Entity.instanceId then
-				s_Entity:FireEvent("EnableMouseInput")
-				break
-			end
-			s_Entity = s_EntityIterator:Next()
-		end
-	end
-end
-
-function VuBattleRoyaleHud:OnDisableGameInput()
-	if self.m_DisableGameInputGraphEntityInstanceId == nil then
-		local s_DataGameInput = self:GetDisableGameInputEntityData()
-		local s_DisableGameInputGraphEntity = EntityManager:CreateEntity(s_DataGameInput, LinearTransform())
-		s_DisableGameInputGraphEntity:FireEvent('DisableGameInput')
-		self.m_DisableGameInputGraphEntityInstanceId = s_DisableGameInputGraphEntity.instanceId
-	else
-		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
-		local s_Entity = s_EntityIterator:Next()
-		while s_Entity do
-			s_Entity = Entity(s_Entity)
-			if self.m_DisableGameInputGraphEntityInstanceId == s_Entity.instanceId then
-				s_Entity:FireEvent("DisableGameInput")
-				break
-			end
-			s_Entity = s_EntityIterator:Next()
-		end
-	end
-end
-
-function VuBattleRoyaleHud:GetEnableMouseEntityData()
-	local s_MousePopupGraphAsset = UIGraphAsset()
-	s_MousePopupGraphAsset.modal = false
-	s_MousePopupGraphAsset.protectScreens = true
-	s_MousePopupGraphAsset.isWin32UIGraphAsset = true
-	s_MousePopupGraphAsset.isXenonUIGraphAsset = true
-	s_MousePopupGraphAsset.isPs3UIGraphAsset = true
-
-	local s_InputNode = InstanceInputNode()
-	s_InputNode.parentGraph = s_MousePopupGraphAsset
-	s_InputNode.name = 'EnableMouseInput'
-	s_InputNode.isRootNode = false
-	s_InputNode.parentIsScreen = false
-	s_MousePopupGraphAsset.nodes:add(s_InputNode)
-
-	local s_ActionNode = ActionNode()
-	s_ActionNode.actionKey = -1254356014
-	s_ActionNode.inValue = UINodePort()
-	s_ActionNode.out = UINodePort()
-	s_ActionNode.appendIncomingParams = false
-	s_ActionNode.name = 'EnableMouseInput'
-	s_ActionNode.params:add("True")
-	s_ActionNode.isRootNode = false
-	s_ActionNode.parentGraph = s_MousePopupGraphAsset
-	s_ActionNode.parentIsScreen = false
-	s_MousePopupGraphAsset.nodes:add(s_ActionNode)
-
-	local s_InputToDialogNodeConnection = UINodeConnection()
-	s_InputToDialogNodeConnection.sourceNode = s_InputNode
-	s_InputToDialogNodeConnection.targetNode = s_ActionNode
-	s_InputToDialogNodeConnection.sourcePort = s_InputNode.out
-	s_InputToDialogNodeConnection.targetPort = s_ActionNode.inValue
-	s_InputToDialogNodeConnection.numScreensToPop = 0
-	s_MousePopupGraphAsset.connections:add(s_InputToDialogNodeConnection)
-
-	local s_OutputNode = InstanceOutputNode()
-	s_OutputNode.inValue = UINodePort()
-	s_OutputNode.id = -1072000798
-	s_OutputNode.destroyGraph = true
-	s_OutputNode.name = "exitIngameMenuMP"
-	s_OutputNode.isRootNode = false
-	s_OutputNode.parentGraph = s_MousePopupGraphAsset
-	s_OutputNode.parentIsScreen = false
-	s_MousePopupGraphAsset.nodes:add(s_OutputNode)
-
-	local s_ActionToOutputNodeConnection = UINodeConnection()
-	s_ActionToOutputNodeConnection.sourceNode = s_ActionNode
-	s_ActionToOutputNodeConnection.targetNode = s_OutputNode
-	s_ActionToOutputNodeConnection.sourcePort = s_ActionNode.out
-	s_ActionToOutputNodeConnection.targetPort = s_OutputNode.inValue
-	s_ActionToOutputNodeConnection.numScreensToPop = 1
-	s_MousePopupGraphAsset.connections:add(s_ActionToOutputNodeConnection)
-
-	local s_MousePopupGraphEntityData = UIGraphEntityData()
-	s_MousePopupGraphEntityData.graphAsset = s_MousePopupGraphAsset
-	s_MousePopupGraphEntityData.popPreviousGraph = false
-
-	return s_MousePopupGraphEntityData
-end
-
-function VuBattleRoyaleHud:GetDisableGameInputEntityData()
-	local s_DisableGameInputGraphAsset = UIGraphAsset()
-	s_DisableGameInputGraphAsset.modal = false
-	s_DisableGameInputGraphAsset.protectScreens = true
-	s_DisableGameInputGraphAsset.isWin32UIGraphAsset = true
-	s_DisableGameInputGraphAsset.isXenonUIGraphAsset = true
-	s_DisableGameInputGraphAsset.isPs3UIGraphAsset = true
-
-	local s_InputNode = InstanceInputNode()
-	s_InputNode.parentGraph = s_DisableGameInputGraphAsset
-	s_InputNode.name = 'DisableGameInput'
-	s_InputNode.isRootNode = false
-	s_InputNode.parentIsScreen = false
-	s_DisableGameInputGraphAsset.nodes:add(s_InputNode)
-
-	local s_ActionNode = ActionNode()
-	s_ActionNode.actionKey = -368863171
-	s_ActionNode.inValue = UINodePort()
-	s_ActionNode.out = UINodePort()
-	s_ActionNode.appendIncomingParams = false
-	s_ActionNode.name = 'DisableGameInput'
-	s_ActionNode.params:add("False")
-	s_ActionNode.isRootNode = false
-	s_ActionNode.parentGraph = s_DisableGameInputGraphAsset
-	s_ActionNode.parentIsScreen = false
-	s_DisableGameInputGraphAsset.nodes:add(s_ActionNode)
-
-	local s_InputToDialogNodeConnection = UINodeConnection()
-	s_InputToDialogNodeConnection.sourceNode = s_InputNode
-	s_InputToDialogNodeConnection.targetNode = s_ActionNode
-	s_InputToDialogNodeConnection.sourcePort = s_InputNode.out
-	s_InputToDialogNodeConnection.targetPort = s_ActionNode.inValue
-	s_InputToDialogNodeConnection.numScreensToPop = 0
-	s_DisableGameInputGraphAsset.connections:add(s_InputToDialogNodeConnection)
-
-	local s_OutputNode = InstanceOutputNode()
-	s_OutputNode.inValue = UINodePort()
-	s_OutputNode.id = -1072000798
-	s_OutputNode.destroyGraph = true
-	s_OutputNode.name = "exitIngameMenuMP"
-	s_OutputNode.isRootNode = false
-	s_OutputNode.parentGraph = s_DisableGameInputGraphAsset
-	s_OutputNode.parentIsScreen = false
-	s_DisableGameInputGraphAsset.nodes:add(s_OutputNode)
-
-	local s_ActionToOutputNodeConnection = UINodeConnection()
-	s_ActionToOutputNodeConnection.sourceNode = s_ActionNode
-	s_ActionToOutputNodeConnection.targetNode = s_OutputNode
-	s_ActionToOutputNodeConnection.sourcePort = s_ActionNode.out
-	s_ActionToOutputNodeConnection.targetPort = s_OutputNode.inValue
-	s_ActionToOutputNodeConnection.numScreensToPop = 1
-	s_DisableGameInputGraphAsset.connections:add(s_ActionToOutputNodeConnection)
-
-	local s_DisableGameInputGraphEntityData = UIGraphEntityData()
-	s_DisableGameInputGraphEntityData.graphAsset = s_DisableGameInputGraphAsset
-	s_DisableGameInputGraphEntityData.popPreviousGraph = false
-
-	return s_DisableGameInputGraphEntityData
-end
-
-function VuBattleRoyaleHud:EnableBlurEffect(p_Enable)
-	if self.m_BlurInstanceId ~= nil then
-		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
-		local s_Entity = s_EntityIterator:Next()
-		while s_Entity do
-			s_Entity = Entity(s_Entity)
-			if self.m_BlurInstanceId == s_Entity.instanceId then
-				if p_Enable then
-					s_Entity:FireEvent("Enable")
-				else
-					s_Entity:FireEvent("Disable")
-				end
-				break
-			end
-			s_Entity = s_EntityIterator:Next()
-		end
-	elseif p_Enable then
-		self:CreateBlurEffect()
-	end
-end
-
-function VuBattleRoyaleHud:StartupChat()
-	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
-	local s_Entity = s_EntityIterator:Next()
-	while s_Entity do
-		s_Entity = Entity(s_Entity)
-		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("7DE28082-B1A7-4C7A-8C6D-8FFB9049F91E") then
-			s_Entity:FireEvent("Startup")
-		end
-		s_Entity = s_EntityIterator:Next()
-	end
-end
-
-function VuBattleRoyaleHud:DestroyEntities()
-	if self.m_BlurInstanceId ~= nil then
-		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
-		local s_Entity = s_EntityIterator:Next()
-		while s_Entity do
-			s_Entity = Entity(s_Entity)
-			if self.m_BlurInstanceId == s_Entity.instanceId then
-				s_Entity:Destroy()
-				break
-			end
-			s_Entity = s_EntityIterator:Next()
-		end
-	end
-	if self.m_DisableGameInputGraphEntityInstanceId ~= nil then
-		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
-		local s_Entity = s_EntityIterator:Next()
-		while s_Entity do
-			s_Entity = Entity(s_Entity)
-			if self.m_DisableGameInputGraphEntityInstanceId == s_Entity.instanceId then
-				s_Entity:FireEvent("DisableGameInput")
-				break
-			end
-			s_Entity = s_EntityIterator:Next()
-		end
-	end
-	if self.m_MouseGraphEntityInstanceId ~= nil then
-		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
-		local s_Entity = s_EntityIterator:Next()
-		while s_Entity do
-			s_Entity = Entity(s_Entity)
-			if self.m_MouseGraphEntityInstanceId == s_Entity.instanceId then
-				s_Entity:FireEvent("EnableMouseInput")
-				break
-			end
-			s_Entity = s_EntityIterator:Next()
-		end
-	end
-end
-
-function VuBattleRoyaleHud:CreateBlurEffect()
-	local s_DofComponentData = ResourceManager:FindInstanceByGuid(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"))
-	if s_DofComponentData == nil then
-		m_Logger:Error("DofComponentData not found")
-	end
-	local s_ClonedDofCompData = DofComponentData(s_DofComponentData):Clone()
-	s_ClonedDofCompData.excluded = false
-
-	local s_VisualEnvEntityData = VisualEnvironmentEntityData()
-	s_VisualEnvEntityData.enabled = true
-	s_VisualEnvEntityData.visibility = 1
-	s_VisualEnvEntityData.priority = 99999
-	s_VisualEnvEntityData.components:add(s_ClonedDofCompData)
-	s_VisualEnvEntityData.runtimeComponentCount = 1
-
-	local s_Entity = EntityManager:CreateEntity(s_VisualEnvEntityData, LinearTransform())
-	if s_Entity == nil then
-		m_Logger:Error("Blurred Entity creation failed")
-	end
-	s_Entity:Init(Realm.Realm_Client, true)
-	self.m_BlurInstanceId = s_Entity.instanceId
-end
 
 -- =============================================
 	-- Close Escape Menu
 -- =============================================
 
 function VuBattleRoyaleHud:OnResume()
-	self:DisableMenuVisualEnv()
-	self:ExitSoundState()
-	self:HUDEnterUIGraph()
-	self:ShowCrosshair(true)
-	self:EnableTabScoreboard()
-	self:EnableBlurEffect(false)
-	self:StartupChat()
+	m_HudUtils:DisableMenuVisualEnv()
+	m_HudUtils:ExitSoundState()
+	m_HudUtils:HUDEnterUIGraph()
+	m_HudUtils:EnableTabScoreboard()
+	m_HudUtils:EnableBlurEffect(false)
+	m_HudUtils:StartupChat()
 	self.m_IsInEscMenu = false
 	self.m_HudOnSetUIState:Update(UiStates.Game)
-end
-
-function VuBattleRoyaleHud:DisableMenuVisualEnv()
-	local s_Iterator = EntityManager:GetIterator("LogicVisualEnvironmentEntity")
-	local s_Entity = s_Iterator:Next()
-	while s_Entity do
-		if s_Entity.data.instanceGuid == Guid("A17FCE78-E904-4833-98F8-50BE77EFCC41") then
-			s_Entity = Entity(s_Entity)
-			s_Entity:FireEvent("Disable")
-			return
-		end
-		s_Entity = s_Iterator:Next()
-	end
-end
-
-function VuBattleRoyaleHud:ExitSoundState()
-	local s_SoundStateEntityIterator = EntityManager:GetIterator("SoundStateEntity")
-	local s_SoundStateEntity = s_SoundStateEntityIterator:Next()
-	while s_SoundStateEntity do
-		if s_SoundStateEntity.data.instanceGuid == Guid("AC7A757C-D9FA-4693-97E7-7A5C50EF29C7") then
-			s_SoundStateEntity = Entity(s_SoundStateEntity)
-			s_SoundStateEntity:FireEvent("Exit")
-			return
-		end
-		s_SoundStateEntity = s_SoundStateEntityIterator:Next()
-	end
-end
-
-function VuBattleRoyaleHud:HUDEnterUIGraph()
-	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
-	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-	while s_UIGraphEntity do
-		if s_UIGraphEntity.data.instanceGuid == Guid("133D3825-5F17-4210-A4DB-3694FDBAD26D") then
-			s_UIGraphEntity = Entity(s_UIGraphEntity)
-			s_UIGraphEntity:FireEvent("EnterUIGraph")
-			return
-		end
-		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-	end
-end
-
-function VuBattleRoyaleHud:ShowCrosshair(p_Enable)
-	if SpectatorManager:GetSpectating() then
-		return
-	end
-	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
-	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-	while s_UIGraphEntity do
-		if s_UIGraphEntity.data.instanceGuid == Guid('9F8D5FCA-9B2A-484F-A085-AFF309DC5B7A') then
-			s_UIGraphEntity = Entity(s_UIGraphEntity)
-			if p_Enable then
-				s_UIGraphEntity:FireEvent('ShowCrosshair')
-			else
-				s_UIGraphEntity:FireEvent('HideCrosshair')
-			end
-			return
-		end
-		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-	end
-end
-
-function VuBattleRoyaleHud:EnableTabScoreboard()
-	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
-	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-	while s_UIGraphEntity do
-		if s_UIGraphEntity.data.instanceGuid == Guid('BD1ED7AE-31AE-495C-9133-DC25ACA30CE4') then
-			s_UIGraphEntity = Entity(s_UIGraphEntity)
-			s_UIGraphEntity:FireEvent('Startup and hide')
-			return
-		end
-		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-	end
 end
 
 -- =============================================

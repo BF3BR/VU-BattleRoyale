@@ -156,6 +156,7 @@ function SpectatorClient:OnPlayerRespawn(p_Player)
 	-- If we have nobody to spectate and this player is spectatable
 	-- then switch to them.
 	if s_LocalPlayer == SpectatorManager:GetSpectatedPlayer() or SpectatorManager:GetCameraMode() ~= SpectatorCameraMode.ThirdPerson then
+		m_Logger:Write("SpectatePlayer OnPlayerRespawn")
 		self:SpectatePlayer(p_Player)
 	end
 end
@@ -214,6 +215,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			if p_InflictorId ~= nil then
 				local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
 				if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
+					m_Logger:Write("SpectatePlayer OnPlayerKilled")
 					self:SpectatePlayer(s_Inflictor)
 					return
 				end
@@ -284,6 +286,7 @@ function SpectatorClient:Enable(p_InflictorId)
 		if self.m_IsSpectatingGunship then
 			self:SpectateGunship(false)
 		end
+		m_Logger:Write("SpectatePlayer Enable")
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
 	elseif self.m_GameState == GameStates.Plane then
@@ -299,6 +302,7 @@ function SpectatorClient:Enable(p_InflictorId)
 		WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
 		SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
 		if not self.m_IsDefaultFreeCamSet then
+			m_Logger:Write("Set freecam transform")
 			local s_Transform = LinearTransform(
 					Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588),
 					Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069),
@@ -470,6 +474,7 @@ function SpectatorClient:SpectateNextPlayer()
 		end
 
 		if s_PlayerToSpectate ~= nil then
+			m_Logger:Write("SpectatePlayer SpectateNextPlayer1")
 			self:SpectatePlayer(s_PlayerToSpectate)
 		end
 
@@ -482,6 +487,7 @@ function SpectatorClient:SpectateNextPlayer()
 	end
 	-- If we didn't find any players to spectate then switch to freecam.
 	if s_NextPlayer ~= nil then
+		m_Logger:Write("SpectatePlayer SpectateNextPlayer2")
 		self:SpectatePlayer(s_NextPlayer)
 	else
 		WebUI:ExecuteJS("SpectatorTarget('');")
@@ -568,6 +574,7 @@ function SpectatorClient:SpectatePreviousPlayer()
 		end
 
 		if s_PlayerToSpectate ~= nil then
+			m_Logger:Write("SpectatePlayer SpectatePreviousPlayer1")
 			self:SpectatePlayer(s_PlayerToSpectate)
 		end
 
@@ -580,6 +587,7 @@ function SpectatorClient:SpectatePreviousPlayer()
 	end
 	-- If we didn't find any players to spectate then switch to freecam.
 	if s_PreviousPlayer ~= nil then
+		m_Logger:Write("SpectatePlayer SpectatePreviousPlayer2")
 		self:SpectatePlayer(s_PreviousPlayer)
 	else
 		WebUI:ExecuteJS("SpectatorTarget('');")
