@@ -85,7 +85,12 @@ function PhaseManagerClient:GetActivePlayerPosition()
 
 	-- ensure soldier exists
 	if l_Player == nil or l_Player.soldier == nil then
-		return nil
+		local s_ClientCamera = ClientUtils:GetCameraTransform()
+		if s_ClientCamera == nil then
+			return nil
+		else
+			return s_ClientCamera.trans
+		end
 	end
 
 	-- return the position
