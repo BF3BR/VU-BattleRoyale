@@ -368,7 +368,7 @@ function BRPlayer:SetArmor(p_Armor)
 	self.m_Armor = p_Armor
 	NetEvents:SendToLocal(BRPlayerNetEvents.ArmorState, self.m_Player, self.m_Armor:AsTable())
 	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
-		local s_Spectator = PlayerManager:GetPlayerName(l_SpectatorName)
+		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
 		if s_Spectator ~= nil then
 			NetEvents:SendToLocal("SpectatedPlayerArmor", s_Spectator, self.m_Armor:AsTable())
 		else
