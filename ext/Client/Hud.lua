@@ -165,7 +165,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	WebUI:ExecuteJS("OnMapShow(true)")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
-	g_Timers:Timeout(1, function()
+	g_Timers:Timeout(0.75, function()
 		m_HudUtils:ShowCrosshair(true)
 	end)
 
