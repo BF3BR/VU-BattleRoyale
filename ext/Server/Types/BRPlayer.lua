@@ -5,6 +5,8 @@ require "__shared/Items/Armor"
 
 class "BRPlayer"
 
+local m_Logger = Logger("BRPlayer", true)
+
 function BRPlayer:__init(p_Player)
 	-- the vanilla player instance of the player
 	self.m_Player = p_Player
@@ -49,19 +51,19 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 		NetEvents:SendToLocal(DamageEvent.Hit, p_Giver.m_Player, p_Damage)
 	end
 
-	local l_Soldier = self:GetSoldier()
-	if l_Soldier == nil then
+	local s_Soldier = self:GetSoldier()
+	if s_Soldier == nil then
 		return p_Damage
 	end
 
-	local health = l_Soldier.health
-	if l_Soldier.isInteractiveManDown and p_Damage >= health then
+	local s_Health = s_Soldier.health
+	if s_Soldier.isInteractiveManDown and p_Damage >= s_Health then
 		self:Kill(true)
 		Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
 
-		return health
-	elseif not l_Soldier.isInteractiveManDown then
-		health = health - 100
+		return s_Health
+	elseif not s_Soldier.isInteractiveManDown then
+		s_Health = s_Health - 100
 
 		-- apply damage to the armor
 		if not p_IgnoreProtection then
@@ -69,7 +71,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 			self:SendState()
 		end
 
-		if p_Damage >= health then
+		if p_Damage >= s_Health then
 			-- kill instantly if no teammates left
 			if self:HasAliveTeammates() then
 				if p_Giver ~= nil then
@@ -91,7 +93,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 				Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
 			end
 
-			return health
+			return s_Health
 		end
 	end
 
@@ -153,13 +155,11 @@ function BRPlayer:Kill(p_Forced)
 	end
 
 	-- TODO removed ForceDead(), it causes crashes
-	-- if p_Forced then
-		-- l_Soldier:ForceDead()
-	-- else
-		-- l_Soldier:Kill()
-	-- end
-	l_Soldier:Kill()
-
+	if p_Forced then
+		l_Soldier:ForceDead()
+	else
+		l_Soldier:Kill()
+	end
 	return true
 end
 
