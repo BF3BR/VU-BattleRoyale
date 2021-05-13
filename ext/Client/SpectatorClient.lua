@@ -218,8 +218,8 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 					return
 				end
 			end
+			self:SpectateNextPlayer()
 		end
-		self:SpectateNextPlayer()
 	end
 end
 
