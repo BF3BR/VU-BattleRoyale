@@ -18,6 +18,10 @@ function BRPlayer:__init(p_Player)
 	-- the name of the player who killed this BRPlayer
 	self.m_KillerName = nil
 
+	-- the names of players who spectate this BRPlayer
+	self.m_SpectatedPlayerName = nil
+	self.m_SpectatorNames = {}
+
 	-- the position of the player in the squad
 	self.m_PosInSquad = 1
 
@@ -286,6 +290,31 @@ function BRPlayer:CreateCustomizeSoldierData()
 end
 
 -- =============================================
+	-- Spectator Functions
+-- =============================================
+
+function BRPlayer:SpectatePlayer(p_PlayerName)
+	self.m_SpectatedPlayerName = p_PlayerName
+end
+
+function BRPlayer:AddSpectator(p_PlayerName)
+	if self.m_SpectatorNames[p_PlayerName] == nil then
+		table.insert(self.m_SpectatorNames, p_PlayerName)
+	end
+	NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
+end
+
+function BRPlayer:RemoveSpectator(p_PlayerName)
+	for i, l_PlayerName in pairs(self.m_SpectatorNames) do
+		if l_PlayerName == p_PlayerName then
+			table.remove(self.m_SpectatorNames, i)
+			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
+			return
+		end
+	end
+end
+
+-- =============================================
 	-- Other Functions
 -- =============================================
 
@@ -338,6 +367,15 @@ end
 function BRPlayer:SetArmor(p_Armor)
 	self.m_Armor = p_Armor
 	NetEvents:SendToLocal(BRPlayerNetEvents.ArmorState, self.m_Player, self.m_Armor:AsTable())
+	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
+		local s_Spectator = PlayerManager:GetPlayerName(l_SpectatorName)
+		if s_Spectator ~= nil then
+			NetEvents:SendToLocal("SpectatedPlayerArmor", s_Spectator, self.m_Armor:AsTable())
+		else
+			table.remove(self.m_SpectatorNames, i)
+			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
+		end
+	end
 end
 
 function BRPlayer:SetTeamJoinStrategy(p_Strategy)

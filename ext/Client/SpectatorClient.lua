@@ -165,6 +165,13 @@ function SpectatorClient:OnPlayerDeleted(p_Player)
 		return
 	end
 
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if p_Player == s_LocalPlayer then
+		m_Logger:Write("You are leaving, disabling spec now.")
+		self:Disable()
+		return
+	end
+
 	-- Handle disconnection of player being spectated.
 	if p_Player == SpectatorManager:GetSpectatedPlayer() or SpectatorManager:GetCameraMode() ~= SpectatorCameraMode.ThirdPerson then
 		self:SpectateNextPlayer()
@@ -223,6 +230,11 @@ function SpectatorClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
 
 	self.m_SpectatingPlayerPitch = p_Pitch
 	self.m_SpectatingPlayerYaw = p_Yaw
+end
+
+function SpectatorClient:OnUpdateSpectatorCount(p_SpectatorCount)
+	m_Logger:Write(p_SpectatorCount)
+	WebUI:ExecuteJS("UpdateSpectatorCount(" .. tostring(p_SpectatorCount) .. ");")
 end
 
 function SpectatorClient:OnGameStateChanged(p_GameState)
@@ -306,8 +318,17 @@ end
 
 function SpectatorClient:Disable()
 	if not SpectatorManager:GetSpectating() then
+		m_Logger:Write("Disable - GetSpectating its off already")
 		return
 	end
+
+	local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
+	m_Logger:Write("Disable - GetSpectatedPlayer")
+	if s_SpectatedPlayer ~= nil then
+		m_Logger:Write("Disable - Sending NetEvent UpdateSpectator")
+		NetEvents:SendLocal('UpdateSpectator', nil, s_SpectatedPlayer.name)
+	end
+
 	SpectatorManager:SetCameraMode(SpectatorCameraMode.Disabled)
 	SpectatorManager:SetSpectating(false)
 
@@ -341,6 +362,15 @@ function SpectatorClient:SpectatePlayer(p_Player)
 
 	WebUI:ExecuteJS("SpectatorTarget('" .. tostring(p_Player.name) .. "');")
 	WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
+
+	local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
+	local s_SpectatedPlayerName = nil
+	m_Logger:Write("New player: " .. p_Player.name)
+	if s_SpectatedPlayer ~= nil then
+		s_SpectatedPlayerName = s_SpectatedPlayer.name
+		m_Logger:Write("Old player: " .. s_SpectatedPlayerName)
+	end
+	NetEvents:SendLocal('UpdateSpectator', p_Player.name, s_SpectatedPlayerName)
 
 	-- Dispatch a local event so phasemanager can toggle the OOC visuals
 	SpectatorManager:SpectatePlayer(p_Player, false)

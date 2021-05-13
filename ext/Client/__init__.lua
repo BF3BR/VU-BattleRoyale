@@ -85,6 +85,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 	NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
 	NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate)
 	NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
+	NetEvents:Subscribe("UpdateSpectatorCount", self, self.OnUpdateSpectatorCount)
 end
 
 function VuBattleRoyaleClient:RegisterWebUIEvents()
@@ -386,6 +387,10 @@ function VuBattleRoyaleClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
 	m_SpectatorClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
 end
 
+function VuBattleRoyaleClient:OnUpdateSpectatorCount(p_SpectatorCount)
+	m_SpectatorClient:OnUpdateSpectatorCount(p_SpectatorCount)
+end
+
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
 	m_Hud.m_MinPlayersToStart = p_MinPlayersToStart
 end
@@ -469,6 +474,7 @@ function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
 	elseif p_Function == "options" then
 		m_Hud:OnOptions()
 	elseif p_Function == "quit" then
+		m_SpectatorClient:Disable()
 		m_Hud:OnQuit()
 	end
 end
