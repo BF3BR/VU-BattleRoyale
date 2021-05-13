@@ -124,7 +124,6 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_SpectatorClient:OnExtensionUnloading()
 	m_Hud:OnExtensionUnloading()
 	m_HudUtils:OnExtensionUnloading()
-	m_Chat:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -158,7 +157,6 @@ function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
 	m_SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	m_Ping:OnEngineUpdate(p_DeltaTime)
 	m_Gunship:OnEngineUpdate(p_DeltaTime)
-	m_Chat:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
@@ -452,12 +450,9 @@ function VuBattleRoyaleClient:OnWebUIDeploy()
 end
 
 function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)
-	m_Logger:Write("OnWebUISetTeamJoinStrategy")
 	if self.m_BrPlayer == nil then
-		m_Logger:Write("OnWebUISetTeamJoinStrategy BrPlayer nil")
 		return
 	end
-	m_Logger:Write("OnWebUISetTeamJoinStrategy BrPlayer SetTeamJoinStrategy")
 	self.m_BrPlayer:SetTeamJoinStrategy(p_Strategy)
 end
 
