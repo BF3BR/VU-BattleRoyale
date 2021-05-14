@@ -651,7 +651,8 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 		return
 	end
 
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	-- SpectatedPlayer default is the local player
+	local s_LocalPlayer = SpectatorManager:GetSpectatedPlayer()
 	if s_LocalPlayer == nil then
 		return
 	end

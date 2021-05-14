@@ -6,6 +6,8 @@ require "BRTeam"
 
 class "BRPlayer"
 
+local m_Logger = Logger("BRPlayer", true)
+
 function BRPlayer:__init()
 	self.m_Team = BRTeam()
 	self.m_Armor = Armor:NoArmor()
@@ -34,6 +36,7 @@ function BRPlayer:OnReceivePlayerState(p_State)
 	end
 
 	if p_State.Armor ~= nil then
+		m_Logger:Write("Update Armor")
 		self.m_Armor:UpdateFromTable(p_State.Armor)
 	end
 
