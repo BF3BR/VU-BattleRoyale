@@ -441,6 +441,7 @@ end
 function VuBattleRoyaleClient:OnWebUIDeploy()
 	m_HudUtils:ShowroomCamera(false)
 	m_VanillaUIManager:EnableShowroomSoldier(false)
+	m_HudUtils:ExitSoundState()
 	m_HudUtils:HUDEnterUIGraph()
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 	if s_LocalPlayer ~= nil and s_LocalPlayer.soldier ~= nil then

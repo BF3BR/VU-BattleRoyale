@@ -211,6 +211,7 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 		WebUI:ExecuteJS("ToggleDeployMenu(false);")
 		m_HudUtils:ShowroomCamera(false)
 		m_VanillaUIManager:EnableShowroomSoldier(false)
+		m_HudUtils:ExitSoundState()
 		m_HudUtils:HUDEnterUIGraph()
 
 		self.m_HudOnSetUIState:Update(UiStates.Loading)
@@ -408,6 +409,7 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 		return
 	end
 	self.m_IsLevelLoaded = true
+	m_HudUtils:ExitSoundState()
 	m_HudUtils:HUDEnterUIGraph()
 	m_HudUtils:EnableTabScoreboard()
 	m_HudUtils:EnableBlurEffect(false)
