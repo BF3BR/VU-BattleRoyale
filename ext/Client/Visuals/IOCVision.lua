@@ -32,6 +32,10 @@ end
 function IOCVision:UpdateFog(p_Diameter)
 	local l_State = VisualEnvironmentManager:GetStates()[2]
 
+	if l_State == nil then
+		return
+	end
+
 	-- update fog
 	local l_Fog = FogData(l_State.fog)
 	l_Fog.endValue = math.min(p_Diameter * 3.2, 2700)
