@@ -1,0 +1,415 @@
+class "HudUtils"
+
+local m_Logger = Logger("HudUtils", true)
+
+function HudUtils:__init()
+	self.m_DisabledFreecamMovement = false
+	self.m_EnableMouseInstanceId = nil
+	self.m_DisableGameInputInstanceId = nil
+	self.m_BlurInstanceId = nil
+end
+
+-- =============================================
+-- Events
+-- =============================================
+
+function HudUtils:OnExtensionUnloading()
+	self:DestroyEntities()
+	self.m_DisabledFreecamMovement = false
+	self.m_EnableMouseInstanceId = nil
+	self.m_DisableGameInputInstanceId = nil
+	self.m_BlurInstanceId = nil
+end
+
+function HudUtils:OnLevelDestroy()
+	self:DestroyEntities()
+	self.m_DisabledFreecamMovement = false
+	self.m_EnableMouseInstanceId = nil
+	self.m_DisableGameInputInstanceId = nil
+	self.m_BlurInstanceId = nil
+end
+
+-- =============================================
+-- Functions
+-- =============================================
+
+function HudUtils:SetDisabledFreecamMovement(p_Enable)
+	self.m_DisabledFreecamMovement = p_Enable
+end
+
+function HudUtils:GetDisabledFreecamMovement()
+	return self.m_DisabledFreecamMovement
+end
+
+function HudUtils:ShowCrosshair(p_Enable)
+	if SpectatorManager:GetSpectating() then
+		return
+	end
+	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
+	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	while s_UIGraphEntity do
+		if s_UIGraphEntity.data.instanceGuid == Guid('9F8D5FCA-9B2A-484F-A085-AFF309DC5B7A') then
+			s_UIGraphEntity = Entity(s_UIGraphEntity)
+			if p_Enable then
+				s_UIGraphEntity:FireEvent('ShowCrosshair')
+			else
+				s_UIGraphEntity:FireEvent('HideCrosshair')
+			end
+			return
+		end
+		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	end
+end
+
+function HudUtils:ShowroomCamera(p_Enable)
+	local s_CameraEntityIterator = EntityManager:GetIterator("ClientCameraEntity")
+	local s_CameraEntity = s_CameraEntityIterator:Next()
+
+	while s_CameraEntity do
+		if s_CameraEntity.data.instanceGuid == Guid("528655FC-2653-4D5B-B55D-E6CBF997FC19") then
+			s_CameraEntity = Entity(s_CameraEntity)
+
+			if p_Enable then
+				s_CameraEntity:FireEvent("TakeControl")
+			else
+				s_CameraEntity:FireEvent("ReleaseControl")
+				WebUI:ResetKeyboard()
+			end
+			return
+		end
+
+		s_CameraEntity = s_CameraEntityIterator:Next()
+	end
+end
+
+function HudUtils:DisableMenuVisualEnv()
+	local s_Iterator = EntityManager:GetIterator("LogicVisualEnvironmentEntity")
+	local s_Entity = s_Iterator:Next()
+	while s_Entity do
+		if s_Entity.data.instanceGuid == Guid("A17FCE78-E904-4833-98F8-50BE77EFCC41") then
+			s_Entity = Entity(s_Entity)
+			s_Entity:FireEvent("Disable")
+			return
+		end
+		s_Entity = s_Iterator:Next()
+	end
+end
+
+function HudUtils:ExitSoundState()
+	local s_SoundStateEntityIterator = EntityManager:GetIterator("SoundStateEntity")
+	local s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+	while s_SoundStateEntity do
+		if s_SoundStateEntity.data.instanceGuid == Guid("AC7A757C-D9FA-4693-97E7-7A5C50EF29C7") then
+			s_SoundStateEntity = Entity(s_SoundStateEntity)
+			s_SoundStateEntity:FireEvent("Exit")
+			return
+		end
+		s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+	end
+end
+
+function HudUtils:HUDEnterUIGraph()
+	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
+	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	while s_UIGraphEntity do
+		if s_UIGraphEntity.data.instanceGuid == Guid("133D3825-5F17-4210-A4DB-3694FDBAD26D") then
+			s_UIGraphEntity = Entity(s_UIGraphEntity)
+			s_UIGraphEntity:FireEvent("EnterUIGraph")
+			break
+		end
+		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	end
+	if self.m_DisabledFreecamMovement then
+		self:OnDisableGameInput()
+	end
+end
+
+function HudUtils:EnableTabScoreboard()
+	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
+	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	while s_UIGraphEntity do
+		if s_UIGraphEntity.data.instanceGuid == Guid('BD1ED7AE-31AE-495C-9133-DC25ACA30CE4') then
+			s_UIGraphEntity = Entity(s_UIGraphEntity)
+			s_UIGraphEntity:FireEvent('Startup and hide')
+			return
+		end
+		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+	end
+end
+
+function HudUtils:StartupChat()
+	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+	local s_Entity = s_EntityIterator:Next()
+	while s_Entity do
+		s_Entity = Entity(s_Entity)
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("7DE28082-B1A7-4C7A-8C6D-8FFB9049F91E") then
+			s_Entity:FireEvent("Startup")
+		end
+		s_Entity = s_EntityIterator:Next()
+	end
+end
+
+-- =============================================
+	-- Mouse
+-- =============================================
+
+function HudUtils:OnEnableMouse()
+	if self.m_EnableMouseInstanceId == nil then
+		local s_DataMouse = self:GetEnableMouseEntityData()
+		local s_EnableMouseGraphEntity = EntityManager:CreateEntity(s_DataMouse, LinearTransform())
+		s_EnableMouseGraphEntity:FireEvent('EnableMouseInput')
+		self.m_EnableMouseInstanceId = s_EnableMouseGraphEntity.instanceId
+	else
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_EnableMouseInstanceId == s_Entity.instanceId then
+				s_Entity:FireEvent("EnableMouseInput")
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+end
+
+function HudUtils:GetEnableMouseEntityData()
+	local s_MousePopupGraphAsset = UIGraphAsset()
+	s_MousePopupGraphAsset.modal = false
+	s_MousePopupGraphAsset.protectScreens = true
+	s_MousePopupGraphAsset.isWin32UIGraphAsset = true
+	s_MousePopupGraphAsset.isXenonUIGraphAsset = true
+	s_MousePopupGraphAsset.isPs3UIGraphAsset = true
+
+	local s_InputNode = InstanceInputNode()
+	s_InputNode.parentGraph = s_MousePopupGraphAsset
+	s_InputNode.name = 'EnableMouseInput'
+	s_InputNode.isRootNode = false
+	s_InputNode.parentIsScreen = false
+	s_MousePopupGraphAsset.nodes:add(s_InputNode)
+
+	local s_ActionNode = ActionNode()
+	s_ActionNode.actionKey = -1254356014
+	s_ActionNode.inValue = UINodePort()
+	s_ActionNode.out = UINodePort()
+	s_ActionNode.appendIncomingParams = false
+	s_ActionNode.name = 'EnableMouseInput'
+	s_ActionNode.params:add("True")
+	s_ActionNode.isRootNode = false
+	s_ActionNode.parentGraph = s_MousePopupGraphAsset
+	s_ActionNode.parentIsScreen = false
+	s_MousePopupGraphAsset.nodes:add(s_ActionNode)
+
+	local s_InputToDialogNodeConnection = UINodeConnection()
+	s_InputToDialogNodeConnection.sourceNode = s_InputNode
+	s_InputToDialogNodeConnection.targetNode = s_ActionNode
+	s_InputToDialogNodeConnection.sourcePort = s_InputNode.out
+	s_InputToDialogNodeConnection.targetPort = s_ActionNode.inValue
+	s_InputToDialogNodeConnection.numScreensToPop = 0
+	s_MousePopupGraphAsset.connections:add(s_InputToDialogNodeConnection)
+
+	local s_OutputNode = InstanceOutputNode()
+	s_OutputNode.inValue = UINodePort()
+	s_OutputNode.id = -1072000798
+	s_OutputNode.destroyGraph = true
+	s_OutputNode.name = "exitIngameMenuMP"
+	s_OutputNode.isRootNode = false
+	s_OutputNode.parentGraph = s_MousePopupGraphAsset
+	s_OutputNode.parentIsScreen = false
+	s_MousePopupGraphAsset.nodes:add(s_OutputNode)
+
+	local s_ActionToOutputNodeConnection = UINodeConnection()
+	s_ActionToOutputNodeConnection.sourceNode = s_ActionNode
+	s_ActionToOutputNodeConnection.targetNode = s_OutputNode
+	s_ActionToOutputNodeConnection.sourcePort = s_ActionNode.out
+	s_ActionToOutputNodeConnection.targetPort = s_OutputNode.inValue
+	s_ActionToOutputNodeConnection.numScreensToPop = 1
+	s_MousePopupGraphAsset.connections:add(s_ActionToOutputNodeConnection)
+
+	local s_MousePopupGraphEntityData = UIGraphEntityData()
+	s_MousePopupGraphEntityData.graphAsset = s_MousePopupGraphAsset
+	s_MousePopupGraphEntityData.popPreviousGraph = false
+
+	return s_MousePopupGraphEntityData
+end
+
+-- =============================================
+	-- GameInput
+-- =============================================
+
+function HudUtils:OnDisableGameInput()
+	if self.m_DisableGameInputInstanceId == nil then
+		local s_DataGameInput = self:GetDisableGameInputEntityData()
+		local s_DisableGameInputGraphEntity = EntityManager:CreateEntity(s_DataGameInput, LinearTransform())
+		s_DisableGameInputGraphEntity:FireEvent('DisableGameInput')
+		self.m_DisableGameInputInstanceId = s_DisableGameInputGraphEntity.instanceId
+	else
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_DisableGameInputInstanceId == s_Entity.instanceId then
+				s_Entity:FireEvent("DisableGameInput")
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+end
+
+function HudUtils:GetDisableGameInputEntityData()
+	local s_DisableGameInputGraphAsset = UIGraphAsset()
+	s_DisableGameInputGraphAsset.modal = false
+	s_DisableGameInputGraphAsset.protectScreens = true
+	s_DisableGameInputGraphAsset.isWin32UIGraphAsset = true
+	s_DisableGameInputGraphAsset.isXenonUIGraphAsset = true
+	s_DisableGameInputGraphAsset.isPs3UIGraphAsset = true
+
+	local s_InputNode = InstanceInputNode()
+	s_InputNode.parentGraph = s_DisableGameInputGraphAsset
+	s_InputNode.name = 'DisableGameInput'
+	s_InputNode.isRootNode = false
+	s_InputNode.parentIsScreen = false
+	s_DisableGameInputGraphAsset.nodes:add(s_InputNode)
+
+	local s_ActionNode = ActionNode()
+	s_ActionNode.actionKey = -368863171
+	s_ActionNode.inValue = UINodePort()
+	s_ActionNode.out = UINodePort()
+	s_ActionNode.appendIncomingParams = false
+	s_ActionNode.name = 'DisableGameInput'
+	s_ActionNode.params:add("False")
+	s_ActionNode.isRootNode = false
+	s_ActionNode.parentGraph = s_DisableGameInputGraphAsset
+	s_ActionNode.parentIsScreen = false
+	s_DisableGameInputGraphAsset.nodes:add(s_ActionNode)
+
+	local s_InputToDialogNodeConnection = UINodeConnection()
+	s_InputToDialogNodeConnection.sourceNode = s_InputNode
+	s_InputToDialogNodeConnection.targetNode = s_ActionNode
+	s_InputToDialogNodeConnection.sourcePort = s_InputNode.out
+	s_InputToDialogNodeConnection.targetPort = s_ActionNode.inValue
+	s_InputToDialogNodeConnection.numScreensToPop = 0
+	s_DisableGameInputGraphAsset.connections:add(s_InputToDialogNodeConnection)
+
+	local s_OutputNode = InstanceOutputNode()
+	s_OutputNode.inValue = UINodePort()
+	s_OutputNode.id = -1072000798
+	s_OutputNode.destroyGraph = true
+	s_OutputNode.name = "exitIngameMenuMP"
+	s_OutputNode.isRootNode = false
+	s_OutputNode.parentGraph = s_DisableGameInputGraphAsset
+	s_OutputNode.parentIsScreen = false
+	s_DisableGameInputGraphAsset.nodes:add(s_OutputNode)
+
+	local s_ActionToOutputNodeConnection = UINodeConnection()
+	s_ActionToOutputNodeConnection.sourceNode = s_ActionNode
+	s_ActionToOutputNodeConnection.targetNode = s_OutputNode
+	s_ActionToOutputNodeConnection.sourcePort = s_ActionNode.out
+	s_ActionToOutputNodeConnection.targetPort = s_OutputNode.inValue
+	s_ActionToOutputNodeConnection.numScreensToPop = 1
+	s_DisableGameInputGraphAsset.connections:add(s_ActionToOutputNodeConnection)
+
+	local s_DisableGameInputGraphEntityData = UIGraphEntityData()
+	s_DisableGameInputGraphEntityData.graphAsset = s_DisableGameInputGraphAsset
+	s_DisableGameInputGraphEntityData.popPreviousGraph = false
+
+	return s_DisableGameInputGraphEntityData
+end
+
+-- =============================================
+	-- BlurEffect
+-- =============================================
+
+function HudUtils:EnableBlurEffect(p_Enable)
+	if self.m_BlurInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_BlurInstanceId == s_Entity.instanceId then
+				if p_Enable then
+					s_Entity:FireEvent("Enable")
+				else
+					s_Entity:FireEvent("Disable")
+				end
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	elseif p_Enable then
+		self:CreateBlurEffect()
+	end
+end
+
+function HudUtils:CreateBlurEffect()
+	local s_DofComponentData = ResourceManager:FindInstanceByGuid(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"))
+	if s_DofComponentData == nil then
+		m_Logger:Error("DofComponentData not found")
+	end
+	local s_ClonedDofCompData = DofComponentData(s_DofComponentData):Clone()
+	s_ClonedDofCompData.excluded = false
+
+	local s_VisualEnvEntityData = VisualEnvironmentEntityData()
+	s_VisualEnvEntityData.enabled = true
+	s_VisualEnvEntityData.visibility = 1
+	s_VisualEnvEntityData.priority = 99999
+	s_VisualEnvEntityData.components:add(s_ClonedDofCompData)
+	s_VisualEnvEntityData.runtimeComponentCount = 1
+
+	local s_Entity = EntityManager:CreateEntity(s_VisualEnvEntityData, LinearTransform())
+	if s_Entity == nil then
+		m_Logger:Error("Blurred Entity creation failed")
+	end
+	s_Entity:Init(Realm.Realm_Client, true)
+	self.m_BlurInstanceId = s_Entity.instanceId
+end
+
+-- =============================================
+	-- Clear Entities
+-- =============================================
+
+function HudUtils:DestroyEntities()
+	if self.m_BlurInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_BlurInstanceId == s_Entity.instanceId then
+				s_Entity:Destroy()
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+	if self.m_DisableGameInputInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_DisableGameInputInstanceId == s_Entity.instanceId then
+				s_Entity:Destroy()
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+	if self.m_EnableMouseInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+			if self.m_EnableMouseInstanceId == s_Entity.instanceId then
+				s_Entity:Destroy()
+				break
+			end
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+end
+
+if g_HudUtils == nil then
+	g_HudUtils = HudUtils()
+end
+
+return g_HudUtils

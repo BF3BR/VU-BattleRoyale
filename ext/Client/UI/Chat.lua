@@ -7,7 +7,7 @@ require "__shared/Utils/Timers"
 -- =============================================
 
 function Chat:OnLevelDestroy()
-    WebUI:ExecuteJS("OnClearChat()")
+	WebUI:ExecuteJS("OnClearChat()")
 end
 
 -- =============================================
@@ -135,8 +135,8 @@ function Chat:OnWebUISetCursor()
 	InputManager:SetCursorPosition(s_WindowSize.x / 2, s_WindowSize.y / 2)
 	WebUI:ResetKeyboard()
 	g_Timers:Timeout(0.035, function()
-        WebUI:ResetMouse()
-    end)
+		WebUI:ResetMouse()
+	end)
 end
 
 -- =============================================
@@ -160,7 +160,7 @@ function Chat:GetPlayerRelation(p_OtherPlayer, p_LocalPlayer)
 end
 
 if g_Chat == nil then
-    g_Chat = Chat()
+	g_Chat = Chat()
 end
 
 return g_Chat

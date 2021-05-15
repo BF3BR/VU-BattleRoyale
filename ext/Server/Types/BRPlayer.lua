@@ -68,7 +68,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 		-- apply damage to the armor
 		if not p_IgnoreProtection then
 			p_Damage = self.m_Armor:ApplyDamage(p_Damage)
-			self:SendState()
+			self:SetArmor(self.m_Armor)
 		end
 
 		if p_Damage >= s_Health then
@@ -366,11 +366,15 @@ end
 
 function BRPlayer:SetArmor(p_Armor)
 	self.m_Armor = p_Armor
-	NetEvents:SendToLocal(BRPlayerNetEvents.ArmorState, self.m_Player, self.m_Armor:AsTable())
+	local s_State = {
+		Armor = self.m_Armor:AsTable()
+	}
+	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, self.m_Player, s_State)
 	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
 		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
 		if s_Spectator ~= nil then
-			NetEvents:SendToLocal("SpectatedPlayerArmor", s_Spectator, self.m_Armor:AsTable())
+			m_Logger:Write("Send PlayerArmorState to spectator " .. s_Spectator.name)
+			NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, s_Spectator, s_State)
 		else
 			table.remove(self.m_SpectatorNames, i)
 			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)

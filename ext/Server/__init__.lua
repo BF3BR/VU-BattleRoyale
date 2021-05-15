@@ -6,6 +6,7 @@ require "__shared/Utils/LevelNameHelper"
 require "__shared/Configs/MapsConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
+require "__shared/Utils/Timers"
 
 require "Match"
 
@@ -405,11 +406,11 @@ end
 -- =============================================
 
 function VuBattleRoyaleServer:GetIsHotReload()
-    if #SharedUtils:GetContentPackages() == 0 then
-        return false
-    else
-        return true
-    end
+	if #SharedUtils:GetContentPackages() == 0 then
+		return false
+	else
+		return true
+	end
 end
 
 function VuBattleRoyaleServer:OnHotReload()
@@ -417,30 +418,35 @@ function VuBattleRoyaleServer:OnHotReload()
 		return
 	end
 
-	-- OnPlayerAuthenticated
-	local s_Players = PlayerManager:GetPlayers()
-	if s_Players ~= nil and #s_Players > 0 then
-		for _, l_Player in pairs(s_Players) do
-			if l_Player ~= nil then
-				m_TeamManager:OnPlayerAuthenticated(l_Player)
+	-- Delay because client didn't finish the mod reload yet
+	g_Timers:Timeout(1, function()
+		-- OnPlayerAuthenticated
+		local s_Players = PlayerManager:GetPlayers()
+		if s_Players ~= nil and #s_Players > 0 then
+			for _, l_Player in pairs(s_Players) do
+				if l_Player ~= nil then
+					m_TeamManager:OnPlayerAuthenticated(l_Player)
+				end
 			end
 		end
-	end
+
+		if SharedUtils:GetLevelName() == nil then
+			self.m_WaitForStart = true
+			return
+		end
+
+		-- OnPlayerConnected
+		NetEvents:BroadcastLocal(PingEvents.UpdateConfig, m_PingServer:GetPingDisplayCooldownTime())
+		NetEvents:Broadcast(PlayerEvents.GameStateChanged, GameStates.None, self.m_GameState)
+	end)
 
 	if SharedUtils:GetLevelName() == nil then
 		self.m_WaitForStart = true
 		return
 	end
-	-- This was a hot reload, and the game is already loaded
-	-- So we dispatch all Level / Connection events
 
-	--self.m_WaitForStart = false
 	m_LootManager:OnModReload()
-	--self:OnLevelLoadResources()
 	self:OnLevelLoaded()
-	-- OnPlayerConnected
-	NetEvents:BroadcastLocal(PingEvents.UpdateConfig, m_PingServer:GetPingDisplayCooldownTime())
-	NetEvents:Broadcast(PlayerEvents.GameStateChanged, GameStates.None, self.m_GameState)
 	PlayerManager:FadeInAll(1.0)
 end
 
