@@ -3,7 +3,14 @@ class "HudUtils"
 local m_Logger = Logger("HudUtils", true)
 
 function HudUtils:__init()
+	self:RegisterVars()
+end
+
+function HudUtils:RegisterVars()
 	self.m_DisabledFreecamMovement = false
+	self.m_IsInEscMenu = false
+	self.m_IsMapOpened = false
+	self.m_IsInDeployScreen = false
 	self.m_EnableMouseInstanceId = nil
 	self.m_DisableGameInputInstanceId = nil
 	self.m_BlurInstanceId = nil
@@ -15,18 +22,12 @@ end
 
 function HudUtils:OnExtensionUnloading()
 	self:DestroyEntities()
-	self.m_DisabledFreecamMovement = false
-	self.m_EnableMouseInstanceId = nil
-	self.m_DisableGameInputInstanceId = nil
-	self.m_BlurInstanceId = nil
+	self:RegisterVars()
 end
 
 function HudUtils:OnLevelDestroy()
 	self:DestroyEntities()
-	self.m_DisabledFreecamMovement = false
-	self.m_EnableMouseInstanceId = nil
-	self.m_DisableGameInputInstanceId = nil
-	self.m_BlurInstanceId = nil
+	self:RegisterVars()
 end
 
 -- =============================================
@@ -39,6 +40,30 @@ end
 
 function HudUtils:GetDisabledFreecamMovement()
 	return self.m_DisabledFreecamMovement
+end
+
+function HudUtils:SetIsInEscMenu(p_Enable)
+	self.m_IsInEscMenu = p_Enable
+end
+
+function HudUtils:GetIsInEscMenu()
+	return self.m_IsInEscMenu
+end
+
+function HudUtils:SetIsMapOpened(p_Enable)
+	self.m_IsMapOpened = p_Enable
+end
+
+function HudUtils:GetIsMapOpened()
+	return self.m_IsMapOpened
+end
+
+function HudUtils:SetIsInDeployScreen(p_Enable)
+	self.m_IsInDeployScreen = p_Enable
+end
+
+function HudUtils:GetIsInDeployScreen()
+	return self.m_IsInDeployScreen
 end
 
 function HudUtils:ShowCrosshair(p_Enable)
@@ -96,6 +121,9 @@ function HudUtils:DisableMenuVisualEnv()
 end
 
 function HudUtils:ExitSoundState()
+	if self.m_IsInEscMenu or self.m_IsInDeployScreen then
+		return
+	end
 	local s_SoundStateEntityIterator = EntityManager:GetIterator("SoundStateEntity")
 	local s_SoundStateEntity = s_SoundStateEntityIterator:Next()
 	while s_SoundStateEntity do
@@ -109,6 +137,9 @@ function HudUtils:ExitSoundState()
 end
 
 function HudUtils:HUDEnterUIGraph()
+	if self.m_IsInEscMenu or self.m_IsInDeployScreen then
+		return
+	end
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	while s_UIGraphEntity do
@@ -121,6 +152,9 @@ function HudUtils:HUDEnterUIGraph()
 	end
 	if self.m_DisabledFreecamMovement then
 		self:OnDisableGameInput()
+	end
+	if self.m_IsMapOpened then
+		self:OnEnableMouse()
 	end
 end
 

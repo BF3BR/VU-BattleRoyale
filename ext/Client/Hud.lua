@@ -21,9 +21,6 @@ function VuBattleRoyaleHud:__init()
 
 	self.m_Markers = {}
 
-	self.m_IsInEscMenu = false
-	self.m_IsMapOpened = false
-
 	self:RegisterVars()
 end
 
@@ -69,14 +66,14 @@ end
 
 function VuBattleRoyaleHud:OnExtensionUnloading()
 	self.m_IsLevelLoaded = false
-	self.m_IsMapOpened = false
+	m_HudUtils:SetIsMapOpened(false)
 	WebUI:ExecuteJS("OnOpenCloseMap(false);")
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 end
 
 function VuBattleRoyaleHud:OnLevelDestroy()
 	self.m_IsLevelLoaded = false
-	self.m_IsMapOpened = false
+	m_HudUtils:SetIsMapOpened(false)
 	WebUI:ExecuteJS("OnOpenCloseMap(false);")
 	self.m_HudOnSetUIState:Update(UiStates.Loading)
 end
@@ -137,10 +134,11 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 			m_HudUtils:ShowCrosshair(false)
 			m_HudUtils:OnEnableMouse()
 			m_VanillaUIManager:EnableShowroomSoldier(true)
+			m_HudUtils:SetIsInDeployScreen(true)
 		end
 	end
 
-	if self.m_IsInEscMenu then
+	if m_HudUtils:GetIsInEscMenu() then
 		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
 			self:OnResume()
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowUp)
@@ -208,6 +206,7 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 			["key"] = nil,
 		}))
 
+		m_HudUtils:SetIsInDeployScreen(false)
 		WebUI:ExecuteJS("ToggleDeployMenu(false);")
 		m_HudUtils:ShowroomCamera(false)
 		m_VanillaUIManager:EnableShowroomSoldier(false)
@@ -343,13 +342,13 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		return
 	end
 	if p_Action == UIInputAction.UIInputAction_MapSize then
-		if self.m_IsMapOpened then
-			self.m_IsMapOpened = false
+		if m_HudUtils:GetIsMapOpened() then
+			m_HudUtils:SetIsMapOpened(false)
 			WebUI:ExecuteJS("OnOpenCloseMap(false);")
 			m_HudUtils:HUDEnterUIGraph()
 			m_HudUtils:ShowCrosshair(true)
 		else
-			self.m_IsMapOpened = true
+			m_HudUtils:SetIsMapOpened(true)
 			WebUI:ExecuteJS("OnOpenCloseMap(true);")
 			m_HudUtils:OnEnableMouse()
 		end
@@ -456,7 +455,7 @@ function VuBattleRoyaleHud:OnOpenEscapeMenu()
 	m_HudUtils:OnDisableGameInput()
 	m_HudUtils:ShowCrosshair(false)
 	m_HudUtils:EnableBlurEffect(true)
-	self.m_IsInEscMenu = true
+	m_HudUtils:SetIsInEscMenu(true)
 
 	self.m_HudOnSetUIState:Update(UiStates.Menu)
 	-- Add WebUI
@@ -468,13 +467,13 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnResume()
+	m_HudUtils:SetIsInEscMenu(false)
 	m_HudUtils:DisableMenuVisualEnv()
 	m_HudUtils:ExitSoundState()
 	m_HudUtils:HUDEnterUIGraph()
 	m_HudUtils:EnableTabScoreboard()
 	m_HudUtils:EnableBlurEffect(false)
 	m_HudUtils:StartupChat()
-	self.m_IsInEscMenu = false
 	self.m_HudOnSetUIState:Update(UiStates.Game)
 end
 
@@ -483,7 +482,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnOptions()
-	self.m_IsInEscMenu = false
+	m_HudUtils:SetIsInEscMenu(false)
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
