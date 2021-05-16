@@ -6,8 +6,27 @@ require "__shared/Utils/Timers"
 -- Events
 -- =============================================
 
+function Chat:__init()
+	self.m_IsChatOpen = false
+end
+
+function Chat:OnExtensionUnloading()
+	WebUI:ExecuteJS("OnClearChat()")
+	self.m_IsChatOpen = false
+	self:DisableWeapon(false)
+end
+
 function Chat:OnLevelDestroy()
 	WebUI:ExecuteJS("OnClearChat()")
+	self.m_IsChatOpen = false
+	self:DisableWeapon(false)
+end
+
+function Chat:OnEngineUpdate(p_DeltaTime)
+	if self.m_IsChatOpen then
+		WebUI:EnableMouse()
+		WebUI:EnableKeyboard()
+	end
 end
 
 -- =============================================
@@ -21,12 +40,13 @@ function Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 
 	if p_Action == UIInputAction.UIInputAction_SayAllChat or p_Action == UIInputAction.UIInputAction_TeamChat
 	or p_Action == UIInputAction.UIInputAction_SquadChat then
+		local s_Target = "squad"
 		if p_Action == UIInputAction.UIInputAction_SayAllChat and ServerConfig.Debug.EnableAllChat then
-			WebUI:ExecuteJS(string.format("OnFocus('%s')", "all"))
-			p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
-			return
+			s_Target = "all"
 		end
-		WebUI:ExecuteJS(string.format("OnFocus('%s')", "squad"))
+		WebUI:ExecuteJS(string.format("OnFocus('%s')", s_Target))
+		self.m_IsChatOpen = true
+		self:DisableWeapon(true)
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
@@ -98,11 +118,17 @@ end
 -- =============================================
 
 function Chat:OnWebUIOutgoingChatMessage(p_JsonData)
+	self.m_IsChatOpen = false
+	self:DisableWeapon(false)
 	local s_DecodedData = json.decode(p_JsonData)
 
 	-- Load params from the decoded JSON.
 	local p_Target = s_DecodedData.target
 	local p_Message = s_DecodedData.message
+
+	if p_Target == nil or p_Message == nil or type(p_Message) ~= "string" then
+		return
+	end
 
 	-- Trim the message.
 	local s_From = p_Message:match"^%s*()"
@@ -157,6 +183,14 @@ function Chat:GetPlayerRelation(p_OtherPlayer, p_LocalPlayer)
 	else
 		return "enemy"
 	end
+end
+
+function Chat:DisableWeapon(p_Disable)
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if s_LocalPlayer == nil then
+		return
+	end
+	s_LocalPlayer:EnableInput(EntryInputActionEnum.EIAFire, not p_Disable)
 end
 
 if g_Chat == nil then

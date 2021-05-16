@@ -124,6 +124,7 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_SpectatorClient:OnExtensionUnloading()
 	m_Hud:OnExtensionUnloading()
 	m_HudUtils:OnExtensionUnloading()
+	m_Chat:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -134,6 +135,7 @@ function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
 	WebUI:ExecuteJS("ToggleDeployMenu(true);")
 	m_HudUtils:ShowroomCamera(true)
 	m_HudUtils:ShowCrosshair(false)
+	m_HudUtils:SetIsInDeployScreen(true)
 	g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
 	g_Timers:Timeout(5, function() m_Hud:OnLevelFinalized() end)
 	m_Ping:OnLevelLoaded()
@@ -157,6 +159,7 @@ function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
 	m_SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	m_Ping:OnEngineUpdate(p_DeltaTime)
 	m_Gunship:OnEngineUpdate(p_DeltaTime)
+	m_Chat:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
@@ -439,6 +442,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
+	m_HudUtils:SetIsInDeployScreen(false)
 	m_HudUtils:ShowroomCamera(false)
 	m_VanillaUIManager:EnableShowroomSoldier(false)
 	m_HudUtils:ExitSoundState()
