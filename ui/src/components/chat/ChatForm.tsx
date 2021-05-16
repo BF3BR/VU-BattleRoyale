@@ -26,6 +26,7 @@ const Title: React.FC<Props> = ({ target, isTypingActive, doneTypeing }) => {
             case 'Escape':
                 resetInputMessage();
                 resetKeyboardAndMouse();
+                sendToLua('WebUI:OutgoingChatMessage', JSON.stringify({ message: null, target: null }));
                 break;
             case 'ArrowUp':
                 event.preventDefault();
@@ -40,6 +41,7 @@ const Title: React.FC<Props> = ({ target, isTypingActive, doneTypeing }) => {
         setTimeout(() => {
             resetInputMessage();
             resetKeyboardAndMouse();
+            sendToLua('WebUI:OutgoingChatMessage', JSON.stringify({ message: null, target: null }));
         }, 100);
     }
 
@@ -48,6 +50,8 @@ const Title: React.FC<Props> = ({ target, isTypingActive, doneTypeing }) => {
 
         if (inputMessage.length > 0) {
             sendToLua('WebUI:OutgoingChatMessage', JSON.stringify({ message: inputMessage, target: target }));
+        } else {
+            sendToLua('WebUI:OutgoingChatMessage', JSON.stringify({ message: null, target: null }));
         }
 
         resetInputMessage();
