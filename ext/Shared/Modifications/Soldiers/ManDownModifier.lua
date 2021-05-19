@@ -90,39 +90,39 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 				-- Should be looked over again, some PlayerFilterEntityData connections might be useful
 				p_SoldierBlueprint.eventConnections:erase(i)
 			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("9DF212F6-73C1-4218-9110-2090EE95F730") then
-				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then	  -- (OnRevived)
-					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660		  -- (OnManDown)
-				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == -563307660 then -- (OnManDown)
+				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnRevived") then
+					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnManDown")
+				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnManDown") then
 					p_SoldierBlueprint.eventConnections:erase(i)
 				end
 			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("48117724-9949-43B4-BFE8-5F7D9492D1EF") then
-				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then	  -- (OnRevived)
-					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660		  -- (OnManDown)
-				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == 2030068478 then -- (OnReviveAccepted)
-					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = 901651067		   -- (OnRevived)
+				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnRevived") then
+					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnManDown")
+				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnReviveAccepted") then
+					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnRevived")
 				end
 			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("AD9FBC60-3ADE-42C4-80FB-647F3DD251C6")
-			and p_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then		 -- (OnRevived)
-				p_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660			  -- (OnManDown)
+			and p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnRevived") then
+				p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnManDown")
 			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("8B5295FF-8770-4587-B436-1F2E71F97F35") then
 				-- Adjust inputrestriction
-				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == 901651067 then	  -- (OnRevived)
-					p_SoldierBlueprint.eventConnections[i].targetEvent.id = 1928776733		  -- (Deactivate)
-				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == 2030068478 then -- (OnReviveAccepted)
-					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = -563307660		  -- (OnManDown)
-					p_SoldierBlueprint.eventConnections[i].targetEvent.id = -559281700		  -- (Activate)
+				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnRevived") then
+					p_SoldierBlueprint.eventConnections[i].targetEvent.id = MathUtils:FNVHash("Deactivate")
+				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnReviveAccepted") then
+					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnManDown")
+					p_SoldierBlueprint.eventConnections[i].targetEvent.id = MathUtils:FNVHash("Activate")
 				else
 					p_SoldierBlueprint.eventConnections:erase(i)
 				end
 			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("7D3F4B44-9E51-444C-A5D7-9D33928A35C5")
-			and p_SoldierBlueprint.eventConnections[i].sourceEvent.id == -563307660 then		-- (OnManDown)
+			and p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnManDown") then
 				-- Leave the damage screen when going mandown
 				p_SoldierBlueprint.eventConnections:erase(i)
 			end
 		end
 	end
 
-	p_SoldierBlueprint.eventConnections[3].targetEvent.id = 2008897511
+	p_SoldierBlueprint.eventConnections[3].targetEvent.id = MathUtils:FNVHash("OnKilled")
 
 	-- M9 kit for ManDownModifier
 	local s_CustomizeSoldierData = self:CreateManDownCustomizeSoldierData()
@@ -136,15 +136,15 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 
 	-- Create EventSplitterEntities for custom events
 	local s_StartEventSplitterEntityData = EventSplitterEntityData(Guid("34130787-22C3-0F9D-6AA7-4BC214FA1734"))
-	s_StartEventSplitterEntityData.isEventConnectionTarget = 2
-	s_StartEventSplitterEntityData.isPropertyConnectionTarget = 3
+	s_StartEventSplitterEntityData.isEventConnectionTarget = Realm.Realm_ClientAndServer
+	s_StartEventSplitterEntityData.isPropertyConnectionTarget = Realm.Realm_None
 	s_StartEventSplitterEntityData.runOnce = false
 	s_StartEventSplitterEntityData.realm = Realm.Realm_Client
 	s_Registry.entityRegistry:add(s_StartEventSplitterEntityData)
 
 	local s_FinishEventSplitterEntityData = EventSplitterEntityData(Guid("D0F06E9A-AE8B-E614-F8C3-54A47CF22565"))
-	s_FinishEventSplitterEntityData.isEventConnectionTarget = 2
-	s_FinishEventSplitterEntityData.isPropertyConnectionTarget = 3
+	s_FinishEventSplitterEntityData.isEventConnectionTarget = Realm.Realm_ClientAndServer
+	s_FinishEventSplitterEntityData.isPropertyConnectionTarget = Realm.Realm_None
 	s_FinishEventSplitterEntityData.runOnce = false
 	s_FinishEventSplitterEntityData.realm = Realm.Realm_Client
 	s_Registry.entityRegistry:add(s_FinishEventSplitterEntityData)
@@ -152,7 +152,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	-- BeingInteracted
 	local s_BeingInteracted_InputRestrictionEntityData = self:_GetInputRestrictionData(m_BeingInteracted_Inputs, Guid("4FFD99D0-3E9B-2A8F-967E-3A0724A06BA7"))
 	s_BeingInteracted_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
-	s_BeingInteracted_InputRestrictionEntityData.isEventConnectionTarget = 1
+	s_BeingInteracted_InputRestrictionEntityData.isEventConnectionTarget = Realm.Realm_Server
 	s_Registry.entityRegistry:add(s_BeingInteracted_InputRestrictionEntityData)
 
 	local s_BeingInteracted_DelayEntityData = DelayEntityData(Guid("ED2D8D65-D942-60BC-20F2-0EE10307F6BC"))
@@ -161,14 +161,14 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	s_BeingInteracted_DelayEntityData.autoStart = false
 	s_BeingInteracted_DelayEntityData.runOnce = false
 	s_BeingInteracted_DelayEntityData.removeDuplicateEvents = false
-	s_BeingInteracted_DelayEntityData.isEventConnectionTarget = 1
-	s_BeingInteracted_DelayEntityData.isPropertyConnectionTarget = 3
+	s_BeingInteracted_DelayEntityData.isEventConnectionTarget = Realm.Realm_Server
+	s_BeingInteracted_DelayEntityData.isPropertyConnectionTarget = Realm.Realm_None
 	s_Registry.entityRegistry:add(s_BeingInteracted_DelayEntityData)
 
 	-- SoldierInteraction
 	local s_SoldierInteraction_InputRestrictionEntityData = self:_GetInputRestrictionData(m_SoldierInteraction_Inputs, Guid("3A0724A0-2A8F-3E9B-6BA7-4FFD99D0967E"))
 	s_SoldierInteraction_InputRestrictionEntityData.applyRestrictionsToSpecificPlayer = true
-	s_SoldierInteraction_InputRestrictionEntityData.isEventConnectionTarget = 1
+	s_SoldierInteraction_InputRestrictionEntityData.isEventConnectionTarget = Realm.Realm_Server
 	s_Registry.entityRegistry:add(s_SoldierInteraction_InputRestrictionEntityData)
 
 	local s_SoldierInteraction_DelayEntityData = DelayEntityData(s_BeingInteracted_DelayEntityData:Clone(Guid("2854112F-E1D2-7BBE-D809-7315794B5271")))
@@ -194,46 +194,46 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	s_InterfaceDescriptorData:MakeWritable()
 
 	-- Add dynamicEvent outputs to InterfaceDescriptorData
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(-1956653754))  -- OnSoldierInteractionFinished
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(1783953429))   -- OnSoldierInteractionStarted
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(-1947428449))  -- OnSoldierInteractionCancelled
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(1565407255))   -- OnInteractionStopped
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(1572599007))   -- OnInteractionStarted
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(-1741104687))  -- OnBeingInteractedStarted
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(-1025749669))  -- OnBeingInteractedCancelled
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(1957374978))   -- OnBeingInteractedFinished
-	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(901651067))	-- OnRevived
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnSoldierInteractionFinished")))
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnSoldierInteractionStarted")))
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnSoldierInteractionCancelled")))
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnInteractionStopped")))
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnInteractionStarted")))
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnBeingInteractedStarted")))
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnBeingInteractedCancelled")))
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnBeingInteractedFinished")))
+	s_InterfaceDescriptorData.outputEvents:add(self:_GetDynamicEvent(MathUtils:FNVHash("OnRevived")))
 
 	-- Add connections between EntityInteractionComponentData and InterfaceDescriptionData
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, -1956653754, -1956653754, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, 1783953429, 1783953429, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, -1947428449, -1947428449, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, 1565407255, 1565407255, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, 1572599007, 1572599007, 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, "OnSoldierInteractionFinished", "OnSoldierInteractionFinished", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, "OnSoldierInteractionStarted", "OnSoldierInteractionStarted", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, "OnSoldierInteractionCancelled", "OnSoldierInteractionCancelled", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, "OnInteractionStopped", "OnInteractionStopped", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_InterfaceDescriptorData, "OnInteractionStarted", "OnInteractionStarted", 3)
 
 	-- Add connections between SoldierEntityData and InterfaceDescriptionData
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, -1741104687, -1741104687, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, -1025749669, -1025749669, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, 1957374978, 1957374978, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_SoldierEntityData, 1957374978, -1001523010, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, 901651067, 901651067, 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, "OnBeingInteractedStarted", "OnBeingInteractedStarted", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, "OnBeingInteractedCancelled", "OnBeingInteractedCancelled", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, "OnBeingInteractedFinished", "OnBeingInteractedFinished", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_SoldierEntityData, "OnBeingInteractedFinished", "Revive", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, "OnRevived", "OnRevived", 3)
 
 	-- Add connections between SoldierEntityData and the custom EventSplitterEntityDatas
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_StartEventSplitterEntityData, -1741104687, 1723395486, 2)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, -1025749669, 1723395486, 2)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, 1957374978, 1723395486, 2)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_StartEventSplitterEntityData, "OnBeingInteractedStarted", "Impulse", 2)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, "OnBeingInteractedCancelled", "Impulse", 2)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, "OnBeingInteractedFinished", "Impulse", 2)
 
 	-- BeingInteracted inputrestriction
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_InputRestrictionEntityData, -1741104687, -559281700, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_InputRestrictionEntityData, -1025749669, 1928776733, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_DelayEntityData, 1957374978, 5862146, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_BeingInteracted_DelayEntityData, s_BeingInteracted_InputRestrictionEntityData, 193453899, 1928776733, 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_InputRestrictionEntityData, "OnBeingInteractedStarted", "Activate", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_InputRestrictionEntityData, "OnBeingInteractedCancelled", "Deactivate", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_DelayEntityData, "OnBeingInteractedFinished", "In", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_BeingInteracted_DelayEntityData, s_BeingInteracted_InputRestrictionEntityData, "Out", "Deactivate", 3)
 
 	-- SoldierInteraction inputrestriction
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_SoldierInteraction_InputRestrictionEntityData, 1783953429, -559281700, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_SoldierInteraction_InputRestrictionEntityData, -1947428449, 1928776733, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_SoldierInteraction_DelayEntityData, -1956653754, 5862146, 3)
-	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierInteraction_DelayEntityData, s_SoldierInteraction_InputRestrictionEntityData, 193453899, 1928776733, 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_SoldierInteraction_InputRestrictionEntityData, "OnSoldierInteractionStarted", "Activate", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_SoldierInteraction_InputRestrictionEntityData, "OnSoldierInteractionCancelled", "Deactivate", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_SoldierInteraction_DelayEntityData, "OnSoldierInteractionFinished", "In", 3)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierInteraction_DelayEntityData, s_SoldierInteraction_InputRestrictionEntityData, "Out", "Deactivate", 3)
 
 	-- TODO: Add Input Restriction with Soldier:HealthAction on client
 	local s_InputRestrictionEntityData = InputRestrictionEntityData(s_Partition:FindInstance(Guid("8B5295FF-8770-4587-B436-1F2E71F97F35")))

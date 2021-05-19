@@ -497,7 +497,7 @@ function VuBattleRoyaleHud:OnOptions()
 end
 
 -- =============================================
-	-- Quit the game (Custom popup is missing)
+	-- Quit the game
 -- =============================================
 
 function VuBattleRoyaleHud:OnQuit()
@@ -522,7 +522,7 @@ function VuBattleRoyaleHud:GetQuitEntityData()
 	s_QuitPopupGraphAsset.nodes:add(s_InputNode)
 
 	local s_ActionNode = ActionNode()
-	s_ActionNode.actionKey = 702328210
+	s_ActionNode.actionKey = MathUtils:FNVHash("QuitGame")
 	s_ActionNode.inValue = UINodePort()
 	s_ActionNode.out = UINodePort()
 	s_ActionNode.appendIncomingParams = false
@@ -542,7 +542,7 @@ function VuBattleRoyaleHud:GetQuitEntityData()
 
 	local s_OutputNode = InstanceOutputNode()
 	s_OutputNode.inValue = UINodePort()
-	s_OutputNode.id = 1905656325
+	s_OutputNode.id = MathUtils:FNVHash("QuitOrSuicide")
 	s_OutputNode.destroyGraph = true
 	s_OutputNode.name = "QuitOrSuicide"
 	s_OutputNode.isRootNode = false

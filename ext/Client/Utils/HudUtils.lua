@@ -223,7 +223,7 @@ function HudUtils:GetEnableMouseEntityData()
 	s_MousePopupGraphAsset.nodes:add(s_InputNode)
 
 	local s_ActionNode = ActionNode()
-	s_ActionNode.actionKey = -1254356014
+	s_ActionNode.actionKey = MathUtils:FNVHash("MouseInput")
 	s_ActionNode.inValue = UINodePort()
 	s_ActionNode.out = UINodePort()
 	s_ActionNode.appendIncomingParams = false
@@ -244,7 +244,7 @@ function HudUtils:GetEnableMouseEntityData()
 
 	local s_OutputNode = InstanceOutputNode()
 	s_OutputNode.inValue = UINodePort()
-	s_OutputNode.id = -1072000798
+	s_OutputNode.id = MathUtils:FNVHash("exitIngameMenuMP")
 	s_OutputNode.destroyGraph = true
 	s_OutputNode.name = "exitIngameMenuMP"
 	s_OutputNode.isRootNode = false
@@ -307,7 +307,7 @@ function HudUtils:GetDisableGameInputEntityData()
 	s_DisableGameInputGraphAsset.nodes:add(s_InputNode)
 
 	local s_ActionNode = ActionNode()
-	s_ActionNode.actionKey = -368863171
+	s_ActionNode.actionKey = MathUtils:FNVHash("GameInput")
 	s_ActionNode.inValue = UINodePort()
 	s_ActionNode.out = UINodePort()
 	s_ActionNode.appendIncomingParams = false
@@ -328,7 +328,7 @@ function HudUtils:GetDisableGameInputEntityData()
 
 	local s_OutputNode = InstanceOutputNode()
 	s_OutputNode.inValue = UINodePort()
-	s_OutputNode.id = -1072000798
+	s_OutputNode.id = MathUtils:FNVHash("exitIngameMenuMP")
 	s_OutputNode.destroyGraph = true
 	s_OutputNode.name = "exitIngameMenuMP"
 	s_OutputNode.isRootNode = false
