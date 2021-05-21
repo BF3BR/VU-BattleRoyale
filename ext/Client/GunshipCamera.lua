@@ -141,8 +141,8 @@ function GunshipCamera:CreateCamera()
 	end
 
 	self:CreateCameraData()
-
 	local s_Entity = EntityManager:CreateEntity(self.m_Data, self.m_Data.transform)
+
 	if s_Entity ~= nil then
 		s_Entity:Init(Realm.Realm_Client, true)
 		self.m_Entity = s_Entity
@@ -170,6 +170,7 @@ end
 
 function GunshipCamera:ReleaseControl()
 	self.m_Active = false
+
 	if self.m_Entity ~= nil then
 		self.m_Entity:FireEvent("ReleaseControl")
 	end

@@ -38,11 +38,13 @@ function ModifyEntry(p_Entry, p_MeshConfig)
 		local s_MeshMaterial = p_Entry.materials[materialIndex].material
 
 		local s_ShaderConfig = materialConfig.SHADER
+
 		if s_ShaderConfig ~= nil then
 			ModifyMeshMaterial(s_ShaderConfig, s_MeshMaterial)
 		end
 
 		local s_TextureConfig = materialConfig.TEXTURES
+
 		if s_TextureConfig ~= nil then
 			if s_TextureConfig.TYPE == ParameterModificationType.ReplaceParameters then
 				p_Entry.materials[materialIndex] = MeshVariationDatabaseMaterial()

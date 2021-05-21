@@ -25,11 +25,10 @@ end
 
 function VanillaUIManager:CreateEntity()
 	local s_Data = self:GetEntityData()
-
 	local s_Entity = EntityManager:CreateEntity(s_Data, LinearTransform())
+
 	if s_Entity ~= nil then
 		self.m_UIControlEntity = s_Entity
-
 		m_Logger:Write("Created UI control entity")
 	else
 		m_Logger:Error("Failed to create UI control entity")

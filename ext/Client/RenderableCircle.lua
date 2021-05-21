@@ -71,10 +71,12 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
 	if l_StartingAngle == self.m_PrevStartingAngle then
 		return
 	end
+
 	self.m_PrevStartingAngle = l_StartingAngle
 
 	-- calculate points
 	self.m_RenderPoints = {}
+
 	for i = 0, self.m_NumPointsToDraw do
 		local l_Angle = l_StartingAngle + i * self.m_ThetaStep
 		local l_Point = self:CircumferencePoint(l_Angle, p_PlayerPos.y)

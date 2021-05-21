@@ -25,26 +25,32 @@ function ServerManDownLoot:OnRegisterKill(p_Victim)
 	if p_Victim == nil or p_Victim.m_Player == nil or p_Victim.m_Player.corpse == nil then
 		return
 	end
+
 	self.m_ManDownLootCount = self.m_ManDownLootCount + 1
 	local s_Transform = nil
 	local s_IndexInBlueprint = nil
 	local s_EntityIterator = EntityManager:GetIterator('ServerInteractionEntity')
 	local s_Entity = s_EntityIterator:Next()
+
 	while s_Entity do
 		s_Entity = SpatialEntity(s_Entity)
+
 		if s_Entity.transform == LinearTransform() and GameObjectData(s_Entity.bus.parentRepresentative).indexInBlueprint == 5555 + self.m_ManDownLootCount then
 			s_Entity.transform = p_Victim.m_Player.corpse.transform
 			s_Transform = s_Entity.transform:Clone()
 			s_IndexInBlueprint = GameObjectData(s_Entity.bus.parentRepresentative).indexInBlueprint
 			break
 		end
+
 		s_Entity = s_EntityIterator:Next()
 	end
+
 	-- We need to update the transform on the client as well
 	NetEvents:BroadcastLocal(ManDownLootEvents.UpdateLootPosition, s_IndexInBlueprint, s_Transform)
 
 	-- TODO: add all weapons, bullets, consumables etc. into a table
 	self.m_ManDownLootTable[s_IndexInBlueprint] = {}
+
 	for i, l_Weapon in pairs(p_Victim.m_Player.corpse.weaponsComponent.weapons) do
 		if l_Weapon ~= nil then
 			self.m_ManDownLootTable[s_IndexInBlueprint][i] = l_Weapon.name
@@ -64,11 +70,14 @@ end
 function ServerManDownLoot:RegisterLootInteractionCallback()
 	local s_EntityIterator = EntityManager:GetIterator('EventSplitterEntity')
 	local s_Entity = s_EntityIterator:Next()
+
 	while s_Entity do
 		s_Entity = Entity(s_Entity)
+
 		if s_Entity.data.instanceGuid == Guid('1E1023F4-EACC-7E35-048B-58B3D32D51D0') then
 			s_Entity:RegisterEventCallback(self, self.OnInteractionFinished)
 		end
+
 		s_Entity = s_EntityIterator:Next()
 	end
 end

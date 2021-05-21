@@ -15,6 +15,7 @@ end
 
 function Teammate:GetState()
 	local l_Player = PlayerManager:GetPlayerByName(self.m_Name)
+
 	if l_Player == nil or l_Player.soldier == nil or not l_Player.alive then
 		return BRPlayerState.Dead
 	elseif l_Player.soldier.isInteractiveManDown then
@@ -113,6 +114,7 @@ function BRTeam:UpdateFromTable(p_BrTeamTable)
 	self.m_Placement = p_BrTeamTable.Placement
 
 	self.m_Players = {}
+
 	for _, p_TeammateTable in ipairs(p_BrTeamTable.Players) do
 		table.insert(self.m_Players, Teammate:FromTable(p_TeammateTable))
 	end
@@ -127,6 +129,7 @@ end
 
 function BRTeam:PlayersTable()
 	local l_PlayersData = {}
+
 	for _, p_Teammate in ipairs(self.m_Players) do
 		table.insert(l_PlayersData, p_Teammate:AsTable())
 	end

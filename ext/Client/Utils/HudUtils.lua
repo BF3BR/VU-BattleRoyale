@@ -70,8 +70,10 @@ function HudUtils:ShowCrosshair(p_Enable)
 	if SpectatorManager:GetSpectating() then
 		return
 	end
+
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+
 	while s_UIGraphEntity do
 		if s_UIGraphEntity.data.instanceGuid == Guid('9F8D5FCA-9B2A-484F-A085-AFF309DC5B7A') then
 			s_UIGraphEntity = Entity(s_UIGraphEntity)
@@ -100,6 +102,7 @@ function HudUtils:ShowroomCamera(p_Enable)
 				s_CameraEntity:FireEvent("ReleaseControl")
 				WebUI:ResetKeyboard()
 			end
+
 			return
 		end
 
@@ -110,6 +113,7 @@ end
 function HudUtils:DisableMenuVisualEnv()
 	local s_Iterator = EntityManager:GetIterator("LogicVisualEnvironmentEntity")
 	local s_Entity = s_Iterator:Next()
+
 	while s_Entity do
 		if s_Entity.data.instanceGuid == Guid("A17FCE78-E904-4833-98F8-50BE77EFCC41") then
 			s_Entity = Entity(s_Entity)
@@ -124,8 +128,10 @@ function HudUtils:ExitSoundState()
 	if self.m_IsInEscMenu or self.m_IsInDeployScreen then
 		return
 	end
+
 	local s_SoundStateEntityIterator = EntityManager:GetIterator("SoundStateEntity")
 	local s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+
 	while s_SoundStateEntity do
 		if s_SoundStateEntity.data.instanceGuid == Guid("AC7A757C-D9FA-4693-97E7-7A5C50EF29C7") then
 			s_SoundStateEntity = Entity(s_SoundStateEntity)
@@ -140,19 +146,24 @@ function HudUtils:HUDEnterUIGraph()
 	if self.m_IsInEscMenu or self.m_IsInDeployScreen then
 		return
 	end
+
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+
 	while s_UIGraphEntity do
 		if s_UIGraphEntity.data.instanceGuid == Guid("133D3825-5F17-4210-A4DB-3694FDBAD26D") then
 			s_UIGraphEntity = Entity(s_UIGraphEntity)
 			s_UIGraphEntity:FireEvent("EnterUIGraph")
 			break
 		end
+
 		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	end
+
 	if self.m_DisabledFreecamMovement then
 		self:OnDisableGameInput()
 	end
+
 	if self.m_IsMapOpened then
 		self:OnEnableMouse()
 	end
@@ -161,12 +172,14 @@ end
 function HudUtils:EnableTabScoreboard()
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+
 	while s_UIGraphEntity do
 		if s_UIGraphEntity.data.instanceGuid == Guid('BD1ED7AE-31AE-495C-9133-DC25ACA30CE4') then
 			s_UIGraphEntity = Entity(s_UIGraphEntity)
 			s_UIGraphEntity:FireEvent('Startup and hide')
 			return
 		end
+
 		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	end
 end
@@ -174,11 +187,14 @@ end
 function HudUtils:StartupChat()
 	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 	local s_Entity = s_EntityIterator:Next()
+
 	while s_Entity do
 		s_Entity = Entity(s_Entity)
+
 		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("7DE28082-B1A7-4C7A-8C6D-8FFB9049F91E") then
 			s_Entity:FireEvent("Startup")
 		end
+
 		s_Entity = s_EntityIterator:Next()
 	end
 end
@@ -196,12 +212,15 @@ function HudUtils:OnEnableMouse()
 	else
 		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 		local s_Entity = s_EntityIterator:Next()
+
 		while s_Entity do
 			s_Entity = Entity(s_Entity)
+
 			if self.m_EnableMouseInstanceId == s_Entity.instanceId then
 				s_Entity:FireEvent("EnableMouseInput")
 				break
 			end
+
 			s_Entity = s_EntityIterator:Next()
 		end
 	end
@@ -280,12 +299,15 @@ function HudUtils:OnDisableGameInput()
 	else
 		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 		local s_Entity = s_EntityIterator:Next()
+
 		while s_Entity do
 			s_Entity = Entity(s_Entity)
+
 			if self.m_DisableGameInputInstanceId == s_Entity.instanceId then
 				s_Entity:FireEvent("DisableGameInput")
 				break
 			end
+
 			s_Entity = s_EntityIterator:Next()
 		end
 	end
@@ -359,16 +381,20 @@ function HudUtils:EnableBlurEffect(p_Enable)
 	if self.m_BlurInstanceId ~= nil then
 		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
 		local s_Entity = s_EntityIterator:Next()
+
 		while s_Entity do
 			s_Entity = Entity(s_Entity)
+
 			if self.m_BlurInstanceId == s_Entity.instanceId then
 				if p_Enable then
 					s_Entity:FireEvent("Enable")
 				else
 					s_Entity:FireEvent("Disable")
 				end
+
 				break
 			end
+
 			s_Entity = s_EntityIterator:Next()
 		end
 	elseif p_Enable then
@@ -378,9 +404,11 @@ end
 
 function HudUtils:CreateBlurEffect()
 	local s_DofComponentData = ResourceManager:FindInstanceByGuid(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"))
+
 	if s_DofComponentData == nil then
 		m_Logger:Error("DofComponentData not found")
 	end
+
 	local s_ClonedDofCompData = DofComponentData(s_DofComponentData):Clone()
 	s_ClonedDofCompData.excluded = false
 
@@ -392,9 +420,11 @@ function HudUtils:CreateBlurEffect()
 	s_VisualEnvEntityData.runtimeComponentCount = 1
 
 	local s_Entity = EntityManager:CreateEntity(s_VisualEnvEntityData, LinearTransform())
+
 	if s_Entity == nil then
 		m_Logger:Error("Blurred Entity creation failed")
 	end
+
 	s_Entity:Init(Realm.Realm_Client, true)
 	self.m_BlurInstanceId = s_Entity.instanceId
 end
@@ -407,36 +437,47 @@ function HudUtils:DestroyEntities()
 	if self.m_BlurInstanceId ~= nil then
 		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
 		local s_Entity = s_EntityIterator:Next()
+
 		while s_Entity do
 			s_Entity = Entity(s_Entity)
+
 			if self.m_BlurInstanceId == s_Entity.instanceId then
 				s_Entity:Destroy()
 				break
 			end
+
 			s_Entity = s_EntityIterator:Next()
 		end
 	end
+
 	if self.m_DisableGameInputInstanceId ~= nil then
 		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 		local s_Entity = s_EntityIterator:Next()
+
 		while s_Entity do
 			s_Entity = Entity(s_Entity)
+
 			if self.m_DisableGameInputInstanceId == s_Entity.instanceId then
 				s_Entity:Destroy()
 				break
 			end
+
 			s_Entity = s_EntityIterator:Next()
 		end
 	end
+
 	if self.m_EnableMouseInstanceId ~= nil then
 		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 		local s_Entity = s_EntityIterator:Next()
+
 		while s_Entity do
 			s_Entity = Entity(s_Entity)
+
 			if self.m_EnableMouseInstanceId == s_Entity.instanceId then
 				s_Entity:Destroy()
 				break
 			end
+
 			s_Entity = s_EntityIterator:Next()
 		end
 	end

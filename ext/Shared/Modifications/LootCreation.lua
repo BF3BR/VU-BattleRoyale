@@ -84,9 +84,11 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
 				s_PickupEntityData.weapons[#s_PickupEntityData.weapons].linkedToWeaponSlot = -1
 				s_PickupEntityData.weapons[#s_PickupEntityData.weapons].minAmmo = l_Weapon.Ammo
 				s_PickupEntityData.weapons[#s_PickupEntityData.weapons].maxAmmo = l_Weapon.Ammo
+
 				if l_Weapon.Type.Attachments[l_Attachment] ~= nil then
 					s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.unlockAssets:add(l_Weapon.Type.Attachments[l_Attachment]:GetInstance())
 				end
+
 				if l_Attachment.Type ~= AttachmentType.Optic and l_Weapon.Type.Attachments[g_Attachments.NoOptics] ~= nil then
 					s_PickupEntityData.weapons[#s_PickupEntityData.weapons].unlockWeaponAndSlot.unlockAssets:add(l_Weapon.Type.Attachments[g_Attachments.NoOptics]:GetInstance())
 				end

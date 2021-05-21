@@ -68,6 +68,7 @@ function Gunship:OnPlayerUpdateInput(p_Player)
 
 	for l_Index, l_PlayerId in pairs(self.m_OpenParachuteList) do
 		local s_Player = PlayerManager:GetPlayerById(l_PlayerId)
+
 		if s_Player ~= nil and s_Player == p_Player then
 			m_Logger:Write("Open Parachute for player: " .. s_Player.name)
 			s_Player.input:SetLevel(EntryInputActionEnum.EIAToggleParachute, 1.0)
@@ -86,6 +87,7 @@ function Gunship:OnJumpOutOfGunship(p_Player)
 	s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 20, s_Transform.trans.z)
 
 	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
 	if s_BrPlayer == nil then
 		return
 	end

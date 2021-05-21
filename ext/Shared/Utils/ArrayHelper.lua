@@ -34,6 +34,7 @@ function ArrayHelper:ToMap(p_Array, p_Value)
 	p_Value = (p_Value == nil and true) or p_Value
 
 	local l_Map = {}
+
 	for _, l_Value in ipairs(p_Array) do
 		l_Map[l_Value] = p_Value
 	end

@@ -36,6 +36,7 @@ function PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	for l_PlayerId, l_Cooldown in pairs(self.m_PlayerCooldowns) do
 		if l_Cooldown ~= nil then
 			local s_NewCooldown = l_Cooldown - p_DeltaTime
+
 			if s_NewCooldown < 0.001 then
 				s_NewCooldown = 0.0
 			end
@@ -67,6 +68,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 
 	-- If there is a cooldown then ignore this request
 	local s_Cooldown = self:FindPlayerCooldownByPlayerId(s_PlayerId)
+
 	if s_Cooldown > 0.0 then
 		m_Logger:Write("player on cooldown")
 		return
@@ -92,6 +94,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 
 	-- Get all players in the same squad and send the notification
 	local s_SquadPlayers = PlayerManager:GetPlayersBySquad(s_TeamId, s_SquadId)
+
 	for _, l_SquadPlayer in pairs(s_SquadPlayers) do
 		-- Validate the target player
 		if l_SquadPlayer == nil then
@@ -121,6 +124,7 @@ function PingServer:OnRemovePlayerPing(p_Player)
 
 	-- Get all players in the same squad and send the notification
 	local s_SquadPlayers = PlayerManager:GetPlayersBySquad(s_TeamId, s_SquadId)
+
 	for _, l_SquadPlayer in pairs(s_SquadPlayers) do
 		-- Validate the target player
 		if l_SquadPlayer == nil then

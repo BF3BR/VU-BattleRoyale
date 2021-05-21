@@ -17,11 +17,13 @@ function WeaponDropModifier:OnRegisterEntityResources()
 	local s_WorldPartData = WorldPartData(ResourceManager:SearchForInstanceByGuid(MapsConfig[LevelNameHelper:GetLevelName()].ConquestGameplayGuid))
 	s_WorldPartData:MakeWritable()
 	local s_Registry = RegistryContainer()
+
 	for i = 100, 1, -1 do
 		local s_ParentRepresentative = self:AddGameInteractionEntityData(s_Blueprint, i)
 		s_WorldPartData.objects:add(s_ParentRepresentative)
 		s_Registry.referenceObjectRegistry:add(s_ParentRepresentative)
 	end
+
 	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end
 
@@ -31,7 +33,6 @@ end
 
 -- Replace vanilla DropWeaponComponentData (drops a kit) with 5 DropWeaponComponentDatas that all drop a weapon
 function WeaponDropModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
-
 	-- Update runtimeComponentCount (the client will crash if this is wrong), erasing 1 component
 	local s_SoldierEntityData = SoldierEntityData(p_SoldierBlueprint.object)
 	s_SoldierEntityData:MakeWritable()

@@ -92,9 +92,11 @@ function TempMapPatches:OnVehiclesWorldPartData(p_Instance)
 	-- Remove / exclude all the vehicles from the map
 	-- TODO: Probably need to fix this for other maps!!
 	p_Instance = WorldPartData(p_Instance)
+
 	for i, l_Object in pairs(p_Instance.objects) do
 		if l_Object:Is("ReferenceObjectData") then
 			l_Object = ReferenceObjectData(l_Object)
+
 			if l_Object.blueprint.instanceGuid ~= Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95") and
 				l_Object.blueprint.instanceGuid ~= Guid("B57E136A-0E4D-4952-8823-98A20DFE8F44") then
 				l_Object:MakeWritable()
@@ -117,12 +119,14 @@ function TempMapPatches:OnDisableCamerasOnUnspawn(p_Instance)
 	-- Disables the default HQ / spawn cameras
 	p_Instance = SpatialPrefabBlueprint(p_Instance)
 	p_Instance:MakeWritable()
+
 	for i = #p_Instance.eventConnections, 1, -1 do
 		if p_Instance.eventConnections[i].source:Is("HumanPlayerEntityData") then
 			if EventSpec(p_Instance.eventConnections[i].sourceEvent).id == 273719920 and
 				p_Instance.eventConnections[i].target:Is("LogicReferenceObjectData") then -- (OnPlayerDeathTimeout)
 				p_Instance.eventConnections:erase(i)
 			end
+
 			if p_Instance.eventConnections[i].target.instanceGuid == Guid("38B766CB-020E-4254-B220-7F69F33A7FEA") then
 				p_Instance.eventConnections:erase(i)
 			end
@@ -137,6 +141,7 @@ function TempMapPatches:OnGameModeSettings(p_Instance)
 	local s_GameModeTeamSize = GameModeTeamSize()
 	s_GameModeTeamSize.playerCount = 127
 	s_GameModeTeamSize.squadSize = 4
+
 	for i = 3, 126 do
 		settings.information[1].sizes[3].teams:add(s_GameModeTeamSize)
 	end

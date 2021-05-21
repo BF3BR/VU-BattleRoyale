@@ -64,8 +64,8 @@ function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
 		if self.m_RestartQueue then
 			m_Logger:Write("INFO: Restart triggered.")
-
 			local s_Result = RCON:SendCommand("mapList.restartRound")
+
 			if #s_Result >= 1 then
 				if s_Result[1] ~= "OK" then
 					m_Logger:Write("INFO: Command: mapList.restartRound returned: " .. s_Result[1])
@@ -88,6 +88,7 @@ function Match:InitMatch()
 
 	-- start the timer for the next match state
 	local s_Delay = ServerConfig.MatchStateTimes[self:GetCurrentState()]
+
 	if s_Delay ~= nil then
 		self:SetTimer("NextMatchState", g_Timers:Timeout(s_Delay, self, self.NextMatchState))
 	else
@@ -102,6 +103,7 @@ end
 function Match:NextMatchState()
 	-- before switching state
 	local s_State = self:GetCurrentState()
+
 	if s_State == GameStates.Plane then
 		NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
 	elseif s_State == GameStates.PlaneToFirstCircle then
@@ -121,6 +123,7 @@ end
 function Match:OnMatchEveryTick()
 	local s_CurrentTimer = self:GetTimer("NextMatchState")
 	local s_State = self:GetCurrentState()
+
 	if s_State == GameStates.Warmup then
 		if s_CurrentTimer ~= nil and s_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
 			self.m_IsFadeOutSet = true
@@ -137,6 +140,7 @@ end
 
 function Match:OnMatchFirstTick()
 	local s_State = self:GetCurrentState()
+
 	if s_State == GameStates.WarmupToPlane then
 		-- Fade out then unspawn all soldiers
 		self.m_TeamManager:UnspawnAllSoldiers()
@@ -149,6 +153,7 @@ function Match:OnMatchFirstTick()
 	elseif s_State == GameStates.Plane then
 		-- Spawn the gunship and set its course
 		local s_Path = self:GetRandomGunshipPath()
+
 		if s_Path ~= nil then
 			self.m_Gunship:Enable(
 				s_Path.StartPos,
@@ -209,6 +214,7 @@ end
 
 function Match:GetRandomWarmupSpawnpoint()
 	local s_LevelName = LevelNameHelper:GetLevelName()
+
 	if s_LevelName == nil then
 		return nil
 	end
@@ -221,6 +227,7 @@ end
 
 function Match:GetRandomGunshipPath()
 	local s_LevelName = LevelNameHelper:GetLevelName()
+
 	if s_LevelName == nil then
 		return nil
 	end
@@ -228,6 +235,7 @@ function Match:GetRandomGunshipPath()
 	local s_Return = nil
 
 	local s_Side = MathUtils:GetRandom(0, 1)
+
 	if s_Side == 0 then
 		-- Left to right
 		s_Return = {
@@ -259,6 +267,7 @@ function Match:GetRandomGunshipPath()
 	end
 
 	local s_Invert = MathUtils:GetRandom(0, 1)
+
 	if s_Invert == 1 then
 		return {
 			StartPos = s_Return.EndPos,
@@ -294,6 +303,7 @@ end
 	end
 
 	self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
+
 	if self.m_AirdropTimer >= self.m_AirdropNextDrop then
 		self.m_AirdropNextDrop = nil
 		self.m_AirdropTimer = 0.0
@@ -312,6 +322,7 @@ function Match:DoWeHaveAWinner()
 	end
 
 	local s_WinningTeam = nil
+
 	if ServerConfig.Debug.EnableWinningCheck then
 		s_WinningTeam = self.m_TeamManager:GetWinningTeam()
 	end

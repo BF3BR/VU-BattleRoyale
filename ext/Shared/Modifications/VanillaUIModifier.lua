@@ -104,6 +104,7 @@ end
 function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)
 	for i = #p_TextureAtlasAsset.icons, 1, -1 do
 		local icon = p_TextureAtlasAsset.icons[i]
+
 		if icon ~= nil then
 			if icon.iconType == UIHudIcon.UIHudIcon_SquadLeader or
 			icon.iconType == UIHudIcon.UIHudIcon_SquadleaderBg or
@@ -138,6 +139,7 @@ function VanillaUIModifier:EditNodes(p_Screen, p_NodeNames, p_CheckValue)
 	-- erase nodes
 	for i = #p_Screen.nodes, 1, -1 do
 		local node = p_Screen.nodes[i]
+
 		if node ~= nil then
 			if p_NodeNames[node.name] ~= p_CheckValue then
 				p_Screen.nodes:erase(i)

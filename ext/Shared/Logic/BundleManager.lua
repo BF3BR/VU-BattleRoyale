@@ -21,10 +21,12 @@ function BundleManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedSer
 	end
 
 	local s_MapPreset = json.decode(MapsConfig[LevelNameHelper:GetLevelName()].MapPreset)
+
 	if s_MapPreset == nil then
 		error("No custom map data for map: " .. p_LevelName .. " and gamemode: " .. p_GameMode)
 		return
 	end
+
 	m_Logger:Write("Dispatch to MapLoader")
 	Events:Dispatch('MapLoader:LoadLevel', s_MapPreset)
 
@@ -54,6 +56,7 @@ end
 
 function BundleManager:OnRegisterEntityResources(p_LevelData)
 	m_Logger:Write("Adding registries")
+
 	for _, l_Registry in ipairs(MapsConfig[LevelNameHelper:GetLevelName()].BundleRegistries) do
 		ResourceManager:AddRegistry(l_Registry:GetInstance(), ResourceCompartment.ResourceCompartment_Game)
 	end

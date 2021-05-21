@@ -37,6 +37,7 @@ end
 function PhaseManagerShared:OnLevelLoaded()
 	-- get and check config for the current map
 	local l_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
+
 	if l_MapConfig == nil then
 		m_Logger:Error("invalid level name")
 		return
@@ -58,6 +59,7 @@ function PhaseManagerShared:GetCurrentDelay()
 	end
 
 	local l_phase = self:GetCurrentPhase()
+
 	if self.m_SubphaseIndex == SubphaseType.Waiting then
 		return l_phase.StartsAt
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then

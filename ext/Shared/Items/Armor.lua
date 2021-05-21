@@ -20,6 +20,7 @@ function Armor:ApplyDamage(p_Damage)
 
 	-- update armor durability
 	self.m_CurrentDurability = self.m_CurrentDurability - l_DamageToArmor
+
 	if self.m_CurrentDurability < 0 then
 		l_DamagePassed = l_DamagePassed + math.abs(self.m_CurrentDurability)
 		self.m_CurrentDurability = 0

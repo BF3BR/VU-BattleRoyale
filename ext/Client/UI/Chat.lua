@@ -41,9 +41,11 @@ function Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_Action == UIInputAction.UIInputAction_SayAllChat or p_Action == UIInputAction.UIInputAction_TeamChat
 	or p_Action == UIInputAction.UIInputAction_SquadChat then
 		local s_Target = "squad"
+
 		if p_Action == UIInputAction.UIInputAction_SayAllChat and ServerConfig.Debug.EnableAllChat then
 			s_Target = "all"
 		end
+
 		WebUI:ExecuteJS(string.format("OnFocus('%s')", s_Target))
 		self.m_IsChatOpen = true
 		self:DisableWeapon(true)
@@ -62,6 +64,7 @@ function Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId,
 	if p_Message == nil then
 		return
 	end
+
 	-- Get the player sending the message, and our local player.
 	local s_OtherPlayer = PlayerManager:GetPlayerById(p_PlayerId)
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
@@ -70,11 +73,10 @@ function Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId,
 	local s_PlayerRelation = "none"
 	local s_TargetName = nil
 
-	-- Region SquadLeaderMessage, DirectMessage, AdminMessage
+	-- Region AdminMessage
 	if p_Channel == ChatChannelType.CctAdmin then
 		local s_Author = ""
 		s_Target = "admin"
-
 		-- This is a workaround because many RCON tools prepend
 		-- "Admin: " to admin messages.
 		local s_String = p_Message:gsub("^Admin: ", '')
@@ -82,7 +84,6 @@ function Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId,
 		WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
 		goto continue
 	end
-	-- Endregion
 
 	-- Players not found; cancel.
 	if s_OtherPlayer == nil or s_LocalPlayer == nil then
@@ -187,9 +188,11 @@ end
 
 function Chat:DisableWeapon(p_Disable)
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
+
 	s_LocalPlayer:EnableInput(EntryInputActionEnum.EIAFire, not p_Disable)
 end
 

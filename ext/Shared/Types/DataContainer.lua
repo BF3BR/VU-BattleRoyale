@@ -4,6 +4,7 @@ function DC:__init(p_PartitionGuid, p_InstanceGuid)
 	if p_PartitionGuid == nil or p_InstanceGuid == nil then
 		error("Invalid guids specified")
 	end
+
 	self.m_PartitionGuid = p_PartitionGuid
 	self.m_InstanceGuid = p_InstanceGuid
 end
@@ -15,6 +16,7 @@ end
 
 function DC:CallOrRegisterLoadHandler(p_Userdata, p_Callback)
 	local s_Instance = self:GetInstance()
+
 	if s_Instance ~= nil then
 		if p_Callback == nil then
 			p_Userdata(s_Instance)

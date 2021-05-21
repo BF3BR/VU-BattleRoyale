@@ -71,13 +71,17 @@ function BRTeamManager:OnPlayerLeft(p_Player)
 
 	-- update player's team placement if needed
 	local l_BrPlayer = self:GetPlayer(p_Player)
+
 	if l_BrPlayer ~= nil then
 		self:UpdateTeamPlacement(l_BrPlayer.m_Team)
+
 		if l_BrPlayer.m_SpectatedPlayerName ~= nil then
 			local s_SpectatedBRPlayer = self:GetPlayer(l_BrPlayer.m_SpectatedPlayerName)
+
 			if s_SpectatedBRPlayer ~= nil then
 				s_SpectatedBRPlayer:RemoveSpectator(p_Player.name)
 			end
+
 			l_BrPlayer.m_SpectatedPlayerName = nil
 		end
 	end
@@ -160,6 +164,7 @@ function BRTeamManager:AssignTeams()
 
 	-- filter unlocked teams
 	local l_UnlockedTeams = {}
+
 	for _, l_BrTeam in pairs(self.m_Teams) do
 		if not l_BrTeam.m_Locked then
 			table.insert(l_UnlockedTeams, l_BrTeam)
@@ -174,6 +179,7 @@ function BRTeamManager:AssignTeams()
 	-- merge teams
 	local l_Low = 1
 	local l_High = #l_UnlockedTeams
+
 	while l_Low < l_High do
 		local l_HighTeam = l_UnlockedTeams[l_High]
 		local l_LowTeam = l_UnlockedTeams[l_Low]
@@ -187,6 +193,7 @@ function BRTeamManager:AssignTeams()
 
 	-- finalize teams
 	local l_Index = 0
+
 	for _, l_BrTeam in pairs(self.m_Teams) do
 		l_BrTeam.m_Active = true
 
@@ -310,6 +317,7 @@ function BRTeamManager:CreateId(p_Len)
 
 	while true do
 		local l_Id = MathUtils:RandomGuid():ToString("N"):sub(1, p_Len)
+
 		if self.m_Teams[l_Id] == nil then
 			return l_Id
 		end
@@ -331,6 +339,7 @@ end
 -- @return number
 function BRTeamManager:GetAliveTeamCount()
 	local l_Count = 0
+
 	for _, l_BrTeam in pairs(self.m_Teams) do
 		if l_BrTeam.m_Active and l_BrTeam:HasAlivePlayers() then
 			l_Count = l_Count + 1
@@ -356,6 +365,7 @@ function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
 	-- resolve who gets the kill
 	if p_Victim.m_KillerName ~= nil then
 		local l_OrigKiller = self:GetPlayer(p_Victim.m_KillerName)
+
 		if l_OrigKiller ~= nil then
 			l_Killer = l_OrigKiller
 		end
@@ -369,6 +379,7 @@ function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
 	end
 
 	local l_PlayerKilledArgs = {p_Victim.m_Player.id, nil}
+
 	if l_Killer ~= nil then
 		l_PlayerKilledArgs[2] = l_Killer.m_Player.id
 
@@ -432,19 +443,25 @@ end
 
 function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayerName)
 	local s_BRPlayer = self:GetPlayer(p_Player)
+
 	if s_BRPlayer ~= nil then
 		s_BRPlayer:SpectatePlayer(nil)
 	end
+
 	if p_LastPlayerName ~= nil then
 		local s_LastSpectatedBRPlayer = self:GetPlayer(p_LastPlayerName)
+
 		if s_LastSpectatedBRPlayer ~= nil then
 			s_LastSpectatedBRPlayer:RemoveSpectator(p_Player.name)
 		end
 	end
+
 	if p_NewPlayerName ~= nil then
 		local s_BRPlayerToSpectate = self:GetPlayer(p_NewPlayerName)
+
 		if s_BRPlayerToSpectate ~= nil then
 			s_BRPlayerToSpectate:AddSpectator(p_Player.name)
+
 			if s_BRPlayer ~= nil then
 				s_BRPlayer:SpectatePlayer(p_NewPlayerName)
 			end

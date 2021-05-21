@@ -127,6 +127,7 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	if self.m_WaitForStart then
 		return
 	end
+
 	m_PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	-- Update the match
 	self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
@@ -135,10 +136,13 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 		self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
 		return
 	end
+
 	self.m_CumulatedTime = 0
+
 	if PlayerManager:GetPlayerCount() >= self.m_MinPlayersToStart then
 		local s_SpawnedPlayerCount = 0
 		local s_Players = PlayerManager:GetPlayers()
+
 		for _, l_Player in ipairs(s_Players) do
 			if l_Player == nil and l_Player.alive == false then
 				goto update_allowed_guids_continue
@@ -178,6 +182,7 @@ function VuBattleRoyaleServer:OnPlayerCreated(p_Player)
 	if p_Player == nil then
 		return
 	end
+
 	-- Event for bots
 	m_TeamManager:OnPlayerAuthenticated(p_Player)
 end
@@ -194,6 +199,7 @@ function VuBattleRoyaleServer:OnPlayerChangingWeapon(p_Player)
 	if p_Player == nil or p_Player.soldier == nil or p_Player.soldier.isInteractiveManDown == false then
 		return
 	end
+
 	p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
 end
 
@@ -226,6 +232,7 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	if p_Player == nil then
 		return
 	end
+
 	m_PingServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
 	NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, self.m_GameState)
@@ -242,11 +249,13 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 	-- Spawn player if the current gamestate is warmup
 	if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
 		local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
 		if s_BrPlayer == nil then
 			return
 		end
 
 		local s_SpawnTrans = self.m_Match:GetRandomWarmupSpawnpoint()
+
 		if s_SpawnTrans == nil then
 			return
 		end
@@ -337,6 +346,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 
 	local l_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
 	local l_BrGiver = nil
+
 	if p_GiverInfo.giver ~= nil then
 		l_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
 	end
@@ -422,6 +432,7 @@ function VuBattleRoyaleServer:OnHotReload()
 	g_Timers:Timeout(1, function()
 		-- OnPlayerAuthenticated
 		local s_Players = PlayerManager:GetPlayers()
+
 		if s_Players ~= nil and #s_Players > 0 then
 			for _, l_Player in pairs(s_Players) do
 				if l_Player ~= nil then
@@ -464,8 +475,8 @@ function VuBattleRoyaleServer:DisablePreRound()
 	-- Thanks to https://github.com/FlashHit/VU-Mods/blob/master/No-PreRound/ext/Server/__init__.lua
 	-- This is for Conquest tickets etc.
 	local s_TicketCounterIterator = EntityManager:GetIterator("ServerTicketCounterEntity")
-
 	local s_TicketCounterEntity = s_TicketCounterIterator:Next()
+
 	while s_TicketCounterEntity do
 		s_TicketCounterEntity = Entity(s_TicketCounterEntity)
 		s_TicketCounterEntity:FireEvent("StartRound")
@@ -475,17 +486,20 @@ function VuBattleRoyaleServer:DisablePreRound()
 	-- This is needed so you are able to move
 	local s_InputRestrictionIterator = EntityManager:GetIterator("ServerInputRestrictionEntity")
 	local s_InputRestrictionEntity = s_InputRestrictionIterator:Next()
+
 	while s_InputRestrictionEntity do
 		if s_InputRestrictionEntity.data.instanceGuid == Guid("E8C37E6A-0C8B-4F97-ABDD-28715376BD2D") then
 			s_InputRestrictionEntity = Entity(s_InputRestrictionEntity)
 			s_InputRestrictionEntity:FireEvent("Disable")
 		end
+
 		s_InputRestrictionEntity = s_InputRestrictionIterator:Next()
 	end
 
 	-- This Entity is needed so the round ends when tickets are reached
 	local s_RoundOverIterator = EntityManager:GetIterator("ServerRoundOverEntity")
 	local s_RoundOverEntity = s_RoundOverIterator:Next()
+
 	while s_RoundOverEntity do
 		s_RoundOverEntity = Entity(s_RoundOverEntity)
 		s_RoundOverEntity:FireEvent("RoundStarted")
@@ -553,6 +567,7 @@ function VuBattleRoyaleServer:SetupRconVariables()
 	-- Iterate through all of the commands and set their values via rcon
 	for l_Command, l_Value in pairs(s_VariablePair) do
 		local s_Result = RCON:SendCommand(l_Command, { l_Value })
+
 		if #s_Result >= 1 then
 			if s_Result[1] ~= "OK" then
 				m_Logger:Write("INFO: Command: " .. l_Command .. " returned: " .. s_Result[1])

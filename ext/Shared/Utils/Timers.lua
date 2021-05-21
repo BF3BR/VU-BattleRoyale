@@ -17,11 +17,13 @@ function TimerManager:Update()
 	self.__CreatedDuringUpdate = false
 
 	local l_Now = SharedUtils:GetTimeMS()
+
 	for id, timer in pairs(self.m_Timers) do
 		if timer ~= nil then timer:Update(l_Now) end
 
 		if self.__CreatedDuringUpdate then return self:Update() end
 	end
+
 	self.__Updating = false
 end
 
@@ -33,6 +35,7 @@ function TimerManager:Remove(p_Timer)
 
 	-- unsubscribe from update event if needed
 	self.m_ActiveTimers = self.m_ActiveTimers - 1
+
 	if self.m_UpdateEvent ~= nil and self.m_ActiveTimers < 1 then
 		self.m_UpdateEvent:Unsubscribe()
 		self.m_UpdateEvent = nil
@@ -65,6 +68,7 @@ function TimerManager:CreateTimer(p_Delay, p_Cycles, p_UserData, p_Callback)
 
 	-- subscribe to update event if needed
 	self.m_ActiveTimers = self.m_ActiveTimers + 1
+
 	if self.m_UpdateEvent == nil then self.m_UpdateEvent = Events:Subscribe("Engine:Update", self, self.Update) end
 
 	return timer
@@ -129,6 +133,7 @@ function Timer:Next()
 
 	-- increment cycle counter
 	self.m_CurrentCycle = self.m_CurrentCycle + 1
+
 	if self.m_CurrentCycle >= self.m_Cycles then
 		self.m_CurrentCycle = self.m_Cycles
 		return false
