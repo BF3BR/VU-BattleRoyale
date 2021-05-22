@@ -2,9 +2,9 @@
     position: absolute;
     top: 2vw;
     left: 2.5vw;
-    width: 12vw;
+    width: 20vw;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     grid-gap: 1vw;
 
     .KillAndAliveBox {
@@ -34,6 +34,18 @@
         &.Alive {
             h1 {
                 color: #94cdf3;
+            }
+        }
+
+        &.SpectatorCount {
+            max-width: 2.5vw;
+
+            h1 {
+                color: #d5dde5;
+            }
+
+            img {
+                max-width: .9vw;
             }
         }
     }

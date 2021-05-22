@@ -38,6 +38,7 @@ import {
     updateTeam
 } from "./store/team/Actions";
 import {
+    updateSpectatorCount,
     updateSpectatorEnabled,
     updateSpectatorTarget
 } from "./store/spectator/Actions";
@@ -239,6 +240,14 @@ const App: React.FC<Props> = ({
 
     window.SpectatorTarget = function (p_TargetName: string) {
         dispatch(updateSpectatorTarget(p_TargetName));
+    }
+
+    window.UpdateSpectatorCount = function (p_Count: string|null) {
+        if (p_Count === null) {
+            dispatch(updateSpectatorCount(null));
+        } else {
+            dispatch(updateSpectatorCount(parseInt(p_Count)));
+        }
     }
 
 
@@ -720,6 +729,7 @@ declare global {
 
         SpectatorTarget: (p_TargetName: string) => void;
         SpectatorEnabled: (p_Enabled: boolean) => void;
+        UpdateSpectatorCount: (p_Count: string | null) => void;
 
         OnUpdateTeamId: (p_Id: string) => void;
         OnUpdateTeamSize: (p_Size: number) => void;
