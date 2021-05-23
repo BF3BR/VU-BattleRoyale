@@ -81,6 +81,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 
 	-- updates the position of the player in the squad
 	local l_Size = MapHelper:Size(self.m_Players)
+
 	for _, l_Player in pairs(self.m_Players) do
 		if l_Player.m_PosInSquad > l_Size then
 			l_Player.m_PosInSquad = l_Player.m_PosInSquad - 1
@@ -164,6 +165,7 @@ function BRTeam:HasAlivePlayers(p_PlayerToIgnore, p_NotManDownCheck)
 			-- ensure its not in mandown state if the p_NotManDownCheck flag is enabled
 			if p_NotManDownCheck then
 				local l_Soldier = l_BrPlayer:GetSoldier()
+
 				if l_Soldier ~= nil and not l_Soldier.isInteractiveManDown then
 					return true
 				end
@@ -196,6 +198,7 @@ function BRTeam:AssignLeader()
 
 	-- pick a player to assign as team leader
 	local l_BrPlayer = MapHelper:Item(self.m_Players)
+
 	if l_BrPlayer ~= nil then
 		l_BrPlayer.m_IsTeamLeader = true
 		return l_BrPlayer
@@ -208,6 +211,7 @@ end
 function BRTeam:CanBeJoinedById()
 	if MapHelper:Size(self.m_Players) == 1 then
 		local l_BrPlayer = MapHelper:Item(self.m_Players)
+
 		if l_BrPlayer ~= nil and l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
 			return false
 		end
@@ -252,6 +256,7 @@ end
 -- Broadcasts the state of the team to all of its members
 function BRTeam:BroadcastState()
 	local l_TeamData = self:AsTable()
+
 	for _, l_BrPlayer in pairs(self.m_Players) do
 		l_BrPlayer:SendState(false, l_TeamData)
 	end
@@ -259,6 +264,7 @@ end
 
 function BRTeam:AsTable()
 	local l_Players = {}
+
 	for _, l_BrPlayer in pairs(self.m_Players) do
 		table.insert(l_Players, l_BrPlayer:AsTable(true))
 	end

@@ -63,12 +63,14 @@ function Gunship:OnUpdatePassPreSim(p_DeltaTime)
 	end
 
 	self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
+
 	if self.m_CumulatedTime < 0.2 then
 		return
 	end
-	self.m_CumulatedTime = 0
 
+	self.m_CumulatedTime = 0
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil or s_LocalPlayer.soldier == nil then
 		return
 	end

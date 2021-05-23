@@ -33,6 +33,7 @@ end
 function ListenersMixin:GetListener(p_Type, p_EventName)
 	-- you can directly pass the key as a parameter instead of type + eventName
 	local l_Key = p_Type
+
 	if p_EventName ~= nil then
 		l_Key = self:MakeListenerKey(p_Type, p_EventName)
 	end
@@ -43,6 +44,7 @@ end
 function ListenersMixin:RemoveListener(p_Type, p_EventName)
 	-- you can directly pass the key as a parameter instead of type + eventName
 	local l_Key = p_Type
+
 	if p_EventName ~= nil then
 		l_Key = self:MakeListenerKey(p_Type, p_EventName)
 	end

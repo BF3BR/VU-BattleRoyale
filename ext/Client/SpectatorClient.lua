@@ -87,6 +87,7 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	self.m_LookAtPos.x = self.m_LookAtPos.x + s_Player.soldier.transform.left.x * 0.5
 	self.m_LookAtPos.z = self.m_LookAtPos.z + s_Player.soldier.transform.left.z * 0.5
 	local s_HeadTransform = s_Player.soldier.ragdollComponent:GetActiveWorldTransform(46)
+
 	if s_HeadTransform ~= nil then
 		s_HeadTransform = s_HeadTransform:ToLinearTransform()
 		self.m_LookAtPos.y = s_HeadTransform.trans.y
@@ -131,6 +132,7 @@ function SpectatorClient:OnClientUpdateInput()
 	if not SpectatorManager:GetSpectating() then
 		return
 	end
+
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight) then
 		self:SpectateNextPlayer()
 	end
@@ -140,6 +142,7 @@ function SpectatorClient:OnClientUpdateInput()
 	end
 
 	local s_CameraMode = SpectatorManager:GetCameraMode()
+
 	if s_CameraMode == SpectatorCameraMode.ThirdPerson and not m_HudUtils:GetDisabledFreecamMovement() then
 		m_HudUtils:OnDisableGameInput()
 		m_HudUtils:SetDisabledFreecamMovement(true)
@@ -158,6 +161,7 @@ function SpectatorClient:OnPlayerRespawn(p_Player)
 
 	-- Disable spectator when the local player spawns.
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -181,6 +185,7 @@ function SpectatorClient:OnPlayerDeleted(p_Player)
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if p_Player == s_LocalPlayer then
 		m_Logger:Write("You are leaving, disabling spec now.")
 		self:Disable()
@@ -199,9 +204,11 @@ end
 
 function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 	m_Logger:Write("OnPlayerKilled")
+
 	if p_PlayerId == nil then
 		return
 	end
+
 	m_Logger:Write("p_PlayerId " .. p_PlayerId)
 	local s_Player = PlayerManager:GetLocalPlayer()
 
@@ -220,20 +227,24 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 	-- Handle death of player being spectated.
 	elseif SpectatorManager:GetSpectating() then
 		local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
+
 		if SpectatorManager:GetCameraMode() ~= SpectatorCameraMode.ThirdPerson then
 			m_Logger:Write("SpectateNextPlayer")
 			self:SpectateNextPlayer()
 			return
 		elseif p_PlayerId == s_SpectatedPlayer.id then
 			m_Logger:Write("SpectatedPlayer died")
+
 			if p_InflictorId ~= nil then
 				local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
+
 				if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
 					m_Logger:Write("SpectatePlayer OnPlayerKilled")
 					self:SpectatePlayer(s_Inflictor)
 					return
 				end
 			end
+
 			self:SpectateNextPlayer()
 		end
 	end
@@ -257,6 +268,7 @@ function SpectatorClient:OnGameStateChanged(p_GameState)
 	if p_GameState == nil then
 		return
 	end
+
 	self.m_GameState = p_GameState
 end
 
@@ -285,12 +297,15 @@ function SpectatorClient:Enable(p_InflictorId)
 		m_Logger:Write("You are not dead :o")
 		return
 	end
+
 	m_Logger:Write("Spectating should work at this point")
+
 	if not SpectatorManager:GetSpectating() then
 		SpectatorManager:SetSpectating(true)
 	end
 
 	local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
+
 	if s_PlayerToSpectate == nil then
 		s_PlayerToSpectate = self:FindFirstPlayerToSpectate(false, p_InflictorId)
 	end
@@ -300,6 +315,7 @@ function SpectatorClient:Enable(p_InflictorId)
 		if self.m_IsSpectatingGunship then
 			self:SpectateGunship(false)
 		end
+
 		m_Logger:Write("SpectatePlayer Enable")
 		self:SpectatePlayer(s_PlayerToSpectate)
 		return
@@ -312,9 +328,11 @@ function SpectatorClient:Enable(p_InflictorId)
 		if self.m_IsSpectatingGunship then
 			self:SpectateGunship(false)
 		end
+
 		WebUI:ExecuteJS("SpectatorTarget('');")
 		WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
 		SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
+
 		if not self.m_IsDefaultFreeCamSet then
 			m_Logger:Write("Set freecam transform")
 			local s_Transform = LinearTransform(
@@ -342,6 +360,7 @@ function SpectatorClient:Disable()
 
 	local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
 	m_Logger:Write("Disable - GetSpectatedPlayer")
+
 	if s_SpectatedPlayer ~= nil then
 		m_Logger:Write("Disable - Sending NetEvent UpdateSpectator")
 		NetEvents:SendLocal('UpdateSpectator', nil, s_SpectatedPlayer.name)
@@ -365,6 +384,7 @@ function SpectatorClient:OnSetFreecameraTransform()
 			Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069),
 			Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139),
 			Vec3(98.216575622559, 889.53924560547, -815.45764160156))
+
 	if s_Transform.trans:Distance(s_CameraTransform.trans) < 15.0 then
 		self.m_IsDefaultFreeCamSet = true
 	else
@@ -389,6 +409,7 @@ function SpectatorClient:SpectatePlayer(p_Player)
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -404,10 +425,12 @@ function SpectatorClient:SpectatePlayer(p_Player)
 	local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
 	local s_SpectatedPlayerName = nil
 	m_Logger:Write("New player: " .. p_Player.name)
+
 	if s_SpectatedPlayer ~= nil then
 		s_SpectatedPlayerName = s_SpectatedPlayer.name
 		m_Logger:Write("Old player: " .. s_SpectatedPlayerName)
 	end
+
 	NetEvents:SendLocal('UpdateSpectator', p_Player.name, s_SpectatedPlayerName)
 
 	-- Dispatch a local event so phasemanager can toggle the OOC visuals
@@ -427,10 +450,12 @@ function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_Inflictor
 		if s_LocalPlayer.squadId == SquadId.SquadNone then
 			return s_PlayerToSpectate
 		end
+
 		s_Players = PlayerManager:GetPlayersBySquad(s_LocalPlayer.teamId, s_LocalPlayer.squadId)
 	else
 		if p_InflictorId ~= nil then
 			local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
+
 			if s_Inflictor ~= nil and p_InflictorId ~= s_LocalPlayer.id then
 				return s_Inflictor
 			end
@@ -495,6 +520,7 @@ function SpectatorClient:SpectateNextPlayer()
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -515,10 +541,13 @@ function SpectatorClient:SpectateNextPlayer()
 		m_Logger:Write("No Player found, stay in freecam")
 		return
 	end
+
 	local s_NextPlayer = self:GetNextPlayer(true)
+
 	if s_NextPlayer == nil then
 		s_NextPlayer = self:GetNextPlayer(false)
 	end
+
 	-- If we didn't find any players to spectate then switch to freecam.
 	if s_NextPlayer ~= nil then
 		m_Logger:Write("SpectatePlayer SpectateNextPlayer2")
@@ -533,6 +562,7 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	local s_CurrentIndex = 0
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -541,6 +571,7 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 		if s_LocalPlayer.squadId == SquadId.SquadNone then
 			return self:GetNextPlayer(false)
 		end
+
 		s_Players = PlayerManager:GetPlayersBySquad(s_LocalPlayer.teamId, s_LocalPlayer.squadId)
 	else
 		s_Players = PlayerManager:GetPlayers()
@@ -595,6 +626,7 @@ function SpectatorClient:SpectatePreviousPlayer()
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -615,10 +647,13 @@ function SpectatorClient:SpectatePreviousPlayer()
 		m_Logger:Write("No Player found, stay in freecam")
 		return
 	end
+
 	local s_PreviousPlayer = self:GetPreviousPlayer(true)
+
 	if s_PreviousPlayer == nil then
 		s_PreviousPlayer = self:GetPreviousPlayer(false)
 	end
+
 	-- If we didn't find any players to spectate then switch to freecam.
 	if s_PreviousPlayer ~= nil then
 		m_Logger:Write("SpectatePlayer SpectatePreviousPlayer2")
@@ -633,6 +668,7 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	local s_CurrentIndex = 0
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -641,6 +677,7 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 		if s_LocalPlayer.squadId == SquadId.SquadNone then
 			return self:GetNextPlayer(false)
 		end
+
 		s_Players = PlayerManager:GetPlayersBySquad(s_LocalPlayer.teamId, s_LocalPlayer.squadId)
 	else
 		s_Players = PlayerManager:GetPlayers()

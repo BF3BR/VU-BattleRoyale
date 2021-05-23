@@ -51,6 +51,7 @@ function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_Dedica
 
 	local s_MapId = LevelNameHelper:GetLevelName()
 	local s_Config = MapsConfig[s_MapId]
+
 	if s_Config == nil then
 		m_Logger:Write("Unsupported map!")
 		return

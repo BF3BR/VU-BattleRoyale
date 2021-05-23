@@ -189,6 +189,7 @@ function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -219,16 +220,16 @@ end
 
 function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
 	local s_Player = PlayerManager:GetPlayerById(p_Table[1])
+
 	if s_Player == nil then
 		return
 	end
 
 	m_Logger:Write("INFO: OnPlayerKilled: " .. s_Player.name)
-
 	local s_InflictorId = p_Table[2]
 	m_SpectatorClient:OnPlayerKilled(s_Player.id, s_InflictorId)
-
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -240,15 +241,19 @@ function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
 	local s_AliveSquadCount = 0
 	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
 	local s_TeamMateDied = false
+
 	if s_TeamPlayers ~= nil then
 		for _, l_Teammate in ipairs(s_TeamPlayers) do
 			if l_Teammate ~= nil then
 				if l_Teammate.State ~= BRPlayerState.Dead then
+
 					s_AliveSquadCount = s_AliveSquadCount + 1
+
 					if s_AliveSquadCount == 2 or s_LocalPlayer.name ~= l_Teammate.Name then
 						-- Your squad is still playing; cancel
 						return
 					end
+
 					if s_Player.name == l_Teammate.Name then
 						s_TeamMateDied = true
 					end
@@ -286,6 +291,7 @@ function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_Is
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -377,9 +383,7 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 	end
 
 	m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
-
 	self.m_GameState = p_GameState
-
 	m_Hud:OnGameStateChanged(p_GameState)
 	m_SpectatorClient:OnGameStateChanged(p_GameState)
 end
@@ -448,9 +452,11 @@ function VuBattleRoyaleClient:OnWebUIDeploy()
 	m_HudUtils:ExitSoundState()
 	m_HudUtils:HUDEnterUIGraph()
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer ~= nil and s_LocalPlayer.soldier ~= nil then
 		m_HudUtils:ShowCrosshair(true)
 	end
+
 	NetEvents:Send(PlayerEvents.PlayerDeploy)
 end
 
@@ -458,6 +464,7 @@ function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)
 	if self.m_BrPlayer == nil then
 		return
 	end
+
 	self.m_BrPlayer:SetTeamJoinStrategy(p_Strategy)
 end
 
@@ -572,21 +579,26 @@ function VuBattleRoyaleClient:OnHotReload()
 	if not self.m_IsHotReload then
 		return
 	end
+
 	if SharedUtils:GetLevelName() == nil then
 		return
 	end
+
 	-- This was a hot reload, and the game is already loaded
 	-- So we dispatch all Level / Connection events
 	self:OnLevelLoaded()
 	m_Hud:OnLevelFinalized()
 	-- OnPlayerConnected
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
+
 	if s_LocalPlayer.soldier ~= nil then
 		self:OnPlayerRespawn(s_LocalPlayer)
 	end
+
 	g_Timers:Timeout(1, function()
 		m_HudUtils:ShowCrosshair(false)
 		m_HudUtils:OnEnableMouse()

@@ -72,6 +72,7 @@ end
 
 function BRPlayer:GetState()
 	local l_Player = PlayerManager:GetLocalPlayer()
+
 	if l_Player == nil or l_Player.soldier == nil or not l_Player.alive then
 		return BRPlayerState.Dead
 	elseif l_Player.soldier.isInteractiveManDown then

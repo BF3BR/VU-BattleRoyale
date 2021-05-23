@@ -85,7 +85,9 @@ function PhaseManagerClient:GetActivePlayerPosition()
 
 	-- ensure soldier exists
 	if l_Player == nil or l_Player.soldier == nil then
+
 		local s_ClientCamera = ClientUtils:GetCameraTransform()
+
 		if s_ClientCamera == nil then
 			return nil
 		else
@@ -104,6 +106,7 @@ function PhaseManagerClient:OnPreSim(p_DeltaTime)
 
 	-- get active player position
 	local l_PlayerPos = self:GetActivePlayerPosition()
+
 	if l_PlayerPos == nil then
 		return
 	end
@@ -130,12 +133,14 @@ function PhaseManagerClient:OnRender()
 
 	-- get active player position
 	local l_PlayerPos = self:GetActivePlayerPosition()
+
 	if l_PlayerPos == nil then
 		return
 	end
 
 	-- render circles
 	self.m_OuterCircle:Render(OuterCircleRenderer, l_PlayerPos)
+
 	if self.m_RenderInnerCircle and not self.m_Completed then
 		self.m_InnerCircle:Render(InnerCircleRenderer, l_PlayerPos)
 	end

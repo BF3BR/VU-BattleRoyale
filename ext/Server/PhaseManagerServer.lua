@@ -182,12 +182,14 @@ end
 
 function PhaseManagerServer:ClientTimer()
 	local l_CurrentTimer = self:GetTimer("NextSubphase")
+
 	if self.m_SubphaseIndex == SubphaseType.Waiting or self.m_SubphaseIndex == SubphaseType.InitialDelay then
 		if l_CurrentTimer ~= nil then
 			NetEvents:Broadcast(PlayerEvents.UpdateTimer, l_CurrentTimer:Remaining())
 		end
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then
 		l_CurrentTimer = self:GetTimer("MovingCircle")
+
 		if l_CurrentTimer ~= nil then
 			NetEvents:Broadcast(PlayerEvents.UpdateTimer, l_CurrentTimer:Remaining())
 		end
@@ -200,6 +202,7 @@ function PhaseManagerServer:GetRandomInitialCenter()
 	-- pick triangle index
 	local l_Rnd = MathUtils:GetRandom(0, 1)
 	local l_Index = 0
+
 	for l_CurrentIndex, l_Value in ipairs(MapsConfig[l_LevelName].InitialCircle.CumulativeDistribution) do
 		if l_Index < 1 and l_Value > l_Rnd then
 			l_Index = l_CurrentIndex

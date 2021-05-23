@@ -52,11 +52,13 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 	end
 
 	local s_Soldier = self:GetSoldier()
+
 	if s_Soldier == nil then
 		return p_Damage
 	end
 
 	local s_Health = s_Soldier.health
+
 	if s_Soldier.isInteractiveManDown and p_Damage >= s_Health then
 		self:Kill(true)
 		Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
@@ -150,6 +152,7 @@ function BRPlayer:Kill(p_Forced)
 
 	-- get soldier entity
 	local l_Soldier = self:GetSoldier()
+
 	if l_Soldier == nil then
 		return true -- TODO maybe should return false
 	end
@@ -160,6 +163,7 @@ function BRPlayer:Kill(p_Forced)
 	else
 		l_Soldier:Kill()
 	end
+
 	return true
 end
 
@@ -244,6 +248,7 @@ function BRPlayer:GunshipSpawn(p_Trans)
 	local s_Event = ServerPlayerEvent("Spawn", self.m_Player, true, false, false, false, false, false, self.m_Player.teamId)
 	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
 	local s_Entity = s_EntityIterator:Next()
+
 	while s_Entity do
 		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1") then
 			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
@@ -252,8 +257,10 @@ function BRPlayer:GunshipSpawn(p_Trans)
 			s_Entity:FireEvent(s_Event)
 			break
 		end
+
 		s_Entity = s_EntityIterator:Next()
 	end
+
 	g_Timers:Timeout(0.01, self.m_Player, function(p_Player)
 		p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
 		p_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
@@ -301,6 +308,7 @@ function BRPlayer:AddSpectator(p_PlayerName)
 	if self.m_SpectatorNames[p_PlayerName] == nil then
 		table.insert(self.m_SpectatorNames, p_PlayerName)
 	end
+
 	NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
 end
 
@@ -370,8 +378,10 @@ function BRPlayer:SetArmor(p_Armor)
 		Armor = self.m_Armor:AsTable()
 	}
 	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, self.m_Player, s_State)
+
 	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
 		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
+
 		if s_Spectator ~= nil then
 			m_Logger:Write("Send PlayerArmorState to spectator " .. s_Spectator.name)
 			NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, s_Spectator, s_State)
@@ -420,6 +430,7 @@ end
 -- @return Vec3|nil
 function BRPlayer:GetPosition()
 	local l_Soldier = self:GetSoldier()
+
 	if l_Soldier == nil then
 		return nil
 	end
@@ -452,6 +463,7 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 	if p_Simple then
 		-- TODO remove it
 		local l_State = BRPlayerState.Dead
+
 		if self.m_Player ~= nil and self.m_Player.alive and self.m_Player.soldier ~= nil then
 			if self.m_Player.soldier.isAlive then
 				l_State = BRPlayerState.Alive
@@ -470,6 +482,7 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 
 	-- get team data
 	local l_Team = p_TeamData
+
 	if l_Team == nil and self.m_Team ~= nil then
 		l_Team = self.m_Team:AsTable()
 	end

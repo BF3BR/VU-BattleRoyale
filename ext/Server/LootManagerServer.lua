@@ -24,6 +24,7 @@ function LootManagerServer:OnLevelLoadResources()
 	self.m_RandomSpawnTransforms = {}
 
 	local s_LevelName = LevelNameHelper:GetLevelName()
+
 	if s_LevelName == nil then
 		return
 	end
@@ -60,6 +61,7 @@ end
 function LootManagerServer:EnableMatchPickups()
 	local s_Iterator = EntityManager:GetIterator("ServerPickupEntity")
 	local s_Entity = s_Iterator:Next()
+
 	while s_Entity do
 		WeaponUnlockPickupEntityData(s_Entity.data).contentIsStatic = false
 		s_Entity.bus.entities[2]:FireEvent("ShowMarker")
@@ -73,18 +75,22 @@ function LootManagerServer:OnModReload()
 
 	local s_Iterator = EntityManager:GetIterator("ServerPickupEntity")
 	local s_Entity = s_Iterator:Next()
+
 	while s_Entity do
 		if s_Entity.data:Is("WeaponUnlockPickupEntityData") then
 			local s_Transform = ReferenceObjectData(s_Entity.bus.parentRepresentative).blueprintTransform
 			local s_HudIcon
+
 			for _, l_Entity in pairs(s_Entity.bus.entities) do
 				if l_Entity.data:Is("MapMarkerEntityData")then
 					s_HudIcon = MapMarkerEntityData(l_Entity.data).hudIcon
 					break
 				end
 			end
+
 			if s_HudIcon ~= nil then
 				local s_Tier = nil
+
 				if s_HudIcon == UIHudIcon.UIHudIcon_WeaponPickupTier1 then
 					s_Tier = 1
 				elseif s_HudIcon == UIHudIcon.UIHudIcon_WeaponPickupTier2 then
@@ -92,9 +98,11 @@ function LootManagerServer:OnModReload()
 				elseif s_HudIcon == UIHudIcon.UIHudIcon_WeaponPickupTier3 then
 					s_Tier = 3
 				end
+
 				table.insert(self.m_RandomSpawnTransforms, { tier = s_Tier - 1, transform = s_Transform})
 			end
 		end
+
 		s_Entity = s_Iterator:Next()
 	end
 end

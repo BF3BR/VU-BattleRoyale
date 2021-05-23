@@ -82,6 +82,7 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 	if not self.m_IsLevelLoaded then
 		return
 	end
+
 	if self.m_BrPlayer ~= nil and self.m_BrPlayer.m_Team ~= nil then
 		self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked)
 		self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
@@ -91,7 +92,6 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 		self.m_HudOnMinPlayersToStart:Update(self.m_MinPlayersToStart)
 		self:PushUpdatePlayersInfo()
 		self:PushLocalPlayerTeam()
-
 		self.m_Ticks = 0.0
 	end
 
@@ -102,6 +102,7 @@ function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
 	if not self.m_IsLevelLoaded then
 		return
 	end
+
 	if self.m_BrPlayer == nil then
 		if p_BrPlayer == nil then
 			return
@@ -121,7 +122,9 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 	if not self.m_IsLevelLoaded then
 		return
 	end
+
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -157,9 +160,11 @@ end
 
 function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer ~= p_Player or p_Player.soldier == nil then
 		return
 	end
+
 	WebUI:ExecuteJS("OnMapShow(true)")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
@@ -170,6 +175,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	if self.m_GameState <= GameStates.Warmup then
 		return
 	end
+
 	self:RegisterOnBeingInteractedCallbacks(p_Player.soldier)
 end
 
@@ -341,6 +347,7 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed or SpectatorManager:GetSpectating() then
 		return
 	end
+
 	if p_Action == UIInputAction.UIInputAction_MapSize then
 		if m_HudUtils:GetIsMapOpened() then
 			m_HudUtils:SetIsMapOpened(false)
@@ -352,6 +359,7 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 			WebUI:ExecuteJS("OnOpenCloseMap(true);")
 			m_HudUtils:OnEnableMouse()
 		end
+
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
 	end
@@ -407,6 +415,7 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 	if self.m_IsLevelLoaded then
 		return
 	end
+
 	self.m_IsLevelLoaded = true
 	m_HudUtils:ExitSoundState()
 	m_HudUtils:HUDEnterUIGraph()
@@ -426,12 +435,15 @@ end
 function VuBattleRoyaleHud:RegisterEscMenuCallbacks()
 	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 	local s_Entity = s_EntityIterator:Next()
+
 	while s_Entity do
 		s_Entity = Entity(s_Entity)
+
 		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("B9437F95-2EBC-4F22-A5F6-F4D0F1331A5E") then
 			-- Registering the EventCallback on modreload => crash on first call
 			s_Entity:RegisterEventCallback(self, self.OnEscapeMenuCallback)
 		end
+
 		s_Entity = s_EntityIterator:Next()
 	end
 end
@@ -486,18 +498,20 @@ function VuBattleRoyaleHud:OnOptions()
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+
 	while s_UIGraphEntity do
 		if s_UIGraphEntity.data.instanceGuid == Guid("EDF20470-4AD7-44BC-96E1-9DF61989BE58") then
 			s_UIGraphEntity = Entity(s_UIGraphEntity)
 			s_UIGraphEntity:FireEvent("EnterOptions")
 			return
 		end
+
 		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	end
 end
 
 -- =============================================
-	-- Quit the game (Custom popup is missing)
+	-- Quit the game
 -- =============================================
 
 function VuBattleRoyaleHud:OnQuit()
@@ -522,7 +536,7 @@ function VuBattleRoyaleHud:GetQuitEntityData()
 	s_QuitPopupGraphAsset.nodes:add(s_InputNode)
 
 	local s_ActionNode = ActionNode()
-	s_ActionNode.actionKey = 702328210
+	s_ActionNode.actionKey = MathUtils:FNVHash("QuitGame")
 	s_ActionNode.inValue = UINodePort()
 	s_ActionNode.out = UINodePort()
 	s_ActionNode.appendIncomingParams = false
@@ -542,7 +556,7 @@ function VuBattleRoyaleHud:GetQuitEntityData()
 
 	local s_OutputNode = InstanceOutputNode()
 	s_OutputNode.inValue = UINodePort()
-	s_OutputNode.id = 1905656325
+	s_OutputNode.id = MathUtils:FNVHash("QuitOrSuicide")
 	s_OutputNode.destroyGraph = true
 	s_OutputNode.name = "QuitOrSuicide"
 	s_OutputNode.isRootNode = false
@@ -571,6 +585,7 @@ end
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -580,6 +595,7 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
 	end
 
 	local s_LocalSoldier = s_LocalPlayer.soldier
+
 	if s_LocalSoldier == nil then
 		return
 	end
@@ -598,6 +614,7 @@ end
 
 function VuBattleRoyaleHud:PushLocalPlayerYaw()
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer == nil or (s_LocalPlayer.soldier == nil and s_LocalPlayer.corpse == nil) then
 		return
 	end
@@ -612,13 +629,15 @@ end
 
 function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 	local s_Players = PlayerManager:GetPlayers()
-
 	local s_PlayersObject = {}
+
 	for _, l_Player in pairs(s_Players) do
 		local l_State = 3
+
 		if l_Player.alive then
 			l_State = 1
 		end
+
 		table.insert(s_PlayersObject, {
 			["id"] = l_Player.id,
 			["name"] = l_Player.name,
@@ -627,6 +646,7 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 			["isTeamLeader"] = false,
 		})
 	end
+
 	self.m_HudOnPlayersInfo:Update(json.encode(s_PlayersObject))
 
 	if self.m_BrPlayer == nil then
@@ -634,6 +654,7 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 	end
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
 	if s_LocalPlayer ~= nil then
 		local s_LocalPlayerTable = {
 			["id"] = s_LocalPlayer.id,
@@ -654,6 +675,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 
 	-- SpectatedPlayer default is the local player
 	local s_LocalPlayer = SpectatorManager:GetSpectatedPlayer()
+
 	if s_LocalPlayer == nil then
 		return
 	end
@@ -664,11 +686,13 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 	end
 
 	local s_LocalSoldier = s_LocalPlayer.soldier
+
 	if s_LocalSoldier == nil then
 		return
 	end
 
 	local s_Inventory = { }
+
 	for l_Index, l_Weapon in pairs(s_LocalSoldier.weaponsComponent.weapons) do
 		if l_Weapon ~= nil then
 			s_Inventory[l_Index] = l_Weapon.name
@@ -680,6 +704,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 	else
 		self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health - 100)
 	end
+
 	self.m_HudOnPlayerArmor:Update(self.m_BrPlayer.m_Armor:GetPercentage())
 	self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
 	self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
@@ -709,6 +734,7 @@ function VuBattleRoyaleHud:PushMarkerUpdate()
 		end
 
 		local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(l_Marker.PositionX, l_Marker.PositionY, l_Marker.PositionZ))
+
 		if s_WorldToScreen == nil then
 			return
 		end
@@ -757,6 +783,7 @@ function VuBattleRoyaleHud:RemoveMarker(p_Key)
 	if self.m_Markers[p_Key] == nil then
 		return
 	end
+
 	self.m_Markers[p_Key] = nil
 	WebUI:ExecuteJS(string.format('OnRemoveMarker("%s")', p_Key))
 end

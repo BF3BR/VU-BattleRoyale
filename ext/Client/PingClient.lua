@@ -70,6 +70,7 @@ function PingClient:OnEngineUpdate(p_DeltaTime)
 		end
 
 		local l_Result = l_Info[2] - p_DeltaTime
+
 		if l_Result < 0.001 then
 			l_Result = 0.0
 		end
@@ -124,6 +125,7 @@ function PingClient:OnUIDrawHud(p_BrPlayer)
 				DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PlayerName), Vec4(1, 0, 0, 1), 1.1)
 			end
 		end
+
 		::__on_ui_draw_hud_cont__::
 	end
 end
@@ -146,8 +148,8 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 	end
 
 	m_Logger:Write("raycasting...")
-
 	local s_RaycastHit = nil
+
 	if self.m_PingMethod == PingMethod.World then
 		s_RaycastHit = self:RaycastWorld()
 	else
@@ -155,6 +157,7 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 	end
 
 	self.m_ShouldPing = false
+
 	if s_RaycastHit == nil then
 		m_Logger:Write("no raycast")
 		return
@@ -172,7 +175,7 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position)
 	if self.m_BrPlayer == nil then
 		return
 	end
-	
+
 	m_Logger:Write("playerName: " .. tostring(p_PlayerName) .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
 
 	-- Send ping to compass
@@ -182,6 +185,7 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position)
 	m_Hud:CreateMarker(tostring(p_PlayerName), p_Position.x, p_Position.y, p_Position.z, s_RgbaColor)
 
 	local s_PingInfo = self.m_SquadPings[p_PlayerName]
+
 	if s_PingInfo == nil then
 		-- No information currently exists
 		self.m_SquadPings[p_PlayerName] = {
@@ -193,6 +197,7 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position)
 
 	-- Update the structure
 	local l_UpdatedCooldown = s_PingInfo[2] + self.m_CooldownTime
+
 	if l_UpdatedCooldown > 3 * self.m_CooldownTime then
 		l_UpdatedCooldown = 3 * self.m_CooldownTime
 	end
@@ -226,6 +231,7 @@ function PingClient:OnWebUIPingFromMap(p_Coordinates)
 		m_Logger:Error("No Coordinates received")
 		return
 	end
+
 	local s_Coordinates = json.decode(p_Coordinates)
 	self.m_Position_X = s_Coordinates.x
 	self.m_Position_Z = s_Coordinates.y
@@ -243,6 +249,7 @@ end
 
 function PingClient:RaycastWorld()
 	local s_Transform = ClientUtils:GetCameraTransform()
+
 	if s_Transform == nil then
 		m_Logger:Write("invalid transform")
 		return
@@ -262,6 +269,7 @@ end
 
 function PingClient:RaycastScreen()
 	local s_Position = Vec3(self.m_Position_X, 2000 ,self.m_Position_Z)
+
 	if s_Position == nil then
 		m_Logger:Write("invalid transform")
 		return
@@ -290,8 +298,8 @@ function PingClient:GetColorByPlayerName(p_PlayerName)
 	end
 
 	local s_Teammates = self.m_BrPlayer.m_Team:PlayersTable()
-
 	local s_Color = nil
+
 	for _, l_Teammate in pairs(s_Teammates) do
 		if l_Teammate.Name == p_PlayerName then
 			s_Color = l_Teammate.ColorVec

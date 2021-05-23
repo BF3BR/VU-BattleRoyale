@@ -11,6 +11,7 @@ function Whitelist:OnPlayerRequestJoin(p_Hook, p_JoinMode, p_AccountGuid, p_Play
 				return
 			end
 		end
+
 		p_Hook:Return(false)
 	end
 end
