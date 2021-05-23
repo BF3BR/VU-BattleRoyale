@@ -303,7 +303,7 @@ function VuBattleRoyaleHud:OnGunshipYaw(p_Trans)
 end
 
 function VuBattleRoyaleHud:OnGunshipPlayerYaw(p_Yaw)
-	local s_Yaw = math.floor((180 / math.pi) * p_Yaw)
+	local s_Yaw = math.floor((180 / math.pi) * p_Yaw) + 90
 	self.m_HudOnPlayerYaw:Update(s_Yaw)
 end
 

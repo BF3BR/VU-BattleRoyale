@@ -9,7 +9,7 @@ function GunshipCamera:__init()
 	self.m_TwoPi = math.pi * 2
 
 	self.m_LockedCameraYaw = 0.0
-	self.m_LockedCameraPitch = 0.0
+	self.m_LockedCameraPitch = -0.9
 
 	self.m_MaxPitch = 85.0 * (math.pi / 180.0)
 	self.m_MinPitch = -70.0 * (math.pi / 180.0)
@@ -28,7 +28,7 @@ function GunshipCamera:OnLevelDestroy()
 	self:Disable()
 end
 
-function GunshipCamera:OnEngineUpdate(p_DeltaTime, p_GunshipEntity)
+function GunshipCamera:OnUIDrawHud(p_DeltaTime, p_GunshipEntity)
 	if not self.m_Active then
 		return
 	end
@@ -48,15 +48,15 @@ function GunshipCamera:OnEngineUpdate(p_DeltaTime, p_GunshipEntity)
 		return
 	end
 
-	local s_Yaw = self.m_LockedCameraYaw
+	local s_Entity = SpatialEntity(p_GunshipEntity)
+	local s_Yaw = -math.atan(s_Entity.transform.forward.x, s_Entity.transform.forward.z) + self.m_LockedCameraYaw
 	local s_Pitch = self.m_LockedCameraPitch
-
-	m_Hud:OnGunshipPlayerYaw(s_Yaw)
 
 	s_Yaw = s_Yaw - math.pi / 2
 	s_Pitch = s_Pitch + math.pi / 2
 
-	local s_Entity = SpatialEntity(p_GunshipEntity)
+	m_Hud:OnGunshipPlayerYaw(s_Yaw)
+	
 	self.m_LookAtPos = s_Entity.transform.trans:Clone()
 	self.m_LookAtPos.y = self.m_LookAtPos.y + self.m_Height
 
@@ -91,8 +91,8 @@ function GunshipCamera:OnInputPreUpdate(p_Hook, p_Cache, p_DeltaTime)
 		return
 	end
 
-	local s_RotateYaw = p_Cache[InputConceptIdentifiers.ConceptYaw] * 2.916686
-	local s_RotatePitch = p_Cache[InputConceptIdentifiers.ConceptPitch] * 2.916686
+	local s_RotateYaw = p_Cache[InputConceptIdentifiers.ConceptYaw] * 2.016686
+	local s_RotatePitch = p_Cache[InputConceptIdentifiers.ConceptPitch] * 2.016686
 
 	self.m_LockedCameraYaw = self.m_LockedCameraYaw + s_RotateYaw
 	self.m_LockedCameraPitch = self.m_LockedCameraPitch + s_RotatePitch
@@ -141,8 +141,8 @@ function GunshipCamera:CreateCamera()
 	end
 
 	self:CreateCameraData()
-	local s_Entity = EntityManager:CreateEntity(self.m_Data, self.m_Data.transform)
 
+	local s_Entity = EntityManager:CreateEntity(self.m_Data, self.m_Data.transform)
 	if s_Entity ~= nil then
 		s_Entity:Init(Realm.Realm_Client, true)
 		self.m_Entity = s_Entity
@@ -157,6 +157,8 @@ function GunshipCamera:DestroyCamera()
 	self.m_Entity:Destroy()
 	self.m_Entity = nil
 	self.m_LookAtPos = nil
+	self.m_LockedCameraYaw = 0.0
+	self.m_LockedCameraPitch = -0.9
 end
 
 -- =============================================
@@ -170,7 +172,6 @@ end
 
 function GunshipCamera:ReleaseControl()
 	self.m_Active = false
-
 	if self.m_Entity ~= nil then
 		self.m_Entity:FireEvent("ReleaseControl")
 	end
