@@ -1,6 +1,7 @@
 import { SpectatorState } from "./Types";
 import { 
     SpectatorActionTypes,
+    UPDATE_SPECTATOR_COUNT,
     UPDATE_SPECTATOR_ENABLED,
     UPDATE_SPECTATOR_TARGET
 } from "./ActionTypes";
@@ -8,6 +9,7 @@ import {
 const initialState: SpectatorState = {
     enabled: false,
     target: "",
+    count: null,
 };
 
 const SpectatorReducer = (
@@ -24,6 +26,11 @@ const SpectatorReducer = (
             return {
                 ...state,
                 target: action.payload.target,
+            };
+        case UPDATE_SPECTATOR_COUNT:
+            return {
+                ...state,
+                count: action.payload.count,
             };
         default:
             return state;

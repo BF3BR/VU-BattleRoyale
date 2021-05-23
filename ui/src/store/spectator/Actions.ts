@@ -1,5 +1,6 @@
 import { 
     SpectatorActionTypes,
+    UPDATE_SPECTATOR_COUNT,
     UPDATE_SPECTATOR_ENABLED,
     UPDATE_SPECTATOR_TARGET,
 } from "./ActionTypes";
@@ -17,3 +18,12 @@ export function updateSpectatorTarget(target: string): SpectatorActionTypes {
         payload: { target },
     };
 }
+
+export function updateSpectatorCount(count: number | null): SpectatorActionTypes {
+    return {
+        type: UPDATE_SPECTATOR_COUNT,
+        payload: { count },
+    };
+}
+
+
