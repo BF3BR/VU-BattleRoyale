@@ -75,24 +75,32 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
     return (
         <>
             <div id="AmmoAndHealthCounter">
-                {(playerIsInPlane === false || (spectating && spectatorTarget !== '')) &&
+                {(playerIsInPlane === false) &&
                     <>
-                        <div className={"WeaponName " + (visible ? 'IsVisible' : '')}>
-                            {playerCurrentWeapon !== '' &&
-                                <>
-                                    {WeaponNames[playerCurrentWeapon]}
-                                </>
-                            }
-                        </div>
-                        <div className="AmmoCounter">
-                            <div className="current" dangerouslySetInnerHTML={padLeadingZeros(playerPrimaryAmmo, playerCurrentWeapon)}></div>
-                            <div className="left">
-                                <span className="mag" dangerouslySetInnerHTML={padLeadingZeros(playerSecondaryAmmo, playerCurrentWeapon)}></span>
-                                <span className="type">{playerFireLogic??"AUTO"}</span>
-                            </div>
-                        </div>
-                        <PercentageCounter type="Armor" value={playerArmor??0} />
-                        <PercentageCounter type="Health" value={playerHealth??0} />
+                        {spectating === false &&
+                            <>
+                                <div className={"WeaponName " + (visible ? 'IsVisible' : '')}>
+                                    {playerCurrentWeapon !== '' &&
+                                        <>
+                                            {WeaponNames[playerCurrentWeapon]}
+                                        </>
+                                    }
+                                </div>
+                                <div className="AmmoCounter">
+                                    <div className="current" dangerouslySetInnerHTML={padLeadingZeros(playerPrimaryAmmo, playerCurrentWeapon)}></div>
+                                    <div className="left">
+                                        <span className="mag" dangerouslySetInnerHTML={padLeadingZeros(playerSecondaryAmmo, playerCurrentWeapon)}></span>
+                                        <span className="type">{playerFireLogic??"AUTO"}</span>
+                                    </div>
+                                </div>
+                            </>
+                        }
+                        {((spectating && spectatorTarget !== "") || spectating === false) &&
+                            <>
+                                <PercentageCounter type="Armor" value={playerArmor??0} />
+                                <PercentageCounter type="Health" value={playerHealth??0} />
+                            </>
+                        }
                     </>
                 }
             </div>
