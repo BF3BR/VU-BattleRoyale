@@ -195,9 +195,9 @@ const Chat: React.FC<Props> = ({ uiState, deployScreen }) => {
                             <div className="chatWindowInner">
                                 {messages.map((message: Message, index: number) => (
                                     <div className={getChatItemClasses(message)} key={index}>
-                                        <span className="chatMessageTarget">
+                                        {/*<span className="chatMessageTarget">
                                             [{getChatItemTarget(message)}]
-                                        </span>
+                                        </span>*/}
                                         <span className="chatSender">
                                             {message.senderName}:
                                         </span>
