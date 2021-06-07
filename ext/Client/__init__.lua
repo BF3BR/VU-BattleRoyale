@@ -1,11 +1,12 @@
 class "VuBattleRoyaleClient"
 
 require "__shared/Configs/ServerConfig"
+require "__shared/Configs/MapsConfig"
+require "__shared/Configs/SettingsConfig"
 require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/EventRouter"
 require "__shared/Utils/LootPointHelper"
-require "__shared/Configs/MapsConfig"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 
@@ -43,6 +44,7 @@ function VuBattleRoyaleClient:RegisterVars()
 	self.m_GameState = GameStates.None
 	self.m_PhaseManager = PhaseManagerClient()
 	self.m_BrPlayer = BRPlayer()
+	self.m_UserSettings = {}
 end
 
 function VuBattleRoyaleClient:RegisterEvents()
@@ -121,10 +123,37 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnExtensionUnloading()
+	self:ResetSettings()
 	m_SpectatorClient:OnExtensionUnloading()
 	m_Hud:OnExtensionUnloading()
 	m_HudUtils:OnExtensionUnloading()
 	m_Chat:OnExtensionUnloading()
+end
+
+function VuBattleRoyaleClient:ApplySettings()
+	for l_SettingsName, l_Settings in pairs(SettingsConfig) do
+		local l_TempSettings = ResourceManager:GetSettings(l_SettingsName)
+		l_TempSettings = _G[l_SettingsName](l_TempSettings)
+		for l_SettingName, l_Setting in pairs(l_Settings) do
+			if self.m_UserSettings[l_SettingsName] == nil then
+				self.m_UserSettings[l_SettingsName] = {}
+			end
+			self.m_UserSettings[l_SettingsName][l_SettingName] = l_TempSettings[l_SettingName]
+			l_TempSettings[l_SettingName] = l_Setting
+		end
+	end
+end
+
+function VuBattleRoyaleClient:ResetSettings()
+	for l_SettingsName, l_Settings in pairs(self.m_UserSettings) do
+		local l_TempSettings = ResourceManager:GetSettings(l_SettingsName)
+		l_TempSettings = _G[l_SettingsName](l_TempSettings)
+		for l_SettingName, l_Setting in pairs(l_Settings) do
+			l_TempSettings[l_SettingName] = l_Setting
+		end
+	end
+
+	self.m_UserSettings = {}
 end
 
 -- =============================================
@@ -132,6 +161,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
+	self:ApplySettings()
 	WebUI:ExecuteJS("ToggleDeployMenu(true);")
 	m_HudUtils:ShowroomCamera(true)
 	m_HudUtils:ShowCrosshair(false)
