@@ -40,7 +40,7 @@ const TeamElement: React.FC<Props> = ({
                 .filter((player: Player) => player.state !== 3)
                 .filter((player: Player) => (player.position.x !== null && player.position.z !== null))
                 .map((player: Player, key: number) => (
-                    (player.state === 2 ?
+                    (player.state === 1 ?
                         <Graphics 
                             draw={(g: any) => drawPlayer(g, getConvertedPlayerColor(player.color))}
                             x={getMapPos(player.position.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
