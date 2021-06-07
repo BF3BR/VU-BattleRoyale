@@ -182,13 +182,13 @@ const Chat: React.FC<Props> = ({ uiState, deployScreen }) => {
         <>
             {(uiState === "menu" || uiState === "game") &&
                 <>
-                    <div id="debugChat">
+                    {/*<div id="debugChat">
                         <button onClick={() => setRandomMessages()}>Random messages</button>
                         <button onClick={() =>  window.OnFocus(MessageTarget.CctSayAll)}>isTypingActive</button>
                         <button onClick={() =>  window.OnChangeType()}>OnChangeType</button>
                         <button onClick={() =>  window.OnClearChat()}>OnClearChat</button>
                         <button onClick={() =>  window.OnCloseChat()}>OnCloseChat</button>
-                    </div>
+                    </div>*/}
 
                     <div id="VuChat" className={(showChat ? "showChat" : "hideChat") + ((isTypingActive || chatState === ChatState.Always) ? " isTypingActive": "") + (hasMouse ? " hasMouse":"") + ((deployScreen || uiState === "menu") ? " isDeploy":"")}>
                         <div className="chatWindow" ref={messageEl}>

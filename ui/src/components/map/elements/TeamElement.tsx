@@ -2,10 +2,15 @@ import React from "react";
 import { connect } from "react-redux";
 import { RootState } from "../../../store/RootReducer";
 
-import { Graphics } from '@inlet/react-pixi';
+import * as PIXI from 'pixi.js';
+import { Graphics, Sprite } from '@inlet/react-pixi';
+import { GlowFilter } from "@pixi/filter-glow";
 
 import { drawPlayer, getConvertedPlayerColor, getMapPos } from './ElementHelpers';
 import { Player } from "../../../helpers/PlayerHelper";
+
+import medic from "../../../assets/img/medic.svg";
+const medicTexture = PIXI.Texture.from(medic);
 
 interface StateFromReducer {
     team: Player[];
@@ -35,14 +40,37 @@ const TeamElement: React.FC<Props> = ({
                 .filter((player: Player) => player.state !== 3)
                 .filter((player: Player) => (player.position.x !== null && player.position.z !== null))
                 .map((player: Player, key: number) => (
-                    <Graphics 
-                        draw={(g: any) => drawPlayer(g, getConvertedPlayerColor(player.color))}
-                        x={getMapPos(player.position.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
-                        y={getMapPos(player.position.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
-                        angle={player.yaw}
-                        scale={0.5}
-                        key={key}
-                    />
+                    (player.state === 2 ?
+                        <Graphics 
+                            draw={(g: any) => drawPlayer(g, getConvertedPlayerColor(player.color))}
+                            x={getMapPos(player.position.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
+                            y={getMapPos(player.position.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
+                            angle={player.yaw}
+                            scale={0.5}
+                            key={key}
+                        />
+                    :
+                        <Sprite
+                            texture={medicTexture}
+                            anchor={0.5}
+                            width={50}
+                            height={50}
+                            x={getMapPos(player.position.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
+                            y={getMapPos(player.position.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
+                            angle={0}
+                            scale={.05}
+                            tint={getConvertedPlayerColor(player.color)}
+                            filters={[
+                                new GlowFilter({
+                                    distance: 25,
+                                    outerStrength: 1,
+                                    innerStrength: 0,
+                                    color: getConvertedPlayerColor(player.color),
+                                })
+                            ]}
+                            key={key}
+                        />
+                    )
                 ))
             }
         </>

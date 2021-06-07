@@ -2,8 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { RootState } from "../../../store/RootReducer";
 
-import { GlowFilter } from "@pixi/filter-glow";
 import * as PIXI from 'pixi.js';
+import { GlowFilter } from "@pixi/filter-glow";
 import { Graphics, Sprite } from '@inlet/react-pixi';
 
 import Vec3 from '../../../helpers/Vec3Helper';
@@ -57,7 +57,7 @@ const PlaneElement: React.FC<Props> = ({
                                 color: 0x9EC555,
                             })
                         ]}
-                    />                        
+                    />
                 </>
             }
         </>

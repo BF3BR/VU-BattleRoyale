@@ -4,9 +4,9 @@ import '@pixi/graphics-extras';
 import { GlowFilter } from '@pixi/filter-glow';
 
 export const drawPlayer = (g: any, color: number) => {
-    var sideLegnth = 20;
+    var sideLength = 20;
     g.clear();
-    g.beginFill(color, 0.4);
+    g.beginFill(color, 0.4);    
     g.lineStyle({
         width: 6,
         color: color,
@@ -14,11 +14,11 @@ export const drawPlayer = (g: any, color: number) => {
         join: PIXI.LINE_JOIN.ROUND,
         miterLimit: 10,
     });
-    g.moveTo(0, 0 + sideLegnth / 2);
-    g.lineTo(0 - sideLegnth, 0 + sideLegnth);
-    g.lineTo(0, 0 - sideLegnth);
-    g.lineTo(0 + sideLegnth, 0 + sideLegnth);
-    g.lineTo(0, 0 + sideLegnth / 2);
+    g.moveTo(0, 0 + sideLength / 2);
+    g.lineTo(0 - sideLength, 0 + sideLength);
+    g.lineTo(0, 0 - sideLength);
+    g.lineTo(0 + sideLength, 0 + sideLength);
+    g.lineTo(0, 0 + sideLength / 2);
     g.closePath();
     g.endFill();
     g.filters = [new GlowFilter({
