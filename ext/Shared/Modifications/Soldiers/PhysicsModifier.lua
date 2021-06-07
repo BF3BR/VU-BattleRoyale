@@ -16,15 +16,15 @@ function PhysicsModifier:RegisterCallbacks()
 	m_PronePoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)
 end
 
--- Change the free fall velocity so free fall state kicks in earlier
+-- Change the free fall velocity so free fall state kicks in later
 function PhysicsModifier:OnInAirStateDataLoaded(p_InAirStateData)
-	p_InAirStateData.freeFallVelocity = 14.0
+	p_InAirStateData.freeFallVelocity = 20.0
 end
 
 -- Modify the free fall velocity
 function PhysicsModifier:OnCharacterStatePoseInfoLoaded(p_CharacterStatePoseInfo)
-	p_CharacterStatePoseInfo.velocity = 35.0
-	p_CharacterStatePoseInfo.accelerationGain = 0.115
+	p_CharacterStatePoseInfo.velocity = 25.0
+	p_CharacterStatePoseInfo.accelerationGain = 0.1
 end
 
 if g_PhysicsModifier == nil then
