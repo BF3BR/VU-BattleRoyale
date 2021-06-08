@@ -55,7 +55,7 @@ end
 function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_BundleManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_RegistryManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	--m_ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 end
 
 function VuBattleRoyaleShared:OnRegisterEntityResources(p_LevelData)
