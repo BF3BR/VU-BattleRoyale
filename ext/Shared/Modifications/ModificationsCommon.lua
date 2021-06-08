@@ -44,8 +44,6 @@ function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
 end
 
--- TODO: Implement generic map and gamemode modification system (that works)
---[[
 function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_Logger:Write("OnLoadResources")
 
@@ -59,8 +57,13 @@ function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_Dedica
 
 	-- Register a load handler for the cql subworld of this level
 	--s_Config.SubWorldInstance:RegisterLoadHandlerOnce(self, self.OnSubWorldLoaded)
+
+	MapsConfig[s_MapId].OOB:RegisterLoadHandler(self, self.OnOOBLoaded)
+	MapsConfig[s_MapId].OOB2:RegisterLoadHandler(self, self.OnOOBLoaded)
 end
 
+-- TODO: Implement generic map and gamemode modification system (that works)
+--[[
 function ModificationsCommon:OnSubWorldLoaded(p_SubWorldData)
 	m_Logger:Write("SubWorld Loaded")
 	local s_Registry = m_RegistryManager:GetRegistry()
@@ -77,6 +80,21 @@ function ModificationsCommon:OnSubWorldLoaded(p_SubWorldData)
 	m_LootCreation:OnSubWorldLoaded(s_WorldPartData)
 end
 --]]
+
+function ModificationsCommon:OnOOBLoaded(p_VolumeVectorShape)
+	m_Logger:Write("VolumeVectorShape Loaded")
+
+	p_VolumeVectorShape.points:clear()
+	p_VolumeVectorShape.normals:clear()
+	p_VolumeVectorShape.points:add(Vec3(9999.0, 150.0, 9999.0))
+	p_VolumeVectorShape.normals:add(Vec3())
+	p_VolumeVectorShape.points:add(Vec3(9999.0, 150.0, -9999.0))
+	p_VolumeVectorShape.normals:add(Vec3())
+	p_VolumeVectorShape.points:add(Vec3(-9999.0, 150.0, -9999.0))
+	p_VolumeVectorShape.normals:add(Vec3())
+	p_VolumeVectorShape.points:add(Vec3(-9999.0, 150.0, 9999.0))
+	p_VolumeVectorShape.normals:add(Vec3())
+end
 
 if g_ModificationsCommon == nil then
 	g_ModificationsCommon = ModificationsCommon()

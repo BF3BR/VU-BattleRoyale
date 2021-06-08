@@ -56,7 +56,7 @@ function GunshipCamera:OnUIDrawHud(p_DeltaTime, p_GunshipEntity)
 	s_Pitch = s_Pitch + math.pi / 2
 
 	m_Hud:OnGunshipPlayerYaw(s_Yaw)
-	
+
 	self.m_LookAtPos = s_Entity.transform.trans:Clone()
 	self.m_LookAtPos.y = self.m_LookAtPos.y + self.m_Height
 
@@ -143,6 +143,7 @@ function GunshipCamera:CreateCamera()
 	self:CreateCameraData()
 
 	local s_Entity = EntityManager:CreateEntity(self.m_Data, self.m_Data.transform)
+
 	if s_Entity ~= nil then
 		s_Entity:Init(Realm.Realm_Client, true)
 		self.m_Entity = s_Entity
@@ -172,6 +173,7 @@ end
 
 function GunshipCamera:ReleaseControl()
 	self.m_Active = false
+
 	if self.m_Entity ~= nil then
 		self.m_Entity:FireEvent("ReleaseControl")
 	end
