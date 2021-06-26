@@ -1,0 +1,12 @@
+.InteractProgress {
+    position: fixed;
+    bottom: 5vw;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 4.5vw;
+    width: 4.5vw;
+    border-radius: 50%;
+    padding: 0.1vw;
+    border: .15vw solid rgb(148, 205, 243);
+    opacity: 1;
+}

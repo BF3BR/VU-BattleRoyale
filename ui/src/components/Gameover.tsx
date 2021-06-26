@@ -1,68 +1,93 @@
 import React, { useEffect } from "react";
-import Player from "../helpers/Player";
+import { connect, useDispatch } from "react-redux";
+import { RootState } from "../store/RootReducer";
+import { updateGameover } from "../store/game/Actions";
 
 import winner from "../assets/sounds/winner.mp3";
 
 import "./Gameover.scss";
-
-interface Props {
-    localPlayer: Player|null;
-    afterInterval: () => void;
-    gameOverPlace: number;
-    gameOverIsWin: boolean;
-}
 
 const alertAudio = new Audio(winner);
 alertAudio.volume = 0.3;
 alertAudio.autoplay = false;
 alertAudio.loop = false;
 
-const Gameover: React.FC<Props> = ({ localPlayer, gameOverIsWin, gameOverPlace, afterInterval }) => {
+interface StateFromReducer {
+    kills: number|null;
+    gameOverPlace: number;
+    gameOverIsWin: boolean;
+    gameOverEnabled: boolean;
+}
+
+type Props = StateFromReducer;
+
+const Gameover: React.FC<Props> = ({ kills, gameOverIsWin, gameOverPlace, gameOverEnabled }) => {
+    const dispatch = useDispatch();
+
+    let interval: any = null;
     useEffect(() => {
-        if (alert !== null && localPlayer !== null) {
+        if (gameOverEnabled) {
             alertAudio.play();
 
-            const interval = setInterval(() => {
-                afterInterval();
+            interval = setInterval(() => {
+                onEnd();
             }, 10000);
 
             return () => {
-                alertAudio.currentTime = 0.0;
-                alertAudio.pause();
-    
-                clearInterval(interval);
-                afterInterval();
+                onEnd();
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [gameOverEnabled]);
+
+    const onEnd = () => {
+        alertAudio.currentTime = 0.0;
+        alertAudio.pause();
+
+        dispatch(updateGameover(false));
+
+        if (interval !== null) {
+            clearInterval(interval);
+        }
+    }
 
     return (
         <>
-            {localPlayer &&
+            {gameOverEnabled &&
                 <div id="Gameover">
                     <span className="WonOrLost">
                         {gameOverIsWin ?
-                            <span className="won">You Won!</span>
+                            <span className="won">You Won</span>
                         :
-                            <span className="lost">You Lost!</span>
+                            <span className="lost">You Lost</span>
                         }
                     </span>
-                    <span className="Name">
+                    {/*<span className="Name">
                         {localPlayer.name??''}
+                    </span>*/}
+                    <span className="Rank">
+                        Your place: <span>#{gameOverPlace??99}</span>
                     </span>
-                    <div className="inline">
-                        <span className="Rank">
-                            Your place: <span>#{gameOverPlace??99}</span>
-                        </span>
-                        <span className="Kills">
-                            Your Kills: <span>{localPlayer.kill??''}</span>
-                        </span>
-                    </div>
+                    <span className="Kills">
+                        Your Kills: <span>{kills??''}</span>
+                    </span>
                 </div>
             }
         </>
     );
 };
 
-export default Gameover;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // PlayerReducer
+        kills: state.PlayerReducer.player.kill,
+        // GameReducer
+        gameOverEnabled: state.GameReducer.gameOver.enabled,
+        gameOverPlace: state.GameReducer.gameOver.place,
+        gameOverIsWin: state.GameReducer.gameOver.win,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Gameover);

@@ -1,192 +1,245 @@
-local Gunship = class "Gunship"
+class "Gunship"
 
+require "__shared/Utils/MathHelper"
 require "__shared/Enums/CustomEvents"
 
+local m_TeamManager = require "BRTeamManager"
 local m_Logger = Logger("Gunship", true)
 
-function Gunship:__init(p_Match, p_TeamManager)
-    -- Save Match and TeamManager reference
-    self.m_Match = p_Match
-    self.m_TeamManager = p_TeamManager
-
-    self.m_StartTransform = nil
-
-    self.m_SpeedMultiplier = 1.5
-
-    -- TODO: Fix this (?)
-    NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
-    NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute)
-    self.m_PlayerUpdateInputEvent = Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
-
-    self.m_SetFlyPath = false
-    self.m_CumulatedTime = 0
-
-    self.m_Enabled = false
-
-    self.m_VehicleEntity = nil
-
-    self.m_OpenParachuteList = {}
+function Gunship:__init()
+	self:RegisterVars()
 end
 
-function Gunship:OnJumpOutOfGunship(p_Player)
-    -- Get the Gunship transform
-    local s_Transform = nil
+function Gunship:RegisterVars()
+	self.m_StartPos = nil
+	self.m_EndPos = nil
+	self.m_TimeToFly = nil
 
-    local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
-    local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
+	self.m_VehicleEntity = nil
+	self.m_Enabled = false
+	self.m_CalculatedTime = 0.0
 
-    while s_VehicleSpawnEntity do
-        if s_VehicleSpawnEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") then
-            s_VehicleSpawnEntity = SpatialEntity(s_VehicleSpawnEntity)
-            s_Transform = s_VehicleSpawnEntity.transform
-            s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 20, s_Transform.trans.z)
-
-            break
-        end
-
-        s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
-    end
-
-    local s_BrPlayer = self.m_TeamManager:GetPlayer(p_Player)
-    if s_BrPlayer == nil then
-        return
-    end
-
-    s_BrPlayer:Spawn(s_Transform)
-    NetEvents:SendToLocal(GunshipEvents.JumpOut, p_Player)
+	self.m_OpenParachuteList = {}
 end
 
-function Gunship:OnOpenParachute(p_Player)
-    table.insert(self.m_OpenParachuteList, p_Player)  
+-- =============================================
+-- Events
+-- =============================================
+
+function Gunship:OnExtensionUnloading()
+	self:Disable()
+end
+
+function Gunship:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
+	if not self.m_Enabled then
+		return
+	end
+
+	if self.m_StartPos == nil or self.m_EndPos == nil or self.m_TimeToFly == nil then
+		return
+	end
+
+	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
+		local s_Transform = LinearTransform()
+		s_Transform:LookAtTransform(self.m_StartPos, self.m_EndPos)
+		s_Transform.trans = self:GetCurrentPosition(self.m_CalculatedTime)
+
+		if self.m_CalculatedTime == 0.0 then
+			self:SetVehicleEntityTransform(s_Transform)
+		end
+
+		self:SetLocatorEntityTransform(s_Transform)
+		self.m_CalculatedTime = self.m_CalculatedTime + p_DeltaTime / self.m_TimeToFly
+
+		--[[if self.m_CalculatedTime >= 1.0 then
+			self:Disable()
+		end]]
+	end
 end
 
 function Gunship:OnPlayerUpdateInput(p_Player)
-    for l_Index, l_Player in pairs(self.m_OpenParachuteList) do
-        if p_Player == l_Player then
-            m_Logger:Write("Open Parachute for player: " .. p_Player.name)
-            l_Player.input:SetLevel(EntryInputActionEnum.EIAToggleParachute, 1.0)
-            table.remove(self.m_OpenParachuteList, l_Index)
-            return
-        end
-    end
+	if not self.m_Enabled and self.m_Type ~= "Paradrop" then
+		return
+	end
+
+	if #self.m_OpenParachuteList == 0 then
+		return
+	end
+
+	for l_Index, l_PlayerId in pairs(self.m_OpenParachuteList) do
+		local s_Player = PlayerManager:GetPlayerById(l_PlayerId)
+
+		if s_Player ~= nil and s_Player == p_Player then
+			m_Logger:Write("Open Parachute for player: " .. s_Player.name)
+			s_Player.input:SetLevel(EntryInputActionEnum.EIAToggleParachute, 1.0)
+			table.remove(self.m_OpenParachuteList, l_Index)
+			return
+		end
+	end
 end
 
-function Gunship:OnEngineUpdate(p_GameState, p_DeltaTime)
-    if self.m_PlayerUpdateInputEvent ~= nil then
-        if p_GameState >= 5 and #self.m_OpenParachuteList == 0 then
-            m_Logger:Write("Unsubscribe Player:UpdateInput")
-            self.m_PlayerUpdateInputEvent:Unsubscribe()
-            self.m_PlayerUpdateInputEvent = nil
-        end
-    elseif p_GameState <= 1 then
-        self.m_PlayerUpdateInputEvent = Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
-    end
-    
-    if not self.m_SetFlyPath then
-        if self.m_VehicleEntity ~= nil then
-            NetEvents:BroadcastLocal(GunshipEvents.Position, self.m_VehicleEntity.transform)
-            NetEvents:BroadcastLocal(GunshipEvents.Yaw, self.m_StartTransform)
-        end
+-- =============================================
+-- Custom (Net-)Events
+-- =============================================
 
-        return
-    end
+function Gunship:OnJumpOutOfGunship(p_Player)
+	local s_Transform = self:GetVehicleEntityTransform()
+	s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 20, s_Transform.trans.z)
 
-    if self.m_StartTransform == nil then
-        return
-    end
-    
-    self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
 
-    if self.m_CumulatedTime >= 0.1 then
-        self.m_SetFlyPath = false
-        self.m_CumulatedTime = 0
-        self:SetLocatorEntityTransform()
-        self:SetVehicleEntityTransform()
-        NetEvents:BroadcastLocal(GunshipEvents.Camera)
-    end
+	if s_BrPlayer == nil then
+		return
+	end
+
+	s_BrPlayer:Spawn(s_Transform)
+	NetEvents:SendToLocal(GunshipEvents.JumpOut, p_Player)
 end
 
-function Gunship:Spawn(p_StartTransform, p_Enable)
-    if p_Enable == self.m_Enabled then
-        return
-    end
+function Gunship:OnOpenParachute(p_Player)
+	if p_Player == nil then
+		return
+	end
 
-    local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleSpawnEntity")
-    local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
-
-    while s_VehicleSpawnEntity do
-        if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0") then
-            s_VehicleSpawnEntity = Entity(s_VehicleSpawnEntity)
-            if p_Enable == true then
-                if p_StartTransform == nil then
-                    return
-                end
-                self.m_StartTransform = p_StartTransform
-
-                s_VehicleSpawnEntity:FireEvent("Spawn")
-
-                self.m_SetFlyPath = true
-                self.m_Enabled = true
-            else
-                s_VehicleSpawnEntity:FireEvent("Unspawn")
-                
-                self.m_VehicleEntity = nil
-                self.m_Enabled = false
-            end
-            return
-        end
-
-        s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
-    end
+	table.insert(self.m_OpenParachuteList, p_Player.id)
 end
 
-function Gunship:GetEnabled()
-    return self.m_Enabled
+-- =============================================
+-- Functions
+-- =============================================
+
+-- =============================================
+	-- Enable / Disable Gunship
+-- =============================================
+
+function Gunship:Enable(p_StartPos, p_EndPos, p_TimeToFly, p_Type)
+	if self.m_Enabled then
+		return
+	end
+
+	if p_StartPos == nil or p_EndPos == nil or p_TimeToFly == nil or p_Type == nil then
+		return
+	end
+
+	self.m_CalculatedTime = 0.0
+	self.m_StartPos = p_StartPos
+	self.m_EndPos = p_EndPos
+	self.m_TimeToFly = p_TimeToFly
+	self.m_Enabled = true
+
+	self:Spawn()
+	NetEvents:BroadcastLocal(GunshipEvents.Enable, p_Type)
 end
 
-function Gunship:SetVehicleEntityTransform()
-    local s_VehicleEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
-    local s_VehicleEntity = s_VehicleEntityIterator:Next()
+function Gunship:Disable()
+	if not self.m_Enabled then
+		return
+	end
 
-    while s_VehicleEntity do
-        if s_VehicleEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") then
-            s_VehicleEntity = SpatialEntity(s_VehicleEntity)
-            s_VehicleEntity.transform = self.m_StartTransform
-            self.m_VehicleEntity = s_VehicleEntity
-            break
-        end
+	self:RegisterVars()
 
-        s_VehicleEntity = s_VehicleEntityIterator:Next()
-    end
+	self:Destroy()
+	NetEvents:BroadcastLocal(GunshipEvents.Disable)
 end
 
-function Gunship:SetLocatorEntityTransform()
-    local s_LocatorEntityIterator = EntityManager:GetIterator("LocatorEntity")
-    local s_LocatorEntity = s_LocatorEntityIterator:Next()
+-- =============================================
+	-- Spawn / Unspawn Gunship
+-- =============================================
 
-    while s_LocatorEntity do
-        s_LocatorEntity = SpatialEntity(s_LocatorEntity)
+function Gunship:Spawn()
+	local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleSpawnEntity")
+	local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
 
-        local s_DirectionTransform = self.m_StartTransform
+	while s_VehicleSpawnEntity do
+		if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0") then
+			s_VehicleSpawnEntity = Entity(s_VehicleSpawnEntity)
+			s_VehicleSpawnEntity:FireEvent("Spawn")
+			return
+		end
 
-        local s_SpeedMultiplier = self.m_SpeedMultiplier
-        local s_TickRate = SharedUtils:GetTickrate()
-        if s_TickRate == 120.0 then
-            s_SpeedMultiplier = s_SpeedMultiplier / 4
-            s_DirectionTransform.trans.x = s_DirectionTransform.trans.x + self.m_StartTransform.forward.x * s_SpeedMultiplier
-            s_DirectionTransform.trans.z = s_DirectionTransform.trans.z + self.m_StartTransform.forward.z * s_SpeedMultiplier
-        elseif s_TickRate == 60.0 then
-            s_SpeedMultiplier = s_SpeedMultiplier * 2
-            s_DirectionTransform.trans.x = s_DirectionTransform.trans.x + self.m_StartTransform.forward.x * s_SpeedMultiplier
-            s_DirectionTransform.trans.z = s_DirectionTransform.trans.z + self.m_StartTransform.forward.z * s_SpeedMultiplier
-        else
-            s_DirectionTransform.trans.x = s_DirectionTransform.trans.x - self.m_StartTransform.forward.x * s_SpeedMultiplier
-            s_DirectionTransform.trans.z = s_DirectionTransform.trans.z - self.m_StartTransform.forward.z * s_SpeedMultiplier
-        end
-
-        s_LocatorEntity.transform = s_DirectionTransform
-        s_LocatorEntity = s_LocatorEntityIterator:Next()
-    end
+		s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
+	end
 end
 
-return Gunship
+function Gunship:Destroy()
+	local s_VehicleSpawnEntityIterator = EntityManager:GetIterator("ServerVehicleSpawnEntity")
+	local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
+
+	while s_VehicleSpawnEntity do
+		if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0") then
+			s_VehicleSpawnEntity = Entity(s_VehicleSpawnEntity)
+			s_VehicleSpawnEntity:FireEvent("Unspawn")
+			return
+		end
+
+		s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
+	end
+end
+
+-- =============================================
+	-- Set Functions
+-- =============================================
+
+function Gunship:SetVehicleEntityTransform(p_Transform)
+	local s_VehicleEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
+	local s_VehicleEntity = s_VehicleEntityIterator:Next()
+
+	while s_VehicleEntity do
+		if s_VehicleEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") then
+			s_VehicleEntity = SpatialEntity(s_VehicleEntity)
+			s_VehicleEntity.transform = p_Transform
+			break
+		end
+
+		s_VehicleEntity = s_VehicleEntityIterator:Next()
+	end
+end
+
+function Gunship:SetLocatorEntityTransform(p_Transform)
+	local s_LocatorEntityIterator = EntityManager:GetIterator("LocatorEntity")
+	local s_LocatorEntity = s_LocatorEntityIterator:Next()
+
+	while s_LocatorEntity do
+		if s_LocatorEntity.data.instanceGuid == Guid("B7C9767E-4154-49F9-B934-F80923BB82C0") then
+			s_LocatorEntity = SpatialEntity(s_LocatorEntity)
+			s_LocatorEntity.transform = p_Transform
+			return
+		end
+
+		s_LocatorEntity = s_LocatorEntityIterator:Next()
+	end
+end
+
+-- =============================================
+	-- Get Functions
+-- =============================================
+
+function Gunship:GetVehicleEntityTransform()
+	local s_VehicleEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
+	local s_VehicleEntity = s_VehicleEntityIterator:Next()
+
+	while s_VehicleEntity do
+		if s_VehicleEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") then
+			s_VehicleEntity = SpatialEntity(s_VehicleEntity)
+			return s_VehicleEntity.transform
+		end
+
+		s_VehicleEntity = s_VehicleEntityIterator:Next()
+	end
+
+	return nil
+end
+
+function Gunship:GetCurrentPosition(p_Time)
+	return Vec3(
+		MathUtils:Lerp(self.m_StartPos.x, self.m_EndPos.x, p_Time),
+		self.m_StartPos.y,
+		MathUtils:Lerp(self.m_StartPos.z, self.m_EndPos.z, p_Time)
+	)
+end
+
+if g_Gunship == nil then
+	g_Gunship = Gunship()
+end
+
+return g_Gunship

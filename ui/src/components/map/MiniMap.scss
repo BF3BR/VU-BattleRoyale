@@ -1,0 +1,96 @@
+#miniMap {
+    position: absolute;
+    box-sizing: border-box;
+    bottom: 2vw;
+    left: 2.5vw;
+    height: 12vw;
+    width: 12vw;
+    border: 0.1vw solid rgba(7,7,7,.8);
+    background: transparent url('../../assets/img/noise.gif') 50% 50% no-repeat;
+    background-size: cover;
+    box-shadow: 0 0 0.25vw rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    &.hideMinimap {
+        display: none !important;
+    }
+
+    #pixiRotator {
+        position: absolute;
+        width: 160% !important;
+        height: 160% !important;
+        left: -30%;
+        top: -30%;
+    }
+
+    canvas {
+        /*position: absolute;
+        width: 160% !important;
+        height: 160% !important;
+        left: -30%;
+        top: -30%;*/
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    &.open {
+        position: absolute;
+        bottom: 50%;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        height: 90vh;
+        width: 90vh;
+        background-size: 300px !important;
+        background-repeat: repeat;
+        max-height: 2048px;
+        max-width: 2048px;
+
+        #pixiRotator,
+        canvas {
+            left: 0;
+            top: 0;
+            width: 100% !important;
+            height: 100% !important;
+            transform: rotate(0deg) !important;
+        }
+    }
+}
+
+.details {
+    position: absolute;
+    top: 10vh;
+    left: calc(50% + 45vh);
+    font-size: 0.75vw;
+    text-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    display: flex;
+    flex-flow: column;
+    background: rgba(0, 0, 0, 0.6);
+    padding: .75vw 1vw;
+
+    .detail {
+        margin-bottom: 1vw;
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+
+    span {
+        &.keyboard {
+            border: .15vw solid #fff;
+            border-radius: 0.25vw;
+            margin: 0 .65vw 0 0;
+            background: rgba(255, 255, 255, 0.1);
+            height: 1.15vw;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+            padding: 0 .3vw .15vw .3vw;
+        }
+    }
+}

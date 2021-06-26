@@ -1,14 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render(
-    <App />,
-    document.getElementById('root')
+import { applyMiddleware, createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import ReduxThunk from 'redux-thunk';
+import { RootReducer } from "./store/RootReducer";
+
+import Alert from './store/alert/Alert';
+import KillMessage from './store/killmsg/KillMessage';
+import InteractMessage from './store/interactivemsg/InteractMessage';
+
+import App from './App';
+
+
+const store = createStore(
+    RootReducer,
+    composeWithDevTools(
+        applyMiddleware(ReduxThunk)
+    )
 );
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+ReactDOM.render(
+    <Provider store={store}>
+        <KillMessage />
+        <Alert />
+        <InteractMessage />
+        <App />
+    </Provider>,
+    document.getElementById('root')
+);

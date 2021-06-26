@@ -1,57 +1,68 @@
 require "__shared/Enums/GameStates"
 
-ServerConfig = 
-{
-    -- Minimum ammounts of players to start the warmup and then the match
-    MinPlayersToStart = 2,
+ServerConfig = {
+	-- Minimum ammounts of players to start the warmup and then the match
+	MinPlayersToStart = 5,
 
-    -- Number of player per team
-    PlayersPerTeam = 2,
+	-- Number of player per team
+	PlayersPerTeam = 4,
 
-    -- Time to update some of the HUD components
-    HudUpdateRate = 2.5,
+	-- Time to update some of the HUD components
+	HudUpdateRate = 2.5,
 
-    GunshipDespawn = 60.0,
+	GunshipDespawn = 60.0,
 
-    ParachuteRaycastUpdateRate = 0.2,
+	ParachuteRaycastUpdateRate = 0.2,
 
-    ForceParachuteHeight = 150.0,
+	ForceParachuteHeight = 125.0,
 
-    MatchStateTimes = {
-        [GameStates.None] = nil,
-        [GameStates.Warmup] = 60.0,
-        [GameStates.WarmupToPlane] = 5.0,
-        [GameStates.Plane] = 35.0,
-        [GameStates.PlaneToFirstCircle] = 5.0,
-        [GameStates.Match] = nil,
-        [GameStates.EndGame] = 15.0,
-    },
+	UseOfficialImage = false,
 
-    -- DEBUG STUFF
-    Debug = {
-        EnableLootPointSpheres = false,
+	MatchStateTimes = {
+		[GameStates.None] = nil,
+		[GameStates.Warmup] = 20.0,
+		[GameStates.WarmupToPlane] = 5.0,
+		[GameStates.Plane] = 35.0,
+		[GameStates.PlaneToFirstCircle] = 10.0,
+		[GameStates.Match] = nil,
+		[GameStates.EndGame] = 15.0,
+	},
 
-        Logger_Enabled = true,
+	PlayerColors = {
+		Vec4(0.619, 0.772, 0.333, 0.5),
+		Vec4(1.000, 0.733, 0.337, 0.5),
+		Vec4(1.000, 0.623, 0.501, 0.5),
+		Vec4(0.580, 0.803, 0.952, 0.5)
+	},
 
-        Logger_Print_All = true,
+	-- DEBUG STUFF
+	Debug = {
+		EnableAllChat = true,
 
-        EnableWinningCheck = true,
+		EnableLootPointSpheres = false,
 
-        ShowAllNametags = false,
+		Logger_Enabled = true,
 
-        Whitelist = {
-            "voteban_flash",
-            "Bree",
-            "Janssent",
-            "[HCM]Janssent",
-            "KVN",
-            "breaknix",
-            "kiwidog",
-            "kiwidoggie",
-            "keku645",
-            "DankBoi21",
-            "FoolHen",
-            "beogath",
-        },
-    }
+		Logger_Print_All = true,
+
+		EnableWinningCheck = false,
+
+		ShowAllNametags = false,
+
+		Whitelist = {
+			"voteban_flash",
+			"Bree",
+			"Janssent",
+			"[HCM]Janssent",
+			"KVN",
+			"breaknix",
+			"kiwidog",
+			"kiwidoggie",
+			"keku645",
+			"DankBoi21",
+			"FoolHen",
+			"beogath",
+			"lol24",
+		},
+	}
 }

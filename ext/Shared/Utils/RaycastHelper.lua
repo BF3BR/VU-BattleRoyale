@@ -1,12 +1,15 @@
+require "__shared/Enums/CustomEvents"
+
 class "RaycastHelper"
 
 function RaycastHelper:__init()
-    self.m_RaycastMemo = {}
+	self.m_RaycastMemo = {}
 
-    Events:Subscribe("Level:Destroy", self, self.Clear)
+	Events:Subscribe("Level:Destroy", self, self.Clear)
+	Events:Subscribe(PhaseManagerEvent.Update, self, self.Clear)
 
-    -- Memoize Functions https://www.lua.org/pil/17.1.html
-    setmetatable(self.m_RaycastMemo, {__mode = "kv"})
+	-- Memoize Functions https://www.lua.org/pil/17.1.html
+	setmetatable(self.m_RaycastMemo, {__mode = "kv"})
 end
 
 -- Returns the ground height (Y) value of a certain position
@@ -42,7 +45,7 @@ end
 
 -- Clears the result cache
 function RaycastHelper:Clear()
-    self.m_RaycastMemo = {}
+	self.m_RaycastMemo = {}
 end
 
 g_RaycastHelper = RaycastHelper()

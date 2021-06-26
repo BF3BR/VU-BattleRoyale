@@ -23,15 +23,13 @@ function Logger:Write(p_Message)
 
 	if ServerConfig.Debug.Logger_Print_All == true and self.className ~= nil then
 		goto continue
-
-	elseif self.debug == false or
-		 self.debug == nil or
-		 self.className == nil then
+	elseif self.debug == false or self.debug == nil or self.className == nil then
 		return
 	end
 
 	::continue::
-	if(type(p_Message) == 'table') then
+
+	if(type(p_Message) == "table") then
 		print("["..self.className.."]")
 		print(p_Message)
 	else

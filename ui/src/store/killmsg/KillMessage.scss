@@ -1,0 +1,19 @@
+#KillMessage {
+    position: absolute;
+    bottom: 7vw;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.25vw;
+    text-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+
+    span {
+        margin-top: .25vw;
+        color: var(--warning);
+        text-shadow: 0 0 0.25vw rgba(196, 117, 50, 0.8);
+        font-size: 1.25vw;
+    }
+}

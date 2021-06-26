@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { RootState } from "../store/RootReducer";
+import { connect } from "react-redux";
 
-import PercentageCounter from "./PercentageCounter";
-import { WeaponNames } from "../helpers/WeaponNames";
+import PercentageCounter from "./helpers/PercentageCounter";
+import { WeaponNames } from "../helpers/WeaponNamesHelper";
 
 import "./AmmoAndHealthCounter.scss";
 
-interface Props {
+interface StateFromReducer {
     playerHealth: number;
     playerArmor: number;
     playerPrimaryAmmo: number;
@@ -13,7 +15,11 @@ interface Props {
     playerFireLogic: string;
     playerCurrentWeapon: string;
     playerIsInPlane: boolean;
+    spectating: boolean;
+    spectatorTarget: string;
 }
+
+type Props = StateFromReducer;
 
 const AmmoAndHealthCounter: React.FC<Props> = ({ 
     playerHealth, 
@@ -22,7 +28,9 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
     playerSecondaryAmmo, 
     playerFireLogic, 
     playerCurrentWeapon, 
-    playerIsInPlane
+    playerIsInPlane,
+    spectating,
+    spectatorTarget
 }) => {
     const [visible, setVisible] = useState<boolean>(false);
 
@@ -69,22 +77,30 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
             <div id="AmmoAndHealthCounter">
                 {(playerIsInPlane === false) &&
                     <>
-                        <div className={"WeaponName " + (visible ? 'IsVisible' : '')}>
-                            {playerCurrentWeapon !== '' &&
-                                <>
-                                    {WeaponNames[playerCurrentWeapon]}
-                                </>
-                            }
-                        </div>
-                        <div className="AmmoCounter">
-                            <div className="current" dangerouslySetInnerHTML={padLeadingZeros(playerPrimaryAmmo, playerCurrentWeapon)}></div>
-                            <div className="left">
-                                <span className="mag" dangerouslySetInnerHTML={padLeadingZeros(playerSecondaryAmmo, playerCurrentWeapon)}></span>
-                                <span className="type">{playerFireLogic??"AUTO"}</span>
-                            </div>
-                        </div>
-                        <PercentageCounter type="Armor" value={playerArmor??0} />
-                        <PercentageCounter type="Health" value={playerHealth??0} />
+                        {spectating === false &&
+                            <>
+                                <div className={"WeaponName " + (visible ? 'IsVisible' : '')}>
+                                    {playerCurrentWeapon !== '' &&
+                                        <>
+                                            {WeaponNames[playerCurrentWeapon]}
+                                        </>
+                                    }
+                                </div>
+                                <div className="AmmoCounter">
+                                    <div className="current" dangerouslySetInnerHTML={padLeadingZeros(playerPrimaryAmmo, playerCurrentWeapon)}></div>
+                                    <div className="left">
+                                        <span className="mag" dangerouslySetInnerHTML={padLeadingZeros(playerSecondaryAmmo, playerCurrentWeapon)}></span>
+                                        <span className="type">{playerFireLogic??"AUTO"}</span>
+                                    </div>
+                                </div>
+                            </>
+                        }
+                        {((spectating && spectatorTarget !== "") || spectating === false) &&
+                            <>
+                                <PercentageCounter type="Armor" value={playerArmor??0} />
+                                <PercentageCounter type="Health" value={playerHealth??0} />
+                            </>
+                        }
                     </>
                 }
             </div>
@@ -93,4 +109,22 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
     );
 };
 
-export default AmmoAndHealthCounter;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // PlayerReducer
+        playerHealth: state.PlayerReducer.hud.health, 
+        playerArmor: state.PlayerReducer.hud.armor,
+        playerPrimaryAmmo: state.PlayerReducer.hud.primaryAmmo,
+        playerSecondaryAmmo: state.PlayerReducer.hud.secondaryAmmo,
+        playerFireLogic: state.PlayerReducer.hud.fireLogic,
+        playerCurrentWeapon: state.PlayerReducer.hud.currentWeapon,
+        playerIsInPlane: state.PlayerReducer.isOnPlane,
+        // SpectatorReducer
+        spectating: state.SpectatorReducer.enabled,
+        spectatorTarget: state.SpectatorReducer.target,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(AmmoAndHealthCounter);
