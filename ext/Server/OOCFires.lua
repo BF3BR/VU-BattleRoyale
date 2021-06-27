@@ -49,14 +49,15 @@ function OOCFires:ShouldSpawnItems(p_Circle)
     return math.abs(self.m_LastSpawnRadius - p_Circle.m_Radius) > 4
 end
 
-function OOCFires:AddItems(p_Items)
+function OOCFires:AddItems(p_Positions)
     local l_AddedItems = {}
 
     -- try to all add new items
-    for l_Index = 1, #p_Items do
+    for l_Index = 1, #p_Positions do
         -- add new item
-        if self:AddItem(p_Items[l_Index]) then
-            table.insert(l_AddedItems, p_Items[l_Index])
+        local l_Item = self:AddItem(p_Positions[l_Index])
+        if l_Item ~= nil then
+            table.insert(l_AddedItems, l_Item)
 
             -- remove oldest item
             self:RemoveOldestItem()
@@ -73,17 +74,32 @@ function OOCFires:CanAddItem(p_Item)
     return not self.m_SpawnGrid[self:GridKey(p_Item)]
 end
 
-function OOCFires:AddItem(p_Item)
+function OOCFires:GetRandomEffectIndex()
+    local l_RandNum = MathUtils:GetRandom(0, 1)
+
+    if l_RandNum > 0.3 then
+        return 1
+    else
+        return 2
+    end
+end
+
+function OOCFires:AddItem(p_Position)
+    local l_Item = {
+        Position = p_Position,
+        Effect = self:GetRandomEffectIndex()
+    }
+
     -- check if item should be added
-    if not self:CanAddItem(p_Item) then
-        return false
+    if not self:CanAddItem(l_Item) then
+        return nil
     end
 
     -- add to queue and grid
-    self.m_Queue:Enqueue(p_Item)
-    self.m_SpawnGrid[self:GridKey(p_Item)] = true
+    self.m_Queue:Enqueue(l_Item)
+    self.m_SpawnGrid[self:GridKey(l_Item)] = true
 
-    return true
+    return l_Item
 end
 
 -- Removes the oldest item if the queue is above the limit
@@ -115,7 +131,7 @@ function OOCFires:SendState(p_Player)
 end
 
 function OOCFires:GridKey(p_Item)
-    return string.format("%.0f:%.0f", p_Item.x // s_GridSize, p_Item.y // s_GridSize)
+    return string.format("%.0f:%.0f", p_Item.Position.x // s_GridSize, p_Item.Position.y // s_GridSize)
 end
 
 function OOCFires:OnPlayerConnected(p_Player)
