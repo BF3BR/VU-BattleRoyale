@@ -54,6 +54,11 @@ function Circle:AsTable()
 	return {Center = self.m_Center, Radius = self.m_Radius}
 end
 
+-- Creates a Circle instance from table data
+function Circle:FromTable(p_Table)
+	return Circle(p_Table.Center, p_Table.Radius)
+end
+
 -- Returns a copy of this circle
 function Circle:Clone()
 	return Circle(self.m_Center:Clone(), self.m_Radius)

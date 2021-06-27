@@ -12,6 +12,7 @@ require "__shared/Enums/CustomEvents"
 
 require "PhaseManagerClient"
 require "BRPlayer"
+require "Visuals/OOCFires"
 
 local m_HudUtils = require "Utils/HudUtils"
 local m_VanillaUIManager = require "VanillaUIManager"

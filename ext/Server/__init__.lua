@@ -8,6 +8,8 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/Timers"
 
+require "OOCFires"
+
 require "Match"
 
 local m_Whitelist = require "Whitelist"
