@@ -16,11 +16,11 @@ function Queue:Dequeue()
         return nil
     end
 
-    local value = self.m_Data[self.m_First]
+    local l_Value = self.m_Data[self.m_First]
     self.m_Data[self.m_First] = nil
 
     self.m_First = self.m_First + 1
-    return value
+    return l_Value
 end
 
 function Queue:IsEmpty()
@@ -29,4 +29,17 @@ end
 
 function Queue:Size()
     return self.m_Last - self.m_First + 1
+end
+
+function Queue:AsList()
+    if self:IsEmpty() then
+        return {}
+    end
+
+    local l_List = {}
+    for i = self.m_First, self.m_Last do
+        table.insert(l_List, self.m_Data[i])
+    end
+
+    return l_List
 end

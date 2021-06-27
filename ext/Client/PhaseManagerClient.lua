@@ -147,7 +147,7 @@ function PhaseManagerClient:OnRender()
 end
 
 -- Moves the outer circle (danger zone)
-function PhaseManagerClient:MoveOuterCircle(p_Timer)
-	PhaseManagerShared.MoveOuterCircle(self, p_Timer)
-	Events:DispatchLocal(PhaseManagerEvent.CircleMove, self.m_OuterCircle:AsTable())
-end
+-- function PhaseManagerClient:MoveOuterCircle(p_Timer)
+-- 	PhaseManagerShared.MoveOuterCircle(self, p_Timer)
+-- 	Events:DispatchLocal(PhaseManagerEvent.CircleMove, self.m_OuterCircle:AsTable())
+-- end
