@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { RootState } from "../store/RootReducer";
 
-import "./SpactatorInfo.scss";
+import "./SpectatorInfo.scss";
 
 
 interface StateFromReducer {
@@ -12,11 +12,11 @@ interface StateFromReducer {
 
 type Props = StateFromReducer;
 
-const SpactatorInfo: React.FC<Props> = ({ spectating, spectatorTarget }) => {
+const SpectatorInfo: React.FC<Props> = ({ spectating, spectatorTarget }) => {
 
     return (
         <>
-            <div id="SpactatorInfo" className={"card " + (spectating ? 'show' : '')}>
+            <div id="SpectatorInfo" className={"card " + (spectating ? 'show' : '')}>
                 <div className="card-header">
                     <h1>
                         Spectating
@@ -41,5 +41,5 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: any) => {
     return {};
 }
-export default connect(mapStateToProps, mapDispatchToProps)(SpactatorInfo);
+export default connect(mapStateToProps, mapDispatchToProps)(SpectatorInfo);
 
