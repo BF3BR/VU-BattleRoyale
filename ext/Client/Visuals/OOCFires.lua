@@ -22,6 +22,7 @@ function OOCFires:RegisterEvents()
     NetEvents:Subscribe("OOCF:SpawnItems", self, self.OnReceiveItems)
 
     Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
+    Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
 end
 
 function OOCFires:SpawnItem(p_Item)
@@ -116,6 +117,9 @@ function OOCFires:OnLevelDestroy()
     self:ResetVars()
 end
 
+function OOCFires:OnExtensionUnloading()
+    self:UnspawnAll()
+end
 
 -- define global
 if g_OOCFires == nil then

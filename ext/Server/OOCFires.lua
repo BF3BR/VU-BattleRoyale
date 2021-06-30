@@ -4,8 +4,8 @@ class "OOCFires"
 
 local m_Logger = Logger("OOCFires", true)
 
-local s_MaxEffectsNumber = 256
-local s_GridSize = 16
+local m_MaxEffectsNumber = 256
+local m_GridSize = 16
 
 function OOCFires:__init()
     self:ResetVars()
@@ -27,6 +27,7 @@ function OOCFires:RegisterEvents()
 
     Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
     Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
+    Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
 end
 
 function OOCFires:GetRandomCircumPositions(p_Circle, p_Num)
@@ -107,7 +108,7 @@ function OOCFires:RemoveOldestItem(p_Force)
     p_Force = not (not p_Force)
 
     -- check if queue is over the limit
-    if not p_Force and self.m_Queue:Size() <= s_MaxEffectsNumber then
+    if not p_Force and self.m_Queue:Size() <= m_MaxEffectsNumber then
         return
     end
 
@@ -123,7 +124,7 @@ end
 
 function OOCFires:SendState(p_Player)
     local l_State = {
-        MaxEffectsNumber = s_MaxEffectsNumber,
+        MaxEffectsNumber = m_MaxEffectsNumber,
         Items = self.m_Queue:AsList()
     }
 
@@ -131,7 +132,7 @@ function OOCFires:SendState(p_Player)
 end
 
 function OOCFires:GridKey(p_Item)
-    return string.format("%.0f:%.0f", p_Item.Position.x // s_GridSize, p_Item.Position.y // s_GridSize)
+    return string.format("%.0f:%.0f", p_Item.Position.x // m_GridSize, p_Item.Position.y // m_GridSize)
 end
 
 function OOCFires:OnPlayerConnected(p_Player)
@@ -160,6 +161,10 @@ function OOCFires:OnLevelLoaded()
 end
 
 function OOCFires:OnLevelDestroy()
+    self:ResetVars()
+end
+
+function OOCFires:OnExtensionUnloading()
     self:ResetVars()
 end
 
