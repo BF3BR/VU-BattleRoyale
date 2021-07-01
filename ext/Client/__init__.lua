@@ -61,6 +61,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Player:Connected", self, self.OnPlayerConnected)
 	Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn)
 	Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted)
+	Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange)
 
 	NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
 	NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
@@ -239,6 +240,16 @@ end
 
 function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
 	m_SpectatorClient:OnPlayerDeleted(p_Player)
+end
+
+function VuBattleRoyaleClient:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
+	if p_Player == PlayerManager:GetLocalPlayer() or self:IsTeamMate(p_Player) then
+		p_Player:OverrideTeamId(TeamId.Team1)
+		p_Player:OverrideSquadId(SquadId.Squad1)
+	else
+		p_Player:OverrideTeamId(TeamId.Team2)
+		p_Player:OverrideSquadId(SquadId.Squad1)
+	end
 end
 
 -- =============================================
@@ -634,6 +645,26 @@ function VuBattleRoyaleClient:OnHotReload()
 		m_HudUtils:ShowCrosshair(false)
 		m_HudUtils:OnEnableMouse()
 	end)
+end
+
+function VuBattleRoyaleClient:IsTeamMate(p_Player)
+	if self.m_BrPlayer == nil then
+		return false
+	end
+
+	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+
+	if s_TeamPlayers ~= nil then
+		for _, l_Teammate in ipairs(s_TeamPlayers) do
+			if l_Teammate ~= nil then
+				if p_Player.name == l_Teammate.Name then
+					return true
+				end
+			end
+		end
+	end
+
+	return false
 end
 
 return VuBattleRoyaleClient()
