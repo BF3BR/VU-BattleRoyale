@@ -63,6 +63,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted)
 	Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange)
 
+	Events:Subscribe('Soldier:HealthAction', self, self.OnSoldierHealthAction)
+
 	NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
 	NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
 	NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill)
@@ -250,6 +252,10 @@ function VuBattleRoyaleClient:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
 		p_Player:OverrideTeamId(TeamId.Team2)
 		p_Player:OverrideSquadId(SquadId.Squad1)
 	end
+end
+
+function VuBattleRoyaleClient:OnSoldierHealthAction(p_Soldier, p_Action)
+	m_Hud:OnSoldierHealthAction(p_Soldier, p_Action)
 end
 
 -- =============================================
