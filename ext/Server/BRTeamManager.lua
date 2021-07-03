@@ -18,6 +18,9 @@ function BRTeamManager:RegisterVars()
 
 	-- [name] -> [BRPlayer]
 	self.m_Players = {}
+
+	-- [player id] -> [BRMerchant]
+	self.m_Merchants = { }
 end
 
 function BRTeamManager:RegisterEvents()
@@ -95,6 +98,18 @@ end
 -- @return BRPlayer|nil
 function BRTeamManager:GetPlayer(p_Player)
 	return self.m_Players[BRPlayer:GetPlayerName(p_Player)]
+end
+
+-- Returns the BRMerchant instance of a player if player is a bot
+--
+-- @param p_Player Player
+-- @return BRMerchant|nil
+function BRTeamManager:GetMerchant(p_Player)
+	if p_Player == nil then
+		return nil
+	end
+
+	return self.m_Merchants[p_Player.name]
 end
 
 -- Returns a BRTeam by it's id
@@ -215,6 +230,30 @@ function BRTeamManager:AssignTeams()
 		end
 
 		l_BrTeam:ApplyTeamSquadIds()
+	end
+
+	-- Create our merchants
+	local s_MerchantNameIndex = 0
+	local s_MerchantTransforms = MerchantsConfig.Spawns[""] -- TODO: Map name
+	for _, l_Transform in pairs(s_MerchantTransforms) do
+		-- TODO: Determine what the merchant team would be
+
+		local l_Merchant = BRMerchant("Merchant" .. s_MerchantNameIndex, TeamId.Team3, SquadId.SquadNone, l_Transform, MerchantsConfig.Types.AMMO)
+		if l_Merchant == nil then
+			print("could not create new merchant...")
+			goto __merchant_spawn_cont__
+		end
+
+		-- Spawn the merchant (also gives it a player id)
+		l_Merchant:Spawn()
+
+		-- Get the merchant player id
+		local l_MerchantId = l_Merchant:GetPlayerId()
+
+		-- Save the merchant by player id
+		self.m_Merchants[l_MerchantId] = l_Merchant
+
+		::__merchant_spawn_cont__::
 	end
 end
 

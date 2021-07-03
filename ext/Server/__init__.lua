@@ -1,3 +1,4 @@
+local MP_001 = require "ext.Shared.Maps.MP_001"
 class "VuBattleRoyaleServer"
 
 require "__shared/Configs/ServerConfig"
@@ -346,11 +347,30 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 		return
 	end
 
-	local l_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
 	local l_BrGiver = nil
-
 	if p_GiverInfo.giver ~= nil then
 		l_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
+	end
+
+	local s_BrMerchant = m_TeamManager:GetMerchant(p_Soldier.player)
+	if s_BrMerchant ~= nil then
+		if l_BrGiver ~= nil then
+			-- We have a merchant, handle accordingly
+			s_BrMerchant:AddDamageForPlayer(l_BrGiver, p_Info.damage)
+		end
+
+		-- Players are not able to hurt merchants
+		p_Info.damage = 0
+
+		-- Override
+		p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
+		return
+	end
+
+	local l_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
+	if l_BrPlayer == nil then
+		-- We do not have a valid br player
+		return
 	end
 
 	p_Info.damage = l_BrPlayer:OnDamaged(p_Info.damage, l_BrGiver)
