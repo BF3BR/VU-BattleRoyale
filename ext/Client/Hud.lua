@@ -788,7 +788,7 @@ function VuBattleRoyaleHud:PushManDownMapMarkers()
 
 				if s_Entity.instanceId == l_EntityInstanceId then
 					s_Entity.transform = s_Player.soldier.transform
-					return
+					break
 				end
 
 				s_Entity = s_EntityIterator:Next()
@@ -803,7 +803,7 @@ function VuBattleRoyaleHud:PushManDownMapMarkers()
 				if s_Entity.instanceId == l_EntityInstanceId then
 					s_Entity.transform = LinearTransform(Vec3(), Vec3(), Vec3(), Vec3(-9999, -9999, -9999))
 					self.m_ManDownMapMarkers[l_PlayerName] = nil
-					return
+					break
 				end
 
 				s_Entity = s_EntityIterator:Next()

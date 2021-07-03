@@ -218,6 +218,9 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_SoldierEntityData, "OnBeingInteractedFinished", "Revive", 3)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, "OnRevived", "OnRevived", 3)
 
+	-- Add connection between SoldierEntityData and CustomizeSoldierEntityData
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_CustomizeSoldierEntityData, "OnManDown", "Apply", 3)
+
 	-- Add connections between SoldierEntityData and the custom EventSplitterEntityDatas
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_StartEventSplitterEntityData, "OnBeingInteractedStarted", "Impulse", 2)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, "OnBeingInteractedCancelled", "Impulse", 2)
@@ -309,13 +312,13 @@ function ManDownModifier:OnWorldPartLoaded(p_WorldPartData, p_Registry)
 		s_MapMarkerEntityData.showRadius = 9999
 		s_MapMarkerEntityData.hideRadius = 0
 		s_MapMarkerEntityData.hudIcon = UIHudIcon.UIHudIcon_Revive
-		s_MapMarkerEntityData.verticalOffset = 0.0
-		s_MapMarkerEntityData.focusPointRadius = 80.0
+		s_MapMarkerEntityData.verticalOffset = 1.0
+		s_MapMarkerEntityData.focusPointRadius = 0.0
 		s_MapMarkerEntityData.useMarkerTransform = false
 		s_MapMarkerEntityData.isVisible = true
 		s_MapMarkerEntityData.snap = true
 		s_MapMarkerEntityData.showAirTargetBox = true
-		s_MapMarkerEntityData.isFocusPoint = true
+		s_MapMarkerEntityData.isFocusPoint = false
 		s_MapMarkerEntityData.indexInBlueprint = 1
 		s_MapMarkerEntityData.isEventConnectionTarget = 2
 		s_MapMarkerEntityData.isPropertyConnectionTarget = 3
