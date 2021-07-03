@@ -29,7 +29,13 @@ function LootManagerServer:OnLevelLoadResources()
 		return
 	end
 
-	for i, l_Transform in pairs(MapsConfig[s_LevelName].LootSpawnPoints) do
+	local s_MapConfig = MapsConfig[s_LevelName]
+	if s_MapConfig == nil then
+		print("skipping LootManagerServer, no map data found.")
+		return
+	end
+
+	for i, l_Transform in pairs(s_MapConfig.LootSpawnPoints) do
 		local s_Tier
 		local s_Random = MathUtils:GetRandom(0, 1) * s_AccumulatedWeight
 

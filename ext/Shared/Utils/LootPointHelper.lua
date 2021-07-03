@@ -21,13 +21,13 @@ function LootPointHelper:__init()
 end
 
 function LootPointHelper:OnLevelLoaded()
-	local s_LevelName = LevelNameHelper:GetLevelName()
-
-	if s_LevelName == nil then
+	local s_MapConfig = MapsConfig[s_LevelName]
+	if s_MapConfig == nil then
+		print("no map configuration data found for WeaponDropModifier.")
 		return
 	end
 
-	self.m_Points = MapsConfig[s_LevelName]["LootSpawnPoints"]
+	self.m_Points = s_MapConfig["LootSpawnPoints"]
 end
 
 function LootPointHelper:OnUIDrawHud()

@@ -220,7 +220,13 @@ function Match:GetRandomWarmupSpawnpoint()
 	end
 
 	local s_SpawnTrans = nil
-	s_SpawnTrans = MapsConfig[s_LevelName]["WarmupSpawnPoints"][ math.random( #MapsConfig[s_LevelName]["WarmupSpawnPoints"] ) ]
+	local s_MapConfig = MapsConfig[s_LevelName]
+	if s_MapConfig == nil then
+		print("skipping GetRandomWarmupSpawnpoint, no map data found.")
+		return nil
+	end
+
+	s_SpawnTrans = s_MapConfig["WarmupSpawnPoints"][ math.random( #s_MapConfig["WarmupSpawnPoints"] ) ]
 
 	return s_SpawnTrans
 end

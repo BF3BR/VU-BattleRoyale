@@ -83,6 +83,12 @@ function PhaseManagerServer:InitPhase()
 	-- start the timer for the next phase
 	self:SetTimer("NextSubphase", g_Timers:Timeout(self:GetCurrentDelay(), self, self.Next))
 
+	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
+	if s_MapConfig == nil then
+		print("skipping InitPhase, no map data found.")
+		return
+	end
+
 	if self.m_SubphaseIndex == SubphaseType.Waiting then
 		local l_Phase = self:GetCurrentPhase()
 		local l_NewRadius = l_Phase.Ratio * self.m_InnerCircle.m_Radius
@@ -90,7 +96,7 @@ function PhaseManagerServer:InitPhase()
 
 		-- pick a random circle center
 		if self.m_PhaseIndex == 1 then
-			l_NewRadius = MapsConfig[LevelNameHelper:GetLevelName()].InitialCircle.Radius
+			l_NewRadius = s_MapConfig.InitialCircle.Radius
 			l_NewCenter = self:GetRandomInitialCenter()
 		else
 			self.m_OuterCircle = self.m_InnerCircle:Clone()
@@ -197,20 +203,24 @@ function PhaseManagerServer:ClientTimer()
 end
 
 function PhaseManagerServer:GetRandomInitialCenter()
-	local l_LevelName = LevelNameHelper:GetLevelName()
+	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
+	if s_MapConfig == nil then
+		print("skipping InitPhase, no map data found.")
+		return
+	end
 
 	-- pick triangle index
 	local l_Rnd = MathUtils:GetRandom(0, 1)
 	local l_Index = 0
 
-	for l_CurrentIndex, l_Value in ipairs(MapsConfig[l_LevelName].InitialCircle.CumulativeDistribution) do
+	for l_CurrentIndex, l_Value in ipairs(s_MapConfig.InitialCircle.CumulativeDistribution) do
 		if l_Index < 1 and l_Value > l_Rnd then
 			l_Index = l_CurrentIndex
 		end
 	end
 
 	-- get random point from the triangle
-	local l_Triangle = MapsConfig[l_LevelName].InitialCircle.Triangles[l_Index]
+	local l_Triangle = s_MapConfig.InitialCircle.Triangles[l_Index]
 	local l_Center2 = MathHelper:RandomTrianglePoint(l_Triangle)
 
 	return Vec3(l_Center2.x, 0, l_Center2.y)

@@ -45,15 +45,21 @@ function OOCVision:CreateVisuals()
 		return
 	end
 
+	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
+	if s_MapConfig == nil then
+		print("skipping CreateVisuals, no map data found.")
+		return
+	end
+
 	local veData = VisualEnvironmentEntityData()
 	veData.enabled = true
 	veData.visibility = 1
 	veData.priority = 999999
 
-	local original = ResourceManager:SearchForInstanceByGuid(MapsConfig[LevelNameHelper:GetLevelName()].SkyComponentDataGuid)
+	local original = ResourceManager:SearchForInstanceByGuid(s_MapConfig.SkyComponentDataGuid)
 	if original == nil then
 		m_Logger:Write("Could not find original SkyComponentData")
-		return nil
+		return
 	end
 
 	local skyComponent = SkyComponentData(original:Clone())

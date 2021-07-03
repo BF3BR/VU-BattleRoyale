@@ -58,8 +58,8 @@ function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_Dedica
 	-- Register a load handler for the cql subworld of this level
 	--s_Config.SubWorldInstance:RegisterLoadHandlerOnce(self, self.OnSubWorldLoaded)
 
-	MapsConfig[s_MapId].OOB:RegisterLoadHandler(self, self.OnOOBLoaded)
-	MapsConfig[s_MapId].OOB2:RegisterLoadHandler(self, self.OnOOBLoaded)
+	s_Config.OOB:RegisterLoadHandler(self, self.OnOOBLoaded)
+	s_Config.OOB2:RegisterLoadHandler(self, self.OnOOBLoaded)
 end
 
 -- TODO: Implement generic map and gamemode modification system (that works)

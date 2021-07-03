@@ -1,4 +1,4 @@
-local MP_001 = require "ext.Shared.Maps.MP_001"
+--local MP_001 = require "ext.Shared.Maps.MP_001"
 class "VuBattleRoyaleServer"
 
 require "__shared/Configs/ServerConfig"

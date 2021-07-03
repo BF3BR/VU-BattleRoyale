@@ -14,7 +14,15 @@ end
 
 function WeaponDropModifier:OnRegisterEntityResources()
 	local s_Blueprint = self:CreateBlueprint()
-	local s_WorldPartData = WorldPartData(ResourceManager:SearchForInstanceByGuid(MapsConfig[LevelNameHelper:GetLevelName()].ConquestGameplayGuid))
+	
+	local s_LevelName = LevelNameHelper:GetLevelName()
+	local s_MapConfig = MapsConfig[s_LevelName]
+	if s_MapConfig == nil then
+		print("no map configuration data found for WeaponDropModifier.")
+		return
+	end
+
+	local s_WorldPartData = WorldPartData(ResourceManager:SearchForInstanceByGuid(s_MapConfig.ConquestGameplayGuid))
 	s_WorldPartData:MakeWritable()
 	local s_Registry = RegistryContainer()
 
