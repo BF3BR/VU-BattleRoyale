@@ -39,9 +39,7 @@ end
 -- Hooks
 -- =============================================
 
-function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
-	p_IgnoreProtection = not (not p_IgnoreProtection)
-
+function BRPlayer:OnDamaged(p_Damage, p_Giver)
 	-- check if giver isnt a teammate or the player himself
 	if p_Giver ~= nil and self:IsTeammate(p_Giver) and not self:Equals(p_Giver) then
 		return 0
@@ -68,7 +66,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IgnoreProtection)
 		s_Health = s_Health - 100
 
 		-- apply damage to the armor
-		if not p_IgnoreProtection then
+		if p_Giver ~= nil then
 			p_Damage = self.m_Armor:ApplyDamage(p_Damage)
 			self:SetArmor(self.m_Armor)
 		end
