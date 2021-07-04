@@ -188,7 +188,7 @@ function VuBattleRoyaleHud:OnSoldierHealthAction(p_Soldier, p_Action)
 		return
 	end
 
-	if p_Action == HealthStateAction.OnInteractiveManDown then
+	if p_Action == HealthStateAction.OnInteractiveManDown and p_Soldier.player ~= nil then
 		m_Logger:Write("HealthStateAction OnInteractiveManDown for player: " .. p_Soldier.player.name)
 		local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
 		local s_Entity = s_EntityIterator:Next()
