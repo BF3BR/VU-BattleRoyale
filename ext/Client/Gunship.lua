@@ -119,6 +119,10 @@ function Gunship:OnGunshipDisable()
 end
 
 function Gunship:OnForceJumpOufOfGunship()
+	if SpectatorManager:GetSpectating() then
+		return
+	end
+
 	if self.m_Type == "Paradrop" then
 		NetEvents:SendLocal(GunshipEvents.JumpOut)
 		self.m_IsInFreeFall = true
