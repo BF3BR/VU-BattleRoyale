@@ -132,9 +132,9 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 		return
 	end
 
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10) then
-		if (self.m_GameState ~= GameStates.Match and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle)
-		or s_LocalPlayer.soldier == nil then
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10)
+	and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle then
+		if self.m_GameState ~= GameStates.Match or s_LocalPlayer.soldier == nil then
 			WebUI:ExecuteJS("ToggleDeployMenu(true);")
 			m_HudUtils:ShowroomCamera(true)
 			m_HudUtils:ShowCrosshair(false)
