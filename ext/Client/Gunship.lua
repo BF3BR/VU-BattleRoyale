@@ -91,6 +91,10 @@ function Gunship:OnClientUpdateInput()
 		return
 	end
 
+	if SpectatorManager:GetSpectating() then
+		return
+	end
+
 	if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) then
 		NetEvents:SendLocal(GunshipEvents.JumpOut)
 		self.m_IsInFreeFall = true
