@@ -245,13 +245,7 @@ function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
 end
 
 function VuBattleRoyaleClient:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
-	if p_Player == PlayerManager:GetLocalPlayer() or self:IsTeamMate(p_Player) then
-		p_Player:OverrideTeamId(TeamId.Team1)
-		p_Player:OverrideSquadId(SquadId.Squad1)
-	else
-		p_Player:OverrideTeamId(TeamId.Team2)
-		p_Player:OverrideSquadId(SquadId.Squad1)
-	end
+	self:OverrideTeamIds(p_Player, p_TeamId)
 end
 
 function VuBattleRoyaleClient:OnSoldierHealthAction(p_Soldier, p_Action)
@@ -432,6 +426,15 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 
 	m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 	self.m_GameState = p_GameState
+
+	if p_GameState == GameStates.WarmupToPlane then
+		local s_Players = PlayerManager:GetPlayers()
+
+		for _, l_Player in pairs(s_Players) do
+			self:OverrideTeamIds(l_Player, l_Player.teamId)
+		end
+	end
+
 	m_Hud:OnGameStateChanged(p_GameState)
 	m_SpectatorClient:OnGameStateChanged(p_GameState)
 end
@@ -671,6 +674,18 @@ function VuBattleRoyaleClient:IsTeamMate(p_Player)
 	end
 
 	return false
+end
+
+function VuBattleRoyaleClient:OverrideTeamIds(p_Player, p_TeamId)
+	if p_Player == PlayerManager:GetLocalPlayer() or self:IsTeamMate(p_Player) then
+		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team1")
+		p_Player:OverrideTeamId(TeamId.Team1)
+		p_Player:OverrideSquadId(SquadId.Squad1)
+	else
+		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team2")
+		p_Player:OverrideTeamId(TeamId.Team2)
+		p_Player:OverrideSquadId(SquadId.Squad1)
+	end
 end
 
 return VuBattleRoyaleClient()
