@@ -21,6 +21,8 @@ function VuBattleRoyaleHud:__init()
 
 	self.m_Markers = {}
 
+	self.m_ManDownMapMarkers = {}
+
 	self:RegisterVars()
 end
 
@@ -111,6 +113,7 @@ function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
 		self.m_BrPlayer = p_BrPlayer
 	end
 
+	self:PushManDownMapMarkers()
 	--self:PushMarkerUpdate()
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
@@ -129,9 +132,9 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 		return
 	end
 
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10) then
-		if (self.m_GameState ~= GameStates.Match and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle)
-		or s_LocalPlayer.soldier == nil then
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10)
+	and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle then
+		if self.m_GameState ~= GameStates.Match or s_LocalPlayer.soldier == nil then
 			WebUI:ExecuteJS("ToggleDeployMenu(true);")
 			m_HudUtils:ShowroomCamera(true)
 			m_HudUtils:ShowCrosshair(false)
@@ -177,6 +180,32 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	end
 
 	self:RegisterOnBeingInteractedCallbacks(p_Player.soldier)
+end
+
+function VuBattleRoyaleHud:OnSoldierHealthAction(p_Soldier, p_Action)
+	if p_Soldier.teamId ~= TeamId.Team1 then
+		-- on the client all mates are in Team1
+		return
+	end
+
+	if p_Action == HealthStateAction.OnInteractiveManDown and p_Soldier.player ~= nil then
+		m_Logger:Write("HealthStateAction OnInteractiveManDown for player: " .. p_Soldier.player.name)
+		local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+		local s_Entity = s_EntityIterator:Next()
+
+		while s_Entity do
+			s_Entity = SpatialEntity(s_Entity)
+			local s_MapMarkerEntityData = MapMarkerEntityData(s_Entity.data)
+
+			if s_MapMarkerEntityData.sid == "ID_H_MAP_PREFABS_REVIVE_ME" and s_Entity.transform.trans == Vec3(-9999, -9999, -9999) then
+				m_Logger:Write("MapMarkerEntity found - changing transform")
+				self.m_ManDownMapMarkers[p_Soldier.player.name] = s_Entity.instanceId
+				break
+			end
+
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
 end
 
 -- =============================================
@@ -672,7 +701,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 	if self.m_BrPlayer == nil then
 		return
 	end
-	
+
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if SpectatorManager:GetSpectating() then
@@ -743,6 +772,43 @@ function VuBattleRoyaleHud:PushMarkerUpdate()
 		end
 
 		WebUI:ExecuteJS(string.format('OnUpdateMarker("%s", %s, %s)', l_Marker.Key, s_WorldToScreen.x, s_WorldToScreen.y))
+	end
+end
+
+function VuBattleRoyaleHud:PushManDownMapMarkers()
+	for l_PlayerName, l_EntityInstanceId in pairs(self.m_ManDownMapMarkers) do
+		local s_Player = PlayerManager:GetPlayerByName(l_PlayerName)
+
+		if s_Player ~= nil and s_Player.soldier ~= nil and s_Player.soldier.isInteractiveManDown then
+			local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+			local s_Entity = s_EntityIterator:Next()
+
+			while s_Entity do
+				s_Entity = SpatialEntity(s_Entity)
+
+				if s_Entity.instanceId == l_EntityInstanceId then
+					s_Entity.transform = s_Player.soldier.transform
+					break
+				end
+
+				s_Entity = s_EntityIterator:Next()
+			end
+		else
+			local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+			local s_Entity = s_EntityIterator:Next()
+
+			while s_Entity do
+				s_Entity = SpatialEntity(s_Entity)
+
+				if s_Entity.instanceId == l_EntityInstanceId then
+					s_Entity.transform = LinearTransform(Vec3(), Vec3(), Vec3(), Vec3(-9999, -9999, -9999))
+					self.m_ManDownMapMarkers[l_PlayerName] = nil
+					break
+				end
+
+				s_Entity = s_EntityIterator:Next()
+			end
+		end
 	end
 end
 

@@ -1,6 +1,7 @@
 class "TempMapPatches"
 
 local m_LootCreation = require "__shared/Modifications/LootCreation"
+local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier"
 
 function TempMapPatches:__init()
 
@@ -82,6 +83,7 @@ function TempMapPatches:OnWorldPartLoaded(p_Instance)
 	local s_Registry = RegistryContainer()
 	s_Registry.blueprintRegistry:add(s_CustomWorldPartData)
 
+	m_ManDownModifier:OnWorldPartLoaded(s_CustomWorldPartData, s_Registry)
 	m_LootCreation:OnWorldPartLoaded(s_CustomWorldPartData, s_Registry)
 
 	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)

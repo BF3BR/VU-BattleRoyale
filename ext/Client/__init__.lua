@@ -61,6 +61,9 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Player:Connected", self, self.OnPlayerConnected)
 	Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn)
 	Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted)
+	Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange)
+
+	Events:Subscribe('Soldier:HealthAction', self, self.OnSoldierHealthAction)
 
 	NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
 	NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
@@ -170,6 +173,7 @@ function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
 	g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
 	g_Timers:Timeout(5, function() m_Hud:OnLevelFinalized() end)
 	m_Ping:OnLevelLoaded()
+	self:StartWindTurbines()
 end
 
 function VuBattleRoyaleClient:OnLevelDestroy()
@@ -239,6 +243,14 @@ end
 
 function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
 	m_SpectatorClient:OnPlayerDeleted(p_Player)
+end
+
+function VuBattleRoyaleClient:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
+	self:OverrideTeamIds(p_Player, p_TeamId)
+end
+
+function VuBattleRoyaleClient:OnSoldierHealthAction(p_Soldier, p_Action)
+	m_Hud:OnSoldierHealthAction(p_Soldier, p_Action)
 end
 
 -- =============================================
@@ -415,6 +427,15 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 
 	m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 	self.m_GameState = p_GameState
+
+	if p_GameState == GameStates.WarmupToPlane then
+		local s_Players = PlayerManager:GetPlayers()
+
+		for _, l_Player in pairs(s_Players) do
+			self:OverrideTeamIds(l_Player, l_Player.teamId)
+		end
+	end
+
 	m_Hud:OnGameStateChanged(p_GameState)
 	m_SpectatorClient:OnGameStateChanged(p_GameState)
 end
@@ -634,6 +655,54 @@ function VuBattleRoyaleClient:OnHotReload()
 		m_HudUtils:ShowCrosshair(false)
 		m_HudUtils:OnEnableMouse()
 	end)
+end
+
+function VuBattleRoyaleClient:IsTeamMate(p_Player)
+	if self.m_BrPlayer == nil then
+		return false
+	end
+
+	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+
+	if s_TeamPlayers ~= nil then
+		for _, l_Teammate in ipairs(s_TeamPlayers) do
+			if l_Teammate ~= nil then
+				if p_Player.name == l_Teammate.Name then
+					return true
+				end
+			end
+		end
+	end
+
+	return false
+end
+
+function VuBattleRoyaleClient:OverrideTeamIds(p_Player, p_TeamId)
+	if p_Player == PlayerManager:GetLocalPlayer() or self:IsTeamMate(p_Player) then
+		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team1")
+		p_Player:OverrideTeamId(TeamId.Team1)
+		p_Player:OverrideSquadId(SquadId.Squad1)
+	else
+		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team2")
+		p_Player:OverrideTeamId(TeamId.Team2)
+		p_Player:OverrideSquadId(SquadId.Squad1)
+	end
+end
+
+function VuBattleRoyaleClient:StartWindTurbines()
+	local s_EntityIterator = EntityManager:GetIterator('SequenceEntity')
+	local s_Entity = s_EntityIterator:Next()
+
+	while s_Entity do
+		s_Entity = Entity(s_Entity)
+
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("F2E30E34-2E82-467B-B160-4BAD4502A465") then
+			m_Logger:Write("Start turbine")
+			s_Entity:FireEvent("Start")
+		end
+
+		s_Entity = s_EntityIterator:Next()
+	end
 end
 
 return VuBattleRoyaleClient()

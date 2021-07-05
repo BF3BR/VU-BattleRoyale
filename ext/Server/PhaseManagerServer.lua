@@ -170,8 +170,6 @@ function PhaseManagerServer:ApplyDamage()
 
 		-- check if soldier is outside of the circle
 		if l_Soldier ~= nil and not self.m_OuterCircle:IsInnerPoint(l_BrPlayer:GetPosition()) then
-			l_Damage = l_BrPlayer:OnDamaged(l_Damage, nil, true)
-
 			-- update player's health if needed
 			if l_BrPlayer.m_Player.alive then
 				l_Soldier.health = math.max(0, l_Soldier.health - l_Damage)

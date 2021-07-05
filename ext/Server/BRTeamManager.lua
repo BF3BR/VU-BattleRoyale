@@ -177,6 +177,8 @@ function BRTeamManager:AssignTeams()
 	end)
 
 	-- merge teams
+	-- smaller teams are merged with the biggest as long as
+	-- there is available space otherwise the index moves forward
 	local l_Low = 1
 	local l_High = #l_UnlockedTeams
 
@@ -193,6 +195,7 @@ function BRTeamManager:AssignTeams()
 
 	-- finalize teams
 	local l_Index = 0
+	local l_AvailableTeamIds = 100
 
 	for _, l_BrTeam in pairs(self.m_Teams) do
 		l_BrTeam.m_Active = true
@@ -202,11 +205,11 @@ function BRTeamManager:AssignTeams()
 			l_BrTeam.m_TeamId = TeamId.Team1
 			l_BrTeam.m_SquadId = SquadId.SquadNone
 		else
-			-- old teamIds logic
-			-- l_BrTeam.m_TeamId = math.floor(l_Index / 32) + 1
-			-- l_BrTeam.m_SquadId = l_Index % 32 + 1
-			l_BrTeam.m_TeamId = l_Index % 15 + 2
-			l_BrTeam.m_SquadId = l_Index // 15 + 1
+			l_BrTeam.m_TeamId = l_Index % (l_AvailableTeamIds - 1) + 2
+
+			-- i guess the squad always will be 1 but i'll let it as is
+			-- in case we lower the number of team ids for some reason
+			l_BrTeam.m_SquadId = l_Index // (l_AvailableTeamIds - 1) + 1
 
 			l_Index = l_Index + 1
 		end

@@ -218,6 +218,9 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_SoldierEntityData, "OnBeingInteractedFinished", "Revive", 3)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_InterfaceDescriptorData, "OnRevived", "OnRevived", 3)
 
+	-- Add connection between SoldierEntityData and CustomizeSoldierEntityData
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_CustomizeSoldierEntityData, "OnManDown", "Apply", 3)
+
 	-- Add connections between SoldierEntityData and the custom EventSplitterEntityDatas
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_StartEventSplitterEntityData, "OnBeingInteractedStarted", "Impulse", 2)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, "OnBeingInteractedCancelled", "Impulse", 2)
@@ -298,6 +301,49 @@ function ManDownModifier:CreateManDownCustomizeSoldierData()
 	s_CoopManDownSoldierData.disableDeathPickup = false
 
 	return s_CoopManDownSoldierData
+end
+
+function ManDownModifier:OnWorldPartLoaded(p_WorldPartData, p_Registry)
+	for i = 1, 4 do
+		local s_MapMarkerEntityData = MapMarkerEntityData()
+		s_MapMarkerEntityData.transform.trans = Vec3(-9999, -9999, -9999)
+		s_MapMarkerEntityData.baseTransform = Vec3(-9999, -9999, -9999)
+		s_MapMarkerEntityData.sid = "ID_H_MAP_PREFABS_REVIVE_ME"
+		s_MapMarkerEntityData.showRadius = 9999
+		s_MapMarkerEntityData.hideRadius = 0
+		s_MapMarkerEntityData.hudIcon = UIHudIcon.UIHudIcon_Revive
+		s_MapMarkerEntityData.verticalOffset = 1.0
+		s_MapMarkerEntityData.focusPointRadius = 0.0
+		s_MapMarkerEntityData.useMarkerTransform = false
+		s_MapMarkerEntityData.isVisible = true
+		s_MapMarkerEntityData.snap = true
+		s_MapMarkerEntityData.showAirTargetBox = true
+		s_MapMarkerEntityData.isFocusPoint = false
+		s_MapMarkerEntityData.indexInBlueprint = 1
+		s_MapMarkerEntityData.isEventConnectionTarget = 2
+		s_MapMarkerEntityData.isPropertyConnectionTarget = 3
+
+		local s_SpatialPrefabBlueprint = SpatialPrefabBlueprint()
+		s_SpatialPrefabBlueprint.needNetworkId = true
+		s_SpatialPrefabBlueprint.interfaceHasConnections = false
+		s_SpatialPrefabBlueprint.alwaysCreateEntityBusClient = true
+		s_SpatialPrefabBlueprint.alwaysCreateEntityBusServer = true
+		s_SpatialPrefabBlueprint.objects:add(s_MapMarkerEntityData)
+
+		p_Registry.blueprintRegistry:add(s_SpatialPrefabBlueprint)
+		p_Registry.entityRegistry:add(s_MapMarkerEntityData)
+
+
+		local s_MapMarkerReferenceObjectData = ReferenceObjectData()
+		s_MapMarkerReferenceObjectData.blueprint = s_SpatialPrefabBlueprint
+		s_MapMarkerReferenceObjectData.blueprintTransform = LinearTransform()
+		s_MapMarkerReferenceObjectData.indexInBlueprint = 128 + i
+
+		p_WorldPartData.objects:add(s_MapMarkerReferenceObjectData)
+
+		p_Registry.referenceObjectRegistry:add(s_MapMarkerReferenceObjectData)
+	end
+	m_Logger:Write("Created mapmarkers")
 end
 
 if g_ManDownModifier == nil then
