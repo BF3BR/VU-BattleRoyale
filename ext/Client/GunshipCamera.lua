@@ -44,15 +44,15 @@ function GunshipCamera:OnUIDrawHud(p_DeltaTime, p_GunshipEntity)
 
 	local s_Player = PlayerManager:GetLocalPlayer()
 
-	if s_Player == nil or s_Player.input == nil then
+	if s_Player == nil then
 		return
 	end
 
 	local s_Entity = SpatialEntity(p_GunshipEntity)
-	local s_Yaw = -math.atan(s_Entity.transform.forward.x, s_Entity.transform.forward.z) + self.m_LockedCameraYaw
+	local s_Yaw = math.atan(s_Entity.transform.forward.z, s_Entity.transform.forward.x) + self.m_LockedCameraYaw
 	local s_Pitch = self.m_LockedCameraPitch
 
-	s_Yaw = s_Yaw - math.pi / 2
+	s_Yaw = s_Yaw - math.pi
 	s_Pitch = s_Pitch + math.pi / 2
 
 	m_Hud:OnGunshipPlayerYaw(s_Yaw)

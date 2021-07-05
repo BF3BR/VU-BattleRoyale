@@ -48,7 +48,7 @@ const PlaneElement: React.FC<Props> = ({
                         x={getMapPos(planePos.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
                         y={getMapPos(planePos.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
                         angle={planeYaw}
-                        scale={open ? .2 : 0.2}
+                        scale={open ? .2 : 0.15}
                         filters={[
                             new GlowFilter({
                                 distance: 25,
