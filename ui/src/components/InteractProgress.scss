@@ -1,12 +1,14 @@
-.InteractProgress {
-    position: fixed;
-    bottom: 5vw;
+.inventoryTimer {
+    position: absolute;
     left: 50%;
-    transform: translateX(-50%);
-    height: 4.5vw;
-    width: 4.5vw;
+    bottom: 10%;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,.65);
     border-radius: 50%;
-    padding: 0.1vw;
-    border: .15vw solid rgb(148, 205, 243);
-    opacity: 1;
+
+    div {
+        font-size: 1vw;
+        color: #fff !important;
+    }
 }

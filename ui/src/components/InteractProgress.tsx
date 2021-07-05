@@ -1,56 +1,59 @@
 import React, { useEffect, useState } from "react";
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import { CountdownCircleTimer } from "react-countdown-circle-timer";
 
 import "./InteractProgress.scss";
 
+
 interface Props {
-    timeout: number|null;
-    clearTimeout: () => void;
+    onComplete: () => void;
+    time: number | null;
 }
+const getWidth = () => window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
-const InteractProgress: React.FC<Props> = ({ timeout }) => {
-    const [time, setTime] = useState<number|null>(timeout);
+const InteractProgress: React.FC<Props> = ({ onComplete, time }) => {
+    const [size, setSize] = useState<number>(getWidth() * 0.04);
 
-    const tick = () => {
-        if (time === 0) {
-            clearTimeout();
-            return;
-        } else {
-            setTime(prevState => prevState - 1);
+    useEffect(() => {
+        const resizeListener = () => {
+            setSize(getWidth() * 0.1);
+        };
+        window.addEventListener('resize', resizeListener);
+    
+        return () => {
+            window.removeEventListener('resize', resizeListener);
         }
+    }, []);
+
+    const renderTime = (elapsedTime: number) => {
+        return (
+            <div className="time-wrapper">
+                <div className="time">{(time - elapsedTime).toFixed(1)}</div>
+            </div>
+        );
     };
-
-    useEffect(() => {
-        const timerID = setInterval(() => tick(), 1000);
-        return () => clearInterval(timerID);
-    });
-
-    useEffect(() => {
-        setTime(timeout);
-    }, [timeout]);
 
     return (
         <>
-            {(timeout !== null && time !== null)  &&
-                <div className="InteractProgress">
-                    <CircularProgressbar
-                        value={time / timeout * 100}
-                        maxValue={100}
-                        strokeWidth={12}
-                        background={false}
-                        styles={buildStyles({
-                            rotation: 0,
-                            strokeLinecap: 'butt',
-                            pathColor: `rgb(148, 205, 243)`,
-                            trailColor: 'rgba(55, 100, 130, .5)',
-                            backgroundColor: 'transparent',
-                            pathTransitionDuration: 0.4,
-                        })}
-                    />
+            {time !== null &&
+                <div className="inventoryTimer">
+                    <CountdownCircleTimer
+                        isPlaying
+                        duration={time}
+                        colors="#FFF"
+                        trailColor="#000"
+                        size={size}
+                        strokeWidth={size * 0.115}
+                        strokeLinecap="round"
+                        onComplete={() => onComplete()}
+                    >
+                        {({ elapsedTime }: any) =>
+                            renderTime(elapsedTime)
+                        }
+                    </CountdownCircleTimer>
                 </div>
             }
         </>
-    );
+    )
 };
 
 export default InteractProgress;

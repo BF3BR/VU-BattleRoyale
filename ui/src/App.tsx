@@ -664,8 +664,8 @@ const App: React.FC<Props> = ({
                                     <>
                                         <MiniMap />
                                         <InteractProgress 
-                                            timeout={interactTimeout}
-                                            clearTimeout={() => setInteractTimeout(null)}
+                                            time={interactTimeout}
+                                            onComplete={() => setInteractTimeout(null)}
                                         />
                                         {/*<Inventory />*/}
                                     </>
