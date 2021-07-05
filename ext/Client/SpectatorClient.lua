@@ -39,10 +39,12 @@ end
 -- =============================================
 
 function SpectatorClient:OnExtensionUnloading()
+	WebUI:ExecuteJS("UpdateSpectatorCount(0);")
 	self:Disable()
 end
 
 function SpectatorClient:OnLevelDestroy()
+	WebUI:ExecuteJS("UpdateSpectatorCount(0);")
 	self:Disable()
 	self.m_SpectatingPlayerPitch = 0.0
 	self.m_SpectatingPlayerYaw = 0.0
@@ -364,6 +366,12 @@ function SpectatorClient:Disable()
 	if s_SpectatedPlayer ~= nil then
 		m_Logger:Write("Disable - Sending NetEvent UpdateSpectator")
 		NetEvents:SendLocal('UpdateSpectator', nil, s_SpectatedPlayer.name)
+	end
+
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer ~= nil then
+		SpectatorManager:SpectatePlayer(s_LocalPlayer, true)
 	end
 
 	SpectatorManager:SetCameraMode(SpectatorCameraMode.Disabled)

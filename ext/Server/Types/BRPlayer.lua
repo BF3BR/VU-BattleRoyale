@@ -344,6 +344,8 @@ function BRPlayer:Reset()
 	self.m_Kills = 0
 	self.m_Score = 0
 	self.m_KillerName = nil
+	self.m_SpectatedPlayerName = nil
+	self.m_SpectatorNames = {}
 
 	self:SendState()
 end
@@ -355,6 +357,8 @@ function BRPlayer:Destroy()
 	self.m_Player = nil
 	self.m_Team = nil
 	self.m_Armor = nil
+	self.m_SpectatedPlayerName = nil
+	self.m_SpectatorNames = {}
 end
 
 -- Alias for `BRTeam:RemovePlayer()`
