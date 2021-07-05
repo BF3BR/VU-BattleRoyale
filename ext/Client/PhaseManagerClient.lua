@@ -80,12 +80,14 @@ end
 
 -- Returns the position of the local or the spectated player
 function PhaseManagerClient:GetActivePlayerPosition()
-	-- pick local or spectated player -- default is local player
-	local l_Player = SpectatorManager:GetSpectatedPlayer()
+	local s_Player = PlayerManager:GetLocalPlayer()
+
+	if SpectatorManager:GetSpectating() then
+		s_Player = SpectatorManager:GetSpectatedPlayer()
+	end
 
 	-- ensure soldier exists
-	if l_Player == nil or l_Player.soldier == nil then
-
+	if s_Player == nil or s_Player.soldier == nil then
 		local s_ClientCamera = ClientUtils:GetCameraTransform()
 
 		if s_ClientCamera == nil then
@@ -96,7 +98,7 @@ function PhaseManagerClient:GetActivePlayerPosition()
 	end
 
 	-- return the position
-	return l_Player.soldier.transform.trans
+	return s_Player.soldier.transform.trans
 end
 
 function PhaseManagerClient:OnPreSim(p_DeltaTime)
