@@ -1,0 +1,19 @@
+#SpectatorInfo {
+    position: absolute;
+    bottom: 4.5vw;
+    left: 2.5vw;
+    width: 12vw;
+    opacity: 0;
+
+    &.show {
+        opacity: 1;
+    }
+
+    .card-header {
+        h1 {
+            font-size: .65vw;
+            color: var(--warning);
+        }
+    }
+}
+

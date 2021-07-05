@@ -1,7 +1,10 @@
 import React from "react";
 import * as PIXI from 'pixi.js';
-import '@pixi/graphics-extras';
 import { GlowFilter } from '@pixi/filter-glow';
+import '@pixi/graphics-extras';
+
+import viewAngles from "../../../assets/img/viewangles_texture.png";
+const viewAnglesTexture = PIXI.Texture.from(viewAngles);
 
 export const drawPlayer = (g: any, color: number) => {
     var sideLength = 20;
@@ -27,6 +30,29 @@ export const drawPlayer = (g: any, color: number) => {
         innerStrength: 0,
         color: color,
     })];
+};
+
+export const drawPlayerVision = (g: any) => {
+    var sideLength = 70;
+    g.filters = [];
+    g.clear();
+    
+    const textureMatrix = new PIXI.Matrix();
+    textureMatrix.rotate(-Math.PI / 2);
+    textureMatrix.scale(2, 2);
+
+    g.beginTextureFill({
+        texture: viewAnglesTexture,
+        matrix: textureMatrix,
+        alpha: 0.35,
+    });
+    g.moveTo(-10, -7);
+    g.lineTo(0 - sideLength, -sideLength * 1.5);
+    g.lineTo(0 + sideLength, -sideLength * 1.5);
+    g.lineTo(10, -7);
+    g.lineTo(0, -20);
+    g.closePath();
+    g.endFill();
 };
 
 export const getConvertedPlayerColor = (color: string) => {

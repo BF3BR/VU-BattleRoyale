@@ -7,7 +7,7 @@ import * as PIXI from 'pixi.js';
 import { Graphics } from '@inlet/react-pixi';
 
 import Vec3 from '../../../helpers/Vec3Helper';
-import { drawPlayer, getConvertedPlayerColor, getMapPos } from './ElementHelpers';
+import { drawPlayer, drawPlayerVision, getConvertedPlayerColor, getMapPos } from './ElementHelpers';
 import Circle from "../../../helpers/CircleHelper";
 
 interface StateFromReducer {
@@ -73,7 +73,7 @@ const PlayerElement: React.FC<Props> = ({
             color: 0xffffff,
         })];
     }, []);
-    
+        
     return (
         <>
             {(innerCircle !== null && playerPos !== null) &&
@@ -92,6 +92,14 @@ const PlayerElement: React.FC<Props> = ({
                 />
             }
 
+            <Graphics 
+                draw={(g: any) => drawPlayerVision(g)}
+                x={getMapPos(playerPos?.x??0, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
+                y={getMapPos(playerPos?.z??0, topLeftPos.z,  textureWidthHeight, worldWidthHeight)}
+                angle={playerYaw}
+                scale={0.5}
+                visible={!playerIsInPlane}
+            />
             <Graphics 
                 draw={(g: any) => drawPlayer(g, color !== null ? getConvertedPlayerColor(color) : 0xff0000)}
                 x={getMapPos(playerPos?.x??0, topLeftPos.x, textureWidthHeight, worldWidthHeight)}

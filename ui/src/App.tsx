@@ -67,7 +67,7 @@ import MiniMap from "./components/map/MiniMap";
 import AmmoAndHealthCounter from "./components/AmmoAndHealthCounter";
 import MatchInfo from "./components/MatchInfo";
 import KillAndAliveInfo from "./components/KillAndAliveInfo";
-import SpactatorInfo from "./components/SpactatorInfo";
+import SpectatorInfo from "./components/SpectatorInfo";
 import Gameover from "./components/Gameover";
 import DeployScreen from "./components/DeployScreen";
 import TeamInfo from "./components/TeamInfo";
@@ -655,7 +655,7 @@ const App: React.FC<Props> = ({
                         :
                             <>
                                 <KillAndAliveInfo />
-                                <SpactatorInfo />
+                                <SpectatorInfo />
                                 <AmmoAndHealthCounter />
                                 <Gameover />
                                 {/*<MapMarkers />*/}
@@ -664,8 +664,8 @@ const App: React.FC<Props> = ({
                                     <>
                                         <MiniMap />
                                         <InteractProgress 
-                                            timeout={interactTimeout}
-                                            clearTimeout={() => setInteractTimeout(null)}
+                                            time={interactTimeout}
+                                            onComplete={() => setInteractTimeout(null)}
                                         />
                                         {/*<Inventory />*/}
                                     </>
