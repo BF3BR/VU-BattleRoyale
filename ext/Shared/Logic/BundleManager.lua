@@ -3,11 +3,6 @@ class "BundleManager"
 local m_Logger = Logger("BundleManager", true)
 
 function BundleManager:__init()
-	self:RegisterVars()
-end
-
-function BundleManager:RegisterVars()
-	self.m_LevelName = ""
 end
 
 function BundleManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
@@ -19,16 +14,6 @@ function BundleManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedSer
 	for _, l_SuperBundle in pairs(MapsConfig[LevelNameHelper:GetLevelName()].SuperBundles) do
 		ResourceManager:MountSuperBundle(l_SuperBundle)
 	end
-
-	local s_MapPreset = json.decode(MapsConfig[LevelNameHelper:GetLevelName()].MapPreset)
-
-	if s_MapPreset == nil then
-		error("No custom map data for map: " .. p_LevelName .. " and gamemode: " .. p_GameMode)
-		return
-	end
-
-	m_Logger:Write("Dispatch to MapLoader")
-	Events:Dispatch('MapLoader:LoadLevel', s_MapPreset)
 
 	self.m_LevelName = p_LevelName
 end

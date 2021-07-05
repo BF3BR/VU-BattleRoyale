@@ -21,6 +21,7 @@ local m_ModificationsCommon = require "__shared/Modifications/ModificationsCommo
 local m_BundleManager = require "__shared/Logic/BundleManager"
 local m_GunSwayManager = require "__shared/Logic/GunSwayManager"
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
+local m_MapLoader = require "__shared/Logic/MapLoader"
 
 function VuBattleRoyaleShared:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -36,6 +37,9 @@ function VuBattleRoyaleShared:RegisterEvents()
 	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
 	Events:Subscribe("Level:RegisterEntityResources", self, self.OnRegisterEntityResources)
 	Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate)
+	Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
+	Events:Subscribe('Level:LoadingInfo', self, self.OnLevelLoadingInfo)
+	Events:Subscribe('Level:Destroy', self, self.OnLevelDestroy)
 end
 
 function VuBattleRoyaleShared:RegisterHooks()
@@ -56,6 +60,7 @@ function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_
 	m_BundleManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_RegistryManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_MapLoader:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 end
 
 function VuBattleRoyaleShared:OnRegisterEntityResources(p_LevelData)
@@ -65,6 +70,18 @@ end
 
 function VuBattleRoyaleShared:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
 	m_GunSwayManager:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
+end
+
+function VuBattleRoyaleShared:OnPartitionLoaded(p_Partition)
+	m_MapLoader:OnPartitionLoaded(p_Partition)
+end
+
+function VuBattleRoyaleShared:OnLevelLoadingInfo(p_ScreenInfo)
+	m_MapLoader:OnLevelLoadingInfo(p_ScreenInfo)
+end
+
+function VuBattleRoyaleShared:OnLevelDestroy()
+	m_MapLoader:OnLevelDestroy()
 end
 
 -- =============================================
