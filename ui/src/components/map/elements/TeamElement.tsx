@@ -6,7 +6,7 @@ import * as PIXI from 'pixi.js';
 import { Graphics, Sprite } from '@inlet/react-pixi';
 import { GlowFilter } from "@pixi/filter-glow";
 
-import { drawPlayer, getConvertedPlayerColor, getMapPos } from './ElementHelpers';
+import { drawPlayer, drawPlayerVision, getConvertedPlayerColor, getMapPos } from './ElementHelpers';
 import { Player } from "../../../helpers/PlayerHelper";
 
 import medic from "../../../assets/img/medic.svg";
@@ -41,14 +41,22 @@ const TeamElement: React.FC<Props> = ({
                 .filter((player: Player) => (player.position.x !== null && player.position.z !== null))
                 .map((player: Player, key: number) => (
                     (player.state === 1 ?
-                        <Graphics 
-                            draw={(g: any) => drawPlayer(g, getConvertedPlayerColor(player.color))}
-                            x={getMapPos(player.position.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
-                            y={getMapPos(player.position.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
-                            angle={player.yaw}
-                            scale={0.5}
-                            key={key}
-                        />
+                        <React.Fragment key={key}>
+                            <Graphics 
+                                draw={(g: any) => drawPlayerVision(g)}
+                                x={getMapPos(player.position.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
+                                y={getMapPos(player.position.z, topLeftPos.z,  textureWidthHeight, worldWidthHeight)}
+                                angle={player.yaw}
+                                scale={0.5}
+                            />
+                            <Graphics 
+                                draw={(g: any) => drawPlayer(g, getConvertedPlayerColor(player.color))}
+                                x={getMapPos(player.position.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
+                                y={getMapPos(player.position.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
+                                angle={player.yaw}
+                                scale={0.5}
+                            />
+                        </React.Fragment>
                     :
                         <Sprite
                             texture={medicTexture}
