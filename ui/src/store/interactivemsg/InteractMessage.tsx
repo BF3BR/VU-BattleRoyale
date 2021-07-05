@@ -1,11 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { RootState } from "../RootReducer";
 import { InteractivemsgState } from "./Types";
 
 import "./InteractMessage.scss";
 
-const InteractMessage: React.FC = () => {
+interface StateFromReducer {
+    gameState: string;
+    uiState: "hidden" | "loading" | "game" | "menu";
+    gameOverScreen: boolean;
+    deployScreen: boolean;
+}
+
+type Props = StateFromReducer;
+
+const InteractMessage: React.FC<Props> = ({
+    deployScreen,
+    uiState
+}) => {
     const interactivemsgFromReducer = useSelector(
         (state: RootState) => state.InteractivemsgReducer
     );
@@ -33,7 +45,7 @@ const InteractMessage: React.FC = () => {
 
     return (
         <div id="Messages">
-            {localInteractivemsg !== null &&
+            {(localInteractivemsg !== null && !deployScreen && uiState === "game") &&
                 <>
                     {localInteractivemsg.message &&
                         <div className="MessageCenter">
@@ -49,4 +61,16 @@ const InteractMessage: React.FC = () => {
     );
 };
 
-export default InteractMessage;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // GameReducer
+        gameState: state.GameReducer.gameState,
+        uiState: state.GameReducer.uiState,
+        gameOverScreen: state.GameReducer.gameOver.enabled,
+        deployScreen: state.GameReducer.deployScreen.enabled,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(InteractMessage);
