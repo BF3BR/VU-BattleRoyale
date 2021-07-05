@@ -135,6 +135,10 @@ function PingClient:OnClientUpdateInput()
 		return
 	end
 
+	if SpectatorManager:GetSpectating() then
+		return
+	end
+
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Q) then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
@@ -157,6 +161,10 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 	end
 
 	self.m_ShouldPing = false
+
+	if SpectatorManager:GetSpectating() then
+		return
+	end
 
 	if s_RaycastHit == nil then
 		m_Logger:Write("no raycast")
