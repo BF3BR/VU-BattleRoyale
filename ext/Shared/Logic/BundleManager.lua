@@ -3,6 +3,7 @@ class "BundleManager"
 local m_Logger = Logger("BundleManager", true)
 
 function BundleManager:__init()
+	self.m_LevelName = ""
 end
 
 function BundleManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
@@ -11,8 +12,11 @@ function BundleManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedSer
 		return
 	end
 
-	for _, l_SuperBundle in pairs(MapsConfig[LevelNameHelper:GetLevelName()].SuperBundles) do
+	m_Logger:Write("Mounting SuperBundles:")
+
+	for l_Index, l_SuperBundle in pairs(MapsConfig[LevelNameHelper:GetLevelName()].SuperBundles) do
 		ResourceManager:MountSuperBundle(l_SuperBundle)
+		m_Logger:Write(l_Index .. ": " .. l_SuperBundle)
 	end
 
 	self.m_LevelName = p_LevelName
@@ -24,7 +28,9 @@ function BundleManager:OnLoadBundles(p_Hook, p_Bundles, p_Compartment)
 		table.insert(s_Bundles, p_Bundles[1])
 
 		m_Logger:Write("Injecting bundles:")
-		m_Logger:Write(s_Bundles)
+		for l_Index, l_Bundle in pairs(s_Bundles) do
+			m_Logger:Write(l_Index .. ": " .. l_Bundle)
+		end
 
 		p_Hook:Pass(s_Bundles, p_Compartment)
 	end
