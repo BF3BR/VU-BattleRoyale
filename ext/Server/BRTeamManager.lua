@@ -466,6 +466,13 @@ function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayer
 			s_BRPlayerToSpectate:AddSpectator(p_Player.name)
 
 			if s_BRPlayer ~= nil then
+				if s_BRPlayerToSpectate.m_Armor ~= nil then
+					local s_State = {
+						Armor = s_BRPlayerToSpectate.m_Armor:AsTable()
+					}
+					NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, p_Player, s_State)
+				end
+
 				s_BRPlayer:SpectatePlayer(p_NewPlayerName)
 			end
 		end
