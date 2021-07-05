@@ -173,6 +173,7 @@ function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
 	g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
 	g_Timers:Timeout(5, function() m_Hud:OnLevelFinalized() end)
 	m_Ping:OnLevelLoaded()
+	self:StartWindTurbines()
 end
 
 function VuBattleRoyaleClient:OnLevelDestroy()
@@ -685,6 +686,22 @@ function VuBattleRoyaleClient:OverrideTeamIds(p_Player, p_TeamId)
 		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team2")
 		p_Player:OverrideTeamId(TeamId.Team2)
 		p_Player:OverrideSquadId(SquadId.Squad1)
+	end
+end
+
+function VuBattleRoyaleClient:StartWindTurbines()
+	local s_EntityIterator = EntityManager:GetIterator('SequenceEntity')
+	local s_Entity = s_EntityIterator:Next()
+
+	while s_Entity do
+		s_Entity = Entity(s_Entity)
+
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("F2E30E34-2E82-467B-B160-4BAD4502A465") then
+			m_Logger:Write("Start turbine")
+			s_Entity:FireEvent("Start")
+		end
+
+		s_Entity = s_EntityIterator:Next()
 	end
 end
 
