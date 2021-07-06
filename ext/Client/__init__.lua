@@ -23,6 +23,8 @@ local m_SpectatorClient = require "SpectatorClient"
 local m_Ping = require "PingClient"
 local m_ClientManDownLoot = require "ClientManDownLoot"
 local m_AntiCheat = require "AntiCheat"
+local m_SoundCommon = require "Sound/SoundCommon"
+
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
 function VuBattleRoyaleClient:__init()
@@ -51,6 +53,7 @@ end
 
 function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
+	Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded)
 
 	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
 	Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
@@ -136,6 +139,21 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_Hud:OnExtensionUnloading()
 	m_HudUtils:OnExtensionUnloading()
 	m_Chat:OnExtensionUnloading()
+end
+
+function VuBattleRoyaleClient:OnPartitionLoaded(p_Partition)
+	if p_Partition == nil then
+		m_Logger:Error("Partition is nil")
+		return
+	end
+
+	local s_Instances = p_Partition.instances
+
+	for _, s_Instance in pairs(s_Instances) do
+		if s_Instance ~= nil then
+			m_SoundCommon:OnInstanceLoaded(p_Partition, s_Instance)
+		end
+	end
 end
 
 function VuBattleRoyaleClient:ApplySettings()
