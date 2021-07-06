@@ -146,13 +146,19 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 
 	if m_HudUtils:GetIsInEscMenu() then
 		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
-			self:OnResume()
+			WebUI:ExecuteJS("OnMenuEsc()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowUp)
 		or InputManager:WentKeyDown(InputDeviceKeys.IDK_W) then
 			WebUI:ExecuteJS("OnMenuArrowUp()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowDown)
 		or InputManager:WentKeyDown(InputDeviceKeys.IDK_S) then
 			WebUI:ExecuteJS("OnMenuArrowDown()")
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight)
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_D) then
+			WebUI:ExecuteJS("OnMenuArrowRight()")
+		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft)
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_A) then
+			WebUI:ExecuteJS("OnMenuArrowLeft()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_Enter)
 		or InputManager:WentKeyDown(InputDeviceKeys.IDK_NumpadEnter)
 		or InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) then

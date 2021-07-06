@@ -7,6 +7,7 @@ import "./MenuScreen.scss";
 
 const MenuScreen: React.FC = () => {
     const [currentFocus, setCurrentFocus] = useState(0);
+    const [currentModalFocus, setCurrentModalFocus] = useState(0);
     const [showQuitModal, setShowQuitModal] = useState(false);
 
     const buttons = [
@@ -31,6 +32,17 @@ const MenuScreen: React.FC = () => {
             onClick: () => setShowQuitModal(true),
         },
     ];
+
+    const modalButtons = [
+        {
+            text: "OK", 
+            handler: () => sendToLua("WebUI:TriggerMenuFunction", "quit"),
+        },
+        {
+            text: "Cancel", 
+            handler: () => setShowQuitModal(false),
+        },
+    ];
     
     window.OnMenuArrowDown = () => {
         if (!showQuitModal) {
@@ -44,9 +56,32 @@ const MenuScreen: React.FC = () => {
         }
     }
 
+    window.OnMenuArrowRight = () => {
+        if (showQuitModal) {
+            setCurrentModalFocus(currentModalFocus === modalButtons.length - 1 ? 0 : currentModalFocus + 1);
+        }
+    }
+
+    window.OnMenuArrowLeft = () => {
+        if (showQuitModal) {
+            setCurrentModalFocus(currentModalFocus === 0 ? modalButtons.length - 1 : currentModalFocus - 1);
+        }
+    }
+
     window.OnMenuEnter = () => {
         if (!showQuitModal) {
             buttons[currentFocus].onClick();
+        } else {
+            modalButtons[currentModalFocus].handler();
+        }
+    }
+
+    window.OnMenuEsc = () => {
+        if (!showQuitModal) {
+            buttons[0].onClick();
+        } else {
+            setShowQuitModal(false);
+            setCurrentModalFocus(0);
         }
     }
     
@@ -70,16 +105,8 @@ const MenuScreen: React.FC = () => {
 
             <Modal 
                 show={showQuitModal}
-                buttons={[
-                    {
-                        text: "OK", 
-                        handler: () => sendToLua("WebUI:TriggerMenuFunction", "quit"),
-                    },
-                    {
-                        text: "Cancel", 
-                        handler: () => setShowQuitModal(false),
-                    },
-                ]}
+                buttons={modalButtons}
+                highlightedButtonIndex={currentModalFocus}
                 title="Are you sure?"
                 text="Are you sure you want to quit? Any unsaved progress will be lost."
                 dismiss={() => setShowQuitModal(false)}
@@ -92,7 +119,7 @@ const MenuScreen: React.FC = () => {
                 <div className="card-content">
                     <ul>
                         <li>Join our discord: <b>https://discord.gg/9nuXa4Sx5c</b></li>
-                        <li>Visit our website: <b>totalynotbf3br.co.uk</b></li>
+                        <li>Visit our website: <b>https://bf3br.github.io</b></li>
                     </ul>
                 </div>
             </div>
@@ -123,5 +150,8 @@ declare global {
         OnMenuArrowUp: () => void;
         OnMenuArrowDown: () => void;
         OnMenuEnter: () => void;
+        OnMenuEsc: () => void;
+        OnMenuArrowRight: () => void;
+        OnMenuArrowLeft: () => void;
     }
 }

@@ -7,10 +7,11 @@ interface Props {
     title: string;
     text: string;
     buttons: null|Array<{ text: string, handler: () => void }>;
-    dismiss: () => void,
+    dismiss: () => void;
+    highlightedButtonIndex: number;
 }
 
-const Modal: React.FC<Props> = ({ show, title, text, buttons, dismiss }) => {
+const Modal: React.FC<Props> = ({ show, title, text, buttons, dismiss, highlightedButtonIndex }) => {
     return (
         <>
             {show &&
@@ -30,7 +31,7 @@ const Modal: React.FC<Props> = ({ show, title, text, buttons, dismiss }) => {
                                         <button 
                                             key={key}
                                             onClick={button.handler}
-                                            className="btn"
+                                            className={"btn" + (highlightedButtonIndex === key ? " active" : "")}
                                         >
                                             {button.text??""}
                                         </button>
