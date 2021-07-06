@@ -186,8 +186,6 @@ const DeployScreen: React.FC<Props> = ({
                                             disabled={!isTeamLeader}
                                             checked={teamOpen}
                                             onChange={OnTeamOpenClose}
-                                            spellCheck={false}
-                                            maxLength={4}
                                         />
                                         {teamOpen ?
                                             <>
@@ -234,6 +232,7 @@ const DeployScreen: React.FC<Props> = ({
                                         onChange={handleJoinCodeChange} 
                                         onFocus={handleFocus}
                                         className={teamJoinError ? 'isError' : ''}
+                                        spellCheck="false"
                                     />
                                     <button className="btn btn-primary btn-small" onClick={OnJoinTeam}>
                                         Join
