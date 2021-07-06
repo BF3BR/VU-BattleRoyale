@@ -604,7 +604,7 @@ end
 
 function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_HookCtx)
 	if not ServerConfig.Debug.ShowAllNametags then
-		p_HookCtx:Return()
+		-- p_HookCtx:Return()
 	end
 end
 

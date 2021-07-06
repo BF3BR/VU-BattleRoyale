@@ -209,11 +209,7 @@ function VuBattleRoyaleServer:OnPlayerChangingWeapon(p_Player)
 end
 
 function VuBattleRoyaleServer:OnPlayerManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
-	if p_Reviver ~= nil then
-		p_Player.soldier.health = 130
-	else
-		p_Player.soldier.health = 0.0001
-	end
+	p_Player.soldier.health = 130
 end
 
 function VuBattleRoyaleServer:OnPlayerKilled(p_Player, p_Inflictor, p_Position, p_Weapon, p_IsRoadKill, p_IsHeadShot)

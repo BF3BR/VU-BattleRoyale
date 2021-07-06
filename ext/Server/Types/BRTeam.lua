@@ -4,6 +4,8 @@ require "__shared/Enums/TeamJoinStrategy"
 
 class "BRTeam"
 
+local m_Logger = Logger("BRTeam", true)
+
 function BRTeam:__init(p_Id)
 	-- the unique id of the team
 	self.m_Id = p_Id
@@ -247,8 +249,9 @@ end
 function BRTeam:RevivePlayers()
 	for _, l_BrPlayer in pairs(self.m_Players) do
 		if l_BrPlayer.m_Player ~= nil and l_BrPlayer.m_Player.soldier ~= nil and l_BrPlayer.m_Player.soldier.isInteractiveManDown then
+			m_Logger:Write("Reviving player: " .. l_BrPlayer.m_Player.name)
 			l_BrPlayer.m_Player.soldier:FireEvent("Revive")
-			l_BrPlayer.m_Player.soldier:SetPose(CharacterPoseTypeCharacterPoseType_Stand, false, true)
+			l_BrPlayer.m_Player.soldier:SetPose(CharacterPoseType.CharacterPoseType_Stand, false, true)
 		end
 	end
 end
