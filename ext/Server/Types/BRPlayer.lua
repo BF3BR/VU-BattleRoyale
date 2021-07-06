@@ -66,7 +66,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 		s_Health = s_Health - 100
 
 		-- apply damage to the armor
-		if p_Giver ~= nil then
+		if p_Giver ~= nil and not self:Equals(p_Giver) then
 			p_Damage = self.m_Armor:ApplyDamage(p_Damage)
 			self:SetArmor(self.m_Armor)
 		end
