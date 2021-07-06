@@ -11,8 +11,8 @@ function SoundCommon:__init()
 	m_Logger:Write("SoundCommon init.")
 end
 
-function SoundCommon:OnInstanceLoaded(p_Partition, p_Instance)
-	m_RemoveAutotriggerVO:OnInstanceLoaded(p_Partition, p_Instance)
+function SoundCommon:RegisterCallbacks()
+	m_RemoveAutotriggerVO:RegisterCallbacks()
 end
 
 -- Singleton.

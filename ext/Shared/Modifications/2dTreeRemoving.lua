@@ -4,8 +4,8 @@ require "__shared/Enums/ParameterModificationType"
 
 local TreeConfig = require('__shared/Configs/2dTreeConfig')
 
-local m_XP5_003 = DC(Guid('2155927F-76C7-84F2-0BAF-4862CD442CF8'), Guid('2155927F-76C7-84F2-0BAF-4862CD442CF8'))
-local m_XP3_Shield = DC(Guid('601D5D72-9EA2-820C-180A-28856102D3A8'), Guid('601D5D72-9EA2-820C-180A-28856102D3A8'))
+local m_XP5_003 = DC(Guid("2155927F-76C7-84F2-0BAF-4862CD442CF8"), Guid("2155927F-76C7-84F2-0BAF-4862CD442CF8"))
+local m_XP3_Shield = DC(Guid("601D5D72-9EA2-820C-180A-28856102D3A8"), Guid("601D5D72-9EA2-820C-180A-28856102D3A8"))
 
 function TreeRemoving:RegisterCallbacks()
 	m_XP5_003:RegisterLoadHandler(self, self.OnMeshVariationDatabase)

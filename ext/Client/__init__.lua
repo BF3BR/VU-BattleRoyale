@@ -53,7 +53,6 @@ end
 
 function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
-	Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded)
 
 	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
 	Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
@@ -114,6 +113,7 @@ end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
 	m_Gunship:RegisterCallbacks()
+	m_SoundCommon:RegisterCallbacks()
 end
 
 function VuBattleRoyaleClient:RegisterHooks()
@@ -139,21 +139,6 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_Hud:OnExtensionUnloading()
 	m_HudUtils:OnExtensionUnloading()
 	m_Chat:OnExtensionUnloading()
-end
-
-function VuBattleRoyaleClient:OnPartitionLoaded(p_Partition)
-	if p_Partition == nil then
-		m_Logger:Error("Partition is nil")
-		return
-	end
-
-	local s_Instances = p_Partition.instances
-
-	for _, s_Instance in pairs(s_Instances) do
-		if s_Instance ~= nil then
-			m_SoundCommon:OnInstanceLoaded(p_Partition, s_Instance)
-		end
-	end
 end
 
 function VuBattleRoyaleClient:ApplySettings()
