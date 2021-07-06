@@ -67,7 +67,7 @@ function VanillaUIModifier:OnHudScreen(p_ScreenAsset)
 end
 
 function VanillaUIModifier:OnHudMpScreen(p_ScreenAsset)
-	self:KeepNodes(p_ScreenAsset, {"LatencyIndicator", "AdminYellMessage"})
+	self:KeepNodes(p_ScreenAsset, {"LatencyIndicator", "AdminYellMessage", "Hitindicator"})
 end
 
 function VanillaUIModifier:OnHudConquestScreen(p_ScreenAsset)
