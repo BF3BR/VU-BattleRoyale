@@ -22,6 +22,7 @@ local m_Chat = require "UI/Chat"
 local m_SpectatorClient = require "SpectatorClient"
 local m_Ping = require "PingClient"
 local m_ClientManDownLoot = require "ClientManDownLoot"
+local m_AntiCheat = require "AntiCheat"
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
 function VuBattleRoyaleClient:__init()
@@ -64,6 +65,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange)
 
 	Events:Subscribe('Soldier:HealthAction', self, self.OnSoldierHealthAction)
+
+	Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate)
 
 	NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
 	NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
@@ -120,6 +123,7 @@ function VuBattleRoyaleClient:RegisterHooks()
 	Hooks:Install("UI:DrawMoreNametags", 999, self, self.OnUIDrawMoreNametags)
 	Hooks:Install("UI:RenderMinimap", 999, self, self.OnUIRenderMinimap)
 	Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate)
+	Hooks:Install('ClientChatManager:IncomingMessage', 1, self, self.OnClientChatManagerIncomingMessage)
 end
 
 -- =============================================
@@ -194,6 +198,7 @@ function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
 	m_SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	m_Ping:OnEngineUpdate(p_DeltaTime)
 	m_Chat:OnEngineUpdate(p_DeltaTime)
+	m_AntiCheat:OnEngineUpdate(p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
@@ -251,6 +256,14 @@ end
 
 function VuBattleRoyaleClient:OnSoldierHealthAction(p_Soldier, p_Action)
 	m_Hud:OnSoldierHealthAction(p_Soldier, p_Action)
+end
+
+-- =============================================
+	-- GunSway Event
+-- =============================================
+
+function VuBattleRoyaleClient:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
+	m_AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
 end
 
 -- =============================================
@@ -613,6 +626,10 @@ end
 
 function VuBattleRoyaleClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
 	m_Gunship:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
+end
+
+function VuBattleRoyaleClient:OnClientChatManagerIncomingMessage(p_HookCtx, p_Message, p_PlayerId, p_RecipientMask, p_ChannelId, p_IsSenderDead)
+	m_AntiCheat:OnClientChatManagerIncomingMessage(p_HookCtx, p_Message, p_PlayerId, p_RecipientMask, p_ChannelId, p_IsSenderDead)
 end
 
 -- =============================================

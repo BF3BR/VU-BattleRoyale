@@ -18,6 +18,7 @@ local m_PingServer = require "PingServer"
 local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
 local m_SpectatorServer = require "SpectatorServer"
+local m_AntiCheat = require "AntiCheat"
 local m_Logger = Logger("VuBattleRoyaleServer", true)
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
 
@@ -113,6 +114,7 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
 	self.m_ForcedWarmup = false
 	m_PingServer:OnLevelLoaded()
 	m_ServerManDownLoot:OnLevelLoaded()
+	m_AntiCheat:OnLevelLoaded()
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
@@ -131,6 +133,7 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	end
 
 	m_PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+	m_AntiCheat:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	-- Update the match
 	self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
 
