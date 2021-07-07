@@ -47,7 +47,7 @@ ServerConfig = {
 
 		EnableWinningCheck = false,
 
-		ShowAllNametags = false,
+		ShowAllNametags = true,
 
 		Whitelist = {
 			"voteban_flash",
