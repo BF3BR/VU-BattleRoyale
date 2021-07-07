@@ -457,11 +457,15 @@ function VuBattleRoyaleClient:OnWebUIJoinTeam(p_Id)
 end
 
 function VuBattleRoyaleClient:OnWebUIPingFromMap(p_Table)
-	m_Ping:OnWebUIPingFromMap(p_Table)
+	if m_HudUtils:GetIsMapOpened() then
+		m_Ping:OnWebUIPingFromMap(p_Table)
+	end
 end
 
 function VuBattleRoyaleClient:OnWebUIPingRemoveFromMap()
-	m_Ping:OnWebUIPingRemoveFromMap()
+	if m_HudUtils:GetIsMapOpened() then
+		m_Ping:OnWebUIPingRemoveFromMap()
+	end
 end
 
 function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
