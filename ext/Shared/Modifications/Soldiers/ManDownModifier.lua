@@ -269,6 +269,18 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	s_VeniceSoldierHealthModuleData.binding.interactiveManDown.assetId = 357042550
 	s_VeniceSoldierHealthModuleData.binding.revived.assetId = -1
 
+	local s_SpottingComponentData = SpottingComponentData(s_Partition:FindInstance(Guid("105707CF-F84E-4A93-B18C-A8EDED291CC4")))
+	s_SpottingComponentData:MakeWritable()
+	s_SpottingComponentData.spottingFov = 1.0
+	s_SpottingComponentData.onlyAllowedToHaveOneSpottedPlayer = true
+	s_SpottingComponentData.coolDownHistoryTime = 10.0
+	s_SpottingComponentData.coolDownAllowedSpotsWithinHistory = 1
+
+	local s_SpottingTargetComponentData = SpottingTargetComponentData(s_Partition:FindInstance(Guid("167E50EE-AAC2-4C58-93C3-55CEA65911D1")))
+	s_SpottingTargetComponentData:MakeWritable()
+	s_SpottingTargetComponentData.activeSpottedTime = 2.0
+	s_SpottingTargetComponentData.passiveSpottedTime  = 1.0
+
 	m_Logger:Write("ManDown state modified")
 end
 
