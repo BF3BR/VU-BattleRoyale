@@ -9,6 +9,7 @@ end
 function HudUtils:RegisterVars()
 	self.m_DisabledFreecamMovement = false
 	self.m_IsInEscMenu = false
+	self.m_IsInOptionsMenu = false
 	self.m_IsMapOpened = false
 	self.m_IsInDeployScreen = false
 	self.m_EnableMouseInstanceId = nil
@@ -48,6 +49,14 @@ end
 
 function HudUtils:GetIsInEscMenu()
 	return self.m_IsInEscMenu
+end
+
+function HudUtils:SetIsInOptionsMenu(p_Enable)
+	self.m_IsInOptionsMenu = p_Enable
+end
+
+function HudUtils:GetIsInOptionsMenu()
+	return self.m_IsInOptionsMenu
 end
 
 function HudUtils:SetIsMapOpened(p_Enable)

@@ -144,7 +144,9 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 		end
 	end
 
-	if m_HudUtils:GetIsInEscMenu() then
+	if m_HudUtils:GetIsInOptionsMenu() then
+		return
+	elseif m_HudUtils:GetIsInEscMenu() then
 		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
 			WebUI:ExecuteJS("OnMenuEsc()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowUp)
@@ -163,6 +165,10 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 		or InputManager:WentKeyDown(InputDeviceKeys.IDK_NumpadEnter)
 		or InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) then
 			WebUI:ExecuteJS("OnMenuEnter()")
+		end
+	elseif m_HudUtils:GetIsInDeployScreen() then
+		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
+			self:OnOpenEscapeMenu()
 		end
 	end
 end
@@ -497,6 +503,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnOpenEscapeMenu()
+	m_HudUtils:SetIsInOptionsMenu(false)
 	m_HudUtils:OnEnableMouse()
 	m_HudUtils:OnDisableGameInput()
 	m_HudUtils:ShowCrosshair(false)
@@ -528,7 +535,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnOptions()
-	m_HudUtils:SetIsInEscMenu(false)
+	m_HudUtils:SetIsInOptionsMenu(true)
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
