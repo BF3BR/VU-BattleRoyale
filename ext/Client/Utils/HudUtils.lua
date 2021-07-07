@@ -152,7 +152,7 @@ function HudUtils:ExitSoundState()
 end
 
 function HudUtils:HUDEnterUIGraph()
-	if self.m_IsInEscMenu then
+	if self.m_IsInEscMenu or self.m_IsInDeployScreen then
 		return
 	end
 
@@ -169,11 +169,11 @@ function HudUtils:HUDEnterUIGraph()
 		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	end
 
-	if self.m_DisabledFreecamMovement or self.m_IsInDeployScreen then
+	if self.m_DisabledFreecamMovement then
 		self:OnDisableGameInput()
 	end
 
-	if self.m_IsMapOpened or self.m_IsInDeployScreen then
+	if self.m_IsMapOpened then
 		self:OnEnableMouse()
 	end
 end
