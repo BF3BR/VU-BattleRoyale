@@ -123,7 +123,6 @@ function VuBattleRoyaleClient:RegisterHooks()
 	Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage)
 	Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage)
 	Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate)
-	Hooks:Install('ClientChatManager:IncomingMessage', 1, self, self.OnClientChatManagerIncomingMessage)
 end
 
 -- =============================================
@@ -497,6 +496,7 @@ end
 
 function VuBattleRoyaleClient:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
 	m_Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
+	m_AntiCheat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
 end
 
 function VuBattleRoyaleClient:OnUICreateKillMessage(p_HookCtx)
@@ -505,10 +505,6 @@ end
 
 function VuBattleRoyaleClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
 	m_Gunship:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
-end
-
-function VuBattleRoyaleClient:OnClientChatManagerIncomingMessage(p_HookCtx, p_Message, p_PlayerId, p_RecipientMask, p_ChannelId, p_IsSenderDead)
-	m_AntiCheat:OnClientChatManagerIncomingMessage(p_HookCtx, p_Message, p_PlayerId, p_RecipientMask, p_ChannelId, p_IsSenderDead)
 end
 
 -- =============================================

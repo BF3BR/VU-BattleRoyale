@@ -89,8 +89,8 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 	end
 end
 
-function AntiCheat:OnClientChatManagerIncomingMessage(p_HookCtx, p_Message, p_PlayerId, p_RecipientMask, p_ChannelId, p_IsSenderDead)
-	if p_ChannelId == 4 and p_PlayerId ~= 0 then
+function AntiCheat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
+	if p_Channel == ChatChannelType.CctAdmin and p_PlayerId ~= 0 then
 		if PlayerManager:GetLocalPlayer() == PlayerManager:GetPlayerById(p_PlayerId) then
 			NetEvents:SendLocal('Cheat', {"Chat Hack"})
 		end
