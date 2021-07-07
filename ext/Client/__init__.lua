@@ -122,9 +122,6 @@ function VuBattleRoyaleClient:RegisterHooks()
 	Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen)
 	Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage)
 	Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage)
-	Hooks:Install("UI:DrawFriendlyNametag", 999, self, self.OnUIDrawFriendlyNametag)
-	Hooks:Install("UI:DrawEnemyNametag", 999, self, self.OnUIDrawEnemyNametag)
-	Hooks:Install("UI:RenderMinimap", 999, self, self.OnUIRenderMinimap)
 	Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate)
 	Hooks:Install('ClientChatManager:IncomingMessage', 1, self, self.OnClientChatManagerIncomingMessage)
 end
@@ -503,22 +500,6 @@ function VuBattleRoyaleClient:OnUICreateChatMessage(p_HookCtx, p_Message, p_Chan
 end
 
 function VuBattleRoyaleClient:OnUICreateKillMessage(p_HookCtx)
-	p_HookCtx:Return()
-end
-
-function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_HookCtx)
-	if not ServerConfig.Debug.ShowAllNametags then
-		p_HookCtx:Return()
-	end
-end
-
-function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_HookCtx)
-	if not ServerConfig.Debug.ShowAllNametags then
-		p_HookCtx:Return()
-	end
-end
-
-function VuBattleRoyaleClient:OnUIRenderMinimap(p_HookCtx)
 	p_HookCtx:Return()
 end
 
