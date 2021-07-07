@@ -2,6 +2,8 @@ class 'Chat'
 
 require "__shared/Utils/Timers"
 
+local m_HudUtils = require "Utils/HudUtils"
+
 -- =============================================
 -- Events
 -- =============================================
@@ -40,6 +42,11 @@ function Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 
 	if p_Action == UIInputAction.UIInputAction_SayAllChat or p_Action == UIInputAction.UIInputAction_TeamChat
 	or p_Action == UIInputAction.UIInputAction_SquadChat then
+		if m_HudUtils:GetIsInOptionsMenu() then
+			p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
+			return
+		end
+
 		local s_Target = "squad"
 
 		if p_Action == UIInputAction.UIInputAction_SayAllChat and ServerConfig.Debug.EnableAllChat then
@@ -54,6 +61,10 @@ function Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	end
 
 	if p_Action == UIInputAction.UIInputAction_ToggleChat then
+		if m_HudUtils:GetIsInOptionsMenu() then
+			p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
+			return
+		end
 		WebUI:ExecuteJS("OnChangeType()")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
