@@ -290,6 +290,9 @@ function BRTeamManager:CreateTeamWithPlayer(p_BrPlayer)
 	-- add player to the team
 	l_Team:AddPlayer(p_BrPlayer)
 
+	-- set player as party member
+	p_BrPlayer.m_JoinedByCode = true
+
 	return l_Team
 end
 
@@ -410,6 +413,9 @@ function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
 	if not l_Team:AddPlayer(l_BrPlayer) then
 		NetEvents:SendToLocal(TeamManagerNetEvent.TeamJoinDenied, p_Player, TeamManagerErrors.TeamIsFull)
 	end
+
+	-- set player as party member
+	p_BrPlayer.m_JoinedByCode = true
 end
 
 function BRTeamManager:OnLeaveTeam(p_Player)

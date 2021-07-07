@@ -75,8 +75,11 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 
 	-- remove references
 	self.m_Players[p_BrPlayer:GetName()] = nil
+
+	-- update BRPlayer related fields
 	p_BrPlayer.m_Team = nil
 	p_BrPlayer.m_IsTeamLeader = false
+	p_BrPlayer.m_JoinedByCode = false
 
 	-- assign new team leader if needed
 	self:AssignLeader()
@@ -119,6 +122,21 @@ function BRTeam:Merge(p_OtherTeam)
 	return true
 end
 
+-- Returns the members of the team that joined using the code
+-- (which means that they are party members)
+function BRTeam:GetPartyMembers()
+	local s_PartyMembers = {}
+
+	for _, l_BrPlayer in pairs(self.m_Players) do
+		if l_BrPlayer.m_JoinedByCode then
+			table.insert(s_PartyMembers, l_BrPlayer)
+		end
+	end
+
+	return s_PartyMembers
+end
+
+-- Toggles the state of the lock
 function BRTeam:ToggleLock(p_BrPlayer)
 	self:SetLock(p_BrPlayer, not self.m_Locked)
 end
@@ -209,8 +227,10 @@ function BRTeam:AssignLeader()
 	return nil
 end
 
--- Checks if the team has only one player with no Custom team join strategy selected
+-- Checks if the team can be joined by id
 function BRTeam:CanBeJoinedById()
+	-- if the team has only one player and no Custom team join strategy selected
+	-- then it can't be joined by id
 	if MapHelper:Size(self.m_Players) == 1 then
 		local l_BrPlayer = MapHelper:Item(self.m_Players)
 
@@ -268,6 +288,7 @@ end
 function BRTeam:AsTable()
 	local l_Players = {}
 
+	-- add the state for each player
 	for _, l_BrPlayer in pairs(self.m_Players) do
 		table.insert(l_Players, l_BrPlayer:AsTable(true))
 	end

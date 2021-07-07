@@ -17,6 +17,9 @@ function BRPlayer:__init(p_Player)
 	-- indicates if the player is the leader of the team
 	self.m_IsTeamLeader = false
 
+	-- indicates if the player joined the team by code
+	self.m_JoinedByCode = false
+
 	-- the name of the player who killed this BRPlayer
 	self.m_KillerName = nil
 
