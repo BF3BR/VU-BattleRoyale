@@ -30,8 +30,13 @@ function BRPlayer:__init(p_Player)
 	-- the user selected strategy that is used when the teams are formed
 	self.m_TeamJoinStrategy = TeamJoinStrategy.NoJoin
 
+	-- The armor of the player (to be replaced by inventory)
 	self.m_Armor = Armor:BasicArmor()
+
+	-- The kill count of the player
 	self.m_Kills = 0
+
+	-- The score count of the player
 	self.m_Score = 0
 end
 
@@ -116,17 +121,19 @@ function BRPlayer:IncrementKills(p_Victim)
 	end
 
 	-- send related net events
-	NetEvents:SendToLocal(DamageEvent.PlayerKill, self.m_Player, p_Victim:GetName())
+	NetEvents:SendToLocal(DamageEvent.PlayerKill, self:GetPlayer(), p_Victim:GetName())
 	NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self:GetName())
 end
 
 function BRPlayer:OnManDownDamage(timer)
-	local l_Soldier = self:GetSoldier()
+	local s_Soldier = self:GetSoldier()
 
 	-- check if not in interactiveManDown
-	if l_Soldier == nil or not l_Soldier.isInteractiveManDown then
+	if s_Soldier == nil or not s_Soldier.isInteractiveManDown then
+		local s_Player = self:GetPlayer()
+
 		-- check if dead
-		if self.m_Player ~= nil and not self.m_Player.alive then
+		if s_Player ~= nil and not s_Player.alive then
 			Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, nil)
 		end
 
@@ -135,7 +142,7 @@ function BRPlayer:OnManDownDamage(timer)
 	end
 
 	-- apply damage
-	l_Soldier.health = math.max(0, l_Soldier.health - 1)
+	s_Soldier.health = math.max(0, s_Soldier.health - 1)
 end
 
 -- Kills the player
@@ -177,16 +184,17 @@ end
 -- @param p_Trans - where to spawn the player
 function BRPlayer:Spawn(p_Trans)
 	-- check if alive
-	if self.m_Player.alive then
+	if self:IsAlive() then
 		return
 	end
 
 	local s_SoldierAsset = nil
 	local s_Appearance = nil
 	local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
+	local s_Player = self:GetPlayer()
 
 	-- TODO: @Janssent's appearance code gonna land here probably
-	if self.m_Player.teamId == TeamId.Team1 then
+	if s_Player.teamId == TeamId.Team1 then
 		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
 		s_Appearance = ResourceManager:SearchForDataContainer(
 						   "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
@@ -200,15 +208,15 @@ function BRPlayer:Spawn(p_Trans)
 		return
 	end
 
-	self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+	s_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
 
-	local s_SpawnedSoldier = self.m_Player:CreateSoldier(s_SoldierBlueprint, p_Trans)
+	local s_SpawnedSoldier = s_Player:CreateSoldier(s_SoldierBlueprint, p_Trans)
 
-	self.m_Player:SpawnSoldierAt(s_SpawnedSoldier, p_Trans, CharacterPoseType.CharacterPoseType_Stand)
-	self.m_Player:AttachSoldier(s_SpawnedSoldier)
+	s_Player:SpawnSoldierAt(s_SpawnedSoldier, p_Trans, CharacterPoseType.CharacterPoseType_Stand)
+	s_Player:AttachSoldier(s_SpawnedSoldier)
 
-	self.m_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
-	self.m_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
+	s_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+	s_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
 end
 
 function BRPlayer:GunshipSpawn(p_Trans)
@@ -266,6 +274,7 @@ function BRPlayer:GunshipSpawn(p_Trans)
 	end)
 end
 
+-- TODO move to a util
 function BRPlayer:CreateCustomizeSoldierData()
 	local s_CustomizeSoldierData = CustomizeSoldierData()
 	s_CustomizeSoldierData.restoreToOriginalVisualState = false
@@ -420,24 +429,39 @@ end
 
 -- Returns the username of the player
 function BRPlayer:GetName()
-	return (self.m_Player ~= nil and self.m_Player.name) or nil
+	local s_Player = self:GetPlayer()
+	return (s_Player ~= nil and s_Player.name) or nil
+end
+
+-- TODO
+-- This should be used instead of keeping player reference
+function BRPlayer:GetPlayer()
+	-- return PlayerManager:GetPlayerByName(self.m_PlayerName)
+	return self.m_Player
 end
 
 -- Returns the soldier object, if exists, or nil
 function BRPlayer:GetSoldier()
-	return self.m_Player ~= nil and self.m_Player.soldier
+	local s_Player = self:GetPlayer()
+	return s_Player ~= nil and s_Player.soldier
 end
 
 -- Returns the position of the player if alive
 -- @return Vec3|nil
 function BRPlayer:GetPosition()
-	local l_Soldier = self:GetSoldier()
+	local s_Soldier = self:GetSoldier()
 
-	if l_Soldier == nil then
+	if s_Soldier == nil then
 		return nil
 	end
 
-	return l_Soldier.transform.trans
+	return s_Soldier.transform.trans
+end
+
+-- Checks if the player is alive
+function BRPlayer:IsAlive()
+	local s_Player = self:GetPlayer()
+	return s_Player ~= nil and s_Player.alive
 end
 
 -- Checks if the player and `p_OtherBrPlayer` are on the same team
@@ -464,20 +488,21 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 	-- state used for squad members
 	if p_Simple then
 		-- TODO remove it
-		local l_State = BRPlayerState.Dead
+		local s_State = BRPlayerState.Dead
+		local s_Soldier = self:GetSoldier()
 
-		if self.m_Player ~= nil and self.m_Player.alive and self.m_Player.soldier ~= nil then
-			if self.m_Player.soldier.isAlive then
-				l_State = BRPlayerState.Alive
-			elseif self.m_Player.soldier.isInteractiveManDown then
-				l_State = BRPlayerState.Down
+		if self:IsAlive() and s_Soldier ~= nil then
+			if s_Soldier.isAlive then
+				s_State = BRPlayerState.Alive
+			elseif s_Soldier.isInteractiveManDown then
+				s_State = BRPlayerState.Down
 			end
 		end
 
 		return {
 			Name = self:GetName(),
 			IsTeamLeader = self.m_IsTeamLeader,
-			State = l_State,
+			State = s_State,
 			PosInSquad = self.m_PosInSquad
 		}
 	end
