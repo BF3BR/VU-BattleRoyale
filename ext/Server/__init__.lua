@@ -149,13 +149,9 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 		local s_Players = PlayerManager:GetPlayers()
 
 		for _, l_Player in ipairs(s_Players) do
-			if l_Player == nil and l_Player.alive == false then
-				goto update_allowed_guids_continue
+			if l_Player ~= nil and l_Player.alive then
+				s_SpawnedPlayerCount = s_SpawnedPlayerCount + 1
 			end
-
-			s_SpawnedPlayerCount = s_SpawnedPlayerCount + 1
-
-			::update_allowed_guids_continue::
 		end
 
 		if self.m_GameState == GameStates.None and s_SpawnedPlayerCount >= self.m_MinPlayersToStart then
