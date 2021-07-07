@@ -73,6 +73,15 @@ function VuBattleRoyaleHud:OnExtensionUnloading()
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 end
 
+function VuBattleRoyaleHud:OnLevelLoaded()
+	WebUI:ExecuteJS("ToggleDeployMenu(true);")
+	m_HudUtils:ShowroomCamera(true)
+	m_HudUtils:ShowCrosshair(false)
+	m_HudUtils:SetIsInDeployScreen(true)
+	g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
+	g_Timers:Timeout(5, function() self:OnLevelFinalized() end)
+end
+
 function VuBattleRoyaleHud:OnLevelDestroy()
 	self.m_IsLevelLoaded = false
 	m_HudUtils:SetIsMapOpened(false)
@@ -223,6 +232,60 @@ end
 -- =============================================
 -- Custom Events
 -- =============================================
+
+-- =============================================
+	-- PlayerKilled Event
+-- =============================================
+
+function VuBattleRoyaleHud:OnPlayerKilled(p_PlayerName)
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil then
+		return
+	end
+
+	if self.m_BrPlayer == nil then
+		return
+	end
+
+	local s_AliveSquadCount = 0
+	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+	local s_TeamMateDied = false
+
+	if s_TeamPlayers ~= nil then
+		for _, l_Teammate in ipairs(s_TeamPlayers) do
+			if l_Teammate ~= nil then
+				if l_Teammate.State ~= BRPlayerState.Dead then
+
+					s_AliveSquadCount = s_AliveSquadCount + 1
+
+					if s_AliveSquadCount == 2 or s_LocalPlayer.name ~= l_Teammate.Name then
+						-- Your squad is still playing; cancel
+						return
+					end
+
+					if p_PlayerName == l_Teammate.Name then
+						s_TeamMateDied = true
+					end
+				end
+			end
+		end
+	end
+
+	if not s_TeamMateDied then
+		return
+	end
+
+	if p_PlayerName == s_LocalPlayer.name and s_AliveSquadCount == 1 then
+		-- If the local player dies and the AliveSquadCount is 1 (local player doesnt update that fast)
+		s_AliveSquadCount = 0
+	end
+
+	if s_AliveSquadCount == 0 then
+		self:OnGameOverScreen(false)
+		return
+	end
+end
 
 -- =============================================
 	-- GameState Events
@@ -414,6 +477,39 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		WebUI:ExecuteJS("OnMapSwitchRotation();")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
+	end
+end
+
+-- =============================================
+-- WebUI Events
+-- =============================================
+
+function VuBattleRoyaleHud:OnWebUIDeploy()
+	m_HudUtils:SetIsInDeployScreen(false)
+	m_HudUtils:ShowroomCamera(false)
+	m_VanillaUIManager:EnableShowroomSoldier(false)
+	m_HudUtils:ExitSoundState()
+	m_HudUtils:HUDEnterUIGraph()
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer ~= nil and s_LocalPlayer.soldier ~= nil then
+		m_HudUtils:ShowCrosshair(true)
+	end
+
+	NetEvents:Send(PlayerEvents.PlayerDeploy)
+end
+
+function VuBattleRoyaleHud:OnWebUITriggerMenuFunction(p_Function)
+	if p_Function == "resume" then
+		self:OnResume()
+	elseif p_Function == "team" then
+		m_Logger:Write("INFO: Team / Squad is missing.")
+	elseif p_Function == "inventory" then
+		m_Logger:Write("INFO: Inventory is missing.")
+	elseif p_Function == "options" then
+		self:OnOptions()
+	elseif p_Function == "quit" then
+		self:OnQuit()
 	end
 end
 

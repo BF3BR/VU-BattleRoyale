@@ -381,17 +381,17 @@ function BRTeamManager:OnRegisterKill(p_Victim, p_Giver)
 		p_Victim.m_KillerName = nil
 	end
 
-	local l_PlayerKilledArgs = {p_Victim.m_Player.id, nil}
+	local s_KilledId
 
 	if l_Killer ~= nil then
-		l_PlayerKilledArgs[2] = l_Killer.m_Player.id
+		s_KilledId = l_Killer.m_Player.id
 
 		-- increment killer's counter
 		l_Killer:IncrementKills(p_Victim)
 	end
 
 	-- broadcast kill
-	NetEvents:BroadcastLocal("ServerPlayer:Killed", l_PlayerKilledArgs)
+	NetEvents:BroadcastLocal("ServerPlayer:Killed", p_Victim.m_Player.id, s_KilledId)
 
 	self:UpdateTeamPlacement(p_Victim.m_Team)
 end
@@ -445,6 +445,7 @@ function BRTeamManager:OnTeamJoinStrategy(p_Player, p_Strategy)
 end
 
 function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayerName)
+	m_Logger:Write("OnUpdateSpectator player: " .. p_Player.name)
 	local s_BRPlayer = self:GetPlayer(p_Player)
 
 	if s_BRPlayer ~= nil then

@@ -24,6 +24,8 @@ local m_Ping = require "PingClient"
 local m_ClientManDownLoot = require "ClientManDownLoot"
 local m_AntiCheat = require "AntiCheat"
 local m_SoundCommon = require "Sound/SoundCommon"
+local m_Settings = require "Settings"
+local m_TeamManager = require "BRTeamManager"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -48,7 +50,6 @@ function VuBattleRoyaleClient:RegisterVars()
 	self.m_GameState = GameStates.None
 	self.m_PhaseManager = PhaseManagerClient()
 	self.m_BrPlayer = BRPlayer()
-	self.m_UserSettings = {}
 end
 
 function VuBattleRoyaleClient:RegisterEvents()
@@ -123,7 +124,6 @@ function VuBattleRoyaleClient:RegisterHooks()
 	Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage)
 	Hooks:Install("UI:DrawFriendlyNametag", 999, self, self.OnUIDrawFriendlyNametag)
 	Hooks:Install("UI:DrawEnemyNametag", 999, self, self.OnUIDrawEnemyNametag)
-	Hooks:Install("UI:DrawMoreNametags", 999, self, self.OnUIDrawMoreNametags)
 	Hooks:Install("UI:RenderMinimap", 999, self, self.OnUIRenderMinimap)
 	Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate)
 	Hooks:Install('ClientChatManager:IncomingMessage', 1, self, self.OnClientChatManagerIncomingMessage)
@@ -134,37 +134,11 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnExtensionUnloading()
-	self:ResetSettings()
+	m_Settings:OnExtensionUnloading()
 	m_SpectatorClient:OnExtensionUnloading()
 	m_Hud:OnExtensionUnloading()
 	m_HudUtils:OnExtensionUnloading()
 	m_Chat:OnExtensionUnloading()
-end
-
-function VuBattleRoyaleClient:ApplySettings()
-	for l_SettingsName, l_Settings in pairs(SettingsConfig) do
-		local l_TempSettings = ResourceManager:GetSettings(l_SettingsName)
-		l_TempSettings = _G[l_SettingsName](l_TempSettings)
-		for l_SettingName, l_Setting in pairs(l_Settings) do
-			if self.m_UserSettings[l_SettingsName] == nil then
-				self.m_UserSettings[l_SettingsName] = {}
-			end
-			self.m_UserSettings[l_SettingsName][l_SettingName] = l_TempSettings[l_SettingName]
-			l_TempSettings[l_SettingName] = l_Setting
-		end
-	end
-end
-
-function VuBattleRoyaleClient:ResetSettings()
-	for l_SettingsName, l_Settings in pairs(self.m_UserSettings) do
-		local l_TempSettings = ResourceManager:GetSettings(l_SettingsName)
-		l_TempSettings = _G[l_SettingsName](l_TempSettings)
-		for l_SettingName, l_Setting in pairs(l_Settings) do
-			l_TempSettings[l_SettingName] = l_Setting
-		end
-	end
-
-	self.m_UserSettings = {}
 end
 
 -- =============================================
@@ -172,13 +146,8 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
-	self:ApplySettings()
-	WebUI:ExecuteJS("ToggleDeployMenu(true);")
-	m_HudUtils:ShowroomCamera(true)
-	m_HudUtils:ShowCrosshair(false)
-	m_HudUtils:SetIsInDeployScreen(true)
-	g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
-	g_Timers:Timeout(5, function() m_Hud:OnLevelFinalized() end)
+	m_Settings:OnLevelLoaded()
+	m_Hud:OnLevelLoaded()
 	m_Ping:OnLevelLoaded()
 	self:StartWindTurbines()
 end
@@ -254,7 +223,7 @@ function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
 end
 
 function VuBattleRoyaleClient:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
-	self:OverrideTeamIds(p_Player, p_TeamId)
+	m_TeamManager:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
 end
 
 function VuBattleRoyaleClient:OnSoldierHealthAction(p_Soldier, p_Action)
@@ -277,63 +246,16 @@ end
 	-- Player Damage Events
 -- =============================================
 
-function VuBattleRoyaleClient:OnPlayerKilled(p_Table)
-	local s_Player = PlayerManager:GetPlayerById(p_Table[1])
+function VuBattleRoyaleClient:OnPlayerKilled(p_VictimId, p_InflictorId)
+	local s_Player = PlayerManager:GetPlayerById(p_VictimId)
 
 	if s_Player == nil then
 		return
 	end
 
 	m_Logger:Write("INFO: OnPlayerKilled: " .. s_Player.name)
-	local s_InflictorId = p_Table[2]
-	m_SpectatorClient:OnPlayerKilled(s_Player.id, s_InflictorId)
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-
-	if s_LocalPlayer == nil then
-		return
-	end
-
-	if self.m_BrPlayer == nil then
-		return
-	end
-
-	local s_AliveSquadCount = 0
-	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
-	local s_TeamMateDied = false
-
-	if s_TeamPlayers ~= nil then
-		for _, l_Teammate in ipairs(s_TeamPlayers) do
-			if l_Teammate ~= nil then
-				if l_Teammate.State ~= BRPlayerState.Dead then
-
-					s_AliveSquadCount = s_AliveSquadCount + 1
-
-					if s_AliveSquadCount == 2 or s_LocalPlayer.name ~= l_Teammate.Name then
-						-- Your squad is still playing; cancel
-						return
-					end
-
-					if s_Player.name == l_Teammate.Name then
-						s_TeamMateDied = true
-					end
-				end
-			end
-		end
-	end
-
-	if not s_TeamMateDied then
-		return
-	end
-
-	if s_Player.name == s_LocalPlayer.name and s_AliveSquadCount == 1 then
-		-- If the local player dies and the AliveSquadCount is 1 (local player doesnt update that fast)
-		s_AliveSquadCount = 0
-	end
-
-	if s_AliveSquadCount == 0 then
-		m_Hud:OnGameOverScreen(false)
-		return
-	end
+	m_SpectatorClient:OnPlayerKilled(s_Player.id, p_InflictorId)
+	m_Hud:OnPlayerKilled(s_Player.name)
 end
 
 function VuBattleRoyaleClient:OnDamageConfirmPlayerDown(p_VictimName)
@@ -444,14 +366,7 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 	m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
 	self.m_GameState = p_GameState
 
-	if p_GameState == GameStates.WarmupToPlane then
-		local s_Players = PlayerManager:GetPlayers()
-
-		for _, l_Player in pairs(s_Players) do
-			self:OverrideTeamIds(l_Player, l_Player.teamId)
-		end
-	end
-
+	m_TeamManager:OnGameStateChanged(p_GameState)
 	m_Hud:OnGameStateChanged(p_GameState)
 	m_SpectatorClient:OnGameStateChanged(p_GameState)
 end
@@ -514,18 +429,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnWebUIDeploy()
-	m_HudUtils:SetIsInDeployScreen(false)
-	m_HudUtils:ShowroomCamera(false)
-	m_VanillaUIManager:EnableShowroomSoldier(false)
-	m_HudUtils:ExitSoundState()
-	m_HudUtils:HUDEnterUIGraph()
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-
-	if s_LocalPlayer ~= nil and s_LocalPlayer.soldier ~= nil then
-		m_HudUtils:ShowCrosshair(true)
-	end
-
-	NetEvents:Send(PlayerEvents.PlayerDeploy)
+	m_Hud:OnWebUIDeploy()
 end
 
 function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)
@@ -561,18 +465,11 @@ function VuBattleRoyaleClient:OnWebUIPingRemoveFromMap()
 end
 
 function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
-	if p_Function == "resume" then
-		m_Hud:OnResume()
-	elseif p_Function == "team" then
-		m_Logger:Write("INFO: Team / Squad is missing.")
-	elseif p_Function == "inventory" then
-		m_Logger:Write("INFO: Inventory is missing.")
-	elseif p_Function == "options" then
-		m_Hud:OnOptions()
-	elseif p_Function == "quit" then
+	if p_Function == "quit" then
 		m_SpectatorClient:Disable()
-		m_Hud:OnQuit()
 	end
+
+	m_Hud:OnWebUITriggerMenuFunction(p_Function)
 end
 
 function VuBattleRoyaleClient:OnWebUIOutgoingChatMessage(p_JsonData)
@@ -607,19 +504,13 @@ end
 
 function VuBattleRoyaleClient:OnUIDrawFriendlyNametag(p_HookCtx)
 	if not ServerConfig.Debug.ShowAllNametags then
-		-- p_HookCtx:Return()
+		p_HookCtx:Return()
 	end
 end
 
 function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_HookCtx)
 	if not ServerConfig.Debug.ShowAllNametags then
 		p_HookCtx:Return()
-	end
-end
-
-function VuBattleRoyaleClient:OnUIDrawMoreNametags(p_HookCtx)
-	if not ServerConfig.Debug.ShowAllNametags then
-		--p_HookCtx:Return()
 	end
 end
 
@@ -675,38 +566,6 @@ function VuBattleRoyaleClient:OnHotReload()
 		m_HudUtils:ShowCrosshair(false)
 		m_HudUtils:OnEnableMouse()
 	end)
-end
-
-function VuBattleRoyaleClient:IsTeamMate(p_Player)
-	if self.m_BrPlayer == nil then
-		return false
-	end
-
-	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
-
-	if s_TeamPlayers ~= nil then
-		for _, l_Teammate in ipairs(s_TeamPlayers) do
-			if l_Teammate ~= nil then
-				if p_Player.name == l_Teammate.Name then
-					return true
-				end
-			end
-		end
-	end
-
-	return false
-end
-
-function VuBattleRoyaleClient:OverrideTeamIds(p_Player, p_TeamId)
-	if p_Player == PlayerManager:GetLocalPlayer() or self:IsTeamMate(p_Player) then
-		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team1")
-		p_Player:OverrideTeamId(TeamId.Team1)
-		p_Player:OverrideSquadId(SquadId.Squad1)
-	else
-		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team2")
-		p_Player:OverrideTeamId(TeamId.Team2)
-		p_Player:OverrideSquadId(SquadId.Squad1)
-	end
 end
 
 function VuBattleRoyaleClient:StartWindTurbines()
