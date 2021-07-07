@@ -12,7 +12,7 @@ function SoundCommon:__init()
 end
 
 function SoundCommon:RegisterCallbacks()
-	m_RemoveAutotriggerVO:RegisterCallbacks()
+	--m_RemoveAutotriggerVO:RegisterCallbacks()
 end
 
 -- Singleton.

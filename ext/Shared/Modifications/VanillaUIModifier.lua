@@ -103,30 +103,38 @@ end
 
 function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)
 	for i = #p_TextureAtlasAsset.icons, 1, -1 do
-		local icon = p_TextureAtlasAsset.icons[i]
+		local s_Icon = p_TextureAtlasAsset.icons[i]
 
-		if icon ~= nil then
-			if icon.iconType == UIHudIcon.UIHudIcon_SquadLeader or
-			icon.iconType == UIHudIcon.UIHudIcon_SquadleaderBg or
-			icon.iconType == UIHudIcon.UIHudIcon_Player or
-			icon.iconType == UIHudIcon.UIHudIcon_Gunship then
-				for _, state in ipairs(icon.states) do
-					state.textureInfos[1].minUv = Vec2(0, 0)
-					state.textureInfos[1].maxUv = Vec2(0, 0)
+		if s_Icon ~= nil then
+			if s_Icon.iconType == UIHudIcon.UIHudIcon_SquadLeader or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_SquadleaderBg or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_PercetageBarMiddle or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_PercetageBarEdge or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_PercentageBarBackground or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_Gunship then
+				for _, l_State in ipairs(s_Icon.states) do
+					for _, l_TextureInfo in ipairs(l_State.textureInfos) do
+						l_TextureInfo.minUv = Vec2(0, 0)
+						l_TextureInfo.maxUv = Vec2(0, 0)
+					end
 				end
 			end
 
-			if icon.iconType == UIHudIcon.UIHudIcon_KitAssault or
-			icon.iconType == UIHudIcon.UIHudIcon_KitEngineer or
-			icon.iconType == UIHudIcon.UIHudIcon_KitSupport or
-			icon.iconType == UIHudIcon.UIHudIcon_KitRecon then
+			if s_Icon.iconType == UIHudIcon.UIHudIcon_KitAssault or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_KitEngineer or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_KitSupport or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_KitRecon or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_NeedMedic or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_NeedAmmo then
 				-- replace kit icons for squad
-				icon.states[1].textureInfos[1].minUv = Vec2(0.50390625, 0.6689453125)
-				icon.states[1].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
+				s_Icon.states[1].textureInfos[1].minUv = Vec2(0.50390625, 0.6689453125)
+				s_Icon.states[1].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
 
-				-- remove kit icons for enemies
-				icon.states[2].textureInfos[1].minUv = Vec2(0, 0)
-				icon.states[2].textureInfos[1].maxUv = Vec2(0, 0)
+				if s_Icon.states[2] ~= nil then
+					-- replace kit icons for squad (colorblind)
+					s_Icon.states[2].textureInfos[1].minUv = Vec2(0.50390625, 0.6689453125)
+					s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
+				end
 			end
 		end
 	end
