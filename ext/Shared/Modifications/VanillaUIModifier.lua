@@ -140,19 +140,20 @@ function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)
 
 				if s_Icon.states[2] ~= nil then
 					-- replace kit icons for squad (colorblind)
-					s_Icon.states[2].textureInfos[1].minUv = Vec2(0.50090625, 0.6659453125)
-					s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
+					s_Icon.states[2].textureInfos[1].minUv = Vec2(0.00871875, 0.5936796875)
+					s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.0625, 0.6123046875)
 				end
 			end
 
 			if s_Icon.iconType == UIHudIcon.UIHudIcon_Player then
-				-- replace kit icons for squad
+				-- add top margin to icons
 				s_Icon.states[1].textureInfos[1].minUv = Vec2(0.4579375, 0.8905546875)
 				s_Icon.states[1].textureInfos[1].maxUv = Vec2(0.51171875, 0.9091796875)
 				s_Icon.states[2].textureInfos[1].minUv = Vec2(0.00871875, 0.74309375)
 				s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.0625, 0.76171875)
 				s_Icon.states[3].textureInfos[1].minUv = Vec2(0.50090625, 0.6659453125)
 				s_Icon.states[3].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
+				-- add top margin to icons (colorblind)
 				s_Icon.states[4].textureInfos[1].minUv = Vec2(0.00871875, 0.5936796875)
 				s_Icon.states[4].textureInfos[1].maxUv = Vec2(0.0625, 0.6123046875)
 			end
