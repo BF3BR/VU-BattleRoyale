@@ -44,6 +44,7 @@ function PingClient:RegisterVars()
 
 	-- Should we send a ping (used for sync across UpdateState's)
 	self.m_ShouldPing = false
+	self.m_PingCooldownTime = 0.60
 end
 
 -- =============================================
@@ -76,6 +77,7 @@ function PingClient:OnEngineUpdate(p_DeltaTime)
 
 		::__on_engine_update_cont__::
 	end
+	self.m_PingCooldownTime = self.m_PingCooldownTime - p_DeltaTime
 end
 
 function PingClient:OnUIDrawHud(p_BrPlayer)
@@ -128,6 +130,10 @@ function PingClient:OnClientUpdateInput()
 		return
 	end
 
+	if self.m_PingCooldownTime > 0.0 then
+		return
+	end
+
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Q) then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
@@ -160,6 +166,7 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 		return
 	end
 
+	self.m_PingCooldownTime = 0.60
 	-- Send the server a client notification that we want to ping at this location
 	NetEvents:Send(PingEvents.ClientPing, s_RaycastHit.position)
 end
