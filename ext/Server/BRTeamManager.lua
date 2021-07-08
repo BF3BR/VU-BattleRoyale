@@ -415,7 +415,7 @@ function BRTeamManager:OnRequestTeamJoin(p_Player, p_Id)
 	end
 
 	-- set player as party member
-	p_BrPlayer.m_JoinedByCode = true
+	l_BrPlayer.m_JoinedByCode = true
 end
 
 function BRTeamManager:OnLeaveTeam(p_Player)
