@@ -12,6 +12,7 @@ local m_VanillaUIModifier = require "__shared/Modifications/VanillaUIModifier"
 local m_LootCreation = require "__shared/Modifications/LootCreation"
 local m_2dTreeRemoving = require "__shared/Modifications/2dTreeRemoving"
 local m_TempMapPatches = require "__shared/Modifications/TempMapPatches"
+local m_FireEffectsModifier = require "__shared/Modifications/FX/FireEffectsModifier"
 
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 
@@ -30,6 +31,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_PhysicsModifier:RegisterCallbacks()
 	m_WeaponDropModifier:RegisterCallbacks()
 	m_2dTreeRemoving:RegisterCallbacks()
+	m_FireEffectsModifier:RegisterCallbacks()
 end
 
 function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)

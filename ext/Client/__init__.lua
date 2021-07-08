@@ -12,7 +12,7 @@ require "__shared/Enums/CustomEvents"
 
 require "PhaseManagerClient"
 require "BRPlayer"
-require "Visuals/OOCFires"
+
 
 local m_HudUtils = require "Utils/HudUtils"
 local m_VanillaUIManager = require "VanillaUIManager"
@@ -26,6 +26,7 @@ local m_AntiCheat = require "AntiCheat"
 local m_SoundCommon = require "Sound/SoundCommon"
 local m_Settings = require "Settings"
 local m_TeamManager = require "BRTeamManager"
+local m_OOCFires = require "Visuals/OOCFires"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -135,6 +136,7 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_Hud:OnExtensionUnloading()
 	m_HudUtils:OnExtensionUnloading()
 	m_Chat:OnExtensionUnloading()
+	m_OOCFires:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -150,11 +152,12 @@ end
 
 function VuBattleRoyaleClient:OnLevelDestroy()
 	m_Hud:OnLevelDestroy()
-	m_HudUtils:OnExtensionUnloading()
+	m_HudUtils:OnLevelDestroy()
 	m_SpectatorClient:OnLevelDestroy()
 	m_Gunship:OnLevelDestroy()
 	m_VanillaUIManager:OnLevelDestroy()
 	m_Chat:OnLevelDestroy()
+	m_OOCFires:OnLevelDestroy()
 end
 
 -- =============================================

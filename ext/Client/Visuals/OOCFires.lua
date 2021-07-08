@@ -20,14 +20,11 @@ end
 function OOCFires:RegisterEvents()
     NetEvents:Subscribe("OOCF:State", self, self.OnReceiveState)
     NetEvents:Subscribe("OOCF:SpawnItems", self, self.OnReceiveItems)
-
-    Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
-    Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
 end
 
 function OOCFires:SpawnItem(p_Item)
-    local l_Blueprint = EffectBlueprint(ResourceManager:SearchForInstanceByGuid(FireEffectsConfig.Effects[p_Item.Effect]))
-
+    local l_Blueprint = ResourceManager:SearchForInstanceByGuid(FireEffectsConfig.CustomEffectsGuid[p_Item.Effect])
+    
     -- convert to 3d position
     local l_Position = Vec3(p_Item.Position.x, 0, p_Item.Position.y)
     l_Position.y = g_RaycastHelper:GetY(l_Position, 600)
