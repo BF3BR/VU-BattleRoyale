@@ -355,7 +355,7 @@ function ManDownModifier:OnWorldPartLoaded(p_WorldPartData, p_Registry)
 
 		p_Registry.referenceObjectRegistry:add(s_MapMarkerReferenceObjectData)
 	end
-	m_Logger:Write("Created mapmarkers")
+	m_Logger:Write("Created mandown mapmarkers")
 end
 
 if g_ManDownModifier == nil then
