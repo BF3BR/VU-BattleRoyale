@@ -194,14 +194,14 @@ function TempMapPatches:CreateMapMarkers(p_WorldPartData, p_Registry)
 		elseif i <= 24 then
 			s_MapMarkerEntityData.hudIcon = UIHudIcon.UIHudIcon_NeedMedic -- health pickup
 		end
-		s_MapMarkerEntityData.verticalOffset = 1.0
+		s_MapMarkerEntityData.verticalOffset = 0.0
 		s_MapMarkerEntityData.focusPointRadius = 0.0
 		s_MapMarkerEntityData.useMarkerTransform = false
 		s_MapMarkerEntityData.isVisible = true
 		s_MapMarkerEntityData.snap = true
 		s_MapMarkerEntityData.showAirTargetBox = true
 		s_MapMarkerEntityData.isFocusPoint = false
-		s_MapMarkerEntityData.indexInBlueprint = 1
+		s_MapMarkerEntityData.indexInBlueprint = 132 + i
 		s_MapMarkerEntityData.isEventConnectionTarget = 2
 		s_MapMarkerEntityData.isPropertyConnectionTarget = 3
 
@@ -225,7 +225,7 @@ function TempMapPatches:CreateMapMarkers(p_WorldPartData, p_Registry)
 
 		p_Registry.referenceObjectRegistry:add(s_MapMarkerReferenceObjectData)
 	end
-	m_Logger:Write("Created enemy spotted mapmarkers")
+	m_Logger:Write("Created pinging mapmarkers")
 end
 
 return TempMapPatches()

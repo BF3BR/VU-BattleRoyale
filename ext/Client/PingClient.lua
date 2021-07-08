@@ -44,9 +44,6 @@ function PingClient:RegisterVars()
 
 	-- Should we send a ping (used for sync across UpdateState's)
 	self.m_ShouldPing = false
-
-	-- Enable debug logging
-	self.m_Debug = true
 end
 
 -- =============================================
@@ -96,7 +93,7 @@ function PingClient:OnUIDrawHud(p_BrPlayer)
 			goto __on_ui_draw_hud_cont__
 		end
 
-		local l_Position = l_PingInfo[1]
+		local l_PingId = l_PingInfo[1]
 		local l_Cooldown = l_PingInfo[2]
 
 		if l_Cooldown < 0.001 then
@@ -104,6 +101,7 @@ function PingClient:OnUIDrawHud(p_BrPlayer)
 			Events:Dispatch("Compass:RemoveMarker", tostring(l_PlayerName))
 			m_Hud:RemoveMarker(tostring(l_PlayerName))
 			self.m_SquadPings[l_PlayerName] = nil
+			self:RemovePing(l_PingId)
 			goto __on_ui_draw_hud_cont__
 		end
 
@@ -115,15 +113,6 @@ function PingClient:OnUIDrawHud(p_BrPlayer)
 			m_Hud:RemoveMarker(tostring(l_PlayerName))
 			self.m_SquadPings[l_PlayerName] = nil
 			goto __on_ui_draw_hud_cont__
-		end
-
-		if self.m_Debug then
-			DebugRenderer:DrawSphere(l_Position, self.m_DebugSize, l_Color, false, false)
-
-			local l_Coordinates = ClientUtils:WorldToScreen(l_Position)
-			if l_Coordinates ~= nil then
-				DebugRenderer:DrawText2D(l_Coordinates.x, l_Coordinates.y, tostring(l_PlayerName), Vec4(1, 0, 0, 1), 1.1)
-			end
 		end
 
 		::__on_ui_draw_hud_cont__::
@@ -188,7 +177,9 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position)
 
 	-- Send ping to compass
 	local s_RgbaColor = self:GetRgbaColorByPlayerName(p_PlayerName)
-
+	local s_PingId = self:GetPingId(p_PlayerName)
+	m_Logger:Write(s_PingId)
+	self:SetPingPosition(s_PingId, p_Position)
 	Events:Dispatch("Compass:CreateMarker", tostring(p_PlayerName), Vec2(p_Position.x, p_Position.z), s_RgbaColor)
 	m_Hud:CreateMarker(tostring(p_PlayerName), p_Position.x, p_Position.y, p_Position.z, s_RgbaColor)
 
@@ -197,7 +188,7 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position)
 	if s_PingInfo == nil then
 		-- No information currently exists
 		self.m_SquadPings[p_PlayerName] = {
-			p_Position,
+			s_PingId,
 			self.m_CooldownTime
 		}
 		return
@@ -211,7 +202,7 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position)
 	end
 
 	self.m_SquadPings[p_PlayerName] = {
-		p_Position,
+		s_PingId,
 		l_UpdatedCooldown
 	}
 end
@@ -297,6 +288,71 @@ function PingClient:RaycastScreen()
 	self.m_Position_Z = 0
 
 	return s_RaycastHit
+end
+
+function PingClient:GetPingId(p_PlayerName)
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer.name == p_PlayerName then
+		return self.m_BrPlayer.m_PosInSquad + 132
+	else
+		local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+
+		if s_TeamPlayers ~= nil then
+			for _, l_Teammate in ipairs(s_TeamPlayers) do
+				if l_Teammate ~= nil then
+					if p_PlayerName == l_Teammate.Name then
+						return l_Teammate.PosInSquad + 132
+					end
+				end
+			end
+		end
+	end
+
+	return nil
+end
+
+function PingClient:SetPingPosition(p_IndexInBlueprint, p_Position)
+	local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+	local s_Entity = s_EntityIterator:Next()
+
+	while s_Entity do
+		s_Entity = SpatialEntity(s_Entity)
+
+		if s_Entity.data ~= nil then
+			local s_Data = MapMarkerEntityData(s_Entity.data)
+
+			if s_Data.indexInBlueprint == p_IndexInBlueprint and s_Data.transform.trans == Vec3(-9999, -9999, -9999) then
+				local s_Transform = LinearTransform()
+				s_Transform.trans = p_Position
+				s_Entity.transform = s_Transform
+				m_Logger:Write("Set ping")
+				return
+			end
+		end
+		s_Entity = s_EntityIterator:Next()
+	end
+end
+
+function PingClient:RemovePing(p_IndexInBlueprint)
+	local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+	local s_Entity = s_EntityIterator:Next()
+
+	while s_Entity do
+		s_Entity = SpatialEntity(s_Entity)
+
+		if s_Entity.data ~= nil then
+			local s_Data = MapMarkerEntityData(s_Entity.data)
+
+			if s_Data.indexInBlueprint == p_IndexInBlueprint and s_Data.transform.trans == Vec3(-9999, -9999, -9999) then
+				local s_Transform = LinearTransform()
+				s_Transform.trans = Vec3(-9999, -9999, -9999)
+				s_Entity.transform = s_Transform
+				return
+			end
+		end
+		s_Entity = s_EntityIterator:Next()
+	end
 end
 
 function PingClient:GetColorByPlayerName(p_PlayerName)
