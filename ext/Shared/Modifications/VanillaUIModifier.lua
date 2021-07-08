@@ -10,6 +10,7 @@ local m_HudMpScreenAsset = DC(Guid("3343E3E3-F3C4-11DF-90D5-D8126D045289"), Guid
 local m_HudConquestScreenAsset = DC(Guid("0C14516A-02F0-4A81-B88B-6010A6A6DDC6"), Guid("2A2B8447-C938-407A-951A-C3BA099F0374"))
 local m_MPMenuScreenAsset = DC(Guid('993445AF-2476-11E0-834E-C984E80F7234'), Guid('5FE2571D-D0AD-CF75-3CB6-43A43AFC0E8B'))
 
+local m_UINametagCompData = DC(Guid('2E84F3D0-8DB2-11DF-9DBF-90F9B54D8E77'), Guid('1061D316-4366-BCA2-27D6-50D43543A41D '))
 local m_UISquadCompData = DC(Guid('88DECC5B-43E8-11E0-A213-8C5E94EEBB5D'), Guid('538F9596-5BED-84BC-92E6-99595A9A69E5 '))
 local m_UITrackingtagCompData = DC(Guid("EEA59917-3FF2-11E0-B6B0-A41634C402A3"), Guid("70998786-14D8-2E5A-CB44-F4C2DA29EE29"))
 local m_UI3dIconCompData = DC(Guid("F9331953-F3F2-11DF-BAF2-BDEFE75B56CA"), Guid("08FB6671-269A-2006-B8E1-AD901370C589"))
@@ -45,6 +46,8 @@ function VanillaUIModifier:RegisterCallbacks()
 	m_HudMpScreenAsset:RegisterLoadHandler(self, self.OnHudMpScreen)
 	m_HudConquestScreenAsset:RegisterLoadHandler(self, self.OnHudConquestScreen)
 
+	m_UINametagCompData:RegisterLoadHandler(self, self.OnUINametagCompData)
+
 	m_UITrackingtagCompData:RegisterLoadHandler(self, self.OnUITrackingtagCompData) -- Need healing / repair / ammo indicators
 	m_UI3dIconCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)		   -- Grenade icons
 	m_CapturepointtagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
@@ -72,6 +75,11 @@ end
 
 function VanillaUIModifier:OnHudConquestScreen(p_ScreenAsset)
 	self:KeepNodes(p_ScreenAsset, {"Minimap", "MapmarkerManager"})
+end
+
+function VanillaUIModifier:OnUINametagCompData(p_UIComponentData)
+	p_UIComponentData.showLabelRange = 0.0
+	p_UIComponentData.teamRadioDistance = 0.0
 end
 
 function VanillaUIModifier:OnUITrackingtagCompData(p_UIComponentData)
@@ -108,14 +116,14 @@ function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)
 		if s_Icon ~= nil then
 			if s_Icon.iconType == UIHudIcon.UIHudIcon_SquadLeader or
 			s_Icon.iconType == UIHudIcon.UIHudIcon_SquadleaderBg or
+			s_Icon.iconType == UIHudIcon.UIHudIcon_Gunship or
 			s_Icon.iconType == UIHudIcon.UIHudIcon_PercetageBarMiddle or
 			s_Icon.iconType == UIHudIcon.UIHudIcon_PercetageBarEdge or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_PercentageBarBackground or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_Gunship then
+			s_Icon.iconType == UIHudIcon.UIHudIcon_PercentageBarBackground then
 				for _, l_State in ipairs(s_Icon.states) do
 					for _, l_TextureInfo in ipairs(l_State.textureInfos) do
-						l_TextureInfo.minUv = Vec2(0, 0)
-						l_TextureInfo.maxUv = Vec2(0, 0)
+						l_TextureInfo.minUv = Vec2(0.0, 0.0)
+						l_TextureInfo.maxUv = Vec2(0.0, 0.0)
 					end
 				end
 			end
@@ -127,14 +135,26 @@ function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)
 			s_Icon.iconType == UIHudIcon.UIHudIcon_NeedMedic or
 			s_Icon.iconType == UIHudIcon.UIHudIcon_NeedAmmo then
 				-- replace kit icons for squad
-				s_Icon.states[1].textureInfos[1].minUv = Vec2(0.50390625, 0.6689453125)
+				s_Icon.states[1].textureInfos[1].minUv = Vec2(0.50090625, 0.6659453125)
 				s_Icon.states[1].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
 
 				if s_Icon.states[2] ~= nil then
 					-- replace kit icons for squad (colorblind)
-					s_Icon.states[2].textureInfos[1].minUv = Vec2(0.50390625, 0.6689453125)
+					s_Icon.states[2].textureInfos[1].minUv = Vec2(0.50090625, 0.6659453125)
 					s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
 				end
+			end
+
+			if s_Icon.iconType == UIHudIcon.UIHudIcon_Player then
+				-- replace kit icons for squad
+				s_Icon.states[1].textureInfos[1].minUv = Vec2(0.4579375, 0.8905546875)
+				s_Icon.states[1].textureInfos[1].maxUv = Vec2(0.51171875, 0.9091796875)
+				s_Icon.states[2].textureInfos[1].minUv = Vec2(0.00871875, 0.74309375)
+				s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.0625, 0.76171875)
+				s_Icon.states[3].textureInfos[1].minUv = Vec2(0.50090625, 0.6659453125)
+				s_Icon.states[3].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
+				s_Icon.states[4].textureInfos[1].minUv = Vec2(0.00871875, 0.5936796875)
+				s_Icon.states[4].textureInfos[1].maxUv = Vec2(0.0625, 0.6123046875)
 			end
 		end
 	end
