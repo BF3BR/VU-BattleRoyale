@@ -47,6 +47,11 @@ function PingClient:RegisterVars()
 	self.m_PingCooldownTime = 0.60
 
 	self.m_PingType = PingType.Default
+
+	-- Time to hold key to display CommoRose
+	self.m_TimeToDisplayCommoRose = 0.25
+	self.m_DisplayCommoRoseTimer = 0.0
+	self.m_IsCommoRoseOpened = false
 end
 
 -- =============================================
@@ -104,7 +109,7 @@ function PingClient:OnUIDrawHud(p_BrPlayer, p_DeltaTime)
 	end
 end
 
-function PingClient:OnClientUpdateInput()
+function PingClient:OnClientUpdateInput(p_DeltaTime)
 	if self.m_BrPlayer == nil then
 		return
 	end
@@ -117,10 +122,23 @@ function PingClient:OnClientUpdateInput()
 		return
 	end
 
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Q) then
-		self.m_ShouldPing = true
-		self.m_PingMethod = PingMethod.World
-		self.m_PingType = PingType.Default
+    if InputManager:IsKeyDown(InputDeviceKeys.IDK_Q) then
+        self.m_DisplayCommoRoseTimer = self.m_DisplayCommoRoseTimer + p_DeltaTime
+
+        if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
+            -- m_Hud:ShowCommoRose()
+			self.m_IsCommoRoseOpened = true
+			m_Logger:Write("ShowCommoRose")
+        end
+    elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Q) then
+        if self.m_DisplayCommoRoseTimer < self.m_TimeToDisplayCommoRose then
+            self.m_ShouldPing = true
+            self.m_PingMethod = PingMethod.World
+			self.m_PingType = PingType.Default
+        end
+
+		self.m_IsCommoRoseOpened = false
+        self.m_DisplayCommoRoseTimer = 0.0
 	elseif InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_2) then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World

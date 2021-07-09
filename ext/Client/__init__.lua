@@ -182,11 +182,11 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	end
 end
 
-function VuBattleRoyaleClient:OnClientUpdateInput()
+function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
 	m_Gunship:OnClientUpdateInput()
 	m_SpectatorClient:OnClientUpdateInput()
 	m_Hud:OnClientUpdateInput()
-	m_Ping:OnClientUpdateInput()
+	m_Ping:OnClientUpdateInput(p_DeltaTime)
 end
 
 -- =============================================
