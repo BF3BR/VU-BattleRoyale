@@ -63,6 +63,8 @@ ServerConfig = {
 			"FoolHen",
 			"beogath",
 			"lol24",
+			"DANNYonPC",
+			"STALKERonPC"
 		},
 	}
 }

@@ -51,6 +51,10 @@ function BundleManager:OnLoadBundles(p_Hook, p_Bundles, p_Compartment)
 	else
 		if #p_Bundles == 1 and p_Bundles[1] == SharedUtils:GetLevelName() then
 			local s_Bundles = s_MapConfig.Bundles
+			if s_Bundles == nil then
+				m_Logger:Write("map config missing bundles...")
+				return
+			end
 			table.insert(s_Bundles, p_Bundles[1])
 
 			m_Logger:Write("Injecting bundles:")
