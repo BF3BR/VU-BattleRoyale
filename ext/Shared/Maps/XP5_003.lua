@@ -9,6 +9,7 @@
 
 -- XP5_003 Kiasar Railroad
 return {
+	RCON = { "XP5_003", "ConquestLarge0", "1" },
 	SuperBundles = {
 		"XP1Chunks",
 		"Levels/XP1_004/XP1_004",

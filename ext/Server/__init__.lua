@@ -114,6 +114,7 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
 	self.m_ForcedWarmup = false
 	m_PingServer:OnLevelLoaded()
 	m_ServerManDownLoot:OnLevelLoaded()
+	self:CheckMap()
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
@@ -595,6 +596,22 @@ function VuBattleRoyaleServer:SetupRconVariables()
 				m_Logger:Write("INFO: Command: " .. l_Command .. " returned: " .. s_Result[1])
 			end
 		end
+	end
+end
+
+function VuBattleRoyaleServer:CheckMap()
+	local s_MapsConfig = MapsConfig[LevelNameHelper:GetLevelName()]
+
+	if s_MapsConfig == nil then
+		m_Logger:Write("Wrong map. Fixing maplist and loading Kiasar.")
+		RCON:SendCommand("mapList.clear")
+
+		for _, l_MapConfig in pairs(MapsConfig) do
+			RCON:SendCommand("mapList.add", l_MapConfig.RCON)
+		end
+
+		RCON:SendCommand("mapList.runNextRound")
+		return
 	end
 end
 
