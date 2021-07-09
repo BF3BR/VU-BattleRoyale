@@ -93,3 +93,9 @@ function BRPlayer:GetColor(p_AsRgba)
 	-- return color as an rgba string
 	return string.format("rgba(%s, %s, %s, %s)", l_Color.x * 255, l_Color.y * 255, l_Color.z * 255, l_Color.w)
 end
+
+if g_BRPlayer == nil then
+	g_BRPlayer = BRPlayer()
+end
+
+return g_BRPlayer

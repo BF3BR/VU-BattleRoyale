@@ -5,6 +5,7 @@ require "__shared/Enums/PingTypes"
 require "__shared/Utils/EventRouter"
 
 local m_Hud = require "Hud"
+local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("PingClient", true)
 
 function PingClient:__init()
@@ -12,8 +13,6 @@ function PingClient:__init()
 end
 
 function PingClient:RegisterVars()
-	self.m_BrPlayer = nil
-
 	self.m_LastPing = Vec3(0, 0, 0)
 	self.m_Color = Vec3(0, 0, 0)
 
@@ -63,15 +62,7 @@ function PingClient:OnLevelLoaded()
 	self.m_ShouldPing = false
 end
 
-function PingClient:OnUIDrawHud(p_BrPlayer, p_DeltaTime)
-	if self.m_BrPlayer == nil then
-		if p_BrPlayer == nil then
-			return
-		end
-
-		self.m_BrPlayer = p_BrPlayer
-	end
-
+function PingClient:OnUIDrawHud(p_DeltaTime)
 	self.m_PingCooldownTime = self.m_PingCooldownTime - p_DeltaTime
 
 	for l_PlayerName, l_PingInfo in pairs(self.m_SquadPings) do
@@ -110,10 +101,6 @@ function PingClient:OnUIDrawHud(p_BrPlayer, p_DeltaTime)
 end
 
 function PingClient:OnClientUpdateInput(p_DeltaTime)
-	if self.m_BrPlayer == nil then
-		return
-	end
-
 	if SpectatorManager:GetSpectating() then
 		return
 	end
@@ -182,10 +169,6 @@ end
 -- =============================================
 
 function PingClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
-	if self.m_BrPlayer == nil then
-		return
-	end
-
 	m_Logger:Write("playerName: " .. tostring(p_PlayerName) .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
 
 	-- Send ping to compass
@@ -330,9 +313,9 @@ function PingClient:GetPingId(p_PlayerName, p_PingType)
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if s_LocalPlayer.name == p_PlayerName then
-		return self.m_BrPlayer.m_PosInSquad + s_IndexOffset
+		return m_BrPlayer.m_PosInSquad + s_IndexOffset
 	else
-		local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+		local s_TeamPlayers = m_BrPlayer.m_Team:PlayersTable()
 
 		if s_TeamPlayers ~= nil then
 			for _, l_Teammate in ipairs(s_TeamPlayers) do
@@ -393,11 +376,11 @@ end
 
 function PingClient:GetColorByPlayerName(p_PlayerName)
 	-- Validate player name
-	if p_PlayerName == nil and self.m_BrPlayer == nil then
+	if p_PlayerName == nil then
 		return
 	end
 
-	local s_Teammates = self.m_BrPlayer.m_Team:PlayersTable()
+	local s_Teammates = m_BrPlayer.m_Team:PlayersTable()
 	local s_Color = nil
 
 	for _, l_Teammate in pairs(s_Teammates) do

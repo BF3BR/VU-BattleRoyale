@@ -7,12 +7,12 @@ require "__shared/Enums/UiStates"
 
 local m_VanillaUIManager = require "VanillaUIManager"
 local m_HudUtils = require "Utils/HudUtils"
+local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("VuBattleRoyaleHud", true)
 
 function VuBattleRoyaleHud:__init()
 	self.m_GameState = GameStates.None
 	self.m_Ticks = 0.0
-	self.m_BrPlayer = nil
 	self.m_IsPlayerOnPlane = false
 
 	self.m_IsLevelLoaded = false
@@ -94,9 +94,9 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 		return
 	end
 
-	if self.m_BrPlayer ~= nil and self.m_BrPlayer.m_Team ~= nil then
-		self.m_HudOnUpdateTeamLocked:Update(self.m_BrPlayer.m_Team.m_Locked)
-		self.m_HudOnUpdateTeamPlayers:Update(json.encode(self.m_BrPlayer.m_Team:PlayersTable()))
+	if m_BrPlayer.m_Team ~= nil then
+		self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
+		self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
 	end
 
 	if self.m_Ticks >= ServerConfig.HudUpdateRate then
@@ -109,17 +109,9 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 	self.m_Ticks = self.m_Ticks + p_DeltaTime
 end
 
-function VuBattleRoyaleHud:OnUIDrawHud(p_BrPlayer)
+function VuBattleRoyaleHud:OnUIDrawHud()
 	if not self.m_IsLevelLoaded then
 		return
-	end
-
-	if self.m_BrPlayer == nil then
-		if p_BrPlayer == nil then
-			return
-		end
-
-		self.m_BrPlayer = p_BrPlayer
 	end
 
 	self:PushManDownMapMarkers()
@@ -244,12 +236,8 @@ function VuBattleRoyaleHud:OnPlayerKilled(p_PlayerName)
 		return
 	end
 
-	if self.m_BrPlayer == nil then
-		return
-	end
-
 	local s_AliveSquadCount = 0
-	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+	local s_TeamPlayers = m_BrPlayer.m_Team:PlayersTable()
 	local s_TeamMateDied = false
 
 	if s_TeamPlayers ~= nil then
@@ -338,11 +326,11 @@ function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin)
 end
 
 function VuBattleRoyaleHud:OnUpdatePlacement()
-	if self.m_BrPlayer.m_Team.m_Placement == nil then
+	if m_BrPlayer.m_Team.m_Placement == nil then
 		return
 	end
 
-	self.m_HudOnUpdatePlacement:Update(self.m_BrPlayer.m_Team.m_Placement)
+	self.m_HudOnUpdatePlacement:Update(m_BrPlayer.m_Team.m_Placement)
 end
 
 -- =============================================
@@ -419,17 +407,13 @@ function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
 end
 
 function VuBattleRoyaleHud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
-	if self.m_BrPlayer == nil then
-		return
-	end
-
 	if p_VictimName == nil or p_IsKill == nil then
 		return
 	end
 
 	self.m_HudOnNotifyInflictorAboutKillOrKnock:ForceUpdate(json.encode({
 		["name"] = p_VictimName,
-		["kills"] = (self.m_BrPlayer.m_Kills or 0),
+		["kills"] = (m_BrPlayer.m_Kills or 0),
 		["isKill"] = p_IsKill,
 	}))
 end
@@ -786,30 +770,22 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 
 	self.m_HudOnPlayersInfo:Update(json.encode(s_PlayersObject))
 
-	if self.m_BrPlayer == nil then
-		return
-	end
-
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if s_LocalPlayer ~= nil then
 		local s_LocalPlayerTable = {
 			["id"] = s_LocalPlayer.id,
 			["name"] = s_LocalPlayer.name,
-			["kill"] =  (self.m_BrPlayer.m_Kills or 0),
-			["state"] = self.m_BrPlayer:GetState(),
-			["isTeamLeader"] = self.m_BrPlayer.m_IsTeamLeader,
-			["color"] = self.m_BrPlayer:GetColor(true),
+			["kill"] =  (m_BrPlayer.m_Kills or 0),
+			["state"] = m_BrPlayer:GetState(),
+			["isTeamLeader"] = m_BrPlayer.m_IsTeamLeader,
+			["color"] = m_BrPlayer:GetColor(true),
 		}
 		self.m_HudOnLocalPlayerInfo:Update(json.encode(s_LocalPlayerTable))
 	end
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
-	if self.m_BrPlayer == nil then
-		return
-	end
-
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if SpectatorManager:GetSpectating() then
@@ -845,7 +821,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 		self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health - 100)
 	end
 
-	self.m_HudOnPlayerArmor:Update(self.m_BrPlayer.m_Armor:GetPercentage())
+	self.m_HudOnPlayerArmor:Update(m_BrPlayer.m_Armor:GetPercentage())
 	self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
 	self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
 	self.m_HudOnPlayerFireLogic:Update(s_LocalSoldier.weaponsComponent.currentWeapon.fireLogic)
@@ -856,14 +832,10 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerTeam()
-	if self.m_BrPlayer == nil then
-		return
-	end
-
 	self.m_HudOnUpdateTeamSize:Update(ServerConfig.PlayersPerTeam)
 
-	if self.m_BrPlayer.m_Team ~= nil then
-		self.m_HudOnUpdateTeamId:Update(self.m_BrPlayer.m_Team.m_Id)
+	if m_BrPlayer.m_Team ~= nil then
+		self.m_HudOnUpdateTeamId:Update(m_BrPlayer.m_Team.m_Id)
 	end
 end
 

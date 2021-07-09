@@ -11,9 +11,8 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 
 require "PhaseManagerClient"
-require "BRPlayer"
 
-
+local m_BrPlayer = require "BRPlayer"
 local m_HudUtils = require "Utils/HudUtils"
 local m_VanillaUIManager = require "VanillaUIManager"
 local m_Gunship = require "Gunship"
@@ -27,6 +26,7 @@ local m_SoundCommon = require "Sound/SoundCommon"
 local m_Settings = require "Settings"
 local m_TeamManager = require "BRTeamManager"
 local m_OOCFires = require "Visuals/OOCFires"
+
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -50,7 +50,6 @@ function VuBattleRoyaleClient:RegisterVars()
 	-- The current gamestate, it's read-only and can only be changed by the SERVER
 	self.m_GameState = GameStates.None
 	self.m_PhaseManager = PhaseManagerClient()
-	self.m_BrPlayer = BRPlayer()
 end
 
 function VuBattleRoyaleClient:RegisterEvents()
@@ -176,8 +175,8 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_Ping:OnUpdatePassPreSim(p_DeltaTime)
 		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
-		m_Hud:OnUIDrawHud(self.m_BrPlayer)
-		m_Ping:OnUIDrawHud(self.m_BrPlayer, p_DeltaTime)
+		m_Hud:OnUIDrawHud()
+		m_Ping:OnUIDrawHud(p_DeltaTime)
 		m_Gunship:OnUIDrawHud(p_DeltaTime)
 	end
 end
@@ -402,15 +401,11 @@ function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
 		return
 	end
 
-	if self.m_BrPlayer == nil then
+	if m_BrPlayer.m_Team == nil then
 		return
 	end
 
-	if self.m_BrPlayer.m_Team == nil then
-		return
-	end
-
-	if p_WinnerTeamId ~= self.m_BrPlayer.m_Team.m_Id then
+	if p_WinnerTeamId ~= m_BrPlayer.m_Team.m_Id then
 		return
 	end
 
@@ -431,27 +426,19 @@ function VuBattleRoyaleClient:OnWebUIDeploy()
 end
 
 function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)
-	if self.m_BrPlayer == nil then
-		return
-	end
-
-	self.m_BrPlayer:SetTeamJoinStrategy(p_Strategy)
+	m_BrPlayer:SetTeamJoinStrategy(p_Strategy)
 end
 
 function VuBattleRoyaleClient:OnWebUIToggleLock()
-	if self.m_BrPlayer == nil then
-		return
-	end
-
-	self.m_BrPlayer:ToggleLock()
+	m_BrPlayer:ToggleLock()
 end
 
 function VuBattleRoyaleClient:OnWebUIJoinTeam(p_Id)
-	if self.m_BrPlayer == nil or p_Id == nil or p_Id == "" then
+	if p_Id == nil or p_Id == "" then
 		return
 	end
 
-	self.m_BrPlayer:JoinTeam(p_Id)
+	m_BrPlayer:JoinTeam(p_Id)
 end
 
 function VuBattleRoyaleClient:OnWebUIPingFromMap(p_Table)

@@ -1,5 +1,6 @@
 class 'BRTeamManager'
 
+local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("BRTeamManager", true)
 
 function BRTeamManager:__init()
@@ -44,11 +45,11 @@ function BRTeamManager:OverrideTeamIds(p_Player, p_TeamId)
 end
 
 function BRTeamManager:IsTeamMate(p_Player)
-	if self.m_BrPlayer == nil then
+	if m_BrPlayer.m_Team == nil then
 		return false
 	end
 
-	local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
+	local s_TeamPlayers = m_BrPlayer.m_Team:PlayersTable()
 
 	if s_TeamPlayers ~= nil then
 		for _, l_Teammate in ipairs(s_TeamPlayers) do
