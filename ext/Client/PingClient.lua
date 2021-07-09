@@ -121,6 +121,10 @@ function PingClient:OnClientUpdateInput()
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
 		self.m_PingType = PingType.Default
+	elseif InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_2) then
+		self.m_ShouldPing = true
+		self.m_PingMethod = PingMethod.World
+		self.m_PingType = PingType.Enemy
 	end
 end
 
