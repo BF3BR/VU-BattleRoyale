@@ -1,5 +1,6 @@
 class "HudUtils"
 
+local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"
 local m_Logger = Logger("HudUtils", true)
 
 function HudUtils:__init()
@@ -15,6 +16,7 @@ function HudUtils:RegisterVars()
 	self.m_EnableMouseInstanceId = nil
 	self.m_DisableGameInputInstanceId = nil
 	self.m_BlurInstanceId = nil
+	self.m_ShowSoldierInstanceId = nil
 end
 
 -- =============================================
@@ -439,6 +441,73 @@ function HudUtils:CreateBlurEffect()
 end
 
 -- =============================================
+	-- ShowroomSoldier
+-- =============================================
+
+function HudUtils:EnableShowroomSoldier(p_Enable)
+	local s_EventId = 'HideSoldier'
+
+	if p_Enable then
+		s_EventId = 'ShowSoldier'
+	end
+
+	if self.m_ShowSoldierInstanceId == nil then
+		local s_ShowSoldierGraphEntityData = self:GetShowSoldierGraphEntityData()
+		local s_ShowSoldierGraphEntity = EntityManager:CreateEntity(s_ShowSoldierGraphEntityData, LinearTransform())
+
+		s_ShowSoldierGraphEntity:FireEvent(s_EventId)
+		self.m_ShowSoldierInstanceId = s_ShowSoldierGraphEntity.instanceId
+	else
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+
+			if self.m_ShowSoldierInstanceId == s_Entity.instanceId then
+				s_Entity:FireEvent(s_EventId)
+				break
+			end
+
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+end
+
+function HudUtils:GetShowSoldierGraphEntityData()
+	local s_GraphAsset = UIGraphAsset()
+
+	-- SpawnCustomization
+	local s_ShowSoldierInputNode = m_ConnectionHelper:GetNode('InstanceInputNode', s_GraphAsset, { 'out' })
+	s_ShowSoldierInputNode.name = 'ShowSoldier'
+
+	local s_ShowSoldierActionNode =  m_ConnectionHelper:GetNode('ActionNode', s_GraphAsset, { 'inValue', 'out' })
+	s_ShowSoldierActionNode.actionKey = UIAction.SpawnCustomization
+	s_ShowSoldierActionNode.params:add('-1')
+	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_ShowSoldierInputNode, s_ShowSoldierActionNode, s_ShowSoldierInputNode.out, s_ShowSoldierActionNode.inValue)
+
+	-- UnSpawnCustomization
+	local s_HideSoldierInputNode = m_ConnectionHelper:GetNode('InstanceInputNode', s_GraphAsset, { 'out' })
+	s_HideSoldierInputNode.name = 'HideSoldier'
+
+	local s_HideSoldierActionNode =  m_ConnectionHelper:GetNode('ActionNode', s_GraphAsset, { 'inValue', 'out' })
+	s_HideSoldierActionNode.actionKey = UIAction.UnSpawnCustomization
+	s_HideSoldierActionNode.params:add('-1')
+	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_HideSoldierInputNode, s_HideSoldierActionNode, s_HideSoldierInputNode.out, s_HideSoldierActionNode.inValue)
+
+	-- Outputs
+	local s_OutputNode = m_ConnectionHelper:GetNode('InstanceOutputNode', s_GraphAsset, { 'inValue' })
+	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_ShowSoldierActionNode, s_OutputNode, s_ShowSoldierActionNode.out, s_OutputNode.inValue)
+	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_HideSoldierActionNode, s_OutputNode, s_HideSoldierActionNode.out, s_OutputNode.inValue)
+
+	local s_ShowSoldierGraphEntityData = UIGraphEntityData()
+	s_ShowSoldierGraphEntityData.graphAsset = s_GraphAsset
+	s_ShowSoldierGraphEntityData.popPreviousGraph = false
+
+	return s_ShowSoldierGraphEntityData
+end
+
+-- =============================================
 	-- Clear Entities
 -- =============================================
 
@@ -483,6 +552,22 @@ function HudUtils:DestroyEntities()
 			s_Entity = Entity(s_Entity)
 
 			if self.m_EnableMouseInstanceId == s_Entity.instanceId then
+				s_Entity:Destroy()
+				break
+			end
+
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+
+	if self.m_ShowSoldierInstanceId ~= nil then
+		local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
+		local s_Entity = s_EntityIterator:Next()
+
+		while s_Entity do
+			s_Entity = Entity(s_Entity)
+
+			if self.m_ShowSoldierInstanceId == s_Entity.instanceId then
 				s_Entity:Destroy()
 				break
 			end

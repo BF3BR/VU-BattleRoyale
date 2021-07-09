@@ -14,7 +14,6 @@ require "PhaseManagerClient"
 
 local m_BrPlayer = require "BRPlayer"
 local m_HudUtils = require "Utils/HudUtils"
-local m_VanillaUIManager = require "VanillaUIManager"
 local m_Gunship = require "Gunship"
 local m_Hud = require "Hud"
 local m_Chat = require "UI/Chat"
@@ -154,7 +153,6 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_HudUtils:OnLevelDestroy()
 	m_SpectatorClient:OnLevelDestroy()
 	m_Gunship:OnLevelDestroy()
-	m_VanillaUIManager:OnLevelDestroy()
 	m_Chat:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 end
@@ -479,8 +477,7 @@ function VuBattleRoyaleClient:OnInputConceptEvent(p_HookCtx, p_EventType, p_Acti
 end
 
 function VuBattleRoyaleClient:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
-	p_Screen = Asset(p_Screen)
-	m_VanillaUIManager:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
+	m_Hud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
 end
 
 function VuBattleRoyaleClient:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)

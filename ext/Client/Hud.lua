@@ -5,7 +5,8 @@ require "__shared/Utils/Timers"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/UiStates"
 
-local m_VanillaUIManager = require "VanillaUIManager"
+local m_EscMenu = require "UI/EscMenu"
+local m_DeployScreen = require "UI/DeployScreen"
 local m_HudUtils = require "Utils/HudUtils"
 local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("VuBattleRoyaleHud", true)
@@ -74,11 +75,7 @@ function VuBattleRoyaleHud:OnExtensionUnloading()
 end
 
 function VuBattleRoyaleHud:OnLevelLoaded()
-	WebUI:ExecuteJS("ToggleDeployMenu(true);")
-	m_HudUtils:ShowroomCamera(true)
-	m_HudUtils:ShowCrosshair(false)
-	m_HudUtils:SetIsInDeployScreen(true)
-	g_Timers:Timeout(2, function() m_VanillaUIManager:EnableShowroomSoldier(true) end)
+	m_DeployScreen:OnLevelLoaded()
 	g_Timers:Timeout(5, function() self:OnLevelFinalized() end)
 end
 
@@ -136,42 +133,11 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10)
 	and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle then
 		if self.m_GameState ~= GameStates.Match or s_LocalPlayer.soldier == nil then
-			WebUI:ExecuteJS("ToggleDeployMenu(true);")
-			m_HudUtils:ShowroomCamera(true)
-			m_HudUtils:ShowCrosshair(false)
-			m_HudUtils:OnEnableMouse()
-			m_VanillaUIManager:EnableShowroomSoldier(true)
-			m_HudUtils:SetIsInDeployScreen(true)
+			m_DeployScreen:OpenDeployScreen()
 		end
 	end
 
-	if m_HudUtils:GetIsInOptionsMenu() then
-		return
-	elseif m_HudUtils:GetIsInEscMenu() then
-		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
-			WebUI:ExecuteJS("OnMenuEsc()")
-		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowUp)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_W) then
-			WebUI:ExecuteJS("OnMenuArrowUp()")
-		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowDown)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_S) then
-			WebUI:ExecuteJS("OnMenuArrowDown()")
-		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_D) then
-			WebUI:ExecuteJS("OnMenuArrowRight()")
-		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_A) then
-			WebUI:ExecuteJS("OnMenuArrowLeft()")
-		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_Enter)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_NumpadEnter)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) then
-			WebUI:ExecuteJS("OnMenuEnter()")
-		end
-	elseif m_HudUtils:GetIsInDeployScreen() then
-		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
-			self:OnOpenEscapeMenu()
-		end
-	end
+	m_EscMenu:OnClientUpdateInput()
 end
 
 function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
@@ -304,13 +270,7 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 			["key"] = nil,
 		}))
 
-		m_HudUtils:SetIsInDeployScreen(false)
-		WebUI:ExecuteJS("ToggleDeployMenu(false);")
-		m_HudUtils:ShowroomCamera(false)
-		m_VanillaUIManager:EnableShowroomSoldier(false)
-		m_HudUtils:ExitSoundState()
-		m_HudUtils:HUDEnterUIGraph()
-
+		m_DeployScreen:CloseDeployScreen()
 		self.m_HudOnSetUIState:Update(UiStates.Loading)
 	elseif self.m_GameState == GameStates.Plane then
 		self.m_HudOnSetUIState:Update(UiStates.Game)
@@ -464,16 +424,27 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	end
 end
 
+function VuBattleRoyaleHud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
+	p_Screen = Asset(p_Screen)
+
+	if p_Screen.name == "UI/Flow/Screen/SpawnScreenPC"
+	or p_Screen.name == "UI/Flow/Screen/SpawnScreenTicketCounterConquestScreen"
+	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen"
+	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen"
+	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD64Screen"
+	or p_Screen.name == "UI/Flow/Screen/KillScreen"
+	or p_Screen.name == "UI/Flow/Screen/SpawnButtonScreen" then
+		p_HookCtx:Return()
+	end
+end
+
 -- =============================================
 -- WebUI Events
 -- =============================================
 
 function VuBattleRoyaleHud:OnWebUIDeploy()
-	m_HudUtils:SetIsInDeployScreen(false)
-	m_HudUtils:ShowroomCamera(false)
-	m_VanillaUIManager:EnableShowroomSoldier(false)
-	m_HudUtils:ExitSoundState()
-	m_HudUtils:HUDEnterUIGraph()
+	m_DeployScreen:CloseDeployScreen()
+
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if s_LocalPlayer ~= nil and s_LocalPlayer.soldier ~= nil then
@@ -484,17 +455,7 @@ function VuBattleRoyaleHud:OnWebUIDeploy()
 end
 
 function VuBattleRoyaleHud:OnWebUITriggerMenuFunction(p_Function)
-	if p_Function == "resume" then
-		self:OnResume()
-	elseif p_Function == "team" then
-		m_Logger:Write("INFO: Team / Squad is missing.")
-	elseif p_Function == "inventory" then
-		m_Logger:Write("INFO: Inventory is missing.")
-	elseif p_Function == "options" then
-		self:OnOptions()
-	elseif p_Function == "quit" then
-		self:OnQuit()
-	end
+	m_EscMenu:OnWebUITriggerMenuFunction(p_Function)
 end
 
 -- =============================================
@@ -544,160 +505,8 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 	m_HudUtils:StartupChat()
 	WebUI:ExecuteJS("OnLevelFinalized('" .. SharedUtils:GetLevelName() .. "');")
 	self:OnGameStateChanged(self.m_GameState)
-	self:RegisterEscMenuCallbacks()
+	m_EscMenu:RegisterEscMenuCallbacks()
 	m_HudUtils:OnEnableMouse()
-end
-
--- =============================================
-	-- Esc Menu Callbacks
--- =============================================
-
-function VuBattleRoyaleHud:RegisterEscMenuCallbacks()
-	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
-	local s_Entity = s_EntityIterator:Next()
-
-	while s_Entity do
-		s_Entity = Entity(s_Entity)
-
-		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("B9437F95-2EBC-4F22-A5F6-F4D0F1331A5E") then
-			-- Registering the EventCallback on modreload => crash on first call
-			s_Entity:RegisterEventCallback(self, self.OnEscapeMenuCallback)
-		end
-
-		s_Entity = s_EntityIterator:Next()
-	end
-end
-
-function VuBattleRoyaleHud:OnEscapeMenuCallback(p_Entity, p_EntityEvent)
-	if p_EntityEvent.eventId == MathUtils:FNVHash("EnterFromGame") then
-		self:OnOpenEscapeMenu()
-		return false
-	elseif p_EntityEvent.eventId == MathUtils:FNVHash("ExitUIGraph") then
-		self:OnResume()
-	end
-end
-
-
--- =============================================
-	-- Open Escape Menu
--- =============================================
-
-function VuBattleRoyaleHud:OnOpenEscapeMenu()
-	m_HudUtils:SetIsInOptionsMenu(false)
-	m_HudUtils:OnEnableMouse()
-	m_HudUtils:OnDisableGameInput()
-	m_HudUtils:ShowCrosshair(false)
-	m_HudUtils:EnableBlurEffect(true)
-	m_HudUtils:SetIsInEscMenu(true)
-
-	self.m_HudOnSetUIState:Update(UiStates.Menu)
-	-- Add WebUI
-end
-
-
--- =============================================
-	-- Close Escape Menu
--- =============================================
-
-function VuBattleRoyaleHud:OnResume()
-	m_HudUtils:SetIsInEscMenu(false)
-	m_HudUtils:DisableMenuVisualEnv()
-	m_HudUtils:ExitSoundState()
-	m_HudUtils:HUDEnterUIGraph()
-	m_HudUtils:EnableTabScoreboard()
-	m_HudUtils:EnableBlurEffect(false)
-	m_HudUtils:StartupChat()
-	self.m_HudOnSetUIState:Update(UiStates.Game)
-end
-
--- =============================================
-	-- Open Options
--- =============================================
-
-function VuBattleRoyaleHud:OnOptions()
-	m_HudUtils:SetIsInOptionsMenu(true)
-	self.m_HudOnSetUIState:Update(UiStates.Hidden)
-	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
-	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-
-	while s_UIGraphEntity do
-		if s_UIGraphEntity.data.instanceGuid == Guid("EDF20470-4AD7-44BC-96E1-9DF61989BE58") then
-			s_UIGraphEntity = Entity(s_UIGraphEntity)
-			s_UIGraphEntity:FireEvent("EnterOptions")
-			return
-		end
-
-		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-	end
-end
-
--- =============================================
-	-- Quit the game
--- =============================================
-
-function VuBattleRoyaleHud:OnQuit()
-	local s_Data = self:GetQuitEntityData()
-	local s_QuitPopupGraphEntity = EntityManager:CreateEntity(s_Data, LinearTransform())
-	s_QuitPopupGraphEntity:FireEvent('Quit')
-end
-
-function VuBattleRoyaleHud:GetQuitEntityData()
-	local s_QuitPopupGraphAsset = UIGraphAsset()
-	s_QuitPopupGraphAsset.modal = false
-	s_QuitPopupGraphAsset.protectScreens = true
-	s_QuitPopupGraphAsset.isWin32UIGraphAsset = true
-	s_QuitPopupGraphAsset.isXenonUIGraphAsset = true
-	s_QuitPopupGraphAsset.isPs3UIGraphAsset = true
-
-	local s_InputNode = InstanceInputNode()
-	s_InputNode.parentGraph = s_QuitPopupGraphAsset
-	s_InputNode.name = 'Quit'
-	s_InputNode.isRootNode = false
-	s_InputNode.parentIsScreen = false
-	s_QuitPopupGraphAsset.nodes:add(s_InputNode)
-
-	local s_ActionNode = ActionNode()
-	s_ActionNode.actionKey = MathUtils:FNVHash("QuitGame")
-	s_ActionNode.inValue = UINodePort()
-	s_ActionNode.out = UINodePort()
-	s_ActionNode.appendIncomingParams = false
-	s_ActionNode.name = 'Quit'
-	s_ActionNode.isRootNode = false
-	s_ActionNode.parentGraph = s_QuitPopupGraphAsset
-	s_ActionNode.parentIsScreen = false
-	s_QuitPopupGraphAsset.nodes:add(s_ActionNode)
-
-	local s_InputToDialogNodeConnection = UINodeConnection()
-	s_InputToDialogNodeConnection.sourceNode = s_InputNode
-	s_InputToDialogNodeConnection.targetNode = s_ActionNode
-	s_InputToDialogNodeConnection.sourcePort = s_InputNode.out
-	s_InputToDialogNodeConnection.targetPort = s_ActionNode.inValue
-	s_InputToDialogNodeConnection.numScreensToPop = 0
-	s_QuitPopupGraphAsset.connections:add(s_InputToDialogNodeConnection)
-
-	local s_OutputNode = InstanceOutputNode()
-	s_OutputNode.inValue = UINodePort()
-	s_OutputNode.id = MathUtils:FNVHash("QuitOrSuicide")
-	s_OutputNode.destroyGraph = true
-	s_OutputNode.name = "QuitOrSuicide"
-	s_OutputNode.isRootNode = false
-	s_OutputNode.parentGraph = s_QuitPopupGraphAsset
-	s_OutputNode.parentIsScreen = false
-	s_QuitPopupGraphAsset.nodes:add(s_OutputNode)
-
-	local s_ActionToOutputNodeConnection = UINodeConnection()
-	s_ActionToOutputNodeConnection.sourceNode = s_ActionNode
-	s_ActionToOutputNodeConnection.targetNode = s_OutputNode
-	s_ActionToOutputNodeConnection.sourcePort = s_ActionNode.out
-	s_ActionToOutputNodeConnection.targetPort = s_OutputNode.inValue
-	s_ActionToOutputNodeConnection.numScreensToPop = 1
-	s_QuitPopupGraphAsset.connections:add(s_ActionToOutputNodeConnection)
-
-	local s_QuitPopupGraphEntityData = UIGraphEntityData()
-	s_QuitPopupGraphEntityData.graphAsset = s_QuitPopupGraphAsset
-	s_QuitPopupGraphEntityData.popPreviousGraph = false
-
-	return s_QuitPopupGraphEntityData
 end
 
 -- =============================================
