@@ -56,7 +56,7 @@ function PingServer:OnPlayerConnected(p_Player)
 	NetEvents:SendToLocal(PingEvents.UpdateConfig, p_Player, self.m_PingDisplayCooldownTime)
 end
 
-function PingServer:OnPlayerPing(p_Player, p_Position)
+function PingServer:OnPlayerPing(p_Player, p_Position, p_PingType)
 	-- Validate our player
 	if p_Player == nil then
 		m_Logger:Write("invalid player")
@@ -88,7 +88,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 
 	-- send only to solo player that created the ping
 	if s_SquadId == SquadId.SquadNone then
-		NetEvents:SendToLocal(PingEvents.ServerPing, p_Player, p_Player.name, p_Position)
+		NetEvents:SendToLocal(PingEvents.ServerPing, p_Player, p_Player.name, p_Position, p_PingType)
 		return
 	end
 
@@ -102,7 +102,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position)
 		end
 
 		-- Send the net event to player in the same squad
-		NetEvents:SendToLocal(PingEvents.ServerPing, l_SquadPlayer, p_Player.name, p_Position)
+		NetEvents:SendToLocal(PingEvents.ServerPing, l_SquadPlayer, p_Player.name, p_Position, p_PingType)
 
 		::__on_player_ping_cont__::
 	end

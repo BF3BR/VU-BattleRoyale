@@ -282,8 +282,8 @@ function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_Is
 	m_Hud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
 end
 
-function VuBattleRoyaleClient:OnPingNotify(p_PlayerName, p_Position)
-	m_Ping:OnPingNotify(p_PlayerName, p_Position)
+function VuBattleRoyaleClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
+	m_Ping:OnPingNotify(p_PlayerName, p_Position, p_PingType)
 end
 
 function VuBattleRoyaleClient:OnPingRemoveNotify(p_PlayerName)

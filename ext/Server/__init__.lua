@@ -279,8 +279,8 @@ end
 	-- Ping Events
 -- =============================================
 
-function VuBattleRoyaleServer:OnPlayerPing(p_Player, p_Position)
-	m_PingServer:OnPlayerPing(p_Player, p_Position)
+function VuBattleRoyaleServer:OnPlayerPing(p_Player, p_Position, p_PingType)
+	m_PingServer:OnPlayerPing(p_Player, p_Position, p_PingType)
 end
 
 function VuBattleRoyaleServer:OnRemovePlayerPing(p_Player)

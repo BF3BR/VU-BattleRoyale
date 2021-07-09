@@ -45,6 +45,8 @@ function PingClient:RegisterVars()
 	-- Should we send a ping (used for sync across UpdateState's)
 	self.m_ShouldPing = false
 	self.m_PingCooldownTime = 0.60
+
+	self.m_PingType = PingType.Default
 end
 
 -- =============================================
@@ -94,6 +96,7 @@ function PingClient:OnUIDrawHud(p_BrPlayer, p_DeltaTime)
 			Events:Dispatch("Compass:RemoveMarker", tostring(l_PlayerName))
 			m_Hud:RemoveMarker(tostring(l_PlayerName))
 			self.m_SquadPings[l_PlayerName] = nil
+			self:RemovePing(s_PingId)
 			goto __on_ui_draw_hud_cont__
 		end
 
@@ -117,6 +120,7 @@ function PingClient:OnClientUpdateInput()
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Q) then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
+		self.m_PingType = PingType.Default
 	end
 end
 
@@ -148,14 +152,14 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 
 	self.m_PingCooldownTime = 0.60
 	-- Send the server a client notification that we want to ping at this location
-	NetEvents:Send(PingEvents.ClientPing, s_RaycastHit.position)
+	NetEvents:Send(PingEvents.ClientPing, s_RaycastHit.position, self.m_PingType)
 end
 
 -- =============================================
 -- Custom (Net-)Events
 -- =============================================
 
-function PingClient:OnPingNotify(p_PlayerName, p_Position)
+function PingClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
 	if self.m_BrPlayer == nil then
 		return
 	end
@@ -164,7 +168,7 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position)
 
 	-- Send ping to compass
 	local s_RgbaColor = self:GetRgbaColorByPlayerName(p_PlayerName)
-	local s_PingId = self:GetPingId(p_PlayerName)
+	local s_PingId = self:GetPingId(p_PlayerName, p_PingType)
 	m_Logger:Write(s_PingId)
 	self:SetPingPosition(s_PingId, p_Position)
 	Events:Dispatch("Compass:CreateMarker", tostring(p_PlayerName), Vec2(p_Position.x, p_Position.z), s_RgbaColor)
@@ -179,6 +183,11 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position)
 			self.m_CooldownTime
 		}
 		return
+	end
+
+	-- remove last ping if it was a different PingType
+	if s_PingInfo[1] ~= s_PingId then
+		self:RemovePing(s_PingInfo[1])
 	end
 
 	-- Update the structure
@@ -199,6 +208,7 @@ function PingClient:OnPingRemoveNotify(p_PlayerName)
 
 	Events:Dispatch("Compass:RemoveMarker", tostring(p_PlayerName))
 	m_Hud:RemoveMarker(tostring(p_PlayerName))
+	self:RemovePing(self.m_SquadPings[p_PlayerName][1])
 	self.m_SquadPings[p_PlayerName] = nil
 end
 
@@ -223,6 +233,7 @@ function PingClient:OnWebUIPingFromMap(p_Coordinates)
 	self.m_Position_Z = s_Coordinates.y
 	self.m_ShouldPing = true
 	self.m_PingMethod = PingMethod.Screen
+	self.m_PingType = PingType.Default
 end
 
 function PingClient:OnWebUIPingRemoveFromMap()
@@ -277,11 +288,27 @@ function PingClient:RaycastScreen()
 	return s_RaycastHit
 end
 
-function PingClient:GetPingId(p_PlayerName)
+function PingClient:GetPingId(p_PlayerName, p_PingType)
+	local s_IndexOffset
+
+	if p_PingType == PingType.Default then
+		s_IndexOffset = 132
+	elseif p_PingType == PingType.Enemy then
+		s_IndexOffset = 136
+	elseif p_PingType == PingType.Weapon then
+		s_IndexOffset = 140
+	elseif p_PingType == PingType.Ammo then
+		s_IndexOffset = 144
+	elseif p_PingType == PingType.Armor then
+		s_IndexOffset = 148
+	elseif p_PingType == PingType.Health then
+		s_IndexOffset = 152
+	end
+
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if s_LocalPlayer.name == p_PlayerName then
-		return self.m_BrPlayer.m_PosInSquad + 132
+		return self.m_BrPlayer.m_PosInSquad + s_IndexOffset
 	else
 		local s_TeamPlayers = self.m_BrPlayer.m_Team:PlayersTable()
 
@@ -289,7 +316,7 @@ function PingClient:GetPingId(p_PlayerName)
 			for _, l_Teammate in ipairs(s_TeamPlayers) do
 				if l_Teammate ~= nil then
 					if p_PlayerName == l_Teammate.Name then
-						return l_Teammate.PosInSquad + 132
+						return l_Teammate.PosInSquad + s_IndexOffset
 					end
 				end
 			end
