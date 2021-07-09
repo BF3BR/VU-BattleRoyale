@@ -56,31 +56,7 @@ function PingClient:OnLevelLoaded()
 	self.m_ShouldPing = false
 end
 
-function PingClient:OnEngineUpdate(p_DeltaTime)
-	if self.m_BrPlayer == nil then
-		return
-	end
-
-	-- Update all of the cooldowns
-	for l_PlayerName, l_Info in pairs(self.m_SquadPings) do
-		if l_Info == nil then
-			goto __on_engine_update_cont__
-		end
-
-		local l_Result = l_Info[2] - p_DeltaTime
-
-		if l_Result < 0.001 then
-			l_Result = 0.0
-		end
-
-		l_Info[2] = l_Result
-
-		::__on_engine_update_cont__::
-	end
-	self.m_PingCooldownTime = self.m_PingCooldownTime - p_DeltaTime
-end
-
-function PingClient:OnUIDrawHud(p_BrPlayer)
+function PingClient:OnUIDrawHud(p_BrPlayer, p_DeltaTime)
 	if self.m_BrPlayer == nil then
 		if p_BrPlayer == nil then
 			return
@@ -89,27 +65,31 @@ function PingClient:OnUIDrawHud(p_BrPlayer)
 		self.m_BrPlayer = p_BrPlayer
 	end
 
+	self.m_PingCooldownTime = self.m_PingCooldownTime - p_DeltaTime
+
 	for l_PlayerName, l_PingInfo in pairs(self.m_SquadPings) do
 		if l_PingInfo == nil then
 			m_Logger:Write("invalid ping info")
 			goto __on_ui_draw_hud_cont__
 		end
 
-		local l_PingId = l_PingInfo[1]
-		local l_Cooldown = l_PingInfo[2]
+		l_PingInfo[2] = l_PingInfo[2] - p_DeltaTime
 
-		if l_Cooldown < 0.001 then
+		local s_PingId = l_PingInfo[1]
+		local s_Cooldown = l_PingInfo[2]
+
+		if s_Cooldown < 0.001 then
 			m_Logger:Write("invalid cooldown")
 			Events:Dispatch("Compass:RemoveMarker", tostring(l_PlayerName))
 			m_Hud:RemoveMarker(tostring(l_PlayerName))
 			self.m_SquadPings[l_PlayerName] = nil
-			self:RemovePing(l_PingId)
+			self:RemovePing(s_PingId)
 			goto __on_ui_draw_hud_cont__
 		end
 
-		local l_Color = self:GetColorByPlayerName(l_PlayerName)
+		local s_Color = self:GetColorByPlayerName(l_PlayerName)
 
-		if l_Color == nil then
+		if s_Color == nil then
 			m_Logger:Write("invalid color for ping ID: " .. tostring(l_PlayerName))
 			Events:Dispatch("Compass:RemoveMarker", tostring(l_PlayerName))
 			m_Hud:RemoveMarker(tostring(l_PlayerName))
