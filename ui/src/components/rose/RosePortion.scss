@@ -1,0 +1,37 @@
+#rosePortion {
+    #roseBackPortion {
+        overflow: hidden;
+        position: absolute;
+        top: -50%;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        transform-origin: 0 100%;
+    }
+
+    #roseFrontPortion {
+        z-index: 50;
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .portionIcon {
+            height: 3vw;
+            opacity: .5;
+            filter: drop-shadow(0 0 0.5vw rgba(0, 0, 0, .25));
+        }
+    }
+
+    &.selected {
+        #roseFrontPortion {
+            .portionIcon {
+                opacity: 1;
+                filter: drop-shadow(0 0 0.5vw rgba(255, 255, 255, .4));
+            }
+        }
+    }
+}

@@ -48,9 +48,11 @@ function PingClient:RegisterVars()
 	self.m_PingType = PingType.Default
 
 	-- Time to hold key to display CommoRose
-	self.m_TimeToDisplayCommoRose = 0.25
+	self.m_TimeToDisplayCommoRose = 0.055
 	self.m_DisplayCommoRoseTimer = 0.0
 	self.m_IsCommoRoseOpened = false
+
+	self.m_CurrentTypeIndex = PingType.Default
 end
 
 -- =============================================
@@ -112,18 +114,25 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 	if InputManager:IsKeyDown(InputDeviceKeys.IDK_Q) then
 		self.m_DisplayCommoRoseTimer = self.m_DisplayCommoRoseTimer + p_DeltaTime
 
-		if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
-			-- m_Hud:ShowCommoRose()
+        if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
+            m_Hud:ShowCommoRose()
 			self.m_IsCommoRoseOpened = true
 			m_Logger:Write("ShowCommoRose")
-		end
-	elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Q) then
-		if self.m_DisplayCommoRoseTimer < self.m_TimeToDisplayCommoRose then
-			self.m_ShouldPing = true
-			self.m_PingMethod = PingMethod.World
-			self.m_PingType = PingType.Default
-		end
+			WebUI:EnableMouse()
+        end
+    elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Q) then
+		self.m_ShouldPing = true
+		self.m_PingMethod = PingMethod.World
 
+        if self.m_DisplayCommoRoseTimer < self.m_TimeToDisplayCommoRose then
+			self.m_PingType = PingType.Default
+		else
+			self.m_PingType = self.m_CurrentTypeIndex
+			self.m_CurrentTypeIndex = PingType.Default
+        end
+
+		WebUI:DisableMouse()
+		m_Hud:HideCommoRose()
 		self.m_IsCommoRoseOpened = false
 		self.m_DisplayCommoRoseTimer = 0.0
 	elseif InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_2) then
@@ -243,6 +252,14 @@ end
 
 function PingClient:OnWebUIPingRemoveFromMap()
 	NetEvents:SendLocal(PingEvents.RemoveClientPing)
+end
+
+function PingClient:OnWebUIHoverCommoRose(p_TypeIndex)
+	if p_TypeIndex == nil then
+		return
+	end
+
+	self.m_CurrentTypeIndex = p_TypeIndex
 end
 
 -- =============================================

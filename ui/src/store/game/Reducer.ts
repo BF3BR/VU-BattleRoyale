@@ -2,6 +2,7 @@ import { GameState } from "./Types";
 import { 
     GameActionTypes,
     SWITCH_DEPLOY_SCREEN,
+    UPDATE_COMMO_ROSE,
     UPDATE_DEPLOY_APPEARANCE,
     UPDATE_DEPLOY_SCREEN,
     UPDATE_DEPLOY_TEAM,
@@ -38,6 +39,7 @@ const initialState: GameState = {
         teamLocked: false,
         teamJoinError: null,
     },
+    showCommoRose: false,
 };
 
 const GameReducer = (
@@ -130,6 +132,11 @@ const GameReducer = (
                     ...state.deployScreen,
                     selectedTeamType: action.payload.selectedTeamType,
                 }
+            };
+        case UPDATE_COMMO_ROSE:
+            return {
+                ...state,
+                showCommoRose: action.payload.show,
             };
         default:
             return state;

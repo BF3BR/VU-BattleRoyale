@@ -22,4 +22,5 @@ export interface GameState {
         teamLocked: boolean;
         teamJoinError: number|null;
     };
+    showCommoRose: boolean;
 }

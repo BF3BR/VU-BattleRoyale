@@ -9,6 +9,7 @@ export const SWITCH_DEPLOY_SCREEN = "SWITCH_DEPLOY_SCREEN";
 export const UPDATE_DEPLOY_TEAM = "UPDATE_DEPLOY_TEAM";
 export const UPDATE_DEPLOY_APPEARANCE = "UPDATE_DEPLOY_APPEARANCE";
 export const UPDATE_DEPLOY_TEAM_TYPE = "UPDATE_DEPLOY_TEAM_TYPE";
+export const UPDATE_COMMO_ROSE = "UPDATE_COMMO_ROSE";
 
 interface UpdateGameState {
     type: typeof UPDATE_GAME_STATE;
@@ -82,6 +83,14 @@ interface UpdateDeployTeamType {
     };
 }
 
+interface UpdateCommoRose {
+    type: typeof UPDATE_COMMO_ROSE;
+    payload: {
+        show: boolean;
+    };
+}
+
+
 export type GameActionTypes = 
     | UpdateGameState
     | UpdateUiState
@@ -94,4 +103,5 @@ export type GameActionTypes =
     | UpdateDeployTeam
     | UpdateDeployAppearance
     | UpdateDeployTeamType
+    | UpdateCommoRose
 ;

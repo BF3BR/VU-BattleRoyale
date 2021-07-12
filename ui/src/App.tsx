@@ -44,6 +44,7 @@ import {
 } from "./store/spectator/Actions";
 import {
     switchDeployScreen,
+    updateCommoRose,
     updateDeployScreen,
     updateDeployTeam,
     updateGameover,
@@ -77,6 +78,7 @@ import Inventory from "./components/Inventory";
 import MenuScreen from "./components/MenuScreen";
 import Chat from "./components/chat/Chat";
 import InteractProgress from "./components/InteractProgress";
+import Rose from "./components/rose/Rose";
 
 /* Style */
 import './App.scss';
@@ -555,6 +557,14 @@ const App: React.FC<Props> = ({
         setInteractTimeout(null);
     }
 
+    window.OnShowCommoRose = () => {
+        dispatch(updateCommoRose(true));
+    }
+
+    window.OnHideCommoRose = () => {
+        dispatch(updateCommoRose(false));
+    }
+
     return (
         <>
             {debugMode &&
@@ -658,6 +668,7 @@ const App: React.FC<Props> = ({
                                 <SpectatorInfo />
                                 <AmmoAndHealthCounter />
                                 <Gameover />
+                                <Rose />
                                 {/*<MapMarkers />*/}
 
                                 {!spectating &&
@@ -750,5 +761,8 @@ declare global {
 
         OnInteractStart: (p_Time: number) => void;
         OnInteractEnd: () => void;
+
+        OnShowCommoRose: () => void;
+        OnHideCommoRose: () => void;
     }
 }

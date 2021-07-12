@@ -746,6 +746,14 @@ function VuBattleRoyaleHud:RemoveMarker(p_Key)
 	WebUI:ExecuteJS(string.format('OnRemoveMarker("%s")', p_Key))
 end
 
+function VuBattleRoyaleHud:ShowCommoRose()
+	WebUI:ExecuteJS("OnShowCommoRose()")
+end
+
+function VuBattleRoyaleHud:HideCommoRose()
+	WebUI:ExecuteJS("OnHideCommoRose()")
+end
+
 if g_VuBattleRoyaleHud == nil then
 	g_VuBattleRoyaleHud = VuBattleRoyaleHud()
 end

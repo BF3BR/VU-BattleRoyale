@@ -107,8 +107,9 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 	Events:Subscribe("WebUI:PingFromMap", self, self.OnWebUIPingFromMap)
 	Events:Subscribe("WebUI:PingRemoveFromMap", self, self.OnWebUIPingRemoveFromMap)
 	Events:Subscribe("WebUI:TriggerMenuFunction", self, self.OnWebUITriggerMenuFunction)
-	Events:Subscribe('WebUI:OutgoingChatMessage', self, self.OnWebUIOutgoingChatMessage)
-	Events:Subscribe('WebUI:SetCursor', self, self.OnWebUISetCursor)
+	Events:Subscribe("WebUI:OutgoingChatMessage", self, self.OnWebUIOutgoingChatMessage)
+	Events:Subscribe("WebUI:SetCursor", self, self.OnWebUISetCursor)
+	Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose)
 end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
@@ -465,6 +466,10 @@ end
 
 function VuBattleRoyaleClient:OnWebUISetCursor()
 	m_Chat:OnWebUISetCursor()
+end
+
+function VuBattleRoyaleClient:OnWebUIHoverCommoRose(p_TypeIndex)
+	m_Ping:OnWebUIHoverCommoRose(p_TypeIndex)
 end
 
 -- =============================================

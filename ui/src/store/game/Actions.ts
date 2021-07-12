@@ -1,6 +1,7 @@
 import { 
     GameActionTypes,
     SWITCH_DEPLOY_SCREEN,
+    UPDATE_COMMO_ROSE,
     UPDATE_DEPLOY_SCREEN,
     UPDATE_DEPLOY_TEAM,
     UPDATE_GAMEOVER,
@@ -89,5 +90,12 @@ export function updateDeployTeam(
             teamLocked,
             teamJoinError
         },
+    };
+}
+
+export function updateCommoRose(show: boolean): GameActionTypes {
+    return {
+        type: UPDATE_COMMO_ROSE,
+        payload: { show },
     };
 }
