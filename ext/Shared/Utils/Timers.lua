@@ -16,10 +16,10 @@ function TimerManager:Update()
 	self.__Updating = true
 	self.__CreatedDuringUpdate = false
 
-	local l_Now = SharedUtils:GetTimeMS()
+	local s_Now = SharedUtils:GetTimeMS()
 
-	for id, timer in pairs(self.m_Timers) do
-		if timer ~= nil then timer:Update(l_Now) end
+	for l_Id, l_Timer in pairs(self.m_Timers) do
+		if l_Timer ~= nil then l_Timer:Update(s_Now) end
 
 		if self.__CreatedDuringUpdate then return self:Update() end
 	end
@@ -51,7 +51,7 @@ function TimerManager:RemoveAll()
 	end
 
 	-- destroy all timers
-	for id, timer in pairs(self.m_Timers) do if timer ~= nil then timer:Destroy() end end
+	for l_Id, l_Timer in pairs(self.m_Timers) do if l_Timer ~= nil then l_Timer:Destroy() end end
 
 	self.m_ActiveTimers = 0
 	self.m_Timers = {}
@@ -60,8 +60,8 @@ end
 -- Creates a timer and add it to the manager
 function TimerManager:CreateTimer(p_Delay, p_Cycles, p_UserData, p_Callback)
 	self.m_LastId = self.m_LastId + 1
-	local timer = Timer(self, tostring(self.m_LastId), p_Delay, p_Cycles, p_UserData, p_Callback)
-	self.m_Timers[timer.m_Id] = timer
+	local s_Timer = Timer(self, tostring(self.m_LastId), p_Delay, p_Cycles, p_UserData, p_Callback)
+	self.m_Timers[s_Timer.m_Id] = s_Timer
 
 	-- update flags
 	if self.__Updating then self.__CreatedDuringUpdate = true end
@@ -71,7 +71,7 @@ function TimerManager:CreateTimer(p_Delay, p_Cycles, p_UserData, p_Callback)
 
 	if self.m_UpdateEvent == nil then self.m_UpdateEvent = Events:Subscribe("Engine:Update", self, self.Update) end
 
-	return timer
+	return s_Timer
 end
 
 -- Runs once after the specified delay
@@ -159,8 +159,8 @@ end
 function Timer:Remaining()
 	if self.m_Cycles == 0 then return 0 end
 
-	local l_Time = (self.m_StartedAt + (self.m_Cycles * self.m_Delay)) - SharedUtils:GetTimeMS()
-	return math.max(0, l_Time / 1000)
+	local s_Time = (self.m_StartedAt + (self.m_Cycles * self.m_Delay)) - SharedUtils:GetTimeMS()
+	return math.max(0, s_Time / 1000)
 end
 
 -- TimerManager singleton

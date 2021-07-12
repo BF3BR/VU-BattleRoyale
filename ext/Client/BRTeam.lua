@@ -14,11 +14,11 @@ function Teammate:__init(p_Name, p_State, p_IsTeamLeader, p_PosInSquad)
 end
 
 function Teammate:GetState()
-	local l_Player = PlayerManager:GetPlayerByName(self.m_Name)
+	local s_Player = PlayerManager:GetPlayerByName(self.m_Name)
 
-	if l_Player == nil or l_Player.soldier == nil or not l_Player.alive then
+	if s_Player == nil or s_Player.soldier == nil or not s_Player.alive then
 		return BRPlayerState.Dead
-	elseif l_Player.soldier.isInteractiveManDown then
+	elseif s_Player.soldier.isInteractiveManDown then
 		return BRPlayerState.Down
 	else
 		return BRPlayerState.Alive
@@ -26,15 +26,15 @@ function Teammate:GetState()
 end
 
 function Teammate:GetColor(p_AsRgba)
-	local l_Color = ServerConfig.PlayerColors[self.m_PosInSquad] or Vec4(1, 1, 1, 1)
+	local s_Color = ServerConfig.PlayerColors[self.m_PosInSquad] or Vec4(1, 1, 1, 1)
 
 	-- return color as Vec4
 	if not p_AsRgba then
-		return l_Color
+		return s_Color
 	end
 
 	-- return color as an rgba string
-	return string.format("rgba(%s, %s, %s, %s)", l_Color.x * 255, l_Color.y * 255, l_Color.z * 255, l_Color.w)
+	return string.format("rgba(%s, %s, %s, %s)", s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)
 end
 
 function Teammate:GetPosition()
@@ -121,18 +121,18 @@ function BRTeam:UpdateFromTable(p_BrTeamTable)
 end
 
 function BRTeam.static:FromTable(p_BrTeamTable)
-	local l_Team = BRTeam(p_BrTeamTable.Id)
-	l_Team:UpdateFromTable(p_BrTeamTable)
+	local s_Team = BRTeam(p_BrTeamTable.Id)
+	s_Team:UpdateFromTable(p_BrTeamTable)
 
-	return l_Team
+	return s_Team
 end
 
 function BRTeam:PlayersTable()
-	local l_PlayersData = {}
+	local s_PlayersData = {}
 
-	for _, p_Teammate in ipairs(self.m_Players) do
-		table.insert(l_PlayersData, p_Teammate:AsTable())
+	for _, l_Teammate in ipairs(self.m_Players) do
+		table.insert(s_PlayersData, l_Teammate:AsTable())
 	end
 
-	return l_PlayersData
+	return s_PlayersData
 end

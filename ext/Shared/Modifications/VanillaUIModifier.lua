@@ -49,7 +49,7 @@ function VanillaUIModifier:RegisterCallbacks()
 	m_UINametagCompData:RegisterLoadHandler(self, self.OnUINametagCompData)
 
 	m_UITrackingtagCompData:RegisterLoadHandler(self, self.OnUITrackingtagCompData) -- Need healing / repair / ammo indicators
-	m_UI3dIconCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)		   -- Grenade icons
+	m_UI3dIconCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)			-- Grenade icons
 	m_CapturepointtagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_3dLaserTagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_MapmarkertagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
@@ -167,10 +167,10 @@ function VanillaUIModifier:EditNodes(p_Screen, p_NodeNames, p_CheckValue)
 
 	-- erase nodes
 	for i = #p_Screen.nodes, 1, -1 do
-		local node = p_Screen.nodes[i]
+		local s_Node = p_Screen.nodes[i]
 
-		if node ~= nil then
-			if p_NodeNames[node.name] ~= p_CheckValue then
+		if s_Node ~= nil then
+			if p_NodeNames[s_Node.name] ~= p_CheckValue then
 				p_Screen.nodes:erase(i)
 			end
 		end

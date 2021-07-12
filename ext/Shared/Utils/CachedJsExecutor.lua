@@ -1,26 +1,26 @@
 class "CachedJsExecutor"
 
-function CachedJsExecutor:__init(funcTemplate, initialValue)
-	self.funcTemplate = funcTemplate
-	self.prev = nil
+function CachedJsExecutor:__init(p_FuncTemplate, p_InitialValue)
+	self.m_FuncTemplate = p_FuncTemplate
+	self.m_Prev = nil
 
-	self:Update(initialValue)
+	self:Update(p_InitialValue)
 end
 
-function CachedJsExecutor:Update(value)
-	if self.prev == value then
-		return value
+function CachedJsExecutor:Update(p_Value)
+	if self.m_Prev == p_Value then
+		return p_Value
 	end
 
-	self.prev = value
+	self.m_Prev = p_Value
 
-	WebUI:ExecuteJS(string.format(self.funcTemplate, value))
-	return value
+	WebUI:ExecuteJS(string.format(self.m_FuncTemplate, p_Value))
+	return p_Value
 end
 
-function CachedJsExecutor:ForceUpdate(value)
-	self.prev = value
+function CachedJsExecutor:ForceUpdate(p_Value)
+	self.m_Prev = p_Value
 
-	WebUI:ExecuteJS(string.format(self.funcTemplate, value))
-	return value
+	WebUI:ExecuteJS(string.format(self.m_FuncTemplate, p_Value))
+	return p_Value
 end

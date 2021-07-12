@@ -75,12 +75,12 @@ function AntiCheat:OnCheat(p_Player, p_Args)
 			print("BANNED PLAYER " .. p_Player.name .. " " .. tostring(p_Player.accountGuid) .. " " .. p_Player.ip)
 			print(p_Args)
 			print("----------------------------------------------------------")
-			local guid = p_Player.accountGuid
-			local name = p_Player.name
-			local ip = p_Player.ip
-			RCON:SendCommand('banList.add', {"guid", guid:ToString('N'), "perm", p_Args[1]})
-			RCON:SendCommand('banList.add', {"name", name, "perm", p_Args[1]})
-			RCON:SendCommand('banList.add', {"ip", ip, "perm", p_Args[1]})
+			local s_Guid = p_Player.accountGuid
+			local s_Name = p_Player.name
+			local s_Ip = p_Player.ip
+			RCON:SendCommand('banList.add', {"guid", s_Guid:ToString('N'), "perm", p_Args[1]})
+			RCON:SendCommand('banList.add', {"name", s_Name, "perm", p_Args[1]})
+			RCON:SendCommand('banList.add', {"ip", s_Ip, "perm", p_Args[1]})
 			RCON:SendCommand('banList.save')
 			self.m_PlayerCount[p_Player.name] = nil
 		end

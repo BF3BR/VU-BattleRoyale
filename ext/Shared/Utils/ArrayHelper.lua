@@ -18,14 +18,14 @@ end
 
 -- Removes an entry of the array by its value
 function ArrayHelper:RemoveByValue(p_Array, p_Value)
-	local l_Index = ArrayHelper:IndexOf(p_Array, p_Value)
+	local s_Index = ArrayHelper:IndexOf(p_Array, p_Value)
 
 	-- check if the value doesn't exist
-	if l_Index == nil then
+	if s_Index == nil then
 		return false
 	end
 
-	table.remove(p_Array, l_Index)
+	table.remove(p_Array, s_Index)
 	return true
 end
 
@@ -33,11 +33,11 @@ end
 function ArrayHelper:ToMap(p_Array, p_Value)
 	p_Value = (p_Value == nil and true) or p_Value
 
-	local l_Map = {}
+	local s_Map = {}
 
 	for _, l_Value in ipairs(p_Array) do
-		l_Map[l_Value] = p_Value
+		s_Map[l_Value] = p_Value
 	end
 
-	return l_Map
+	return s_Map
 end

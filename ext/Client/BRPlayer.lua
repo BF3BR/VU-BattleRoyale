@@ -71,11 +71,11 @@ function BRPlayer:ToggleLock()
 end
 
 function BRPlayer:GetState()
-	local l_Player = PlayerManager:GetLocalPlayer()
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
-	if l_Player == nil or l_Player.soldier == nil or not l_Player.alive then
+	if s_LocalPlayer == nil or s_LocalPlayer.soldier == nil or not s_LocalPlayer.alive then
 		return BRPlayerState.Dead
-	elseif l_Player.soldier.isInteractiveManDown then
+	elseif s_LocalPlayer.soldier.isInteractiveManDown then
 		return BRPlayerState.Down
 	else
 		return BRPlayerState.Alive
@@ -83,15 +83,15 @@ function BRPlayer:GetState()
 end
 
 function BRPlayer:GetColor(p_AsRgba)
-	local l_Color = ServerConfig.PlayerColors[self.m_PosInSquad] or Vec4(1, 1, 1, 1)
+	local s_Color = ServerConfig.PlayerColors[self.m_PosInSquad] or Vec4(1, 1, 1, 1)
 
 	-- return color as Vec4
 	if not p_AsRgba then
-		return l_Color
+		return s_Color
 	end
 
 	-- return color as an rgba string
-	return string.format("rgba(%s, %s, %s, %s)", l_Color.x * 255, l_Color.y * 255, l_Color.z * 255, l_Color.w)
+	return string.format("rgba(%s, %s, %s, %s)", s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)
 end
 
 if g_BRPlayer == nil then

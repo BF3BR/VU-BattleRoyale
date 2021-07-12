@@ -28,7 +28,7 @@ function MapLoader:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	self.m_ObjectVariations = {}
 	self.m_PendingVariations = {}
 
-	if  not ServerConfig.Debug.DisableMapLoader then
+	if not ServerConfig.Debug.DisableMapLoader then
 		self.m_MapPreset = json.decode(MapsConfig[LevelNameHelper:GetLevelName()].MapPreset)
 	end
 
@@ -247,10 +247,10 @@ function MapLoader:CreateWorldPart(p_PrimaryLevel, p_RegistryContainer)
 	--find index
 	for _, l_Object in pairs(p_PrimaryLevel.objects) do
 		if l_Object:Is('WorldPartReferenceObjectData') then
-			local l_RefObjectData = WorldPartReferenceObjectData(l_Object)
+			local s_RefObjectData = WorldPartReferenceObjectData(l_Object)
 
-			if l_RefObjectData.blueprint:Is('WorldPartData') then
-				local s_WorldPart = WorldPartData(l_RefObjectData.blueprint)
+			if s_RefObjectData.blueprint:Is('WorldPartData') then
+				local s_WorldPart = WorldPartData(s_RefObjectData.blueprint)
 
 				if #s_WorldPart.objects ~= 0 then
 					local s_ROD = s_WorldPart.objects[#s_WorldPart.objects] -- last one in array

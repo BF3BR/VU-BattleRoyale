@@ -279,7 +279,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	local s_SpottingTargetComponentData = SpottingTargetComponentData(s_Partition:FindInstance(Guid("167E50EE-AAC2-4C58-93C3-55CEA65911D1")))
 	s_SpottingTargetComponentData:MakeWritable()
 	s_SpottingTargetComponentData.activeSpottedTime = 2.0
-	s_SpottingTargetComponentData.passiveSpottedTime  = 1.0
+	s_SpottingTargetComponentData.passiveSpottedTime = 1.0
 
 	m_Logger:Write("ManDown state modified")
 end

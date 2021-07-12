@@ -135,23 +135,23 @@ function Chat:OnWebUIOutgoingChatMessage(p_JsonData)
 	local s_DecodedData = json.decode(p_JsonData)
 
 	-- Load params from the decoded JSON.
-	local p_Target = s_DecodedData.target
-	local p_Message = s_DecodedData.message
+	local s_Target = s_DecodedData.target
+	local s_Message = s_DecodedData.message
 
-	if p_Target == nil or p_Message == nil or type(p_Message) ~= "string" then
+	if s_Target == nil or s_Message == nil or type(s_Message) ~= "string" then
 		return
 	end
 
 	-- Trim the message.
-	local s_From = p_Message:match"^%s*()"
- 	p_Message = s_From > #p_Message and "" or p_Message:match(".*%S", s_From)
+	local s_From = s_Message:match"^%s*()"
+ 	s_Message = s_From > #s_Message and "" or s_Message:match(".*%S", s_From)
 
 	-- Ignore if the message is empty.
-	if p_Message:len() == 0 then
+	if s_Message:len() == 0 then
 		return
 	end
 
-	-- Get the local player.
+	-- Get the local Player.
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	-- We can't send a message if we don't have an active player.
@@ -160,12 +160,12 @@ function Chat:OnWebUIOutgoingChatMessage(p_JsonData)
 	end
 
 	-- Dispatch message based on the specified target.
-	if p_Target == 'all' and ServerConfig.Debug.EnableAllChat then
-		ChatManager:SendMessage(p_Message)
+	if s_Target == 'all' and ServerConfig.Debug.EnableAllChat then
+		ChatManager:SendMessage(s_Message)
 		return
 	end
 
-	ChatManager:SendMessage(p_Message, s_LocalPlayer.teamId, s_LocalPlayer.squadId)
+	ChatManager:SendMessage(s_Message, s_LocalPlayer.teamId, s_LocalPlayer.squadId)
 end
 
 function Chat:OnWebUISetCursor()

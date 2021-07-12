@@ -4,7 +4,7 @@ class "Whitelist"
 -- Events
 -- =============================================
 
-function Whitelist:OnPlayerRequestJoin(p_Hook, p_JoinMode, p_AccountGuid, p_PlayerGuid, p_PlayerName)
+function Whitelist:OnPlayerRequestJoin(p_HookCtx, p_JoinMode, p_AccountGuid, p_PlayerGuid, p_PlayerName)
 	if #ServerConfig.Debug.Whitelist > 0 then
 		for _, l_Name in ipairs(ServerConfig.Debug.Whitelist) do
 			if p_PlayerName:lower() == l_Name:lower() then
@@ -12,7 +12,7 @@ function Whitelist:OnPlayerRequestJoin(p_Hook, p_JoinMode, p_AccountGuid, p_Play
 			end
 		end
 
-		p_Hook:Return(false)
+		p_HookCtx:Return(false)
 	end
 end
 

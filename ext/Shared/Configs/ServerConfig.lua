@@ -47,7 +47,7 @@ ServerConfig = {
 
 		EnableWinningCheck = false,
 
-		DisableMapLoader = false,
+		DisableMapLoader = true,
 
 		Whitelist = {
 			"voteban_flash",

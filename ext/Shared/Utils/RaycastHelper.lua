@@ -14,33 +14,33 @@ end
 
 -- Returns the ground height (Y) value of a certain position
 function RaycastHelper:GetY(p_Pos, p_Height)
-    p_Height = p_Height or 100
+	p_Height = p_Height or 100
 
-    -- used math.floor to reduce raycasts number
-    -- local l_X = math.floor(p_Pos.x)
-    -- local l_Z = math.floor(p_Pos.z)
-    local l_X = p_Pos.x
-    local l_Z = p_Pos.z
-    local l_Key = string.format("%.2f:%.2f", l_X, l_Z)
+	-- used math.floor to reduce raycasts number
+	-- local s_X = math.floor(p_Pos.x)
+	-- local s_Z = math.floor(p_Pos.z)
+	local s_X = p_Pos.x
+	local s_Z = p_Pos.z
+	local s_Key = string.format("%.2f:%.2f", s_X, s_Z)
 
-    -- check for cache hit
-    if self.m_RaycastMemo[l_Key] ~= nil then
-        return self.m_RaycastMemo[l_Key]
-    end
+	-- check for cache hit
+	if self.m_RaycastMemo[s_Key] ~= nil then
+		return self.m_RaycastMemo[s_Key]
+	end
 
-    local l_From = p_Pos + Vec3(0, p_Height, 0)
-    local l_To = p_Pos - Vec3(0, p_Height, 0)
-    local l_Hit = RaycastManager:Raycast(l_From, l_To, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter |
-                                             RayCastFlags.DontCheckRagdoll)
+	local s_From = p_Pos + Vec3(0, p_Height, 0)
+	local s_To = p_Pos - Vec3(0, p_Height, 0)
+	local s_Hit = RaycastManager:Raycast(s_From, s_To, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter |
+											 RayCastFlags.DontCheckRagdoll)
 
-    -- return initial y if there's no hit
-    if l_Hit == nil then
-        return p_Pos.y
-    end
+	-- return initial y if there's no hit
+	if s_Hit == nil then
+		return p_Pos.y
+	end
 
-    -- save result and return
-    self.m_RaycastMemo[l_Key] = l_Hit.position.y
-    return l_Hit.position.y
+	-- save result and return
+	self.m_RaycastMemo[s_Key] = s_Hit.position.y
+	return s_Hit.position.y
 end
 
 -- Clears the result cache

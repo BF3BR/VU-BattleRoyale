@@ -109,23 +109,23 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 		return
 	end
 
-    if InputManager:IsKeyDown(InputDeviceKeys.IDK_Q) then
-        self.m_DisplayCommoRoseTimer = self.m_DisplayCommoRoseTimer + p_DeltaTime
+	if InputManager:IsKeyDown(InputDeviceKeys.IDK_Q) then
+		self.m_DisplayCommoRoseTimer = self.m_DisplayCommoRoseTimer + p_DeltaTime
 
-        if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
-            -- m_Hud:ShowCommoRose()
+		if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
+			-- m_Hud:ShowCommoRose()
 			self.m_IsCommoRoseOpened = true
 			m_Logger:Write("ShowCommoRose")
-        end
-    elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Q) then
-        if self.m_DisplayCommoRoseTimer < self.m_TimeToDisplayCommoRose then
-            self.m_ShouldPing = true
-            self.m_PingMethod = PingMethod.World
+		end
+	elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Q) then
+		if self.m_DisplayCommoRoseTimer < self.m_TimeToDisplayCommoRose then
+			self.m_ShouldPing = true
+			self.m_PingMethod = PingMethod.World
 			self.m_PingType = PingType.Default
-        end
+		end
 
 		self.m_IsCommoRoseOpened = false
-        self.m_DisplayCommoRoseTimer = 0.0
+		self.m_DisplayCommoRoseTimer = 0.0
 	elseif InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_2) then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
@@ -196,15 +196,15 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
 	end
 
 	-- Update the structure
-	local l_UpdatedCooldown = s_PingInfo[2] + self.m_CooldownTime
+	local s_UpdatedCooldown = s_PingInfo[2] + self.m_CooldownTime
 
-	if l_UpdatedCooldown > 3 * self.m_CooldownTime then
-		l_UpdatedCooldown = 3 * self.m_CooldownTime
+	if s_UpdatedCooldown > 3 * self.m_CooldownTime then
+		s_UpdatedCooldown = 3 * self.m_CooldownTime
 	end
 
 	self.m_SquadPings[p_PlayerName] = {
 		s_PingId,
-		l_UpdatedCooldown
+		s_UpdatedCooldown
 	}
 end
 
@@ -261,8 +261,8 @@ function PingClient:RaycastWorld()
 
 	local s_RayStart = s_Transform.trans
 	local s_RayEnd = Vec3(s_Transform.trans.x + (s_Direction.x * self.m_RaycastLength),
-						  s_Transform.trans.y + (s_Direction.y * self.m_RaycastLength),
-						  s_Transform.trans.z + (s_Direction.z * self.m_RaycastLength))
+						s_Transform.trans.y + (s_Direction.y * self.m_RaycastLength),
+						s_Transform.trans.z + (s_Direction.z * self.m_RaycastLength))
 
 	local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater |
 													RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)

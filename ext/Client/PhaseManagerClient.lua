@@ -63,7 +63,7 @@ function PhaseManagerClient:OnUpdateState(p_State)
 		-- start moving the outer circle
 		self.m_PrevOuterCircle = Circle(self.m_OuterCircle.m_Center, self.m_OuterCircle.m_Radius)
 		self:SetTimer("MovingCircle",
-					  g_Timers:Sequence(CircleConfig.ClientUpdateMs,
+					g_Timers:Sequence(CircleConfig.ClientUpdateMs,
 										math.floor(p_State.Duration / CircleConfig.ClientUpdateMs) + 1, self,
 										self.MoveOuterCircle))
 	end
@@ -107,23 +107,23 @@ function PhaseManagerClient:OnPreSim(p_DeltaTime)
 	end
 
 	-- get active player position
-	local l_PlayerPos = self:GetActivePlayerPosition()
+	local s_PlayerPos = self:GetActivePlayerPosition()
 
-	if l_PlayerPos == nil then
+	if s_PlayerPos == nil then
 		return
 	end
 
 	-- toggle OOB vision
-	if self.m_OuterCircle:IsInnerPoint(l_PlayerPos) then
+	if self.m_OuterCircle:IsInnerPoint(s_PlayerPos) then
 		m_OOCVision:Disable()
 	else
 		m_OOCVision:Enable()
 	end
 
 	-- calculate render points for both circles
-	self.m_OuterCircle:CalculateRenderPoints(l_PlayerPos)
+	self.m_OuterCircle:CalculateRenderPoints(s_PlayerPos)
 	if self.m_RenderInnerCircle and not self.m_Completed then
-		self.m_InnerCircle:CalculateRenderPoints(l_PlayerPos)
+		self.m_InnerCircle:CalculateRenderPoints(s_PlayerPos)
 	end
 end
 
@@ -134,17 +134,17 @@ function PhaseManagerClient:OnRender()
 	end
 
 	-- get active player position
-	local l_PlayerPos = self:GetActivePlayerPosition()
+	local s_PlayerPos = self:GetActivePlayerPosition()
 
-	if l_PlayerPos == nil then
+	if s_PlayerPos == nil then
 		return
 	end
 
 	-- render circles
-	self.m_OuterCircle:Render(OuterCircleRenderer, l_PlayerPos)
+	self.m_OuterCircle:Render(OuterCircleRenderer, s_PlayerPos)
 
 	if self.m_RenderInnerCircle and not self.m_Completed then
-		self.m_InnerCircle:Render(InnerCircleRenderer, l_PlayerPos)
+		self.m_InnerCircle:Render(InnerCircleRenderer, s_PlayerPos)
 	end
 end
 

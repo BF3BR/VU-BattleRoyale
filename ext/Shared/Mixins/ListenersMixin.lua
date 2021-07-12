@@ -6,7 +6,7 @@ function ListenersMixin:__init()
 	self.m__Listeners = {}
 end
 
-function ListenersMixin:MakeListenerKey(p_Type, p_EventName)
+function ListenersMixin:MakeListenerKey(p_Type, p_Listener)
 	return string.format("%s:%d", p_Listener, p_Type)
 end
 
@@ -18,47 +18,47 @@ function ListenersMixin:AddListener(p_Type, p_EventName, p_Listener)
 	self.m__Listeners[p_Key] = {Type = p_Type, Listener = p_Listener}
 end
 
-function ListenersMixin:AddEventListener(eventName, context, callback)
-	self:AddListener(ListenerType.Event, eventName, Events:Subscribe(eventName, context, callback))
+function ListenersMixin:AddEventListener(p_EventName, p_Context, p_Callback)
+	self:AddListener(ListenerType.Event, p_EventName, Events:Subscribe(p_EventName, p_Context, p_Callback))
 end
 
-function ListenersMixin:AddNetEventListener(eventName, context, callback)
-	self:AddListener(ListenerType.NetEvent, eventName, NetEvents:Subscribe(eventName, context, callback))
+function ListenersMixin:AddNetEventListener(p_EventName, p_Context, p_Callback)
+	self:AddListener(ListenerType.NetEvent, p_EventName, NetEvents:Subscribe(p_EventName, p_Context, p_Callback))
 end
 
-function ListenersMixin:AddHookListener(hookName, priority, context, callback)
-	self:AddListener(ListenerType.Hook, eventName, Hooks:Install(hookName, priority, context, callback))
+function ListenersMixin:AddHookListener(p_HookName, p_Priority, p_Context, p_Callback)
+	self:AddListener(ListenerType.Hook, eventName, Hooks:Install(p_HookName, p_Priority, p_Context, p_Callback))
 end
 
 function ListenersMixin:GetListener(p_Type, p_EventName)
 	-- you can directly pass the key as a parameter instead of type + eventName
-	local l_Key = p_Type
+	local s_Key = p_Type
 
 	if p_EventName ~= nil then
-		l_Key = self:MakeListenerKey(p_Type, p_EventName)
+		s_Key = self:MakeListenerKey(p_Type, p_EventName)
 	end
 
-	return self.m__Listeners[l_Key]
+	return self.m__Listeners[s_Key]
 end
 
 function ListenersMixin:RemoveListener(p_Type, p_EventName)
 	-- you can directly pass the key as a parameter instead of type + eventName
-	local l_Key = p_Type
+	local s_Key = p_Type
 
 	if p_EventName ~= nil then
-		l_Key = self:MakeListenerKey(p_Type, p_EventName)
+		s_Key = self:MakeListenerKey(p_Type, p_EventName)
 	end
 
-	local l_Listener = self:GetListener(l_Key)
+	local s_Listener = self:GetListener(s_Key)
 
-	if l_Listener ~= nil then
-		if l_Listener.type == ListenerType.Hook then
+	if s_Listener ~= nil then
+		if s_Listener.type == ListenerType.Hook then
 			item:Uninstall()
 		else
 			item:Unsubscribe()
 		end
 
-		self.m__Listeners[key] = nil
+		self.m__Listeners[s_Key] = nil
 	end
 end
 

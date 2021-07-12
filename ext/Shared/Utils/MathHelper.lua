@@ -6,27 +6,27 @@ end
 
 -- Returns the squared 2D distance between two points
 function MathHelper:SquaredDistance(p_PointA, p_PointB)
-	local l_Dx = p_PointA.x - p_PointB.x
-	local l_Dz = p_PointA.z - p_PointB.z
+	local s_Dx = p_PointA.x - p_PointB.x
+	local s_Dz = p_PointA.z - p_PointB.z
 
-	return l_Dx * l_Dx + l_Dz * l_Dz
+	return s_Dx * s_Dx + s_Dz * s_Dz
 end
 
 -- @param p_TrianglePoints Vec2[3]
 function MathHelper:RandomTrianglePoint(p_TrianglePoints)
-	local l_A = p_TrianglePoints[1]
-	local l_B = p_TrianglePoints[2]
-	local l_C = p_TrianglePoints[3]
+	local s_A = p_TrianglePoints[1]
+	local s_B = p_TrianglePoints[2]
+	local s_C = p_TrianglePoints[3]
 
-	local l_R1 = MathUtils:GetRandom(0, 1)
-	local l_R2 = MathUtils:GetRandom(0, 1)
+	local s_R1 = MathUtils:GetRandom(0, 1)
+	local s_R2 = MathUtils:GetRandom(0, 1)
 
-	local l_SqrtR1 = math.sqrt(l_R1)
+	local s_SqrtR1 = math.sqrt(s_R1)
 
-	local l_X = (1 - l_SqrtR1) * l_A.x + (l_SqrtR1 * (1 - l_R2)) * l_B.x + (l_SqrtR1 * l_R2) * l_C.x
-	local l_Y = (1 - l_SqrtR1) * l_A.y + (l_SqrtR1 * (1 - l_R2)) * l_B.y + (l_SqrtR1 * l_R2) * l_C.y
+	local s_X = (1 - s_SqrtR1) * s_A.x + (s_SqrtR1 * (1 - s_R2)) * s_B.x + (s_SqrtR1 * s_R2) * s_C.x
+	local s_Y = (1 - s_SqrtR1) * s_A.y + (s_SqrtR1 * (1 - s_R2)) * s_B.y + (s_SqrtR1 * s_R2) * s_C.y
 
-	return Vec2(l_X, l_Y)
+	return Vec2(s_X, s_Y)
 end
 
 function MathHelper:LerpRadians(p_PointA, p_PointB, p_Time)

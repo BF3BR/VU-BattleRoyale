@@ -15,9 +15,8 @@ function SoundCommon:RegisterCallbacks()
 	--m_RemoveAutotriggerVO:RegisterCallbacks()
 end
 
--- Singleton.
 if g_SoundCommon == nil then
-    g_SoundCommon = SoundCommon()
+	g_SoundCommon = SoundCommon()
 end
 
 return g_SoundCommon

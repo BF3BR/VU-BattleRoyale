@@ -18,27 +18,27 @@ function IOCVision:RegisterEvents()
 end
 
 function IOCVision:FixedVisionUpdates()
-	local l_State = VisualEnvironmentManager:GetStates()[2]
+	local s_State = VisualEnvironmentManager:GetStates()[2]
 
 	-- update fog
-	local l_Fog = FogData(l_State.fog)
-	l_Fog.start = 0
-	l_Fog.endValue = 2700
-	l_Fog.curve = Vec4(0.7, -0.72, 1.75, -0.65)
+	local s_Fog = FogData(s_State.fog)
+	s_Fog.start = 0
+	s_Fog.endValue = 2700
+	s_Fog.curve = Vec4(0.7, -0.72, 1.75, -0.65)
 
 	VisualEnvironmentManager:SetDirty(true)
 end
 
 function IOCVision:UpdateFog(p_Diameter)
-	local l_State = VisualEnvironmentManager:GetStates()[2]
+	local s_State = VisualEnvironmentManager:GetStates()[2]
 
-	if l_State == nil then
+	if s_State == nil then
 		return
 	end
 
 	-- update fog
-	local l_Fog = FogData(l_State.fog)
-	l_Fog.endValue = math.min(p_Diameter * 3.2, 2700)
+	local s_Fog = FogData(s_State.fog)
+	s_Fog.endValue = math.min(p_Diameter * 3.2, 2700)
 
 	VisualEnvironmentManager:SetDirty(true)
 end

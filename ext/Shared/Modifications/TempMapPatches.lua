@@ -31,7 +31,7 @@ function TempMapPatches:RegisterCallbacks()
 	ResourceManager:RegisterInstanceLoadHandler(
 		Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"),
 		Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
-	   self, self.OnVehiclesWorldPartData
+		self, self.OnVehiclesWorldPartData
 	)
 
 	ResourceManager:RegisterInstanceLoadHandler(
@@ -52,8 +52,8 @@ function TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	-- Add 1 CharacterSpawnReference
 	local s_SpatialPrefabBlueprint = SpatialPrefabBlueprint(ResourceManager:SearchForDataContainer("Gameplay/GameModes/Conquest"))
 	s_SpatialPrefabBlueprint:MakeWritable()
-	local partition = ResourceManager:FindPartitionForInstance(s_SpatialPrefabBlueprint)
-	local registry = RegistryContainer()
+	local s_Partition = ResourceManager:FindPartitionForInstance(s_SpatialPrefabBlueprint)
+	local s_Registry = RegistryContainer()
 
 	local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1"))
 	s_CharacterSpawnReferenceObjectData.team = TeamId.TeamNeutral
@@ -68,10 +68,10 @@ function TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	s_CharacterSpawnReferenceObjectData.isPropertyConnectionTarget = 3
 
 	s_SpatialPrefabBlueprint.objects:add(s_CharacterSpawnReferenceObjectData)
-	partition:AddInstance(s_CharacterSpawnReferenceObjectData)
-	registry.referenceObjectRegistry:add(s_CharacterSpawnReferenceObjectData)
+	s_Partition:AddInstance(s_CharacterSpawnReferenceObjectData)
+	s_Registry.referenceObjectRegistry:add(s_CharacterSpawnReferenceObjectData)
 
-	ResourceManager:AddRegistry(registry, ResourceCompartment.ResourceCompartment_Game)
+	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end
 
 -- TODO: Include in map modification system
@@ -140,14 +140,14 @@ end
 
 -- TODO: Include in map modification system
 function TempMapPatches:OnGameModeSettings(p_Instance)
-	local settings = GameModeSettings(p_Instance)
-	settings:MakeWritable()
+	local s_Settings = GameModeSettings(p_Instance)
+	s_Settings:MakeWritable()
 	local s_GameModeTeamSize = GameModeTeamSize()
 	s_GameModeTeamSize.playerCount = 127
 	s_GameModeTeamSize.squadSize = 4
 
 	for i = 3, 126 do
-		settings.information[1].sizes[3].teams:add(s_GameModeTeamSize)
+		s_Settings.information[1].sizes[3].teams:add(s_GameModeTeamSize)
 	end
 end
 
@@ -156,7 +156,7 @@ function TempMapPatches:OnTeamEntityData(p_Instance)
 	for i = 3, 16 do
 		local s_NewTeamId = TeamEntityData(MathUtils:RandomGuid())
 		s_NewTeamId.isEventConnectionTarget = 3
-		s_NewTeamId.isPropertyConnectionTarget  = 3
+		s_NewTeamId.isPropertyConnectionTarget = 3
 		s_NewTeamId.indexInBlueprint = i
 		s_NewTeamId.team = TeamData(p_Instance)
 		s_NewTeamId.id = i

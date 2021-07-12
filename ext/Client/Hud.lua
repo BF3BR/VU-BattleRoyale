@@ -562,17 +562,17 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 	local s_PlayersObject = {}
 
 	for _, l_Player in pairs(s_Players) do
-		local l_State = 3
+		local s_State = 3
 
 		if l_Player.alive then
-			l_State = 1
+			s_State = 1
 		end
 
 		table.insert(s_PlayersObject, {
 			["id"] = l_Player.id,
 			["name"] = l_Player.name,
 			["kill"] = 0,
-			["state"] = l_State,
+			["state"] = s_State,
 			["isTeamLeader"] = false,
 		})
 	end
@@ -585,7 +585,7 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 		local s_LocalPlayerTable = {
 			["id"] = s_LocalPlayer.id,
 			["name"] = s_LocalPlayer.name,
-			["kill"] =  (m_BrPlayer.m_Kills or 0),
+			["kill"] = (m_BrPlayer.m_Kills or 0),
 			["state"] = m_BrPlayer:GetState(),
 			["isTeamLeader"] = m_BrPlayer.m_IsTeamLeader,
 			["color"] = m_BrPlayer:GetColor(true),

@@ -481,7 +481,7 @@ function HudUtils:GetShowSoldierGraphEntityData()
 	local s_ShowSoldierInputNode = m_ConnectionHelper:GetNode('InstanceInputNode', s_GraphAsset, { 'out' })
 	s_ShowSoldierInputNode.name = 'ShowSoldier'
 
-	local s_ShowSoldierActionNode =  m_ConnectionHelper:GetNode('ActionNode', s_GraphAsset, { 'inValue', 'out' })
+	local s_ShowSoldierActionNode = m_ConnectionHelper:GetNode('ActionNode', s_GraphAsset, { 'inValue', 'out' })
 	s_ShowSoldierActionNode.actionKey = UIAction.SpawnCustomization
 	s_ShowSoldierActionNode.params:add('-1')
 	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_ShowSoldierInputNode, s_ShowSoldierActionNode, s_ShowSoldierInputNode.out, s_ShowSoldierActionNode.inValue)
@@ -490,7 +490,7 @@ function HudUtils:GetShowSoldierGraphEntityData()
 	local s_HideSoldierInputNode = m_ConnectionHelper:GetNode('InstanceInputNode', s_GraphAsset, { 'out' })
 	s_HideSoldierInputNode.name = 'HideSoldier'
 
-	local s_HideSoldierActionNode =  m_ConnectionHelper:GetNode('ActionNode', s_GraphAsset, { 'inValue', 'out' })
+	local s_HideSoldierActionNode = m_ConnectionHelper:GetNode('ActionNode', s_GraphAsset, { 'inValue', 'out' })
 	s_HideSoldierActionNode.actionKey = UIAction.UnSpawnCustomization
 	s_HideSoldierActionNode.params:add('-1')
 	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_HideSoldierInputNode, s_HideSoldierActionNode, s_HideSoldierInputNode.out, s_HideSoldierActionNode.inValue)

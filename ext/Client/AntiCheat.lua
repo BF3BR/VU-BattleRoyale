@@ -26,7 +26,7 @@ function AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaT
 		NetEvents:SendLocal('Cheat', {"No Spread/ No Recoil 1", p_GunSway.currentGameplayDeviationScaleFactor, p_GunSway.currentVisualDeviationScaleFactor, p_GunSway.data.instanceGuid})
 	end
 
-	if GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorNoZoom < 1.0 or GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorZoom < 1.0 or GunSwayData(p_GunSway.data).deviationScaleFactorNoZoom  < 1.0 or GunSwayData(p_GunSway.data).deviationScaleFactorZoom < 1.0 then
+	if GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorNoZoom < 1.0 or GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorZoom < 1.0 or GunSwayData(p_GunSway.data).deviationScaleFactorNoZoom < 1.0 or GunSwayData(p_GunSway.data).deviationScaleFactorZoom < 1.0 then
 		NetEvents:SendLocal('Cheat', {"No Spread/ No Recoil 2", GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorNoZoom, GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorZoom, GunSwayData(p_GunSway.data).deviationScaleFactorNoZoom, GunSwayData(p_GunSway.data).deviationScaleFactorZoom, p_GunSway.data.instanceGuid})
 	end
 

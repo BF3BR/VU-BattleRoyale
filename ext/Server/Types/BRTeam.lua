@@ -85,10 +85,10 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	self:AssignLeader()
 
 	-- updates the position of the player in the squad
-	local l_Size = MapHelper:Size(self.m_Players)
+	local s_Size = MapHelper:Size(self.m_Players)
 
 	for _, l_Player in pairs(self.m_Players) do
-		if l_Player.m_PosInSquad > l_Size then
+		if l_Player.m_PosInSquad > s_Size then
 			l_Player.m_PosInSquad = l_Player.m_PosInSquad - 1
 		end
 	end
@@ -184,9 +184,9 @@ function BRTeam:HasAlivePlayers(p_PlayerToIgnore, p_NotManDownCheck)
 		if l_BrPlayer.m_Player.alive and (p_PlayerToIgnore == nil or not l_BrPlayer:Equals(p_PlayerToIgnore)) then
 			-- ensure its not in mandown state if the p_NotManDownCheck flag is enabled
 			if p_NotManDownCheck then
-				local l_Soldier = l_BrPlayer:GetSoldier()
+				local s_Soldier = l_BrPlayer:GetSoldier()
 
-				if l_Soldier ~= nil and not l_Soldier.isInteractiveManDown then
+				if s_Soldier ~= nil and not s_Soldier.isInteractiveManDown then
 					return true
 				end
 			else
@@ -217,11 +217,11 @@ function BRTeam:AssignLeader()
 	end
 
 	-- pick a player to assign as team leader
-	local l_BrPlayer = MapHelper:Item(self.m_Players)
+	local s_BrPlayer = MapHelper:Item(self.m_Players)
 
-	if l_BrPlayer ~= nil then
-		l_BrPlayer.m_IsTeamLeader = true
-		return l_BrPlayer
+	if s_BrPlayer ~= nil then
+		s_BrPlayer.m_IsTeamLeader = true
+		return s_BrPlayer
 	end
 
 	return nil
@@ -232,9 +232,9 @@ function BRTeam:CanBeJoinedById()
 	-- if the team has only one player and no Custom team join strategy selected
 	-- then it can't be joined by id
 	if MapHelper:Size(self.m_Players) == 1 then
-		local l_BrPlayer = MapHelper:Item(self.m_Players)
+		local s_BrPlayer = MapHelper:Item(self.m_Players)
 
-		if l_BrPlayer ~= nil and l_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
+		if s_BrPlayer ~= nil and s_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
 			return false
 		end
 	end
@@ -278,26 +278,26 @@ end
 
 -- Broadcasts the state of the team to all of its members
 function BRTeam:BroadcastState()
-	local l_TeamData = self:AsTable()
+	local s_TeamData = self:AsTable()
 
 	for _, l_BrPlayer in pairs(self.m_Players) do
-		l_BrPlayer:SendState(false, l_TeamData)
+		l_BrPlayer:SendState(false, s_TeamData)
 	end
 end
 
 function BRTeam:AsTable()
-	local l_Players = {}
+	local s_Players = {}
 
 	-- add the state for each player
 	for _, l_BrPlayer in pairs(self.m_Players) do
-		table.insert(l_Players, l_BrPlayer:AsTable(true))
+		table.insert(s_Players, l_BrPlayer:AsTable(true))
 	end
 
 	return {
 		Id = self.m_Id,
 		Locked = self.m_Locked,
 		Placement = self.m_Placement,
-		Players = l_Players
+		Players = s_Players
 	}
 end
 

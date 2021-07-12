@@ -118,9 +118,9 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 
 		-- Move it just a bit forward so we're not actually inside geometry.
 		local s_Heading = self.m_LookAtPos - s_CameraLocation
-		local direction = s_Heading:Normalize()
+		local s_Direction = s_Heading:Normalize()
 
-		s_CameraLocation = s_CameraLocation + (direction * 0.1)
+		s_CameraLocation = s_CameraLocation + (s_Direction * 0.1)
 	end
 
 	local s_Transform = LinearTransform()
@@ -607,16 +607,16 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	local s_NextPlayer = nil
 
 	for i = 1, #s_Players do
-		local l_PlayerIndex = (i - 1) + s_CurrentIndex
+		local s_PlayerIndex = (i - 1) + s_CurrentIndex
 
-		if l_PlayerIndex > #s_Players then
-			l_PlayerIndex = l_PlayerIndex - #s_Players
+		if s_PlayerIndex > #s_Players then
+			s_PlayerIndex = s_PlayerIndex - #s_Players
 		end
 
-		local l_Player = s_Players[l_PlayerIndex]
+		local s_Player = s_Players[s_PlayerIndex]
 
-		if l_Player.soldier ~= nil and l_Player ~= s_LocalPlayer then
-			s_NextPlayer = l_Player
+		if s_Player.soldier ~= nil and s_Player ~= s_LocalPlayer then
+			s_NextPlayer = s_Player
 			break
 		end
 	end
@@ -713,16 +713,16 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	local s_PreviousPlayer = nil
 
 	for i = #s_Players, 1, -1 do
-		local l_PlayerIndex = (i - (#s_Players - s_CurrentIndex))
+		local s_PlayerIndex = (i - (#s_Players - s_CurrentIndex))
 
-		if l_PlayerIndex <= 0 then
-			l_PlayerIndex = l_PlayerIndex + #s_Players
+		if s_PlayerIndex <= 0 then
+			s_PlayerIndex = s_PlayerIndex + #s_Players
 		end
 
-		local l_Player = s_Players[l_PlayerIndex]
+		local s_Player = s_Players[s_PlayerIndex]
 
-		if l_Player.soldier ~= nil and l_Player ~= s_LocalPlayer then
-			s_PreviousPlayer = l_Player
+		if s_Player.soldier ~= nil and s_Player ~= s_LocalPlayer then
+			s_PreviousPlayer = s_Player
 			break
 		end
 	end

@@ -159,17 +159,17 @@ function BRPlayer:Kill(p_Forced)
 	p_Forced = not (not p_Forced)
 
 	-- get soldier entity
-	local l_Soldier = self:GetSoldier()
+	local s_Soldier = self:GetSoldier()
 
-	if l_Soldier == nil then
+	if s_Soldier == nil then
 		return true -- TODO maybe should return false
 	end
 
 	-- TODO removed ForceDead(), it causes crashes
 	if p_Forced then
-		l_Soldier:ForceDead()
+		s_Soldier:ForceDead()
 	else
-		l_Soldier:Kill()
+		s_Soldier:Kill()
 	end
 
 	return true
@@ -200,11 +200,11 @@ function BRPlayer:Spawn(p_Trans)
 	if s_Player.teamId == TeamId.Team1 then
 		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
 		s_Appearance = ResourceManager:SearchForDataContainer(
-						   "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
+						"Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
 	else
 		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
 		s_Appearance = ResourceManager:SearchForDataContainer(
-						   "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
+						"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
 	end
 
 	if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
@@ -238,11 +238,11 @@ function BRPlayer:GunshipSpawn(p_Trans)
 	if self.m_Player.teamId == TeamId.Team1 then
 		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
 		s_Appearance = ResourceManager:SearchForDataContainer(
-						   "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
+						"Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
 	else
 		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
 		s_Appearance = ResourceManager:SearchForDataContainer(
-						   "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
+						"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
 	end
 
 	if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
@@ -285,19 +285,19 @@ function BRPlayer:CreateCustomizeSoldierData()
 	s_CustomizeSoldierData.overrideMaxHealth = -1.0
 	s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
 
-	local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
-	s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+	local s_UnlockWeaponAndSlot7 = UnlockWeaponAndSlot()
+	s_UnlockWeaponAndSlot7.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 																Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),
 																Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73")))
-	s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_7
-	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
+	s_UnlockWeaponAndSlot7.slot = WeaponSlot.WeaponSlot_7
+	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot7)
 
-	local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
-	s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+	local s_UnlockWeaponAndSlot9 = UnlockWeaponAndSlot()
+	s_UnlockWeaponAndSlot9.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 																Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
 																Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
-	s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
-	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
+	s_UnlockWeaponAndSlot9.slot = WeaponSlot.WeaponSlot_9
+	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot9)
 
 	s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_9
 	s_CustomizeSoldierData.removeAllExistingWeapons = true
@@ -346,8 +346,8 @@ function BRPlayer:ApplyTeamSquadIds()
 end
 
 function BRPlayer:SendState(p_Simple, p_TeamData)
-	local l_Data = self:AsTable(p_Simple, p_TeamData)
-	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerState, self.m_Player, l_Data)
+	local s_Data = self:AsTable(p_Simple, p_TeamData)
+	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerState, self.m_Player, s_Data)
 end
 
 -- Resets the state of a player
@@ -511,15 +511,15 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 	end
 
 	-- get team data
-	local l_Team = p_TeamData
+	local s_Team = p_TeamData
 
-	if l_Team == nil and self.m_Team ~= nil then
-		l_Team = self.m_Team:AsTable()
+	if s_Team == nil and self.m_Team ~= nil then
+		s_Team = self.m_Team:AsTable()
 	end
 
 	-- state used for local player
 	return {
-		Team = l_Team,
+		Team = s_Team,
 		Armor = self.m_Armor:AsTable(),
 		Data = {
 			TeamJoinStrategy = self.m_TeamJoinStrategy,
@@ -532,8 +532,8 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 end
 
 -- A helper function to get the name of the player
--- * p_Player is string		  --> p_Player
--- * p_Player is vanilla player  --> p_Player.name
+-- * p_Player is string			--> p_Player
+-- * p_Player is vanilla player --> p_Player.name
 -- * p_Player is BRPlayer		--> p_Player.m_Player.name
 -- * else						--> nil
 function BRPlayer.static:GetPlayerName(p_Player)

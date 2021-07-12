@@ -2,54 +2,58 @@
 class "EmitterHelper"
 
 function EmitterHelper:Clone(sourceEmitterEntityData)
-    local emitterEntityData = EmitterEntityData(sourceEmitterEntityData):Clone(MathUtils:RandomGuid())
-    emitterEntityData:MakeWritable()
+	local s_EmitterEntityData = EmitterEntityData(sourceEmitterEntityData):Clone(MathUtils:RandomGuid())
+	s_EmitterEntityData:MakeWritable()
 
-    if emitterEntityData.emitter == nil then
-        return emitterEntityData
-    end
-    local emitterDocument = EmitterDocument(emitterEntityData.emitter):Clone()
-    emitterDocument:MakeWritable()
-    emitterEntityData.emitter = emitterDocument
+	if s_EmitterEntityData.emitter == nil then
+		return s_EmitterEntityData
+	end
 
-    if emitterDocument.templateData == nil then
-        return emitterEntityData
-    end
-    local emitterTemplateData = EmitterTemplateData(emitterDocument.templateData):Clone()
-    emitterTemplateData:MakeWritable()
-    emitterDocument.templateData = emitterTemplateData
+	local s_EmitterDocument = EmitterDocument(s_EmitterEntityData.emitter):Clone()
+	s_EmitterDocument:MakeWritable()
+	s_EmitterEntityData.emitter = s_EmitterDocument
 
-    if emitterTemplateData.rootProcessor == nil then
-        return emitterEntityData
-    end
-    local rootProcessor = ProcessorData(emitterTemplateData.rootProcessor):Clone()
-    rootProcessor:MakeWritable()
-    emitterTemplateData.rootProcessor = rootProcessor
+	if s_EmitterDocument.templateData == nil then
+		return s_EmitterEntityData
+	end
 
-    local previousProcessorData = rootProcessor
-    local currentProcessorData = rootProcessor.nextProcessor
-    while currentProcessorData ~= nil do
-        local processorData = _G[currentProcessorData.typeInfo.name](currentProcessorData):Clone()
-        processorData:MakeWritable()
-        previousProcessorData.nextProcessor = processorData
+	local s_EmitterTemplateData = EmitterTemplateData(s_EmitterDocument.templateData):Clone()
+	s_EmitterTemplateData:MakeWritable()
+	s_EmitterDocument.templateData = s_EmitterTemplateData
 
-        previousProcessorData = _G[processorData.typeInfo.name](processorData)
-        currentProcessorData = processorData.nextProcessor
-    end
+	if s_EmitterTemplateData.rootProcessor == nil then
+		return s_EmitterEntityData
+	end
 
-    return emitterEntityData
+	local s_RootProcessor = ProcessorData(s_EmitterTemplateData.rootProcessor):Clone()
+	s_RootProcessor:MakeWritable()
+	s_EmitterTemplateData.rootProcessor = s_RootProcessor
+
+	local s_PreviousProcessorData = s_RootProcessor
+	local s_CurrentProcessorData = s_RootProcessor.nextProcessor
+
+	while s_CurrentProcessorData ~= nil do
+		local s_ProcessorData = _G[s_CurrentProcessorData.typeInfo.name](s_CurrentProcessorData):Clone()
+		s_ProcessorData:MakeWritable()
+		s_PreviousProcessorData.nextProcessor = s_ProcessorData
+
+		s_PreviousProcessorData = _G[s_ProcessorData.typeInfo.name](s_ProcessorData)
+		s_CurrentProcessorData = s_ProcessorData.nextProcessor
+	end
+
+	return s_EmitterEntityData
 end
 
-function EmitterHelper:FindData(processorData, dataType)
-    if processorData:Is(dataType.typeInfo.name) then
-        return dataType(processorData)
-    end
+function EmitterHelper:FindData(p_ProcessorData, p_DataType)
+	if p_ProcessorData:Is(p_DataType.typeInfo.name) then
+		return p_DataType(p_ProcessorData)
+	end
 
-    if processorData.nextProcessor ~= nil then
-        return self:FindData(processorData.nextProcessor, dataType)
-    end
+	if p_ProcessorData.nextProcessor ~= nil then
+		return self:FindData(p_ProcessorData.nextProcessor, p_DataType)
+	end
 
-    return nil
+	return nil
 end
 
 if g_EmitterHelper == nil then

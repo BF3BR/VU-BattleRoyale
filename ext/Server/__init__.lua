@@ -341,14 +341,14 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 		return
 	end
 
-	local l_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
-	local l_BrGiver = nil
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
+	local s_BrGiver = nil
 
 	if p_GiverInfo.giver ~= nil then
-		l_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
+		s_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
 	end
 
-	p_Info.damage = l_BrPlayer:OnDamaged(p_Info.damage, l_BrGiver)
+	p_Info.damage = s_BrPlayer:OnDamaged(p_Info.damage, s_BrGiver)
 	p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
 end
 

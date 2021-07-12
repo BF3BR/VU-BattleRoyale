@@ -27,9 +27,8 @@ function RemoveAutoTriggerVO:OnVoiceOverLogicAsset(p_VoiceOverLogicAsset)
 	m_Logger:Write("Removed automatic VoiceOver / Shoutouts")
 end
 
--- Singleton.
 if g_RemoveAutoTriggerVO == nil then
-    g_RemoveAutoTriggerVO = RemoveAutoTriggerVO()
+	g_RemoveAutoTriggerVO = RemoveAutoTriggerVO()
 end
 
 return g_RemoveAutoTriggerVO

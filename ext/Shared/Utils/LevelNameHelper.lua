@@ -2,16 +2,16 @@ class "LevelNameHelper"
 
 -- Returns "mp_001" from "levels/mp_001/mp_001"
 function LevelNameHelper:GetLevelName()
-	local l_LevelName = nil
-	local l_tempLevelName = SharedUtils:GetLevelName()
+	local s_LevelName = nil
+	local s_TempLevelName = SharedUtils:GetLevelName()
 
-	if l_tempLevelName == nil then
+	if s_TempLevelName == nil then
 		return nil
 	end
 
-	for l_Word in string.gmatch(l_tempLevelName, "([^/]+)") do
-		l_LevelName = l_Word
+	for l_Word in string.gmatch(s_TempLevelName, "([^/]+)") do
+		s_LevelName = l_Word
 	end
 
-	return l_LevelName
+	return s_LevelName
 end

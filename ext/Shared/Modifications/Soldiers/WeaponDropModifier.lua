@@ -86,7 +86,7 @@ function WeaponDropModifier:CreateBlueprint()
 	s_GameInteractionEntityData.nameSid = " "
 	s_GameInteractionEntityData.interactionVerticalOffset = 0.0
 	s_GameInteractionEntityData.friendlyTextSid = "PICKUP LOOT"
-	s_GameInteractionEntityData.enemyTextSid =  "PICKUP LOOT"
+	s_GameInteractionEntityData.enemyTextSid = "PICKUP LOOT"
 	s_GameInteractionEntityData.shrinkSnap = false
 	s_GameInteractionEntityData.showAsCapturePoint = false
 	s_GameInteractionEntityData.capturepointVerticalOffset = 0.2

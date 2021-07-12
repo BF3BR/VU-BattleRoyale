@@ -18,35 +18,35 @@ end
 
 -- Returns an array containing all of the keys as an array-like table
 function MapHelper:Keys(p_Map)
-	local l_Keys = {}
+	local s_Keys = {}
 
 	for l_Key, _ in pairs(p_Map) do
-		table.insert(l_Keys, l_Key)
+		table.insert(s_Keys, l_Key)
 	end
 
-	return l_Keys
+	return s_Keys
 end
 
 -- Returns an array containing all of the values as an array-like table
 function MapHelper:Values(p_Map)
-	local l_Values = {}
+	local s_Values = {}
 
 	for _, l_Value in pairs(p_Map) do
-		table.insert(l_Values, l_Value)
+		table.insert(s_Values, l_Value)
 	end
 
-	return l_Values
+	return s_Values
 end
 
 -- Returns the number of entries in the map
 function MapHelper:Size(p_Map)
-	local l_Count = 0
+	local s_Count = 0
 
 	for _, _ in pairs(p_Map) do
-		l_Count = l_Count + 1
+		s_Count = s_Count + 1
 	end
 
-	return l_Count
+	return s_Count
 end
 
 -- Removes the first entry of the map where the value is equal to the specified one
@@ -63,10 +63,10 @@ end
 
 -- Returns an item of the Map if it's not empty, otherwise nil
 function MapHelper:Item(p_Map)
-	local l_Key = next(p_Map)
+	local s_Key = next(p_Map)
 
-	if l_Key ~= nil then
-		return p_Map[l_Key]
+	if s_Key ~= nil then
+		return p_Map[s_Key]
 	end
 
 	return nil

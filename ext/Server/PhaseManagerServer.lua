@@ -84,30 +84,30 @@ function PhaseManagerServer:InitPhase()
 	self:SetTimer("NextSubphase", g_Timers:Timeout(self:GetCurrentDelay(), self, self.Next))
 
 	if self.m_SubphaseIndex == SubphaseType.Waiting then
-		local l_Phase = self:GetCurrentPhase()
-		local l_NewRadius = l_Phase.Ratio * self.m_InnerCircle.m_Radius
-		local l_NewCenter = nil
+		local s_Phase = self:GetCurrentPhase()
+		local s_NewRadius = s_Phase.Ratio * self.m_InnerCircle.m_Radius
+		local s_NewCenter = nil
 
 		-- pick a random circle center
 		if self.m_PhaseIndex == 1 then
-			l_NewRadius = MapsConfig[LevelNameHelper:GetLevelName()].InitialCircle.Radius
-			l_NewCenter = self:GetRandomInitialCenter()
+			s_NewRadius = MapsConfig[LevelNameHelper:GetLevelName()].InitialCircle.Radius
+			s_NewCenter = self:GetRandomInitialCenter()
 		else
 			self.m_OuterCircle = self.m_InnerCircle:Clone()
-			l_NewCenter = self.m_InnerCircle:RandomInnerPoint(self.m_InnerCircle.m_Radius - l_NewRadius)
+			s_NewCenter = self.m_InnerCircle:RandomInnerPoint(self.m_InnerCircle.m_Radius - s_NewRadius)
 		end
 
 		-- set new safezone
-		self.m_InnerCircle:Update(l_NewCenter, l_NewRadius)
+		self.m_InnerCircle:Update(s_NewCenter, s_NewRadius)
 
 		-- update initial outer circle center
 		if self.m_PhaseIndex == 1 then
-			self.m_OuterCircle:Update(l_NewCenter, l_NewRadius * 3)
+			self.m_OuterCircle:Update(s_NewCenter, s_NewRadius * 3)
 		end
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then
 		self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
 		self:SetTimer("MovingCircle",
-					  g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
+					g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
 	end
 
 	self:DebugMessage()
@@ -133,26 +133,26 @@ end
 
 -- Broadcasts PhaseManager's state to all players
 function PhaseManagerServer:BroadcastState(p_Player)
-	local l_Duration = 0
-	local l_Timer = self:GetTimer("NextSubphase")
+	local s_Duration = 0
+	local s_Timer = self:GetTimer("NextSubphase")
 
 	-- Send remaning time to complete
-	if l_Timer ~= nil then
-		l_Duration = l_Timer:Remaining()
+	if s_Timer ~= nil then
+		s_Duration = s_Timer:Remaining()
 	end
 
-	local l_Data = {
+	local s_Data = {
 		PhaseIndex = self.m_PhaseIndex,
 		SubphaseIndex = self.m_SubphaseIndex,
 		InnerCircle = self.m_InnerCircle:AsTable(),
 		OuterCircle = self.m_OuterCircle:AsTable(),
-		Duration = l_Duration
+		Duration = s_Duration
 	}
 
 	if p_Player ~= nil then
-		NetEvents:SendToLocal(PhaseManagerNetEvent.UpdateState, p_Player, l_Data)
+		NetEvents:SendToLocal(PhaseManagerNetEvent.UpdateState, p_Player, s_Data)
 	else
-		NetEvents:BroadcastLocal(PhaseManagerNetEvent.UpdateState, l_Data)
+		NetEvents:BroadcastLocal(PhaseManagerNetEvent.UpdateState, s_Data)
 	end
 end
 
@@ -163,73 +163,73 @@ function PhaseManagerServer:ApplyDamage()
 	end
 
 	-- get damage for current phase
-	local l_Damage = self:GetCurrentPhase().Damage
+	local s_Damage = self:GetCurrentPhase().Damage
 
 	for _, l_BrPlayer in pairs(m_BRTeamManager.m_Players) do
-		local l_Soldier = l_BrPlayer:GetSoldier()
+		local s_Soldier = l_BrPlayer:GetSoldier()
 
 		-- check if soldier is outside of the circle
-		if l_Soldier ~= nil and not self.m_OuterCircle:IsInnerPoint(l_BrPlayer:GetPosition()) then
+		if s_Soldier ~= nil and not self.m_OuterCircle:IsInnerPoint(l_BrPlayer:GetPosition()) then
 			-- update player's health if needed
 			if l_BrPlayer.m_Player.alive then
-				l_Soldier.health = math.max(0, l_Soldier.health - l_Damage)
+				s_Soldier.health = math.max(0, s_Soldier.health - s_Damage)
 			end
 		end
 	end
 end
 
 function PhaseManagerServer:ClientTimer()
-	local l_CurrentTimer = self:GetTimer("NextSubphase")
+	local s_CurrentTimer = self:GetTimer("NextSubphase")
 
 	if self.m_SubphaseIndex == SubphaseType.Waiting or self.m_SubphaseIndex == SubphaseType.InitialDelay then
-		if l_CurrentTimer ~= nil then
-			NetEvents:Broadcast(PlayerEvents.UpdateTimer, l_CurrentTimer:Remaining())
+		if s_CurrentTimer ~= nil then
+			NetEvents:Broadcast(PlayerEvents.UpdateTimer, s_CurrentTimer:Remaining())
 		end
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then
-		l_CurrentTimer = self:GetTimer("MovingCircle")
+		s_CurrentTimer = self:GetTimer("MovingCircle")
 
-		if l_CurrentTimer ~= nil then
-			NetEvents:Broadcast(PlayerEvents.UpdateTimer, l_CurrentTimer:Remaining())
+		if s_CurrentTimer ~= nil then
+			NetEvents:Broadcast(PlayerEvents.UpdateTimer, s_CurrentTimer:Remaining())
 		end
 	end
 end
 
 function PhaseManagerServer:GetRandomInitialCenter()
-	local l_LevelName = LevelNameHelper:GetLevelName()
+	local s_LevelName = LevelNameHelper:GetLevelName()
 
 	-- pick triangle index
-	local l_Rnd = MathUtils:GetRandom(0, 1)
-	local l_Index = 0
+	local s_Rnd = MathUtils:GetRandom(0, 1)
+	local s_Index = 0
 
-	for l_CurrentIndex, l_Value in ipairs(MapsConfig[l_LevelName].InitialCircle.CumulativeDistribution) do
-		if l_Index < 1 and l_Value > l_Rnd then
-			l_Index = l_CurrentIndex
+	for l_CurrentIndex, l_Value in ipairs(MapsConfig[s_LevelName].InitialCircle.CumulativeDistribution) do
+		if s_Index < 1 and l_Value > s_Rnd then
+			s_Index = l_CurrentIndex
 		end
 	end
 
 	-- get random point from the triangle
-	local l_Triangle = MapsConfig[l_LevelName].InitialCircle.Triangles[l_Index]
-	local l_Center2 = MathHelper:RandomTrianglePoint(l_Triangle)
+	local s_Triangle = MapsConfig[s_LevelName].InitialCircle.Triangles[s_Index]
+	local s_Center2 = MathHelper:RandomTrianglePoint(s_Triangle)
 
-	return Vec3(l_Center2.x, 0, l_Center2.y)
+	return Vec3(s_Center2.x, 0, s_Center2.y)
 end
 
 -- Prints a debug message about the current status of PhaseManager
 function PhaseManagerServer:DebugMessage()
-	local l_Delay = self:GetCurrentDelay()
+	local s_Delay = self:GetCurrentDelay()
 
 	-- check if PhaseManager's work is completed
-	if l_Delay < 0 then
+	if s_Delay < 0 then
 		m_Logger:Write("Completed")
 		return
 	end
 
 	-- debug messages for each SubphaseType
-	local l_Messages = {
+	local s_Messages = {
 		[SubphaseType.InitialDelay] = "Initial Delay",
 		[SubphaseType.Waiting] = "Circle is waiting",
 		[SubphaseType.Moving] = "Circle is moving"
 	}
 
-	m_Logger:Write(string.format("[%d] %s for %.2f seconds", self.m_PhaseIndex, l_Messages[self.m_SubphaseIndex], l_Delay))
+	m_Logger:Write(string.format("[%d] %s for %.2f seconds", self.m_PhaseIndex, s_Messages[self.m_SubphaseIndex], s_Delay))
 end

@@ -1,5 +1,5 @@
 SettingsConfig = {
-    WorldRenderSettings = {
-        shadowmapViewDistance = 2500,
-    },
+	WorldRenderSettings = {
+		shadowmapViewDistance = 2500,
+	},
 }

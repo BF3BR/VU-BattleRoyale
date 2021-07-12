@@ -15,18 +15,18 @@ function Armor:ApplyDamage(p_Damage)
 	end
 
 	-- calculate damage
-	local l_DamageToArmor = p_Damage * self.m_Type.DamageReduction
-	local l_DamagePassed = p_Damage - l_DamageToArmor
+	local s_DamageToArmor = p_Damage * self.m_Type.DamageReduction
+	local s_DamagePassed = p_Damage - s_DamageToArmor
 
 	-- update armor durability
-	self.m_CurrentDurability = self.m_CurrentDurability - l_DamageToArmor
+	self.m_CurrentDurability = self.m_CurrentDurability - s_DamageToArmor
 
 	if self.m_CurrentDurability < 0 then
-		l_DamagePassed = l_DamagePassed + math.abs(self.m_CurrentDurability)
+		s_DamagePassed = s_DamagePassed + math.abs(self.m_CurrentDurability)
 		self.m_CurrentDurability = 0
 	end
 
-	return l_DamagePassed
+	return s_DamagePassed
 end
 
 function Armor:GetPercentage()
