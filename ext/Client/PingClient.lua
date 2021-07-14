@@ -48,7 +48,7 @@ function PingClient:RegisterVars()
 	self.m_PingType = PingType.Default
 
 	-- Time to hold key to display CommoRose
-	self.m_TimeToDisplayCommoRose = 0.055
+	self.m_TimeToDisplayCommoRose = 0.15
 	self.m_DisplayCommoRoseTimer = 0.0
 	self.m_IsCommoRoseOpened = false
 
