@@ -137,7 +137,7 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
 
 	local s_LinearTransform = self.m_LastTransform
 	s_LinearTransform.trans.y = p_PlayerPos.y
-	
+
 	local s_Entity = SpatialEntity(self.m_Entity)
 	s_Entity.transform = s_LinearTransform
 	s_Entity:FireEvent("Disable")
@@ -159,37 +159,37 @@ end
 -- KVN
 function RenderableCircle:Spawn(p_Center)
 	if self.m_Entity ~= nil then
-        return
-    end
-
-	local s_LinearTransform = LinearTransform(
-        Vec3(0, 0, 0),
-        Vec3(0, 0, 0),
-        Vec3(0, 0, 0),
-        Vec3(0, 0, 0)
-    )
-
-    local s_StaticModelEntityData = StaticModelEntityData()
-    s_StaticModelEntityData.mesh = m_SP_Valley_BackdropMatte_01:GetInstance()
-
-    local s_BusStaticModel = EntityManager:CreateEntity(s_StaticModelEntityData, s_LinearTransform)
-
-    if s_BusStaticModel == nil then
 		return
 	end
 
-    s_BusStaticModel:Init(Realm.Realm_Client, true, false)
+	local s_LinearTransform = LinearTransform(
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0),
+		Vec3(0, 0, 0)
+	)
 
-    self.m_Entity = s_BusStaticModel
+	local s_StaticModelEntityData = StaticModelEntityData()
+	s_StaticModelEntityData.mesh = m_SP_Valley_BackdropMatte_01:GetInstance()
+
+	local s_BusStaticModel = EntityManager:CreateEntity(s_StaticModelEntityData, s_LinearTransform)
+
+	if s_BusStaticModel == nil then
+		return
+	end
+
+	s_BusStaticModel:Init(Realm.Realm_Client, true, false)
+
+	self.m_Entity = s_BusStaticModel
 end
 
 function RenderableCircle:Destroy()
-    if self.m_Entity == nil then
-        return
-    end
-    
-    self.m_Entity:FireEvent("Disable")
-    self.m_Entity:FireEvent("Destroy")
-    self.m_Entity:Destroy()
-    self.m_Entity = nil
+	if self.m_Entity == nil then
+		return
+	end
+
+	self.m_Entity:FireEvent("Disable")
+	self.m_Entity:FireEvent("Destroy")
+	self.m_Entity:Destroy()
+	self.m_Entity = nil
 end
