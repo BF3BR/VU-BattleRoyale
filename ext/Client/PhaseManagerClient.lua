@@ -69,7 +69,7 @@ function PhaseManagerClient:OnUpdateState(p_State)
 	end
 
 	-- update inner circle data
-	self.m_InnerCircle:Update(p_State.InnerCircle.Center, p_State.InnerCircle.Radius, self.m_PhaseIndex)
+	self.m_InnerCircle:Update(p_State.InnerCircle.Center, p_State.InnerCircle.Radius, self.m_PhaseIndex, true)
 
 	-- update outer circle data
 	self.m_OuterCircle:Update(p_State.OuterCircle.Center, p_State.OuterCircle.Radius, self.m_PhaseIndex)

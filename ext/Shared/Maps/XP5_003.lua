@@ -15,13 +15,15 @@ return {
 		"XP3Chunks",
 		"Levels/XP3_Shield/XP3_Shield",
 		"Levels/XP3_Alborz/XP3_Alborz",
-		"Levels/COOP_010/COOP_010"
+		"Levels/COOP_010/COOP_010",
+		"Levels/sp_valley/sp_valley",
 	},
 	Bundles = {
 		"Levels/XP1_004/XP1_004",
 		"Levels/XP3_Shield/XP3_Shield",
 		"Levels/XP3_Alborz/XP3_Alborz",
-		"Levels/COOP_010/COOP_010"
+		"Levels/COOP_010/COOP_010",
+		"Levels/sp_valley/sp_valley",
 	},
 	BundleRegistries = {
 		DC(Guid("333BDB92-E69D-11DF-9B0E-AF9CA6E0236B"), Guid("2C804637-3B56-6DDB-92C8-81D094EA806B"))

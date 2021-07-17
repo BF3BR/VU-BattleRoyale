@@ -4,6 +4,7 @@ require "__shared/Configs/CircleConfig"
 require "__shared/Types/Circle"
 
 local s_TwoPi = 2 * math.pi
+local m_SP_Valley_BackdropMatte_01 = DC(Guid("13B3ADD0-6311-E970-175F-DAE08111C1AB"), Guid("C6F52724-F9FC-1E44-A389-E4E9C03791FA"))
 
 class ("RenderableCircle", Circle)
 
@@ -20,9 +21,13 @@ function RenderableCircle:__init(p_Center, p_Radius)
 	self.m_RenderPoints = {}
 	self.m_PrevStartingAngle = nil
 	self.m_ShouldDrawPoints = false
+
+	-- KVN
+	self.m_Entity = nil
+	self.m_LastTransform = nil
 end
 
-function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex)
+function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex, p_IgnoreRender)
 	Circle.Update(self, p_Center, p_Radius)
 
 	-- reduce max arc length based on current phase index
@@ -48,6 +53,42 @@ function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex)
 
 	-- convert to angle
 	self.m_ThetaStep = s_ArcLength / p_Radius
+
+	-- KVN
+	if p_IgnoreRender then
+		return
+	end
+
+	if self.m_Entity == nil then
+		self:Spawn()
+	end
+
+	if self.m_Entity == nil then
+		return
+	end
+
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil or s_LocalPlayer.soldier == nil then
+		return
+	end
+
+	local s_Center = Vec3(
+		p_Center.x,
+		s_LocalPlayer.soldier.worldTransform.trans.y,
+		p_Center.z
+	)
+
+	local s_Scale = 100 / 6785 * p_Radius / 100
+
+	local s_LinearTransform = LinearTransform(
+		Vec3(s_Scale, 0, 0),
+		Vec3(0, s_Scale * 15, 0),
+		Vec3(0, 0, s_Scale),
+		s_Center
+	)
+
+	self.m_LastTransform = s_LinearTransform
 end
 
 function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
@@ -88,6 +129,19 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
 
 		table.insert(self.m_RenderPoints, s_Point)
 	end
+
+	-- KVN
+	if self.m_LastTransform == nil then
+		return
+	end
+
+	local s_LinearTransform = self.m_LastTransform
+	s_LinearTransform.trans.y = p_PlayerPos.y
+	
+	local s_Entity = SpatialEntity(self.m_Entity)
+	s_Entity.transform = s_LinearTransform
+	s_Entity:FireEvent("Disable")
+	s_Entity:FireEvent("Enable")
 end
 
 function RenderableCircle:Render(p_Renderer, p_PlayerPos)
@@ -100,4 +154,42 @@ function RenderableCircle:Render(p_Renderer, p_PlayerPos)
 					MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]), s_DoubleDrawDistance)
 		end
 	end
+end
+
+-- KVN
+function RenderableCircle:Spawn(p_Center)
+	if self.m_Entity ~= nil then
+        return
+    end
+
+	local s_LinearTransform = LinearTransform(
+        Vec3(0, 0, 0),
+        Vec3(0, 0, 0),
+        Vec3(0, 0, 0),
+        Vec3(0, 0, 0)
+    )
+
+    local s_StaticModelEntityData = StaticModelEntityData()
+    s_StaticModelEntityData.mesh = m_SP_Valley_BackdropMatte_01:GetInstance()
+
+    local s_BusStaticModel = EntityManager:CreateEntity(s_StaticModelEntityData, s_LinearTransform)
+
+    if s_BusStaticModel == nil then
+		return
+	end
+
+    s_BusStaticModel:Init(Realm.Realm_Client, true, false)
+
+    self.m_Entity = s_BusStaticModel
+end
+
+function RenderableCircle:Destroy()
+    if self.m_Entity == nil then
+        return
+    end
+    
+    self.m_Entity:FireEvent("Disable")
+    self.m_Entity:FireEvent("Destroy")
+    self.m_Entity:Destroy()
+    self.m_Entity = nil
 end
