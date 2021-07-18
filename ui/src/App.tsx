@@ -417,6 +417,8 @@ const App: React.FC<Props> = ({
                         z: teamPlayer.Position?.z ?? null,
                     },
                     yaw: teamPlayer.Yaw,
+                    health: teamPlayer.Health ? teamPlayer.Health - 100 : null,
+                    armor: teamPlayer.Armor ?? null,
                 });
 
                 if (teamPlayer.State === 2 && teamPlayer.Name !== localName) {
@@ -449,6 +451,7 @@ const App: React.FC<Props> = ({
                 z: -822.253479,
             },
             yaw: 60,
+            health: Math.random() * 100,
         });
         tempTeam.push({
             name: "Test 2",
@@ -462,6 +465,7 @@ const App: React.FC<Props> = ({
                 z: -921.253479,
             },
             yaw: 110,
+            health: Math.random() * 100,
         });
         tempTeam.push({
             name: "Test",
@@ -475,6 +479,7 @@ const App: React.FC<Props> = ({
                 z: -920.253479,
             },
             yaw: 30,
+            health: Math.random() * 100,
         });
         tempTeam.push({
             name: "Test 3",
@@ -488,6 +493,7 @@ const App: React.FC<Props> = ({
                 z: -922.253479,
             },
             yaw: 10,
+            health: Math.random() * 100,
         });
         dispatch(updateTeam(tempTeam));
     }

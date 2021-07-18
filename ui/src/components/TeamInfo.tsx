@@ -36,13 +36,21 @@ const TeamInfo: React.FC<Props> = ({ team, deployScreen }) => {
             {team.length > 0 &&
                 <div id="TeamInfo" className={deployScreen ? "deployScreen" : ""}>
                     {team.map((player: Player, index: number) => (
-                        <div className={"TeamPlayer state" + player.state.toString()} style={{ color: rgbaToRgb(player.color), textShadow: "0 0 0.2vw " + player.color }} key={index}>
+                        <div className={"TeamPlayer state" + player.state.toString()} key={index}>
                             <div className="TeamPlayerName">
-                                <span>
+                                <div className="index" style={{ background: rgbaToRgb(player.color) }}>
+                                    {index + 1}
+                                </div>
+                                <span style={{ color: rgbaToRgb(player.color), textShadow: "0 0 0.2vw " + player.color }}>
                                     {player.name ?? ''}
                                     {getStateIcon(player)}
                                 </span>
                             </div>
+                            {(player.health !== null && player.health > 0) &&
+                                <div className="PercentageBg">
+                                    <div className="PercentageFg" style={{width: player.health + "%"}}></div>
+                                </div>
+                            }
                         </div>
                     ))}
                 </div>

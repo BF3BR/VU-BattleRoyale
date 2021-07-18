@@ -8,6 +8,8 @@ export interface Player {
     color?: string;
     position?: Vec3;
     yaw?: number;
+    health?: number|null;
+    armor?: number|null;
 }
 
 export const rgbaToRgb = (input: string) => {

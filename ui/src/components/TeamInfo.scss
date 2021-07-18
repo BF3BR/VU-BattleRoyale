@@ -1,46 +1,60 @@
 #TeamInfo {
     position: absolute;
-    bottom: 2vw;
-    left: 15.25vw;
+    top: 4.5vw;
+    left: 2.5vw;
     width: auto;
     z-index: 999;
 
     .TeamPlayer {
+        position: relative;
         width: auto;
         padding: 0;
         display: flex;
         align-items: center;
         justify-content: space-between;
         text-shadow: 0 0 0.15vw rgba(7, 7, 7, 0.45);
-        margin-bottom: 0.4vw;
+        margin-bottom: 0.6vw;
 
         .TeamPlayerName {
+            min-width: 9vw;
             max-width: 9vw;
             text-overflow: ellipsis;
             overflow: hidden; 
             white-space: nowrap;
+            display: inline-flex;
+            background: rgba(7, 7, 7, 0.8);
+
+            .index {
+                width: 1.15vw;
+                height: 1.25vw;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                text-shadow: 0 0 0.2vw rgba(7, 7, 7, .5);
+                margin-right: .45vw;
+                font-size: .75vw;
+            }
+
+            span {
+                display: flex;
+                align-items: center;
+                text-transform: uppercase;
+                margin: 0;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 1;
+                font-size: .65vw;
+    
+                img {
+                    max-width: .5vw;
+                    margin-left: 0.25vw;
+                }
+            }
         }
 
         &:last-of-type {
             margin: 0;
-        }
-
-        span {
-            display: flex;
-            align-items: flex-end;
-            text-transform: uppercase;
-            margin: 0;
-            font-style: normal;
-            font-weight: 600;
-            line-height: 1vw;
-            font-size: .8vw;
-            //color: #9EC555;
-            //text-shadow: 0 0 0.25vw rgba(158, 197, 85, .8);
-
-            img {
-                max-width: .7vw;
-                margin-left: 0.5vw;
-            }
         }
 
         &.state2 {
@@ -57,6 +71,39 @@
                 color: #fff !important;
                 text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.4) !important;
             }*/
+        }
+
+        .PercentageBg {
+            position: absolute;
+            bottom: -0.23vw;
+            width: 100%;
+            flex: 1 1 auto;
+            height: 0.23vw;
+            background-color: rgba(255, 255, 255, 0.4);
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 24%, transparent 25%, transparent);
+            background-size: 0.175vw 100%;
+        }
+    
+        .PercentageFg {
+            position: relative;
+            flex: 1 1 auto;
+            height: 0.23vw;
+            transition: width 0.1s ease;
+            background-color: #fff;
+            box-shadow: 0 0 0.2vw 0.05vw rgba(255, 255, 255, .25) inset, 0 0 0.15vw 0.05vw rgba(255, 255, 255, 0.25);
+    
+            &::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 24%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0));
+                background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 24%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0));
+                background-size: 0.175vw 100%;
+                z-index: 99;
+            }
         }
     }
 

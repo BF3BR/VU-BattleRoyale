@@ -70,6 +70,20 @@ function Teammate:GetYaw()
 	return math.floor((180 / math.pi) * s_YawRad)
 end
 
+function Teammate:GetHealth()
+	local s_Player = PlayerManager:GetPlayerByName(self.m_Name)
+
+	if s_Player == nil then
+		return 0
+	end
+
+	if s_Player.soldier == nil then
+		return 0
+	end
+
+	return s_Player.soldier.health
+end
+
 function Teammate:FromTable(p_TeammateTable)
 	return Teammate(p_TeammateTable.Name, p_TeammateTable.State, p_TeammateTable.IsTeamLeader, p_TeammateTable.PosInSquad)
 end
@@ -84,6 +98,7 @@ function Teammate:AsTable()
 		ColorVec = self:GetColor(false),
 		Position = self:GetPosition(),
 		Yaw = self:GetYaw(),
+		Health = self:GetHealth(),
 	}
 end
 
