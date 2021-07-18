@@ -63,7 +63,11 @@ ServerConfig = {
 			"FoolHen",
 			"beogath",
 			"lol24",
-			"DANNYonPC"
+			"DANNYonPC",
+			"NoFaTe",
+			"3ti65",
+			"Imposter",
+			"Powback"
 		},
 	}
 }

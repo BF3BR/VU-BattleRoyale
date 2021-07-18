@@ -1,7 +1,7 @@
 class "Whitelist"
 
 -- =============================================
--- Events
+-- Hooks
 -- =============================================
 
 function Whitelist:OnPlayerRequestJoin(p_HookCtx, p_JoinMode, p_AccountGuid, p_PlayerGuid, p_PlayerName)
