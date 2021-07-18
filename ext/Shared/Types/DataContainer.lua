@@ -11,7 +11,12 @@ end
 
 function DC:GetInstance()
 	local s_Instance = ResourceManager:FindInstanceByGuid(self.m_PartitionGuid, self.m_InstanceGuid)
-	return (s_Instance == nil) and s_Instance or _G[s_Instance.typeInfo.name](s_Instance)
+
+	if s_Instance == nil then
+		return nil
+	end
+
+	return _G[s_Instance.typeInfo.name](s_Instance)
 end
 
 function DC:CallOrRegisterLoadHandler(p_Userdata, p_Callback)
@@ -19,9 +24,9 @@ function DC:CallOrRegisterLoadHandler(p_Userdata, p_Callback)
 
 	if s_Instance ~= nil then
 		if p_Callback == nil then
-			p_Userdata(s_Instance)
+			p_Userdata(self:_CastedAndWritable(s_Instance))
 		else
-			p_Callback(p_Userdata, p_Callback)
+			p_Callback(p_Userdata, self:_CastedAndWritable(s_Instance))
 		end
 	else
 		self:RegisterLoadHandlerOnce(p_Userdata, p_Callback)
@@ -78,6 +83,8 @@ function DC.static:WaitForInstances(p_Instances, p_Userdata, p_Callback)
 			else
 				p_Callback(p_Userdata, table.unpack(s_Instances))
 			end
+
+			self:WaitForInstances(p_Instances, p_Userdata, p_Callback)
 		end)
 	end
 end
