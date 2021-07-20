@@ -28,9 +28,11 @@ function MapLoader:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	self.m_ObjectVariations = {}
 	self.m_PendingVariations = {}
 
-	if not ServerConfig.Debug.DisableMapLoader then
-		self.m_MapPreset = json.decode(MapsConfig[LevelNameHelper:GetLevelName()].MapPreset)
+	if ServerConfig.Debug.DisableMapLoader then
+		m_Logger:Write("MapLoader is disabled.")
 	end
+
+	self.m_MapPreset = json.decode(MapsConfig[LevelNameHelper:GetLevelName()].MapPreset)
 
 	if self.m_MapPreset == nil then
 		m_Logger:Error("No custom map data for map: " .. p_LevelName .. " and gamemode: " .. p_GameMode)

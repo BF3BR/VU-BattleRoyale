@@ -9,7 +9,6 @@ local m_AutoTriggersMP_VoiceOverLogicAsset = DC(Guid("0663E4AE-5E2A-4512-9012-F8
 local m_ComRose_VoiceOverLogicAsset = DC(Guid("BF876C50-4FFB-11E0-BB5C-96166BF39E10"), Guid("CA084EB9-BE72-B3BA-0D73-AAEC80C1CB91"))
 
 function RemoveAutoTriggerVO:__init()
-	m_Logger:Write("RemoveAutoTriggerVO initializing")
 end
 
 function RemoveAutoTriggerVO:RegisterCallbacks()

@@ -13,6 +13,8 @@ local m_LootCreation = require "__shared/Modifications/LootCreation"
 local m_2dTreeRemoving = require "__shared/Modifications/2dTreeRemoving"
 local m_TempMapPatches = require "__shared/Modifications/TempMapPatches"
 local m_FireEffectsModifier = require "__shared/Modifications/FX/FireEffectsModifier"
+local m_RemoveVanillaLoadingScreen = require "__shared/Modifications/LoadingScreen/RemoveVanillaLoadingScreen"
+-- local m_RemoveAutotriggerVO = require "__shared/Modifications/Sound/RemoveAutoTriggerVO"
 
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 
@@ -32,6 +34,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_WeaponDropModifier:RegisterCallbacks()
 	m_2dTreeRemoving:RegisterCallbacks()
 	m_FireEffectsModifier:RegisterCallbacks()
+	-- m_RemoveAutotriggerVO:RegisterCallbacks()
 end
 
 function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
@@ -40,6 +43,14 @@ function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_WeaponDropModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
+end
+
+function ModificationsCommon:OnExtensionLoaded()
+	m_RemoveVanillaLoadingScreen:OnExtensionLoaded()
+end
+
+function ModificationsCommon:OnExtensionUnloading()
+	m_RemoveVanillaLoadingScreen:OnExtensionUnloading()
 end
 
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)

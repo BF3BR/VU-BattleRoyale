@@ -21,11 +21,9 @@ local m_SpectatorClient = require "SpectatorClient"
 local m_Ping = require "PingClient"
 local m_ClientManDownLoot = require "ClientManDownLoot"
 local m_AntiCheat = require "AntiCheat"
-local m_SoundCommon = require "Sound/SoundCommon"
 local m_Settings = require "Settings"
 local m_TeamManager = require "BRTeamManager"
 local m_OOCFires = require "Visuals/OOCFires"
-
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -114,7 +112,6 @@ end
 
 function VuBattleRoyaleClient:RegisterCallbacks()
 	m_Gunship:RegisterCallbacks()
-	m_SoundCommon:RegisterCallbacks()
 end
 
 function VuBattleRoyaleClient:RegisterHooks()

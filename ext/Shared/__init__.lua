@@ -16,7 +16,6 @@ require "__shared/Configs/ServerConfig"
 require "__shared/Configs/MapsConfig"
 require "__shared/Configs/PickupsConfig"
 
-
 local m_ModificationsCommon = require "__shared/Modifications/ModificationsCommon"
 local m_BundleManager = require "__shared/Logic/BundleManager"
 local m_GunSwayManager = require "__shared/Logic/GunSwayManager"
@@ -31,9 +30,11 @@ function VuBattleRoyaleShared:OnExtensionLoaded()
 	self:RegisterEvents()
 	self:RegisterHooks()
 	self:RegisterCallbacks()
+	m_ModificationsCommon:OnExtensionLoaded()
 end
 
 function VuBattleRoyaleShared:RegisterEvents()
+	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
 	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
 	Events:Subscribe("Level:RegisterEntityResources", self, self.OnRegisterEntityResources)
 	Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate)
@@ -55,6 +56,10 @@ end
 -- =============================================
 -- Events
 -- =============================================
+
+function VuBattleRoyaleShared:OnExtensionUnloading()
+	m_ModificationsCommon:OnExtensionUnloading()
+end
 
 function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_BundleManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
