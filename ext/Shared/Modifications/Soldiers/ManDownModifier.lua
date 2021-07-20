@@ -246,15 +246,6 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	s_InputRestrictionEntityData.changeWeapon = false
 	s_InputRestrictionEntityData.zoom = false
 
-	local s_CollisionData = CollisionData(s_Partition:FindInstance(Guid("5917C5BE-142C-498F-9EA0-CCC6211746D2")))
-	s_CollisionData:MakeWritable()
-	s_CollisionData.damageAtVerticalVelocity:add(ValueAtX())
-	s_CollisionData.damageAtVerticalVelocity[#s_CollisionData.damageAtVerticalVelocity].x = 50
-	s_CollisionData.damageAtVerticalVelocity[#s_CollisionData.damageAtVerticalVelocity].value = 200
-	s_CollisionData.damageAtVerticalVelocity:add(ValueAtX())
-	s_CollisionData.damageAtVerticalVelocity[#s_CollisionData.damageAtVerticalVelocity].x = 70
-	s_CollisionData.damageAtVerticalVelocity[#s_CollisionData.damageAtVerticalVelocity].value = 300
-
 	local s_VeniceSoldierHealthModuleData = VeniceSoldierHealthModuleData(s_Partition:FindInstance(Guid("705967EE-66D3-4440-88B9-FEEF77F53E77")))
 	s_VeniceSoldierHealthModuleData:MakeWritable()
 	s_VeniceSoldierHealthModuleData.interactiveManDown = true
