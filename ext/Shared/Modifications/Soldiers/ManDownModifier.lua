@@ -7,6 +7,8 @@ local m_RegistryManager = require("__shared/Logic/RegistryManager")
 local m_ReviveCustomizeSoldierData = DC(Guid("4EF77C47-6512-11E0-9AE6-EF0E747BA479"), Guid("B407182A-1C98-13DE-49A3-EE7F7EADFB4D"))
 local m_M9UnlockAsset = DC(Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"), Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B"))
 
+local m_AimingConstraints = DC(Guid("0309271B-3E7A-11E0-8B89-BBAF7A9E99DB"), Guid("922C1DF4-0208-0A6D-2651-7EEA9A13C468"))
+
 local m_BeingInteracted_Inputs = {
 	"throttle",
 	"strafe",
@@ -72,10 +74,15 @@ end
 
 function ManDownModifier:RegisterCallbacks()
 	m_ReviveCustomizeSoldierData:RegisterLoadHandler(self, self.OnReviveCustomizeSoldierData)
+	m_AimingConstraints:RegisterLoadHandler(self, self.OnAimingConstraintsData)
 end
 
 function ManDownModifier:OnReviveCustomizeSoldierData(p_CustomizeSoldierData)
 	p_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_0
+end
+
+function ManDownModifier:OnAimingConstraintsData(p_AimingConstraintEntityCommonData)
+	p_AimingConstraintEntityCommonData.aimingConstraints.minPitch = -15.0
 end
 
 function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
