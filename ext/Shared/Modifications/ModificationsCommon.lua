@@ -34,6 +34,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_WeaponDropModifier:RegisterCallbacks()
 	m_2dTreeRemoving:RegisterCallbacks()
 	m_FireEffectsModifier:RegisterCallbacks()
+	m_ManDownModifier:RegisterCallbacks()
 	-- m_RemoveAutotriggerVO:RegisterCallbacks()
 end
 
