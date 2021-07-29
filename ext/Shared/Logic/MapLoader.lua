@@ -30,6 +30,7 @@ function MapLoader:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 
 	if ServerConfig.Debug.DisableMapLoader then
 		m_Logger:Write("MapLoader is disabled.")
+		return
 	end
 
 	self.m_MapPreset = json.decode(MapsConfig[LevelNameHelper:GetLevelName()].MapPreset)
