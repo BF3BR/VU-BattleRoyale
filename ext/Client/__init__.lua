@@ -10,8 +10,7 @@ require "__shared/Utils/LootPointHelper"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 
-require "PhaseManagerClient"
-
+local m_PhaseManagerClient = require "PhaseManagerClient"
 local m_BrPlayer = require "BRPlayer"
 local m_HudUtils = require "Utils/HudUtils"
 local m_Gunship = require "Gunship"
@@ -417,8 +416,8 @@ end
 -- WebUI Events
 -- =============================================
 
-function VuBattleRoyaleClient:OnWebUIDeploy()
-	m_Hud:OnWebUIDeploy()
+function VuBattleRoyaleClient:OnWebUIDeploy(p_AppearanceName)
+	m_Hud:OnWebUIDeploy(p_AppearanceName)
 end
 
 function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)

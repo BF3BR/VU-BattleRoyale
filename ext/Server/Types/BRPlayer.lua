@@ -41,6 +41,9 @@ function BRPlayer:__init(p_Player)
 
 	-- The score count of the player
 	self.m_Score = 0
+
+	-- The appearance name
+	self.m_Appearance = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01"
 end
 
 -- =============================================
@@ -235,15 +238,9 @@ function BRPlayer:GunshipSpawn(p_Trans)
 	self.m_Player.selectedKit = s_SoldierBlueprint
 
 	-- TODO: @Janssent's appearance code gonna land here probably
-	if self.m_Player.teamId == TeamId.Team1 then
-		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
-		s_Appearance = ResourceManager:SearchForDataContainer(
-						"Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
-	else
-		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
-		s_Appearance = ResourceManager:SearchForDataContainer(
-						"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
-	end
+
+	s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
+	s_Appearance = ResourceManager:SearchForDataContainer(self.m_Appearance)
 
 	if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
 		return
@@ -424,6 +421,15 @@ function BRPlayer:SetTeamJoinStrategy(p_Strategy)
 	end
 
 	self:SendState()
+end
+
+function BRPlayer:SetAppearance(p_AppearanceName)
+	if p_AppearanceName == nil then
+		return false
+	end
+
+	self.m_Appearance = p_AppearanceName
+	return true
 end
 
 -- =============================================
