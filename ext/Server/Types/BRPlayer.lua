@@ -199,16 +199,8 @@ function BRPlayer:Spawn(p_Trans)
 	local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
 	local s_Player = self:GetPlayer()
 
-	-- TODO: @Janssent's appearance code gonna land here probably
-	if s_Player.teamId == TeamId.Team1 then
-		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
-		s_Appearance = ResourceManager:SearchForDataContainer(
-						"Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
-	else
-		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
-		s_Appearance = ResourceManager:SearchForDataContainer(
-						"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
-	end
+	s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
+	s_Appearance = ResourceManager:SearchForDataContainer(self.m_Appearance)
 
 	if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
 		return
@@ -236,8 +228,6 @@ function BRPlayer:GunshipSpawn(p_Trans)
 	local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
 
 	self.m_Player.selectedKit = s_SoldierBlueprint
-
-	-- TODO: @Janssent's appearance code gonna land here probably
 
 	s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
 	s_Appearance = ResourceManager:SearchForDataContainer(self.m_Appearance)
