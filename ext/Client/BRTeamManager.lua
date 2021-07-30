@@ -34,24 +34,26 @@ end
 
 function BRTeamManager:OverrideTeamIds(p_Player, p_TeamId)
 	if p_Player == PlayerManager:GetLocalPlayer() or self:IsTeamMate(p_Player) then
-		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team1")
-		p_Player.teamId = TeamId.Team1
-		p_Player.squadId = SquadId.Squad1
-
-		if p_Player.soldier ~= nil then
-			m_Logger:Write("OverrideTeamId of soldier for this player from " .. p_TeamId .. " to Team1")
-			p_Player.soldier.teamId = TeamId.Team1
-		end
+		self:SetTeamId(p_Player, TeamId.Team1)
 	else
-		m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from " .. p_TeamId .. " to Team2")
-		p_Player.teamId = TeamId.Team2
-		p_Player.squadId = SquadId.Squad1
-
-		if p_Player.soldier ~= nil then
-			m_Logger:Write("OverrideTeamId of soldier for this player from " .. p_TeamId .. " to Team2")
-			p_Player.soldier.teamId = TeamId.Team2
-		end
+		self:SetTeamId(p_Player, TeamId.Team2)
 	end
+end
+
+function BRTeamManager:SetTeamId(p_Player, p_TeamId)
+	m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from Team" .. p_Player.teamId .. " to Team" .. p_TeamId)
+	p_Player.teamId = p_TeamId
+	p_Player.squadId = SquadId.Squad1
+
+
+	g_Timers:Timeout(1, function()
+		if p_Player.soldier ~= nil then
+			m_Logger:Write("OverrideTeamId of soldier for this player from Team" .. p_Player.soldier.teamId .. " to Team" .. p_TeamId)
+			p_Player.teamId = p_TeamId
+			p_Player.soldier.teamId = p_TeamId
+			p_Player.squadId = SquadId.Squad1
+		end
+	end)
 end
 
 function BRTeamManager:IsTeamMate(p_Player)
