@@ -11,7 +11,11 @@ end
 -- =============================================
 
 function BRTeamManager:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
-	self:OverrideTeamIds(p_Player, p_TeamId)
+	self:OverrideTeamIds(p_Player)
+end
+
+function BRTeamManager:OnPlayerRespawn(p_Player)
+	self:OverrideTeamIds(p_Player)
 end
 
 -- =============================================
@@ -23,7 +27,7 @@ function BRTeamManager:OnGameStateChanged(p_GameState)
 		local s_Players = PlayerManager:GetPlayers()
 
 		for _, l_Player in pairs(s_Players) do
-			self:OverrideTeamIds(l_Player, l_Player.teamId)
+			self:OverrideTeamIds(l_Player)
 		end
 	end
 end
@@ -32,7 +36,7 @@ end
 -- Functions
 -- =============================================
 
-function BRTeamManager:OverrideTeamIds(p_Player, p_TeamId)
+function BRTeamManager:OverrideTeamIds(p_Player)
 	if p_Player == PlayerManager:GetLocalPlayer() or self:IsTeamMate(p_Player) then
 		self:SetTeamId(p_Player, TeamId.Team1)
 	else
@@ -43,8 +47,12 @@ end
 function BRTeamManager:SetTeamId(p_Player, p_TeamId)
 	m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from Team" .. p_Player.teamId .. " to Team" .. p_TeamId)
 	p_Player.teamId = p_TeamId
-	p_Player.squadId = SquadId.Squad1
 
+	if p_Player.soldier ~= nil then
+		p_Player.soldier.teamId = p_TeamId
+	end
+
+	p_Player.squadId = SquadId.Squad1
 
 	g_Timers:Timeout(1, function()
 		if p_Player.soldier ~= nil then

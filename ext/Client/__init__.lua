@@ -207,6 +207,7 @@ function VuBattleRoyaleClient:OnPlayerConnected(p_Player)
 end
 
 function VuBattleRoyaleClient:OnPlayerRespawn(p_Player)
+	m_TeamManager:OnPlayerRespawn(p_Player)
 	m_Hud:OnPlayerRespawn(p_Player)
 	m_SpectatorClient:OnPlayerRespawn(p_Player)
 end
