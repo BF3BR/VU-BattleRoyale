@@ -45,7 +45,7 @@ ServerConfig = {
 
 		Logger_Print_All = true,
 
-		EnableWinningCheck = false,
+		DisableWinningCheck = true,
 
 		DisableMapLoader = true,
 

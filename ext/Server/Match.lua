@@ -321,11 +321,12 @@ function Match:DoWeHaveAWinner()
 		return
 	end
 
-	local s_WinningTeam = nil
-
-	if ServerConfig.Debug.EnableWinningCheck then
-		s_WinningTeam = self.m_TeamManager:GetWinningTeam()
+	if ServerConfig.Debug.DisableWinningCheck then
+		m_Logger:Write("WinningCheck is disabled.")
+		return
 	end
+
+	local s_WinningTeam = self.m_TeamManager:GetWinningTeam()
 
 	if s_WinningTeam ~= nil then
 		self.m_WinnerTeam = s_WinningTeam
