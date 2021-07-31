@@ -155,6 +155,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_Gunship:OnLevelDestroy()
 	m_Chat:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
+	m_WindowsCircleSpawner:OnLevelDestroy()
 end
 
 -- =============================================

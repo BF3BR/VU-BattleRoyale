@@ -3,6 +3,8 @@ require "__shared/Utils/RaycastHelper"
 require "__shared/Configs/CircleConfig"
 require "__shared/Types/Circle"
 
+local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
+
 local s_TwoPi = 2 * math.pi
 
 class ("RenderableCircle", Circle)
@@ -95,9 +97,15 @@ function RenderableCircle:Render(p_Renderer, p_PlayerPos)
 	local s_DoubleDrawDistance = math.min(s_RadiusDrawDistance, CircleConfig.DrawDistance * CircleConfig.DrawDistance)
 
 	if self.m_ShouldDrawPoints and #self.m_RenderPoints > 1 then
+
+		-- remove previously spawned windows
+		m_WindowsCircleSpawner:DestroyEntities()
+		local s_Length = self.m_RenderPoints[1]:Distance(self.m_RenderPoints[2])
+
 		for i = 2, #self.m_RenderPoints do
-			p_Renderer(self.m_RenderPoints[i - 1], self.m_RenderPoints[i],
-					MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]), s_DoubleDrawDistance)
+			-- p_Renderer(self.m_RenderPoints[i - 1], self.m_RenderPoints[i],
+			-- 		MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]), s_DoubleDrawDistance)
+			m_WindowsCircleSpawner:SpawnWindow(self.m_RenderPoints[i - 1], self.m_RenderPoints[i], s_Length)
 		end
 	end
 end

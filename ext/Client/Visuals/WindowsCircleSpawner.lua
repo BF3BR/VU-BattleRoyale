@@ -5,7 +5,7 @@ class "WindowsCircleSpawner"
 local m_Logger = Logger("WindowsCircleSpawner", true)
 local m_ScalingMatrix = LinearTransform(
   Vec3(1.0, 0.0, 0.0),
-  Vec3(0.0, 10.0, 0.0),
+  Vec3(0.0, 100.0, 0.0),
   Vec3(0.0, 0.0, 1.0),
   Vec3(0.0, 0.0, 0.0)
 )
@@ -35,8 +35,10 @@ end
 function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength)
   -- create entity transform
 	local s_Angle = math.atan(p_To.z - p_From.z, p_To.x - p_From.x)
-	local s_EntityTrans = MathUtils:GetTransformFromYPR(-angle, 0, 0)
-	s_EntityTrans.trans = Vec3(p_To.x, p_From.y, p_To.z)
+	local s_EntityTrans = MathUtils:GetTransformFromYPR(-s_Angle, 0, 0)
+
+  -- TODO i think we need to use fixed y per map
+	s_EntityTrans.trans = Vec3(p_To.x, 125, p_To.z)
 
   -- scale entity transform
 	local s_XScaling = p_EdgeLength / m_MagicScalingNumber
@@ -54,18 +56,12 @@ function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength)
 		s_CreatedEntity:Init(Realm.Realm_Client, true)
 		table.insert(self.m_Entities, s_CreatedEntity)
 
-		local s_SpatialEntity = s_SpatialEntity(s_CreatedEntity)
-		local s_Aabb = spatialEntity.aabb
+		-- local s_SpatialEntity = SpatialEntity(s_CreatedEntity)
+		-- local s_Aabb = s_SpatialEntity.aabb
 
-    local width = s_Aabb.max.x - s_Aabb.min.x
-		local height = s_Aabb.max.y - s_Aabb.min.y
-		local depth = s_Aabb.max.z - s_Aabb.min.z
-
-		print({
-			width = width,
-			depth = depth,
-			height = height,
-		})
+    -- local width = s_Aabb.max.x - s_Aabb.min.x
+		-- local height = s_Aabb.max.y - s_Aabb.min.y
+		-- local depth = s_Aabb.max.z - s_Aabb.min.z
 	end
 end
 
@@ -83,6 +79,10 @@ function WindowsCircleSpawner:Destroy()
 end
 
 function WindowsCircleSpawner:OnExtensionUnloading()
+  self:Destroy()
+end
+
+function WindowsCircleSpawner:OnLevelDestroy()
   self:Destroy()
 end
 
