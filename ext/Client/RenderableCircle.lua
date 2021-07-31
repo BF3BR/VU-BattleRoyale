@@ -45,6 +45,7 @@ function RenderableCircle:Update(p_Center, p_Radius, p_PhaseIndex)
 
 	-- calculate final points to draw and
 	s_NumPointsToDraw = MathUtils:Clamp(s_NumPointsToDraw, CircleConfig.RenderPoints.Min, CircleConfig.RenderPoints.Max)
+	s_NumPointsToDraw = 80
 	s_ArcLength = s_DrawArcLen / s_NumPointsToDraw
 	self.m_NumPointsToDraw = s_NumPointsToDraw
 
@@ -58,22 +59,24 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
 	local s_ClosestCircumPoint = self:CircumferencePoint(s_PlayerAngle, p_PlayerPos.y)
 
 	-- check if it should draw the circle
-	if s_ClosestCircumPoint:Distance(p_PlayerPos) >= CircleConfig.DrawDistance then
-		self.m_ShouldDrawPoints = false
-		return
-	else
-		self.m_ShouldDrawPoints = true
-	end
+	-- if s_ClosestCircumPoint:Distance(p_PlayerPos) >= CircleConfig.DrawDistance then
+	-- 	self.m_ShouldDrawPoints = false
+	-- 	return
+	-- else
+	-- 	self.m_ShouldDrawPoints = true
+	-- end
+	self.m_ShouldDrawPoints = true
 
 	-- discritize starting angle
 	local s_StartingAngle = s_PlayerAngle - math.floor(self.m_NumPointsToDraw / 2) * self.m_ThetaStep
 	s_StartingAngle = math.floor(s_StartingAngle / self.m_ThetaStep) * self.m_ThetaStep
 
 	-- check if starting angle is the same as before
-	if s_StartingAngle == self.m_PrevStartingAngle then
-		return
-	end
+	-- if s_StartingAngle == self.m_PrevStartingAngle then
+	-- 	return
+	-- end
 
+	s_StartingAngle = 0
 	self.m_PrevStartingAngle = s_StartingAngle
 
 	-- calculate points
