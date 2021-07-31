@@ -19,6 +19,50 @@ function WindowsCircleSpawner:__init()
 	self.m_EntityData = nil
 end
 
+function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength, p_Index)
+	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
+
+	-- create entity transform
+	local s_Angle = math.atan(p_To.z - p_From.z, p_To.x - p_From.x)
+	local s_EntityTrans = MathUtils:GetTransformFromYPR(-s_Angle, 0, 0)
+	s_EntityTrans.trans = Vec3(p_To.x, s_MapConfig.CircleWallY, p_To.z)
+
+	-- scale entity transform
+	local s_XScaling = p_EdgeLength / m_MagicScalingNumber
+	m_ScalingMatrix.left.x = s_XScaling
+	m_ScalingMatrix.up.y = s_MapConfig.CircleWallHeightModifier
+	s_EntityTrans = m_ScalingMatrix * s_EntityTrans
+
+	-- get or create an entity and update it's transform
+	local s_Entity = self:GetOrCreateEntity(p_Index, s_EntityTrans)
+	if s_Entity ~= nil then
+		SpatialEntity(s_Entity).transform = s_EntityTrans
+	end
+end
+
+function WindowsCircleSpawner:GetOrCreateEntity(p_Index, p_EntityTrans)
+	-- check if there's an available entity to use
+	if p_Index <= #self.m_Entities then
+		return self.m_Entities[p_Index]
+	end
+
+	-- get entity data
+	local s_EntityData = self:GetEntityData()
+	if s_EntityData == nil then
+		return nil
+	end
+
+	-- create and save new entity
+	local s_CreatedEntity = EntityManager:CreateEntity(s_EntityData, p_EntityTrans)
+	if s_CreatedEntity ~= nil then
+		s_CreatedEntity:Init(Realm.Realm_Client, true)
+		table.insert(self.m_Entities, s_CreatedEntity)
+		m_Logger:Write("Created a new entity")
+	end
+
+	return s_CreatedEntity
+end
+
 function WindowsCircleSpawner:GetEntityData()
 	if self.m_EntityData ~= nil then
 		return self.m_EntityData
@@ -32,38 +76,23 @@ function WindowsCircleSpawner:GetEntityData()
 	return self.m_EntityData
 end
 
-function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength)
-	-- create entity transform
-	local s_Angle = math.atan(p_To.z - p_From.z, p_To.x - p_From.x)
-	local s_EntityTrans = MathUtils:GetTransformFromYPR(-s_Angle, 0, 0)
+function WindowsCircleSpawner:DestroyEntities(p_StartIndex)
+	p_StartIndex = p_StartIndex or 1
 
-	-- TODO i think we need to use fixed y per map
-	s_EntityTrans.trans = Vec3(p_To.x, 125, p_To.z)
+	-- destroy selected entities
+	for l_Index = #self.m_Entities, p_StartIndex, -1 do
+		local s_Entity = self.m_Entities[l_Index]
 
-	-- scale entity transform
-	local s_XScaling = p_EdgeLength / m_MagicScalingNumber
-	m_ScalingMatrix.left.x = s_XScaling
-	s_EntityTrans = m_ScalingMatrix * s_EntityTrans
-
-	-- create entity
-	local s_EntityData = self:GetEntityData()
-	if s_EntityData == nil then
-		return
-	end
-	local s_CreatedEntity = EntityManager:CreateEntity(s_EntityData, s_EntityTrans)
-
-	if s_CreatedEntity ~= nil then
-		s_CreatedEntity:Init(Realm.Realm_Client, true)
-		table.insert(self.m_Entities, s_CreatedEntity)
-	end
-end
-
-function WindowsCircleSpawner:DestroyEntities()
-	for _, l_Entity in pairs(self.m_Entities) do
-		l_Entity:Destroy()
+		if s_Entity ~= nil then
+			s_Entity:Destroy()
+			table.remove(self.m_Entities, l_Index)
+		end
 	end
 
-	self.m_Entities = {}
+	-- clear entities array if all entities got destroyed
+	if p_StartIndex == 1 then
+		self.m_Entities = {}
+	end
 end
 
 function WindowsCircleSpawner:Destroy()

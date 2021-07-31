@@ -102,13 +102,14 @@ function RenderableCircle:Render(p_Renderer, p_PlayerPos)
 	if self.m_ShouldDrawPoints and #self.m_RenderPoints > 1 then
 
 		-- remove previously spawned windows
-		m_WindowsCircleSpawner:DestroyEntities()
+		-- m_WindowsCircleSpawner:DestroyEntities()
 		local s_Length = self.m_RenderPoints[1]:Distance(self.m_RenderPoints[2])
 
-		for i = 2, #self.m_RenderPoints do
+		for l_Index = 2, #self.m_RenderPoints do
 			-- p_Renderer(self.m_RenderPoints[i - 1], self.m_RenderPoints[i],
 			-- 		MathHelper:SquaredDistance(p_PlayerPos, self.m_RenderPoints[i]), s_DoubleDrawDistance)
-			m_WindowsCircleSpawner:SpawnWindow(self.m_RenderPoints[i - 1], self.m_RenderPoints[i], s_Length)
+			m_WindowsCircleSpawner:SpawnWindow(self.m_RenderPoints[l_Index - 1], self.m_RenderPoints[l_Index], s_Length, l_Index - 1)
 		end
+		m_WindowsCircleSpawner:DestroyEntities(#self.m_RenderPoints + 1)
 	end
 end
