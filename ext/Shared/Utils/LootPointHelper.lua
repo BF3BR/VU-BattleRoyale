@@ -87,9 +87,6 @@ function LootPointHelper:OnPlayerUpdateInput()
 		-- If theres a point selected, clear only it
 		elseif self.m_SelectedIndex then
 			table.remove(self.m_Points, self.m_SelectedIndex)
-		-- Otherwise, clear all points
-		else
-			self.m_Points = {}
 		end
 
 		self.m_ActiveIndex = nil
@@ -97,8 +94,8 @@ function LootPointHelper:OnPlayerUpdateInput()
 		self.m_SavedPosition = nil
 	end
 
-	-- Press E to select point or confirm point placement
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_E) then
+	-- Press F7 to select point or confirm point placement
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F7) then
 		if self.m_ActiveIndex then
 			-- If a point was being moved and it has now been confirmed
 			if self.m_SavedPosition then
@@ -121,8 +118,8 @@ function LootPointHelper:OnPlayerUpdateInput()
 		end
 	end
 
-	-- Press F1 to print points as LinearTransforms
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F1) then
+	-- Press F2 to print points as LinearTransforms
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F2) then
 		self:PrintPointsAsLinearTransforms()
 	end
 end
