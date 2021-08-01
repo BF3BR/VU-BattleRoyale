@@ -322,7 +322,7 @@ function Match:DoWeHaveAWinner()
 	end
 
 	if ServerConfig.Debug.DisableWinningCheck then
-		m_Logger:Write("WinningCheck is disabled.")
+		-- m_Logger:Write("WinningCheck is disabled.")
 		return
 	end
 

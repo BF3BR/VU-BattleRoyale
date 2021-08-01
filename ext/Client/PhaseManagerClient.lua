@@ -18,8 +18,6 @@ function PhaseManagerClient:RegisterVars()
 	self.m_InnerCircle = RenderableCircle()
 	self.m_OuterCircle = RenderableCircle()
 
-	self.m_RenderInnerCircle = CircleConfig.RenderInnerCircle
-
 	-- events/hooks
 	self.m_LevelLoadedEvent = nil
 end
@@ -69,10 +67,13 @@ function PhaseManagerClient:OnUpdateState(p_State)
 	end
 
 	-- update inner circle data
-	self.m_InnerCircle:Update(p_State.InnerCircle.Center, p_State.InnerCircle.Radius, self.m_PhaseIndex)
+	self.m_InnerCircle:Update(p_State.InnerCircle.Center, p_State.InnerCircle.Radius)
 
 	-- update outer circle data
-	self.m_OuterCircle:Update(p_State.OuterCircle.Center, p_State.OuterCircle.Radius, self.m_PhaseIndex)
+	self.m_OuterCircle:Update(p_State.OuterCircle.Center, p_State.OuterCircle.Radius)
+
+	-- update render parameters for circle
+	self.m_OuterCircle:UpdateRenderParameters()
 
 	-- custom event to inform the rest of the client scripts about the state update
 	Events:DispatchLocal(PhaseManagerEvent.Update, p_State)
@@ -122,7 +123,7 @@ function PhaseManagerClient:OnPreSim(p_DeltaTime)
 
 	-- calculate render points for both circles
 	self.m_OuterCircle:CalculateRenderPoints(s_PlayerPos)
-	if self.m_RenderInnerCircle and not self.m_Completed then
+	if CircleConfig.RenderInnerCircle and not self.m_Completed then
 		self.m_InnerCircle:CalculateRenderPoints(s_PlayerPos)
 	end
 end
@@ -135,21 +136,13 @@ function PhaseManagerClient:OnRender()
 
 	-- get active player position
 	local s_PlayerPos = self:GetActivePlayerPosition()
-
 	if s_PlayerPos == nil then
 		return
 	end
 
 	-- render circles
 	self.m_OuterCircle:Render(OuterCircleRenderer, s_PlayerPos)
-
-	if self.m_RenderInnerCircle and not self.m_Completed then
+	if CircleConfig.RenderInnerCircle and not self.m_Completed then
 		self.m_InnerCircle:Render(InnerCircleRenderer, s_PlayerPos)
 	end
 end
-
--- Moves the outer circle (danger zone)
--- function PhaseManagerClient:MoveOuterCircle(p_Timer)
--- 	PhaseManagerShared.MoveOuterCircle(self, p_Timer)
--- 	Events:DispatchLocal(PhaseManagerEvent.CircleMove, self.m_OuterCircle:AsTable())
--- end

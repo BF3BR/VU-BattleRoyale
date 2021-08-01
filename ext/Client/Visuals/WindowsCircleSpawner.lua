@@ -19,7 +19,7 @@ function WindowsCircleSpawner:__init()
 	self.m_EntityData = nil
 end
 
-function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength, p_Index)
+function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength, p_CachedEntityIndex)
 	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
 
 	-- create entity transform
@@ -34,7 +34,7 @@ function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength, p_Index)
 	s_EntityTrans = m_ScalingMatrix * s_EntityTrans
 
 	-- get or create an entity and update it's transform
-	local s_Entity = self:GetOrCreateEntity(p_Index, s_EntityTrans)
+	local s_Entity = self:GetOrCreateEntity(p_CachedEntityIndex, s_EntityTrans)
 	if s_Entity ~= nil then
 		SpatialEntity(s_Entity).transform = s_EntityTrans
 	end
@@ -57,7 +57,6 @@ function WindowsCircleSpawner:GetOrCreateEntity(p_Index, p_EntityTrans)
 	if s_CreatedEntity ~= nil then
 		s_CreatedEntity:Init(Realm.Realm_Client, true)
 		table.insert(self.m_Entities, s_CreatedEntity)
-		m_Logger:Write("Created a new entity")
 	end
 
 	return s_CreatedEntity
@@ -84,6 +83,7 @@ function WindowsCircleSpawner:DestroyEntities(p_StartIndex)
 		local s_Entity = self.m_Entities[l_Index]
 
 		if s_Entity ~= nil then
+			m_Logger:Write("Destroying window#" .. l_Index)
 			s_Entity:Destroy()
 			table.remove(self.m_Entities, l_Index)
 		end
