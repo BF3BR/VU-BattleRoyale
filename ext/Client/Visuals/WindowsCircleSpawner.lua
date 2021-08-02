@@ -2,17 +2,13 @@
 
 class "WindowsCircleSpawner"
 
-local m_Logger = Logger("WindowsCircleSpawner", true)
-local m_ScalingMatrix = LinearTransform(
-	Vec3(1.0, 0.0, 0.0),
-	Vec3(0.0, 100.0, 0.0),
-	Vec3(0.0, 0.0, 1.0),
-	Vec3(0.0, 0.0, 0.0)
-)
-local m_MagicScalingNumber = 1.66
+local m_RotationHelper = require "__shared/Utils/RotationHelper"
 
--- 'XP3/Architecture/Barrack_02/Barrack_02_Window_01'
-local m_WindowBP = DC(Guid("C2F9C48C-A4EB-11E1-ABB8-FED5C2003E58"), Guid("11DEF780-CA1C-D8A7-A389-E267D1146509"))
+local m_Logger = Logger("WindowsCircleSpawner", true)
+local m_MagicScalingNumber = 2.5
+
+-- 'Architecture/Warehouse_02/DebrisClusters/Warehouse_02_WindowBroken_01'
+local m_WindowBP = DC(Guid("AFEA12FF-A2F8-11E0-9D5D-D43B5C1D8C9B"), Guid("319952E5-30F8-86E1-2FA0-890716D7D491"))
 
 function WindowsCircleSpawner:__init()
 	self.m_Entities = {}
@@ -25,13 +21,19 @@ function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength, p_CachedEn
 	-- create entity transform
 	local s_Angle = math.atan(p_To.z - p_From.z, p_To.x - p_From.x)
 	local s_EntityTrans = MathUtils:GetTransformFromYPR(-s_Angle, 0, 0)
-	s_EntityTrans.trans = Vec3(p_To.x, s_MapConfig.CircleWallY, p_To.z)
+	s_EntityTrans.trans = Vec3((p_From.x + p_To.x) / 2, s_MapConfig.CircleWallY, (p_From.z + p_To.z) / 2)
+
+	local s_Left, s_Up, s_Forward = m_RotationHelper:GetLUFfromYPR(0, math.pi, 0)
 
 	-- scale entity transform
 	local s_XScaling = p_EdgeLength / m_MagicScalingNumber
-	m_ScalingMatrix.left.x = s_XScaling
-	m_ScalingMatrix.up.y = s_MapConfig.CircleWallHeightModifier
-	s_EntityTrans = m_ScalingMatrix * s_EntityTrans
+	local s_ScalingMatrix = LinearTransform(
+		Vec3(s_Left.x * s_XScaling, s_Left.y, s_Left.z),
+		Vec3(s_Up.x, s_Up.y * s_MapConfig.CircleWallHeightModifier, s_Up.z),
+		s_Forward,
+		Vec3(0, 0, 0)
+	)
+	s_EntityTrans = s_ScalingMatrix * s_EntityTrans
 
 	-- get or create an entity and update it's transform
 	local s_Entity = self:GetOrCreateEntity(p_CachedEntityIndex, s_EntityTrans)
