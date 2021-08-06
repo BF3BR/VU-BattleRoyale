@@ -4,6 +4,7 @@ require "__shared/Enums/CustomEvents"
 require "__shared/Enums/PingTypes"
 require "__shared/Utils/EventRouter"
 
+local m_HudUtils = require "Utils/HudUtils"
 local m_Hud = require "Hud"
 local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("PingClient", true)
@@ -48,7 +49,7 @@ function PingClient:RegisterVars()
 	self.m_PingType = PingType.Default
 
 	-- Time to hold key to display CommoRose
-	self.m_TimeToDisplayCommoRose = 0.15
+	self.m_TimeToDisplayCommoRose = 0.20
 	self.m_DisplayCommoRoseTimer = 0.0
 	self.m_IsCommoRoseOpened = false
 
@@ -111,7 +112,11 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 		return
 	end
 
-	if InputManager:IsKeyDown(InputDeviceKeys.IDK_Q) then
+	if m_HudUtils:GetIsMapOpened() then
+		return
+	end
+
+	if InputManager:IsDown(InputConceptIdentifiers.ConceptCommMenu1) then
 		self.m_DisplayCommoRoseTimer = self.m_DisplayCommoRoseTimer + p_DeltaTime
 
 		if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
@@ -120,7 +125,7 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 			m_Logger:Write("ShowCommoRose")
 			WebUI:EnableMouse()
 		end
-	elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Q) then
+	elseif InputManager:WentUp(InputConceptIdentifiers.ConceptCommMenu1) then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
 
@@ -131,7 +136,7 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 			self.m_CurrentTypeIndex = PingType.Default
 		end
 
-		WebUI:DisableMouse()
+		WebUI:ResetMouse()
 		m_Hud:HideCommoRose()
 		self.m_IsCommoRoseOpened = false
 		self.m_DisplayCommoRoseTimer = 0.0
