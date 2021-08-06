@@ -173,7 +173,8 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
 		m_Hud:OnUIDrawHud()
 		m_Ping:OnUIDrawHud(p_DeltaTime)
-		m_Gunship:OnUIDrawHud(p_DeltaTime)
+	elseif p_UpdatePass == UpdatePass.UpdatePass_PostFrame then
+		m_Gunship:OnUpdatePassPostFrame(p_DeltaTime)
 	end
 end
 

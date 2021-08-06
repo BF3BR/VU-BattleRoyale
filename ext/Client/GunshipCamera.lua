@@ -28,7 +28,7 @@ function GunshipCamera:OnLevelDestroy()
 	self:Disable()
 end
 
-function GunshipCamera:OnUIDrawHud(p_DeltaTime, p_GunshipEntity)
+function GunshipCamera:OnUpdatePassPostFrame(p_DeltaTime, p_GunshipEntity)
 	if not self.m_Active then
 		return
 	end
