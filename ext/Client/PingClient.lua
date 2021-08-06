@@ -116,7 +116,7 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 		return
 	end
 
-	if InputManager:IsDown(InputConceptIdentifiers.ConceptCommMenu1) then
+	if InputManager:IsKeyDown(InputDeviceKeys.IDK_Q) then
 		self.m_DisplayCommoRoseTimer = self.m_DisplayCommoRoseTimer + p_DeltaTime
 
 		if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
@@ -125,7 +125,7 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 			m_Logger:Write("ShowCommoRose")
 			WebUI:EnableMouse()
 		end
-	elseif InputManager:WentUp(InputConceptIdentifiers.ConceptCommMenu1) then
+	elseif InputManager:WentKeyUp(InputDeviceKeys.IDK_Q) then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
 
