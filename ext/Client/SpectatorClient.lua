@@ -50,7 +50,7 @@ function SpectatorClient:OnLevelDestroy()
 	self.m_SpectatingPlayerYaw = 0.0
 end
 
-function SpectatorClient:OnEngineUpdate(p_DeltaTime)
+function SpectatorClient:OnUpdatePassPostFrame(p_DeltaTime)
 	if not SpectatorManager:GetSpectating() then
 		return
 	end

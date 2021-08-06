@@ -161,7 +161,6 @@ end
 
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
 	m_Hud:OnEngineUpdate(p_DeltaTime)
-	m_SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	m_Chat:OnEngineUpdate(p_DeltaTime)
 	m_AntiCheat:OnEngineUpdate(p_DeltaTime)
 end
@@ -175,6 +174,7 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_Ping:OnUIDrawHud(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PostFrame then
 		m_Gunship:OnUpdatePassPostFrame(p_DeltaTime)
+		m_SpectatorClient:OnUpdatePassPostFrame(p_DeltaTime)
 	end
 end
 
