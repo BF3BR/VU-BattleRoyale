@@ -15,13 +15,13 @@ CircleConfig = {
 	ArcLen = { Min = 4, Max = 30},
 
 	-- The number of points used to draw the circles
-	RenderPoints = { Min = 7, Max = 128},
+	RenderPoints = { Min = 7, Max = 96 },
 
 	-- The maximum opacity of the outer circle
 	OuterCircleMaxOpacity = 0.12,
 
-	-- The time between each update of the outer circle position
-	ClientUpdateMs = 0.001,
+	-- The time between each update of the outer circle position (seconds)
+	ClientUpdateMs = 0.08,
 
 	-- Use fog to give the player a better sense of the playable area
 	UseFog = true

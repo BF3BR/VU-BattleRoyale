@@ -129,7 +129,25 @@ local TreeConfig = {
 	-- levels/xp5_003/objects/pine_tree_01_crossplane_xp5_003/pine_tree_01_crossplane_xp5_003_Mesh/
 	['4391F277-041B-4FA5-BF8A-2156A392BAC7'] = EMPTY_SHADER_CONFIG,
 	-- levels/xp5_003/objects/pine_tree_01_crossplane_xp5_003/pine_tree_01_crossplane_xp5_003_Mesh/
-	['7D5BAF2F-72DC-4C94-B364-FFB8869E948E'] = EMPTY_SHADER_CONFIG
+	['7D5BAF2F-72DC-4C94-B364-FFB8869E948E'] = EMPTY_SHADER_CONFIG,
+
+	-- Circle glass shader
+	["253EA57C-15CD-C0C2-BD16-4B317D88D099"] = {
+		MATERIALS = {
+			[1] = {
+				SHADER = {
+					NAME = "Vehicles/Shaders/VehiclePreset_Glass",
+					TYPE = ParameterModificationType.ModifyOrAddParameters,
+					PARAMETERS = {
+						ColorTint = { VALUE = Vec4(1.0, 0.365, 0.0, 1.0), TYPE = ShaderParameterType.ShaderParameterType_Color },
+						MaxOpacity = { VALUE = Vec4(0.65, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
+						MinOpacity = { VALUE = Vec4(0.65, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
+						OpacityMultiplier = { VALUE = Vec4(0.65, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
+					}
+				},
+			},
+		}
+	},
 }
 
 return TreeConfig
