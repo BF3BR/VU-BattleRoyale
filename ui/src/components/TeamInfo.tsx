@@ -33,7 +33,7 @@ const TeamInfo: React.FC<Props> = ({ team, deployScreen }) => {
 
     return (
         <>
-            {team.length > 0 &&
+            {team.length > 1 &&
                 <div id="TeamInfo" className={deployScreen ? "deployScreen" : ""}>
                     {team.map((player: Player, index: number) => (
                         <div className={"TeamPlayer state" + player.state.toString()} key={index}>
