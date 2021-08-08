@@ -82,9 +82,9 @@ const PixiViewportComponent = PixiComponent("Viewport", {
         }
 
         viewport
-            .drag()
+            .drag({ factor: .65 })
             .pinch()
-            .wheel({ percent: 2.5, smooth: 10 })
+            .wheel({ percent: .65, smooth: 10 })
             .decelerate()
             .bounce({ sides: 'all', time: 100, ease: 'easeInOutSine', underflow: 'center'})
             .clampZoom({ minWidth: 200, maxWidth: 1024 })
