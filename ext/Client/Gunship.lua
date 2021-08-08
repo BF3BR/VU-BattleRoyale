@@ -46,14 +46,14 @@ function Gunship:OnLevelDestroy()
 	m_GunshipCamera:OnLevelDestroy()
 end
 
-function Gunship:OnUIDrawHud(p_DeltaTime)
+function Gunship:OnUpdatePassPostFrame(p_DeltaTime)
 	local s_GunshipEntity = self:GetGunshipEntity()
 
 	if s_GunshipEntity ~= nil then
 		local s_Entity = SpatialEntity(s_GunshipEntity)
 		m_Hud:OnGunshipPosition(s_Entity.transform)
 		m_Hud:OnGunshipYaw(s_Entity.transform)
-		m_GunshipCamera:OnUIDrawHud(p_DeltaTime, s_GunshipEntity)
+		m_GunshipCamera:OnUpdatePassPostFrame(p_DeltaTime, s_GunshipEntity)
 	end
 end
 
