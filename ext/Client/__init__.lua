@@ -24,6 +24,7 @@ local m_AntiCheat = require "AntiCheat"
 local m_Settings = require "Settings"
 local m_TeamManager = require "BRTeamManager"
 local m_OOCFires = require "Visuals/OOCFires"
+local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -133,6 +134,7 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_HudUtils:OnExtensionUnloading()
 	m_Chat:OnExtensionUnloading()
 	m_OOCFires:OnExtensionUnloading()
+	m_WindowsCircleSpawner:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -153,6 +155,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_Gunship:OnLevelDestroy()
 	m_Chat:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
+	m_WindowsCircleSpawner:OnLevelDestroy()
 end
 
 -- =============================================

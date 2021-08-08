@@ -35,6 +35,8 @@ return {
 	BeforeFirstCircleDelay = 60.0,
 	SkyComponentDataGuid = Guid("9159BC49-8F6C-4422-BD1E-EA76D956DFA3"),
 	ConquestGameplayGuid = Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
+	CircleWallY = 100,
+	CircleWallHeightModifier = 200,
 	PhasesCount = 9,
 	Phases = {
 		{
