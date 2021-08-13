@@ -5,7 +5,7 @@ class "Whitelist"
 -- =============================================
 
 function Whitelist:OnPlayerRequestJoin(p_HookCtx, p_JoinMode, p_AccountGuid, p_PlayerGuid, p_PlayerName)
-	if ServerConfig.Debug.DisableWhitelist then
+	if not ServerConfig.Debug.EnableWhitelist then
 		return
 	end
 

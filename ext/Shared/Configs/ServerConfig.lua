@@ -49,7 +49,7 @@ ServerConfig = {
 
 		DisableMapLoader = true,
 
-		DisableWhitelist = false,
+		EnableWhitelist = true,
 
 		Whitelist = {
 			"voteban_flash",
