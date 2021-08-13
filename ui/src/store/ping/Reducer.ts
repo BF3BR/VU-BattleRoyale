@@ -3,12 +3,14 @@ import {
     PingActionTypes,
     ADD_PING,
     REMOVE_PING,
-    UPDATE_PING
+    UPDATE_PING,
+    LAST_PING
 } from "./ActionTypes";
 import Ping from "../../helpers/PingHelper";
 
 const initialState: PingState = {
     pings: [],
+    lastPing: null,
 };
 
 const PingReducer = (
@@ -45,6 +47,11 @@ const PingReducer = (
                     ping
                 )
              }
+        case LAST_PING:
+            return {
+                ...state,
+                lastPing: action.payload.id,
+            };
         default:
             return state;
     }

@@ -5,6 +5,7 @@ interface Ping {
     position: Vec3;
     color: string;
     worldPos: Vec3;
+    type: number|null;
 }
 
 export default Ping;

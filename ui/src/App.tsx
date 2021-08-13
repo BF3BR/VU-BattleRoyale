@@ -17,6 +17,7 @@ import {
 } from "./store/player/Actions";
 import {
     addPing,
+    lastPing,
     removePing,
     updatePing
 } from "./store/ping/Actions";
@@ -82,6 +83,7 @@ import Rose from "./components/rose/Rose";
 
 /* Style */
 import './App.scss';
+import PingSoundManager from "./components/PingSoundManager";
 
 interface StateFromReducer {
     gameState: string;
@@ -518,9 +520,11 @@ const App: React.FC<Props> = ({
         p_PositionX: number,
         p_PositionZ: number,
         p_WorldToScreenX: number,
-        p_WorldToScreenY: number
+        p_WorldToScreenY: number,
+        p_Type?: number
     ) => {
         dispatch(removePing(p_Key));
+        dispatch(lastPing(p_Key));
         dispatch(addPing({
             id: p_Key,
             color: p_Color,
@@ -534,6 +538,7 @@ const App: React.FC<Props> = ({
                 y: p_WorldToScreenY,
                 z: 0,
             },
+            type: p_Type??null,
         }));
     }
 
@@ -692,6 +697,7 @@ const App: React.FC<Props> = ({
                     </div>
                 </>
             }
+            <PingSoundManager />
             <Chat />
         </>
     );

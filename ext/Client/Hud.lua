@@ -705,7 +705,7 @@ end
 	-- Create / Remove Marker
 -- =============================================
 
-function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_PositionZ, p_Color)
+function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_PositionZ, p_Color, p_PingType)
 	--[[local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(p_PositionX, p_PositionY, p_PositionZ))
 	if s_WorldToScreen == nil then
 		return
@@ -719,20 +719,20 @@ function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_Posit
 		Color = p_Color,
 		WorldToScreenX = 0,
 		WorldToScreenY = 0,
+		Type = p_PingType,
 	}
-
-	print("CreateMarker: " .. p_Key)
 
 	self.m_Markers[p_Key] = s_Marker
 	WebUI:ExecuteJS(
 		string.format(
-			'OnCreateMarker("%s", "%s", %s, %s, %s, %s)',
+			'OnCreateMarker("%s", "%s", %s, %s, %s, %s, %s)',
 			s_Marker.Key,
 			s_Marker.Color,
 			s_Marker.PositionX,
 			s_Marker.PositionZ,
 			s_Marker.WorldToScreenX,
-			s_Marker.WorldToScreenY
+			s_Marker.WorldToScreenY,
+			s_Marker.Type
 		)
 	)
 end

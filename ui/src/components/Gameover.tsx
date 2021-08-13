@@ -6,9 +6,10 @@ import { updateGameover } from "../store/game/Actions";
 import winner from "../assets/sounds/winner.mp3";
 
 import "./Gameover.scss";
+import { VolumeConst } from "../helpers/SoundHelper";
 
 const alertAudio = new Audio(winner);
-alertAudio.volume = 0.3;
+alertAudio.volume = VolumeConst;
 alertAudio.autoplay = false;
 alertAudio.loop = false;
 

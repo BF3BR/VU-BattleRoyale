@@ -11,19 +11,20 @@ import objective from "../../assets/sounds/objective.mp3";
 import countdown from "../../assets/sounds/countdown.mp3";
 
 import "./Alert.scss";
+import { VolumeConst } from "../../helpers/SoundHelper";
 
 const alertAudio = new Audio(alert);
-alertAudio.volume = 0.3;
+alertAudio.volume = VolumeConst;
 alertAudio.autoplay = false;
 alertAudio.loop = false;
 
 const objectiveAudio = new Audio(objective);
-objectiveAudio.volume = 0.3;
+objectiveAudio.volume = VolumeConst;
 objectiveAudio.autoplay = false;
 objectiveAudio.loop = false;
 
 const countdownAudio = new Audio(countdown);
-countdownAudio.volume = 0.3;
+countdownAudio.volume = VolumeConst;
 countdownAudio.autoplay = false;
 countdownAudio.loop = false;
 

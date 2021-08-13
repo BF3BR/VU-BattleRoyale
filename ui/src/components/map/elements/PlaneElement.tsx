@@ -4,7 +4,7 @@ import { RootState } from "../../../store/RootReducer";
 
 import * as PIXI from 'pixi.js';
 import { GlowFilter } from "@pixi/filter-glow";
-import { Graphics, Sprite } from '@inlet/react-pixi';
+import { Sprite } from '@inlet/react-pixi';
 
 import Vec3 from '../../../helpers/Vec3Helper';
 import { getMapPos } from './ElementHelpers';

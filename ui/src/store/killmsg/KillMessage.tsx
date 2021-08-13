@@ -7,16 +7,19 @@ import kill from "../../assets/sounds/kill.mp3";
 import downed from "../../assets/sounds/downed.mp3";
 
 import "./KillMessage.scss";
+import { VolumeConst } from "../../helpers/SoundHelper";
 
 const killAudio = new Audio(kill);
-killAudio.volume = 0.3;
+killAudio.volume = VolumeConst;
 killAudio.autoplay = false;
 killAudio.loop = false;
+killAudio.pause();
 
 const downAudio = new Audio(downed);
-downAudio.volume = 0.3;
+downAudio.volume = VolumeConst;
 downAudio.autoplay = false;
 downAudio.loop = false;
+downAudio.pause();
 
 const KillMessage: React.FC = () => {
     const killmsgFromReducer = useSelector(
@@ -28,7 +31,6 @@ const KillMessage: React.FC = () => {
     let interval: any = null;
     useEffect(() => {
         if (killmsgFromReducer.killed !== null) {
-            
             if (killmsgFromReducer.killed) {
                 killAudio.play();
             } else {

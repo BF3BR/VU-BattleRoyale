@@ -190,8 +190,8 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
 	local s_PingId = self:GetPingId(p_PlayerName, p_PingType)
 	m_Logger:Write(s_PingId)
 	self:SetPingPosition(s_PingId, p_Position)
-	Events:Dispatch("Compass:CreateMarker", tostring(p_PlayerName), Vec2(p_Position.x, p_Position.z), s_RgbaColor)
-	m_Hud:CreateMarker(tostring(p_PlayerName), p_Position.x, p_Position.y, p_Position.z, s_RgbaColor)
+	Events:Dispatch("Compass:CreateMarker", tostring(p_PlayerName), Vec2(p_Position.x, p_Position.z), s_RgbaColor, p_PingType)
+	m_Hud:CreateMarker(tostring(p_PlayerName), p_Position.x, p_Position.y, p_Position.z, s_RgbaColor, p_PingType)
 
 	local s_PingInfo = self.m_SquadPings[p_PlayerName]
 
