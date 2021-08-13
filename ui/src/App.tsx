@@ -647,7 +647,7 @@ const App: React.FC<Props> = ({
                                 radius: 250,
                             }));
                         }}>setRandomCircle</button>
-                        <button onClick={() => SetKilledMessage(false, 'TestUser', 3)}>SetKillMsg</button>
+                        <button onClick={() => SetKilledMessage(true, 'TestUser', 3)}>SetKillMsg</button>
                         <button onClick={() => dispatch(switchDeployScreen())}>setDeployScreen</button>
                         <button onClick={CreateRandomTeam}>CreateRandomTeam</button>
                         <button onClick={() => window.OnPlayerIsOnPlane(true)}>OnPlayerIsOnPlane true</button>
