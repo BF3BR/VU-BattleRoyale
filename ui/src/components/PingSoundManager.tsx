@@ -35,7 +35,7 @@ interface StateFromReducer {
 
 type Props = StateFromReducer;
 
-const SpectatorInfo: React.FC<Props> = ({ pingsTable, lastPing }) => {
+const PingSoundManager: React.FC<Props> = ({ pingsTable, lastPing }) => {
     
     let interval: any = null;
     useEffect(() => {
@@ -82,5 +82,5 @@ const mapStateToProps = (state: RootState) => {
 const mapDispatchToProps = (dispatch: any) => {
     return {};
 }
-export default connect(mapStateToProps, mapDispatchToProps)(SpectatorInfo);
+export default connect(mapStateToProps, mapDispatchToProps)(PingSoundManager);
 

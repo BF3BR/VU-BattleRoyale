@@ -1,27 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Oval } from 'svg-loaders-react';
 
 import loop from "../assets/vid/loop.webm";
-import loading from "../assets/sounds/DELETE_THIS_WHEN_WE_RELEASE.mp3";
 
 import "./LoadingScreen.scss";
 
-const loadingAudio = new Audio(loading);
-loadingAudio.volume = 0.2;
-loadingAudio.autoplay = false;
-loadingAudio.loop = false;
-
 const LoadingScreen: React.FC = () => {
-
-    useEffect(() => {
-        loadingAudio.play();
-
-        return () => {
-            loadingAudio.currentTime = 0.0;
-            loadingAudio.pause();
-        }
-    }, []);
-
     return (
         <div id="LoadingScreen">
             <div className="LoadingBox">

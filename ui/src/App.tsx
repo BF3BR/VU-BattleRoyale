@@ -80,10 +80,11 @@ import MenuScreen from "./components/MenuScreen";
 import Chat from "./components/chat/Chat";
 import InteractProgress from "./components/InteractProgress";
 import Rose from "./components/rose/Rose";
+import PingSoundManager from "./components/PingSoundManager";
+import LoadingSoundManager from "./components/LoadingSoundManager";
 
 /* Style */
 import './App.scss';
-import PingSoundManager from "./components/PingSoundManager";
 
 interface StateFromReducer {
     gameState: string;
@@ -697,6 +698,7 @@ const App: React.FC<Props> = ({
                     </div>
                 </>
             }
+            <LoadingSoundManager uiState={uiState} />
             <PingSoundManager />
             <Chat />
         </>
