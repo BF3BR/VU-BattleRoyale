@@ -5,11 +5,10 @@ import { RootState } from "../store/RootReducer";
 
 import ping from "../assets/sounds/ping.mp3";
 import pingEnemy from "../assets/sounds/ping_enemy.mp3";
-import { lastPing } from "../store/ping/Actions";
 import { VolumeConst } from "../helpers/SoundHelper";
 
 const pingAudio = new Audio(ping);
-pingAudio.volume = VolumeConst;
+pingAudio.volume = VolumeConst * .7;
 pingAudio.autoplay = false;
 pingAudio.loop = false;
 pingAudio.pause();
@@ -70,10 +69,7 @@ const SpectatorInfo: React.FC<Props> = ({ pingsTable, lastPing }) => {
         }
     }
 
-    return (
-        <> 
-        </>
-    );
+    return (<></>);
 };
 
 const mapStateToProps = (state: RootState) => {
