@@ -257,7 +257,12 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 			return
 		end
 
-		s_BrPlayer:Spawn(s_SpawnTrans)
+		s_BrPlayer:Spawn(LinearTransform(
+			Vec3(1.0, 0.0, 0.0), 
+			Vec3(0.0, 1.0, 0.0), 
+			Vec3(0.0, 0.0, 1.0),
+			s_SpawnTrans
+		))
 	else
 		NetEvents:SendTo(PlayerEvents.EnableSpectate, p_Player)
 	end

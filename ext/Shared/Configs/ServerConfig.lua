@@ -49,6 +49,8 @@ ServerConfig = {
 
 		DisableMapLoader = true,
 
+		DisableWhitelist = false,
+
 		Whitelist = {
 			"voteban_flash",
 			"Bree",
@@ -67,7 +69,9 @@ ServerConfig = {
 			"NoFaTe",
 			"3ti65",
 			"Imposter",
-			"Powback"
+			"Powback",
+			"milkman dan",
+			"P!NK_Lesley"
 		},
 	}
 }

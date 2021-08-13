@@ -32,56 +32,56 @@ return {
 	MapTopLeftPos = Vec3(667.28, 0, -290.44),
 	MapWidthHeight = 1250.0,
 	PlaneFlyHeight = 755.0,
-	BeforeFirstCircleDelay = 60.0,
+	BeforeFirstCircleDelay = 30.0,
 	SkyComponentDataGuid = Guid("9159BC49-8F6C-4422-BD1E-EA76D956DFA3"),
 	ConquestGameplayGuid = Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
-	CircleWallY = 100,
-	CircleWallHeightModifier = 200,
+	CircleWallY = 200,
+	CircleWallHeightModifier = 400,
 	PhasesCount = 9,
 	Phases = {
 		{
-			StartsAt = 120.0,
-			MoveDuration = 120.0,
+			StartsAt = 60.0,
+			MoveDuration = 60.0,
 			Damage = 0.4,
 			Ratio = 0.550
 		},{
-			StartsAt = 120.0,
-			MoveDuration = 90.0,
+			StartsAt = 60.0,
+			MoveDuration = 45.0,
 			Damage = 0.6,
 			Ratio = 0.700
 		},{
-			StartsAt = 90.0,
-			MoveDuration = 90.0,
+			StartsAt = 45.0,
+			MoveDuration = 45.0,
 			Damage = 0.8,
 			Ratio = 0.600
 		},{
-			StartsAt = 60.0,
-			MoveDuration = 60.0,
+			StartsAt = 30.0,
+			MoveDuration = 30.0,
 			Damage = 1.0,
 			Ratio = 0.600
 		},{
-			StartsAt = 60.0,
-			MoveDuration = 60.0,
+			StartsAt = 30.0,
+			MoveDuration = 30.0,
 			Damage = 3.0,
 			Ratio = 0.600
 		},{
 			StartsAt = 30.0,
-			MoveDuration = 60.0,
+			MoveDuration = 30.0,
 			Damage = 5.0,
 			Ratio = 0.500
 		},{
-			StartsAt = 30.0,
-			MoveDuration = 30.0,
+			StartsAt = 15.0,
+			MoveDuration = 15.0,
 			Damage = 7.0,
 			Ratio = 0.500
 		},{
-			StartsAt = 30.0,
-			MoveDuration = 30.0,
+			StartsAt = 15.0,
+			MoveDuration = 15.0,
 			Damage = 9.0,
 			Ratio = 0.500
 		},{
-			StartsAt = 30.0,
-			MoveDuration = 30.0,
+			StartsAt = 15.0,
+			MoveDuration = 15.0,
 			Damage = 11.0,
 			Ratio = 0.001
 		}
@@ -97,16 +97,16 @@ return {
 		CumulativeDistribution = { 0.10138120512771834, 0.7874338010033433, 0.9719027867851032, 1 }
 	},
 	WarmupSpawnPoints = {
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(522.175720, 155.705505, -822.253479)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(504.892242, 155.705521, -818.481201)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(489.687561, 155.705505, -821.180725)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(508.602478, 155.002380, -805.288818)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(532.126038, 155.705505, -812.327698)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(549.835144, 155.705505, -814.410950)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(554.443542, 155.705521, -827.446960)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(538.788635, 155.705505, -826.814697)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(524.122437, 155.705521, -836.830017)),
-		LinearTransform(Vec3(1.0, 0.0, 0.0), Vec3(0.0, 1.0, 0.0), Vec3(0.0, 0.0, 1.0), Vec3(506.119202, 155.705490, -834.631287))
+		Vec3(522.175720, 155.705505, -822.253479),
+		Vec3(504.892242, 155.705521, -818.481201),
+		Vec3(489.687561, 155.705505, -821.180725),
+		Vec3(508.602478, 155.002380, -805.288818),
+		Vec3(532.126038, 155.705505, -812.327698),
+		Vec3(549.835144, 155.705505, -814.410950),
+		Vec3(554.443542, 155.705521, -827.446960),
+		Vec3(538.788635, 155.705505, -826.814697),
+		Vec3(524.122437, 155.705521, -836.830017),
+		Vec3(506.119202, 155.705490, -834.631287)
 	},
 	LootSpawnPoints = require "__shared/Maps/XP5_003/XP5_003_LootPresets",
 	MapPreset = require "__shared/Maps/XP5_003/XP5_003_MapPreset"
