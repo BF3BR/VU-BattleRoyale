@@ -136,6 +136,7 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 			self.m_CurrentTypeIndex = PingType.Default
 		end
 
+		InputManager:SetCursorPosition(WebUI:GetScreenWidth() / 2, WebUI:GetScreenHeight() / 2)
 		WebUI:ResetMouse()
 		m_Hud:HideCommoRose()
 		self.m_IsCommoRoseOpened = false
