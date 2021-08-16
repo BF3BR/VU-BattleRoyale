@@ -234,41 +234,41 @@ function Match:GetRandomGunshipPath()
 
 	local s_Return = nil
 
-	local s_Side = MathUtils:GetRandom(0, 1)
+	local s_Side = math.random(1, 2)
 
-	if s_Side == 0 then
+	if s_Side == 1 then
 		-- Left to right
 		s_Return = {
 			StartPos = Vec3(
 				MapsConfig[s_LevelName]["MapTopLeftPos"].x,
 				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - MathUtils:GetRandom(0, MapsConfig[s_LevelName]["MapWidthHeight"])
+				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
 			),
 			EndPos = Vec3(
 				MapsConfig[s_LevelName]["MapTopLeftPos"].x - MapsConfig[s_LevelName]["MapWidthHeight"],
 				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - MathUtils:GetRandom(0, MapsConfig[s_LevelName]["MapWidthHeight"])
+				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
 			)
 		}
 	else
 		-- Top to bottom
 		s_Return = {
 			StartPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - MathUtils:GetRandom(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
+				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
 				MapsConfig[s_LevelName]["PlaneFlyHeight"],
 				MapsConfig[s_LevelName]["MapTopLeftPos"].z
 			),
 			EndPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - MathUtils:GetRandom(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
+				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
 				MapsConfig[s_LevelName]["PlaneFlyHeight"],
 				MapsConfig[s_LevelName]["MapTopLeftPos"].z - MapsConfig[s_LevelName]["MapWidthHeight"]
 			)
 		}
 	end
 
-	local s_Invert = MathUtils:GetRandom(0, 1)
+	local s_Invert = math.random(1, 2)
 
-	if s_Invert == 1 then
+	if s_Invert == 2 then
 		return {
 			StartPos = s_Return.EndPos,
 			EndPos = s_Return.StartPos
