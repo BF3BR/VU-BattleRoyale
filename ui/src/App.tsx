@@ -82,6 +82,7 @@ import InteractProgress from "./components/InteractProgress";
 import Rose from "./components/rose/Rose";
 import PingSoundManager from "./components/PingSoundManager";
 import LoadingSoundManager from "./components/LoadingSoundManager";
+import ArmorSoundManager from "./components/ArmorSoundManager";
 
 /* Style */
 import './App.scss';
@@ -700,6 +701,7 @@ const App: React.FC<Props> = ({
             }
             <LoadingSoundManager uiState={uiState} />
             <PingSoundManager />
+            <ArmorSoundManager />
             <Chat />
         </>
     );

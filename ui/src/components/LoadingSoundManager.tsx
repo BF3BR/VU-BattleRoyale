@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import loading from "../assets/sounds/DELETE_THIS_WHEN_WE_RELEASE.mp3";
+import loading from "../assets/sounds/loading.mp3";
 
 const loadingAudio = new Audio(loading);
 loadingAudio.volume = 0.2;
 loadingAudio.autoplay = false;
-loadingAudio.loop = false;
+loadingAudio.loop = true;
 
 type Props = {
     uiState: string;
@@ -51,7 +51,7 @@ const LoadingSoundManager: React.FC<Props> = ({ uiState }) => {
                 fadeInterval = null;
                 return;
             }
-        }, 15);
+        }, 5);
     }
 
     return (<></>);

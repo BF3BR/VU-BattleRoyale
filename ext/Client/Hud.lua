@@ -242,7 +242,7 @@ function VuBattleRoyaleHud:OnPlayerKilled(p_PlayerName)
 end
 
 function VuBattleRoyaleHud:OnPlayerBrokeShield(p_PlayerName)
-	-- TODO: add a sound or UI
+	WebUI:ExecuteJS("OnShieldBreak();")
 end
 
 -- =============================================
