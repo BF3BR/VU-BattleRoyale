@@ -241,6 +241,10 @@ function VuBattleRoyaleHud:OnPlayerKilled(p_PlayerName)
 	end
 end
 
+function VuBattleRoyaleHud:OnPlayerBrokeShield(p_PlayerName)
+	-- TODO: add a sound or UI
+end
+
 -- =============================================
 	-- GameState Events
 -- =============================================

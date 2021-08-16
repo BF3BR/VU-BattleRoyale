@@ -75,8 +75,18 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 
 		-- apply damage to the armor
 		if p_Giver ~= nil and not self:Equals(p_Giver) then
-			p_Damage = self.m_Armor:ApplyDamage(p_Damage)
-			self:SetArmor(self.m_Armor)
+			local s_Damage = self.m_Armor:ApplyDamage(p_Damage)
+
+			-- check if we really did damage to the armor
+			if s_Damage ~= p_Damage then
+				p_Damage = s_Damage
+				self:SetArmor(self.m_Armor)
+
+				-- check if the player still has a shield or if the giver broke it
+				if self.m_Armor:GetPercentage() == 0 then
+					NetEvents:SendToLocal("Player:BrokeShield", p_Giver.m_Player, self:GetName())
+				end
+			end
 		end
 
 		if p_Damage >= s_Health then

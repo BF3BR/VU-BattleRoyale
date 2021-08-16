@@ -72,6 +72,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 	NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
 	NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
 	NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill)
+	NetEvents:Subscribe("Player:BrokeShield", self, self.OnPlayerBrokeShield)
 
 	NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
 	NetEvents:Subscribe(PingEvents.RemoveServerPing, self, self.OnPingRemoveNotify)
@@ -280,6 +281,10 @@ function VuBattleRoyaleClient:OnDamageConfirmPlayerKillOrDown(p_VictimName, p_Is
 	end
 
 	m_Hud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
+end
+
+function VuBattleRoyaleClient:OnPlayerBrokeShield(p_PlayerName)
+	m_Hud:OnPlayerBrokeShield(p_PlayerName)
 end
 
 function VuBattleRoyaleClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
