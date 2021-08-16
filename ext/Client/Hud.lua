@@ -266,9 +266,7 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 			["key"] = "F10",
 		}))
 		self.m_HudOnSetUIState:Update(UiStates.Game)
-	end
-
-	if self.m_GameState == GameStates.WarmupToPlane then
+	elseif self.m_GameState == GameStates.WarmupToPlane then
 		self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
 			["msg"] = nil,
 			["key"] = nil,
@@ -276,7 +274,7 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 
 		m_DeployScreen:CloseDeployScreen()
 		self.m_HudOnSetUIState:Update(UiStates.Loading)
-	elseif self.m_GameState == GameStates.Plane then
+	else
 		self.m_HudOnSetUIState:Update(UiStates.Game)
 	end
 
@@ -501,6 +499,7 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 		return
 	end
 
+	m_Logger:Write("OnLevelFinalized")
 	self.m_IsLevelLoaded = true
 	m_HudUtils:ExitSoundState()
 	m_HudUtils:HUDEnterUIGraph()
