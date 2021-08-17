@@ -236,8 +236,19 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			return
 		elseif p_PlayerId == s_SpectatedPlayer.id then
 			m_Logger:Write("SpectatedPlayer died")
+			local s_NextPlayer = nil
 
-			if p_InflictorId ~= nil then
+			-- this check is needed otherwise it would repeat the function for all players
+			if s_SpectatedPlayer.squadId ~= SquadId.SquadNone then
+				-- get the next squad mate
+				s_NextPlayer = self:GetNextPlayer(true)
+			end
+
+			-- if we find a squadmate we want to spectate him
+			if s_NextPlayer ~= nil then
+				self:SpectatePlayer(s_NextPlayer)
+			-- otherwise spectate the inflictor if there is one
+			elseif p_InflictorId ~= nil then
 				local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
 
 				if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
@@ -683,7 +694,7 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 
 	if p_OnlySquadMates then
 		if s_LocalPlayer.squadId == SquadId.SquadNone then
-			return self:GetNextPlayer(false)
+			return self:GetPreviousPlayer(false)
 		end
 
 		s_Players = PlayerManager:GetPlayersBySquad(s_LocalPlayer.teamId, s_LocalPlayer.squadId)
