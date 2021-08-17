@@ -6,7 +6,8 @@
     "HasVeniceEXT": true,
     "HasWebUI": true,
     "Dependencies": {
-        "veniceext": "^1.0.8"
+        "veniceext": "^1.0.8",
+        "VEManager": "^0.2.0-rc.1"
     },
     "RequiredXPacks": [5]
 }

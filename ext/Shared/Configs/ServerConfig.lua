@@ -71,7 +71,8 @@ ServerConfig = {
 			"Imposter",
 			"Powback",
 			"milkman dan",
-			"P!NK_Lesley"
+			"P!NK_Lesley",
+			"P!NK_Illustris",
 		},
 	}
 }

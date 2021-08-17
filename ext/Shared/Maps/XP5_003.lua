@@ -109,5 +109,6 @@ return {
 		Vec3(506.119202, 155.705490, -834.631287)
 	},
 	LootSpawnPoints = require "__shared/Maps/XP5_003/XP5_003_LootPresets",
-	MapPreset = require "__shared/Maps/XP5_003/XP5_003_MapPreset"
+	MapPreset = require "__shared/Maps/XP5_003/XP5_003_MapPreset",
+	Injected_sublevels = require "__shared/Maps/XP5_003/XP5_003_Injected_sublevels"
 }

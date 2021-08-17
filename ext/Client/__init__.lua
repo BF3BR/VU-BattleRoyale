@@ -24,6 +24,7 @@ local m_AntiCheat = require "AntiCheat"
 local m_Settings = require "Settings"
 local m_TeamManager = require "BRTeamManager"
 local m_OOCFires = require "Visuals/OOCFires"
+local m_OOCVision = require "Visuals/OOCVision"
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
@@ -55,6 +56,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 
 	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
 	Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
+	Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
 
 	Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
 	Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
@@ -157,6 +159,10 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_Chat:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 	m_WindowsCircleSpawner:OnLevelDestroy()
+end
+
+function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 end
 
 -- =============================================
