@@ -11,7 +11,7 @@ if SharedUtils:GetLevelName() ~= 'Levels/XP5_003/XP5_003' then
     -- Airturbines + some props	---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     --print('Injecting PropsLarge reference data...')
-	print('PropsLarge spawned')
+	--print('PropsLarge spawned')
     local spLevelPropsLargeReferenceData = WorldPartReferenceObjectData(ResourceManager:FindInstanceByGuid(Guid('69AFE35D-259F-11E1-98E7-C42BEF8FFB67'), Guid('080E0293-4B9D-479C-A663-912BDC6CB24D'))) -- To change
     mpLevelPropsLargeReferenceData = WorldPartReferenceObjectData(spLevelPropsLargeReferenceData:Clone(Guid('A0000000-0000-0000-0000-000000000000')))
     mpLevelPropsLargeReferenceData:MakeWritable()
@@ -31,7 +31,7 @@ Events:Subscribe('Level:RegisterEntityResources', function(levelData)
     end
 
 
-    print('Adding new registry containing relevant SubWorldReferenceData...')
+    --print('Adding new registry containing relevant SubWorldReferenceData...')
     local newRegistry = RegistryContainer()
     newRegistry.referenceObjectRegistry:add(mpLevelForestReferenceData) -- Forest
 
