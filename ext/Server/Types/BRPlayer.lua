@@ -193,48 +193,15 @@ end
 	-- Player Spawn Functions
 -- =============================================
 
--- Spawns the player
--- @param p_Trans - where to spawn the player
 function BRPlayer:Spawn(p_Trans)
 	-- check if alive
-	if self:IsAlive() then
-		return
-	end
-
-	local s_SoldierAsset = nil
-	local s_Appearance = nil
-	local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
-	local s_Player = self:GetPlayer()
-
-	-- TODO: @Janssent's appearance code gonna land here probably
-	if s_Player.teamId == TeamId.Team1 then
-		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
-		s_Appearance = ResourceManager:SearchForDataContainer(
-						"Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
-	else
-		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
-		s_Appearance = ResourceManager:SearchForDataContainer(
-						"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
-	end
-
-	if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
-		return
-	end
-
-	s_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
-
-	local s_SpawnedSoldier = s_Player:CreateSoldier(s_SoldierBlueprint, p_Trans)
-
-	s_Player:SpawnSoldierAt(s_SpawnedSoldier, p_Trans, CharacterPoseType.CharacterPoseType_Stand)
-	s_Player:AttachSoldier(s_SpawnedSoldier)
-
-	s_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
-	s_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
-end
-
-function BRPlayer:GunshipSpawn(p_Trans)
-	-- check if alive
 	if self.m_Player.alive then
+		m_Logger:Write("Spawn: Player " .. self.m_Player.name .. " is already alive.")
+		return
+	end
+
+	if p_Trans == nil then
+		m_Logger:Write("Spawn transform is invalid.")
 		return
 	end
 
@@ -274,16 +241,20 @@ function BRPlayer:GunshipSpawn(p_Trans)
 			s_CharacterSpawnReferenceObjectData:MakeWritable()
 			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Trans
 			s_Entity:FireEvent(s_Event)
+			m_Logger:Write("Spawning player " .. self.m_Player.name)
 			break
 		end
 
 		s_Entity = s_EntityIterator:Next()
 	end
 
-	g_Timers:Timeout(0.01, self.m_Player, function(p_Player)
-		p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
-		p_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
-		p_Player.soldier:SetTransform(p_Trans)
+	g_Timers:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
+		if p_Player.soldier ~= nil then
+			p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+			p_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
+			p_Player.soldier:SetTransform(p_Trans)
+			p_Timer:Destroy()
+		end
 	end)
 end
 

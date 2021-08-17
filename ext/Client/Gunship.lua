@@ -43,6 +43,7 @@ end
 -- =============================================
 
 function Gunship:OnLevelDestroy()
+	self.m_IsInFreeFall = false
 	m_GunshipCamera:OnLevelDestroy()
 end
 
@@ -95,7 +96,11 @@ function Gunship:OnClientUpdateInput()
 		return
 	end
 
-	if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) then
+	if self.m_IsInFreeFall then
+		return
+	end
+
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_E) then
 		NetEvents:SendLocal(GunshipEvents.JumpOut)
 		self.m_IsInFreeFall = true
 		m_GunshipCamera:Disable()

@@ -92,7 +92,7 @@ function Gunship:OnJumpOutOfGunship(p_Player)
 		return
 	end
 
-	s_BrPlayer:GunshipSpawn(s_Transform)
+	s_BrPlayer:Spawn(s_Transform)
 	NetEvents:SendToLocal(GunshipEvents.JumpOut, p_Player)
 end
 
