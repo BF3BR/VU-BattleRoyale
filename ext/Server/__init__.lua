@@ -541,7 +541,7 @@ function VuBattleRoyaleServer:SetupRconVariables()
 		["vars.soldierHealth"] = "100",
 		["vars.regenerateHealth"] = "false",
 		["vars.onlySquadLeaderSpawn"] = "false",
-		["vars.3dSpotting"] = "true",
+		["vars.3dSpotting"] = "false",
 		["vars.miniMap"] = "false",
 		["vars.autoBalance"] = "false",
 		["vars.teamKillCountForKick"] = "0",

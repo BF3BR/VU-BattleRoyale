@@ -139,21 +139,27 @@ function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)
 				s_Icon.states[1].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
 
 				if s_Icon.states[2] ~= nil then
-					-- replace kit icons for squad (colorblind)
+					-- replace kit icons for squad (colorblind) + top margin
 					s_Icon.states[2].textureInfos[1].minUv = Vec2(0.00871875, 0.5936796875)
 					s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.0625, 0.6123046875)
 				end
 			end
 
+			-- add top margin to icons
 			if s_Icon.iconType == UIHudIcon.UIHudIcon_Player then
-				-- add top margin to icons
+				-- teammate
 				s_Icon.states[1].textureInfos[1].minUv = Vec2(0.4579375, 0.8905546875)
 				s_Icon.states[1].textureInfos[1].maxUv = Vec2(0.51171875, 0.9091796875)
-				s_Icon.states[2].textureInfos[1].minUv = Vec2(0.00871875, 0.74309375)
-				s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.0625, 0.76171875)
+				-- enemy
+				-- s_Icon.states[2].textureInfos[1].minUv = Vec2(0.00871875, 0.74309375)
+				-- s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.0625, 0.76171875)
+				-- removing the enemy nametags completely (only works for no color blind mode)
+				s_Icon.states[2].textureInfos[1].minUv = Vec2(0.0, 0.0)
+				s_Icon.states[2].textureInfos[1].maxUv = Vec2(0.0, 0.0)
+				-- squad
 				s_Icon.states[3].textureInfos[1].minUv = Vec2(0.50090625, 0.6659453125)
 				s_Icon.states[3].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
-				-- add top margin to icons (colorblind)
+				-- colorblind
 				s_Icon.states[4].textureInfos[1].minUv = Vec2(0.00871875, 0.5936796875)
 				s_Icon.states[4].textureInfos[1].maxUv = Vec2(0.0625, 0.6123046875)
 			end

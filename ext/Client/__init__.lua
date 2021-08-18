@@ -124,6 +124,7 @@ function VuBattleRoyaleClient:RegisterHooks()
 	Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage)
 	Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage)
 	Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate)
+	Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag)
 end
 
 -- =============================================
@@ -509,6 +510,10 @@ end
 
 function VuBattleRoyaleClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
 	m_Gunship:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
+end
+
+function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_HookCtx)
+	p_HookCtx:Return()
 end
 
 -- =============================================
