@@ -68,6 +68,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange)
 
 	Events:Subscribe('Soldier:HealthAction', self, self.OnSoldierHealthAction)
+	Events:Subscribe('Soldier:Spawn', self, self.OnSoldierSpawn)
 
 	Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate)
 
@@ -238,6 +239,17 @@ end
 
 function VuBattleRoyaleClient:OnSoldierHealthAction(p_Soldier, p_Action)
 	m_Hud:OnSoldierHealthAction(p_Soldier, p_Action)
+end
+
+function VuBattleRoyaleClient:OnSoldierSpawn(p_Soldier)
+	if p_Soldier.player == nil then
+		-- it is probably always this case
+		g_Timers:Timeout(1.0, self, function()
+			self:FixParachuteSound(p_Soldier)
+		end)
+	else
+		self:FixParachuteSound(p_Soldier)
+	end
 end
 
 -- =============================================
@@ -575,6 +587,40 @@ function VuBattleRoyaleClient:OnHotReload()
 	g_Timers:Timeout(1, function()
 		m_HudUtils:ShowCrosshair(false)
 		m_HudUtils:OnEnableMouse()
+	end)
+end
+
+function VuBattleRoyaleClient:FixParachuteSound(p_Soldier)
+	-- Fix for: Sometimes when you get close to a player you haven't been near, you hear the parachute open sound #245
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil then
+		return
+	end
+
+	if s_LocalPlayer.soldier ~= nil and s_LocalPlayer == p_Soldier.player then
+		return
+	end
+
+	-- Get the parachute and freefall SoundEntity for all soldiers except the local soldier
+	local s_SoundEntity = p_Soldier.bus:GetEntity(ResourceManager:FindInstanceByGuid(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("63CDCA57-2E2C-45FF-A465-CF3EE42E5EE1")))
+
+	-- Should never happen.
+	if s_SoundEntity == nil then
+		m_Logger:Write("Error - SoundEntity not found.")
+		return
+	end
+
+	-- Register an event callback and block the ParachuteBegin event
+	-- also the ParachuteEnd event, because it could be also this event that causes the issue
+	s_SoundEntity:RegisterEventCallback(function(p_Entity, p_EntityEvent)
+		if p_EntityEvent.eventId == MathUtils:FNVHash("ParachuteBegin") then
+			m_Logger:Write("ParachuteBegin sound blocked.")
+			return false
+		elseif p_EntityEvent.eventId == MathUtils:FNVHash("ParachuteEnd") then
+			m_Logger:Write("ParachuteEnd sound blocked.")
+			return false
+		end
 	end)
 end
 
