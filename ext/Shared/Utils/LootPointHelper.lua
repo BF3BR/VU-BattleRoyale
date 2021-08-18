@@ -28,6 +28,7 @@ function LootPointHelper:OnLevelLoaded()
 	end
 
 	self.m_Points = MapsConfig[s_LevelName]["LootSpawnPoints"]
+	self.m_Center = ClientUtils:GetWindowSize() / 2
 end
 
 function LootPointHelper:OnUIDrawHud()
