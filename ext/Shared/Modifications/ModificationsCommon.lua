@@ -15,6 +15,7 @@ local m_TempMapPatches = require "__shared/Modifications/TempMapPatches"
 local m_FireEffectsModifier = require "__shared/Modifications/FX/FireEffectsModifier"
 local m_RemoveVanillaLoadingScreen = require "__shared/Modifications/LoadingScreen/RemoveVanillaLoadingScreen"
 local m_RemoveAutotriggerVO = require "__shared/Modifications/Sound/RemoveAutoTriggerVO"
+local m_TimeOutFix = require "__shared/Modifications/TimeOutFix"
 
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 
@@ -36,6 +37,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_FireEffectsModifier:RegisterCallbacks()
 	m_ManDownModifier:RegisterCallbacks()
 	m_RemoveAutotriggerVO:RegisterCallbacks()
+	m_TimeOutFix:RegisterCallbacks()
 end
 
 function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
