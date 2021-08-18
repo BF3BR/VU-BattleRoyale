@@ -40,7 +40,7 @@ function LootPointHelper:OnUIDrawHud()
 	local s_Position = s_LocalPlayer.soldier.transform.trans
 
 	for i, l_Point in pairs(self.m_Points) do
-		if i ~= self.m_ActiveIndex and s_LocalPlayer < 50 then
+		if i ~= self.m_ActiveIndex and s_Position:Distance(l_Point.trans) < 50 then
 			DebugRenderer:DrawSphere(l_Point.trans, 0.3, Vec4(1, 1, 1, 0.5), true, false)
 		end
 	end
