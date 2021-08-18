@@ -454,6 +454,21 @@ function SpectatorClient:SpectatePlayer(p_Player)
 
 	-- Dispatch a local event so phasemanager can toggle the OOC visuals
 	SpectatorManager:SpectatePlayer(p_Player, false)
+
+	-- Add a FadeOut + FadeIn event
+	local s_EntityIterator = EntityManager:GetIterator("ClientFadeEntity")
+	local s_Entity = s_EntityIterator:Next()
+
+	while s_Entity do
+		s_Entity = Entity(s_Entity)
+
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("B3E83182-483B-4E97-BC90-AB7E2813552A") then
+			s_Entity:FireEvent("FadeOut")
+			return
+		end
+
+		s_Entity = s_EntityIterator:Next()
+	end
 end
 
 function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_InflictorId)
