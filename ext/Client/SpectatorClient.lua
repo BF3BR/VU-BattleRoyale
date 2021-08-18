@@ -50,7 +50,7 @@ function SpectatorClient:OnLevelDestroy()
 	self.m_SpectatingPlayerYaw = 0.0
 end
 
-function SpectatorClient:OnUpdatePassPostFrame(p_DeltaTime)
+function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	if not SpectatorManager:GetSpectating() then
 		return
 	end
@@ -236,8 +236,19 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			return
 		elseif p_PlayerId == s_SpectatedPlayer.id then
 			m_Logger:Write("SpectatedPlayer died")
+			local s_NextPlayer = nil
 
-			if p_InflictorId ~= nil then
+			-- this check is needed otherwise it would repeat the function for all players
+			if s_SpectatedPlayer.squadId ~= SquadId.SquadNone then
+				-- get the next squad mate
+				s_NextPlayer = self:GetNextPlayer(true)
+			end
+
+			-- if we find a squadmate we want to spectate him
+			if s_NextPlayer ~= nil then
+				self:SpectatePlayer(s_NextPlayer)
+			-- otherwise spectate the inflictor if there is one
+			elseif p_InflictorId ~= nil then
 				local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
 
 				if s_Inflictor ~= nil and p_InflictorId ~= s_Player.id then
@@ -443,6 +454,21 @@ function SpectatorClient:SpectatePlayer(p_Player)
 
 	-- Dispatch a local event so phasemanager can toggle the OOC visuals
 	SpectatorManager:SpectatePlayer(p_Player, false)
+
+	-- Add a FadeOut + FadeIn event
+	local s_EntityIterator = EntityManager:GetIterator("ClientFadeEntity")
+	local s_Entity = s_EntityIterator:Next()
+
+	while s_Entity do
+		s_Entity = Entity(s_Entity)
+
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("B3E83182-483B-4E97-BC90-AB7E2813552A") then
+			s_Entity:FireEvent("FadeOut")
+			return
+		end
+
+		s_Entity = s_EntityIterator:Next()
+	end
 end
 
 function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_InflictorId)
@@ -683,7 +709,7 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 
 	if p_OnlySquadMates then
 		if s_LocalPlayer.squadId == SquadId.SquadNone then
-			return self:GetNextPlayer(false)
+			return self:GetPreviousPlayer(false)
 		end
 
 		s_Players = PlayerManager:GetPlayersBySquad(s_LocalPlayer.teamId, s_LocalPlayer.squadId)

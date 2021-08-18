@@ -32,6 +32,51 @@ function Chat:OnEngineUpdate(p_DeltaTime)
 end
 
 -- =============================================
+-- NetEvents
+-- =============================================
+
+function Chat:OnChatMessageSquadReceive(p_PlayerName, p_Message)
+	local s_OtherPlayer = PlayerManager:GetPlayerByName(p_PlayerName)
+
+	if s_OtherPlayer == nil then
+		return
+	end
+
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil then
+		return
+	end
+
+	local s_PlayerRelation = "squadMate"
+
+	if s_OtherPlayer == s_LocalPlayer then
+		s_PlayerRelation = "localPlayer"
+	end
+
+	local s_Table = {author = p_PlayerName, content = p_Message, target = "squad", playerRelation = s_PlayerRelation}
+	WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
+end
+
+function Chat:OnChatMessageAllReceive(p_PlayerName, p_Message)
+	local s_OtherPlayer = PlayerManager:GetPlayerByName(p_PlayerName)
+
+	if s_OtherPlayer == nil then
+		return
+	end
+
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil then
+		return
+	end
+
+	local s_PlayerRelation = self:GetPlayerRelation(s_OtherPlayer, s_LocalPlayer)
+	local s_Table = {author = s_OtherPlayer.name, content = p_Message, target = "all", playerRelation = s_PlayerRelation}
+	WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
+end
+
+-- =============================================
 -- Hooks
 -- =============================================
 
@@ -65,6 +110,7 @@ function Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 			p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 			return
 		end
+
 		WebUI:ExecuteJS("OnChangeType()")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
@@ -76,52 +122,16 @@ function Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId,
 		return
 	end
 
-	-- Get the player sending the message, and our local player.
-	local s_OtherPlayer = PlayerManager:GetPlayerById(p_PlayerId)
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-	local s_Target
-	local s_Table = {}
-	local s_PlayerRelation = "none"
-	local s_TargetName = nil
-
 	-- Region AdminMessage
 	if p_Channel == ChatChannelType.CctAdmin then
-		local s_Author = ""
-		s_Target = "admin"
 		-- This is a workaround because many RCON tools prepend
 		-- "Admin: " to admin messages.
 		local s_String = p_Message:gsub("^Admin: ", '')
-		s_Table = {author = s_Author, content = s_String, target = s_Target, playerRelation = s_PlayerRelation, targetName = s_TargetName}
+
+		local s_Table = {author = "Admin", content = s_String, target = "admin", playerRelation = "none"}
 		WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
-		goto continue
 	end
 
-	-- Players not found; cancel.
-	if s_OtherPlayer == nil or s_LocalPlayer == nil then
-		goto continue
-	end
-
-	-- Region target: all, squad
-	if p_Channel == ChatChannelType.CctSayAll then
-		s_Target = "all"
-	-- Display team message.
-	elseif p_Channel == ChatChannelType.CctTeam then
-		s_Target = "squad"
-	-- Display squad message.
-	elseif p_Channel == ChatChannelType.CctSquad then
-		s_Target = "squad"
-	else
-		goto continue
-	end
-
-	s_PlayerRelation = self:GetPlayerRelation(s_OtherPlayer, s_LocalPlayer)
-	s_Table = {author = s_OtherPlayer.name, content = p_Message, target = s_Target, playerRelation = s_PlayerRelation}
-	WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
-
-	::continue::
-
-	-- A new chat message is being created;
-	-- prevent the game from rendering it.
 	p_HookCtx:Return()
 end
 
@@ -151,26 +161,17 @@ function Chat:OnWebUIOutgoingChatMessage(p_JsonData)
 		return
 	end
 
-	-- Get the local Player.
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-
-	-- We can't send a message if we don't have an active player.
-	if s_LocalPlayer == nil then
-		return
-	end
-
 	-- Dispatch message based on the specified target.
 	if s_Target == 'all' and ServerConfig.Debug.EnableAllChat then
-		ChatManager:SendMessage(s_Message)
+		NetEvents:SendLocal("ChatMessage:AllSend", s_Message)
 		return
 	end
 
-	ChatManager:SendMessage(s_Message, s_LocalPlayer.teamId, s_LocalPlayer.squadId)
+	NetEvents:SendLocal("ChatMessage:SquadSend", s_Message)
 end
 
 function Chat:OnWebUISetCursor()
-	local s_WindowSize = ClientUtils:GetWindowSize()
-	InputManager:SetCursorPosition(s_WindowSize.x / 2, s_WindowSize.y / 2)
+	InputManager:SetCursorPosition(WebUI:GetScreenWidth() / 2, WebUI:GetScreenHeight() / 2)
 	WebUI:ResetKeyboard()
 	g_Timers:Timeout(0.035, function()
 		WebUI:ResetMouse()

@@ -32,6 +32,24 @@ function BRTeamManager:OnGameStateChanged(p_GameState)
 	end
 end
 
+function BRTeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
+	-- First we want to move all old spectated players from Team3 to Team2
+	local s_Team3Players = PlayerManager:GetPlayersByTeam(TeamId.Team3)
+
+	for _, l_Player in pairs(s_Team3Players) do
+		self:SetTeamId(l_Player, TeamId.Team2)
+	end
+
+	-- now we move the new spectated team to Team3
+	for _, l_PlayerName in pairs(p_PlayerNames) do
+		local s_Player = PlayerManager:GetPlayerByName(l_PlayerName)
+
+		if s_Player ~= nil then
+			self:SetTeamId(s_Player, TeamId.Team3)
+		end
+	end
+end
+
 -- =============================================
 -- Functions
 -- =============================================

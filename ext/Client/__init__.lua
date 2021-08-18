@@ -68,6 +68,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange)
 
 	Events:Subscribe('Soldier:HealthAction', self, self.OnSoldierHealthAction)
+	Events:Subscribe('Soldier:Spawn', self, self.OnSoldierSpawn)
 
 	Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate)
 
@@ -88,6 +89,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate)
 	Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove)
 
+	Events:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers)
+
 	NetEvents:Subscribe(ManDownLootEvents.UpdateLootPosition, self, self.OnUpdateLootPosition)
 	NetEvents:Subscribe(ManDownLootEvents.OnInteractionFinished, self, self.OnLootInteractionFinished)
 
@@ -99,6 +102,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 	NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate)
 	NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
 	NetEvents:Subscribe("UpdateSpectatorCount", self, self.OnUpdateSpectatorCount)
+	NetEvents:Subscribe("ChatMessage:SquadReceive", self, self.OnChatMessageSquadReceive)
+	NetEvents:Subscribe("ChatMessage:AllReceive", self, self.OnChatMessageAllReceive)
 end
 
 function VuBattleRoyaleClient:RegisterWebUIEvents()
@@ -124,6 +129,7 @@ function VuBattleRoyaleClient:RegisterHooks()
 	Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage)
 	Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage)
 	Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate)
+	Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag)
 end
 
 -- =============================================
@@ -171,6 +177,7 @@ end
 
 function VuBattleRoyaleClient:OnEngineUpdate(p_DeltaTime)
 	m_Hud:OnEngineUpdate(p_DeltaTime)
+	m_SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	m_Chat:OnEngineUpdate(p_DeltaTime)
 	m_AntiCheat:OnEngineUpdate(p_DeltaTime)
 end
@@ -184,7 +191,6 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_Ping:OnUIDrawHud(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PostFrame then
 		m_Gunship:OnUpdatePassPostFrame(p_DeltaTime)
-		m_SpectatorClient:OnUpdatePassPostFrame(p_DeltaTime)
 	end
 end
 
@@ -233,6 +239,21 @@ end
 
 function VuBattleRoyaleClient:OnSoldierHealthAction(p_Soldier, p_Action)
 	m_Hud:OnSoldierHealthAction(p_Soldier, p_Action)
+end
+
+function VuBattleRoyaleClient:OnSoldierSpawn(p_Soldier)
+	if self.m_GameState < GameStates.Plane then
+		return
+	end
+
+	if p_Soldier.player == nil then
+		-- it is probably always this case
+		g_Timers:Timeout(1.0, self, function()
+			self:FixParachuteSound(p_Soldier)
+		end)
+	else
+		self:FixParachuteSound(p_Soldier)
+	end
 end
 
 -- =============================================
@@ -346,6 +367,14 @@ end
 	-- ManDownLoot Events
 -- =============================================
 
+function VuBattleRoyaleClient:OnSpectatedPlayerTeamMembers(p_PlayerNames)
+	m_TeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
+end
+
+-- =============================================
+	-- ManDownLoot Events
+-- =============================================
+
 function VuBattleRoyaleClient:OnUpdateLootPosition(p_IndexInBlueprint, p_Transform)
 	m_ClientManDownLoot:OnUpdateLootPosition(p_IndexInBlueprint, p_Transform)
 end
@@ -402,6 +431,14 @@ end
 
 function VuBattleRoyaleClient:OnUpdateSpectatorCount(p_SpectatorCount)
 	m_SpectatorClient:OnUpdateSpectatorCount(p_SpectatorCount)
+end
+
+function VuBattleRoyaleClient:OnChatMessageSquadReceive(p_PlayerName, p_Message)
+	m_Chat:OnChatMessageSquadReceive(p_PlayerName, p_Message)
+end
+
+function VuBattleRoyaleClient:OnChatMessageAllReceive(p_PlayerName, p_Message)
+	m_Chat:OnChatMessageAllReceive(p_PlayerName, p_Message)
 end
 
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
@@ -511,6 +548,10 @@ function VuBattleRoyaleClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
 	m_Gunship:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
 end
 
+function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_HookCtx)
+	p_HookCtx:Return()
+end
+
 -- =============================================
 -- Functions
 -- =============================================
@@ -550,6 +591,40 @@ function VuBattleRoyaleClient:OnHotReload()
 	g_Timers:Timeout(1, function()
 		m_HudUtils:ShowCrosshair(false)
 		m_HudUtils:OnEnableMouse()
+	end)
+end
+
+function VuBattleRoyaleClient:FixParachuteSound(p_Soldier)
+	-- Fix for: Sometimes when you get close to a player you haven't been near, you hear the parachute open sound #245
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil then
+		return
+	end
+
+	if s_LocalPlayer.soldier ~= nil and s_LocalPlayer == p_Soldier.player then
+		return
+	end
+
+	-- Get the parachute and freefall SoundEntity for all soldiers except the local soldier
+	local s_SoundEntity = p_Soldier.bus:GetEntity(ResourceManager:FindInstanceByGuid(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("63CDCA57-2E2C-45FF-A465-CF3EE42E5EE1")))
+
+	-- Should never happen.
+	if s_SoundEntity == nil then
+		m_Logger:Write("Error - SoundEntity not found.")
+		return
+	end
+
+	-- Register an event callback and block the ParachuteBegin event
+	-- also the ParachuteEnd event, because it could be also this event that causes the issue
+	s_SoundEntity:RegisterEventCallback(function(p_Entity, p_EntityEvent)
+		if p_EntityEvent.eventId == MathUtils:FNVHash("ParachuteBegin") then
+			m_Logger:Write("ParachuteBegin sound blocked.")
+			return false
+		elseif p_EntityEvent.eventId == MathUtils:FNVHash("ParachuteEnd") then
+			m_Logger:Write("ParachuteEnd sound blocked.")
+			return false
+		end
 	end)
 end
 
