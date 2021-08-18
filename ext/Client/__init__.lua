@@ -99,6 +99,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 	NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate)
 	NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
 	NetEvents:Subscribe("UpdateSpectatorCount", self, self.OnUpdateSpectatorCount)
+	NetEvents:Subscribe("ChatMessage:SquadReceive", self, self.OnChatMessageSquadReceive)
+	NetEvents:Subscribe("ChatMessage:AllReceive", self, self.OnChatMessageAllReceive)
 end
 
 function VuBattleRoyaleClient:RegisterWebUIEvents()
@@ -403,6 +405,14 @@ end
 
 function VuBattleRoyaleClient:OnUpdateSpectatorCount(p_SpectatorCount)
 	m_SpectatorClient:OnUpdateSpectatorCount(p_SpectatorCount)
+end
+
+function VuBattleRoyaleClient:OnChatMessageSquadReceive(p_PlayerName, p_Message)
+	m_Chat:OnChatMessageSquadReceive(p_PlayerName, p_Message)
+end
+
+function VuBattleRoyaleClient:OnChatMessageAllReceive(p_PlayerName, p_Message)
+	m_Chat:OnChatMessageAllReceive(p_PlayerName, p_Message)
 end
 
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)

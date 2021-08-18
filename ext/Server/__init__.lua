@@ -77,6 +77,8 @@ function VuBattleRoyaleServer:RegisterEvents()
 	NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing)
 	NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
 	NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute)
+	NetEvents:Subscribe("ChatMessage:SquadSend", self, self.OnChatMessageSquadSend)
+	NetEvents:Subscribe("ChatMessage:AllSend", self, self.OnChatMessageAllSend)
 end
 
 function VuBattleRoyaleServer:RegisterHooks()
@@ -310,6 +312,26 @@ function VuBattleRoyaleServer:OnOpenParachute(p_Player)
 	end
 
 	self.m_Match:OnOpenParachute(p_Player)
+end
+
+function VuBattleRoyaleServer:OnChatMessageSquadSend(p_Player, p_Message)
+	local s_BrTeam = m_TeamManager:GetTeamByPlayer(p_Player)
+
+	if s_BrTeam == nil then
+		m_Logger:Write("Chat: BrTeam of player ".. p_Player.name .. "is nil. We can't send this message.")
+		return
+	end
+
+	for _, l_Player in pairs(s_BrTeam.m_Players) do
+		NetEvents:SendToLocal("ChatMessage:SquadReceive", l_Player:GetPlayer(), p_Player.name, p_Message)
+	end
+
+	RCON:TriggerEvent("player.onChat", {p_Player.name, p_Message, "squad", tostring(p_Player.teamId), tostring(p_Player.squadId)})
+end
+
+function VuBattleRoyaleServer:OnChatMessageAllSend(p_Player, p_Message)
+	NetEvents:BroadcastLocal("ChatMessage:AllReceive", p_Player.name, p_Message)
+	RCON:TriggerEvent("player.onChat", {p_Player.name, p_Message, "all"})
 end
 
 -- =============================================
