@@ -240,7 +240,13 @@ function BRPlayer:Spawn(p_Trans)
 			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
 			s_CharacterSpawnReferenceObjectData:MakeWritable()
 			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Trans
+
+			local s_TeamId = self.m_Player.teamId
+			self.m_Player.teamId = TeamId.Team2
+
 			s_Entity:FireEvent(s_Event)
+
+			self.m_Player.teamId = s_TeamId
 			m_Logger:Write("Spawning player " .. self.m_Player.name)
 			break
 		end
