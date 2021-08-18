@@ -51,6 +51,8 @@ ServerConfig = {
 
 		EnableWhitelist = true,
 
+		DisableMinimapUpdates = true,
+
 		Whitelist = {
 			"voteban_flash",
 			"Bree",

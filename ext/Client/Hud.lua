@@ -1,11 +1,11 @@
 class "VuBattleRoyaleHud"
 
+require "__shared/Configs/ServerConfig"
 require "__shared/Utils/Timers"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/UiStates"
--- require "Utils/CachedJsExecutor"
-local m_HudUpdateQueue = require "Utils/HudUpdateQueue"
 
+local m_HudUpdateQueue = require "Utils/HudUpdateQueue"
 local m_EscMenu = require "UI/EscMenu"
 local m_DeployScreen = require "UI/DeployScreen"
 local m_HudUtils = require "Utils/HudUtils"
@@ -29,12 +29,12 @@ function VuBattleRoyaleHud:__init()
 end
 
 function VuBattleRoyaleHud:RegisterVars()
-	self.m_HudOnPlayerPos = m_HudUpdateQueue:CreateExecutor("OnPlayerPos(%s)", nil, true)
-	self.m_HudOnPlayerYaw = m_HudUpdateQueue:CreateExecutor("OnPlayerYaw(%s)", 0, true)
-	self.m_HudOnPlayerIsOnPlane = m_HudUpdateQueue:CreateExecutor("OnPlayerIsOnPlane(%s)", false, true)
-	self.m_HudOnPlanePos = m_HudUpdateQueue:CreateExecutor("OnPlanePos(%s)", nil, true)
-	self.m_HudOnPlaneYaw = m_HudUpdateQueue:CreateExecutor("OnPlaneYaw(%s)", 0, true)
-	self.m_HudOnUpdateCircles = m_HudUpdateQueue:CreateExecutor("OnUpdateCircles(%s)", nil, true)
+	self.m_HudOnPlayerPos = m_HudUpdateQueue:CreateExecutor("OnPlayerPos(%s)", nil, ServerConfig.Debug.DisableMinimapUpdates)
+	self.m_HudOnPlayerYaw = m_HudUpdateQueue:CreateExecutor("OnPlayerYaw(%s)", 0, ServerConfig.Debug.DisableMinimapUpdates)
+	self.m_HudOnPlayerIsOnPlane = m_HudUpdateQueue:CreateExecutor("OnPlayerIsOnPlane(%s)", false, ServerConfig.Debug.DisableMinimapUpdates)
+	self.m_HudOnPlanePos = m_HudUpdateQueue:CreateExecutor("OnPlanePos(%s)", nil, ServerConfig.Debug.DisableMinimapUpdates)
+	self.m_HudOnPlaneYaw = m_HudUpdateQueue:CreateExecutor("OnPlaneYaw(%s)", 0, ServerConfig.Debug.DisableMinimapUpdates)
+	self.m_HudOnUpdateCircles = m_HudUpdateQueue:CreateExecutor("OnUpdateCircles(%s)", nil, ServerConfig.Debug.DisableMinimapUpdates)
 	self.m_HudOnGameState = m_HudUpdateQueue:CreateExecutor("OnGameState('%s')", GameStates.None)
 	self.m_HudOnPlayersInfo = m_HudUpdateQueue:CreateExecutor("OnPlayersInfo(%s)", nil)
 	self.m_HudOnLocalPlayerInfo = m_HudUpdateQueue:CreateExecutor("OnLocalPlayerInfo(%s)", nil)
