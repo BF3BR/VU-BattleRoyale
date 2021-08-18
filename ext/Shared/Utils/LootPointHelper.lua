@@ -29,6 +29,7 @@ function LootPointHelper:OnLevelLoaded()
 	end
 
 	self.m_Points = MapsConfig[s_LevelName]["LootSpawnPoints"]
+	self.m_Center = ClientUtils:GetWindowSize() / 2
 end
 
 function LootPointHelper:OnUIDrawHud()
@@ -153,8 +154,10 @@ function LootPointHelper:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		self.m_Points[self.m_ActiveIndex].trans = s_HitPosition
 	-- If theres no active point, check to see if the POA is near a point
 	else
-		for index, point in pairs(self.m_Points) do
-			local s_PointScreenPos = ClientUtils:WorldToScreen(point.trans)
+		local s_ClosestDistance = 1000.0
+
+		for l_Index, l_Point in pairs(self.m_Points) do
+			local s_PointScreenPos = ClientUtils:WorldToScreen(l_Point.trans)
 
 			-- Skip to the next point if this one isn't in view
 			if s_PointScreenPos == nil then
@@ -162,9 +165,13 @@ function LootPointHelper:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 			end
 
 			-- Select point if its close to the hitPosition
-			if self.m_Center:Distance(s_PointScreenPos) < 20 then
-				self.m_SelectedIndex = index
+			local s_Distance = self.m_Center:Distance(s_PointScreenPos)
+
+			if s_Distance < s_ClosestDistance then
+				s_ClosestDistance = s_Distance
+				self.m_SelectedIndex = l_Index
 			end
+
 			::continue::
 		end
 	end
