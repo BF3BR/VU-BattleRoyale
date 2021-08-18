@@ -637,7 +637,11 @@ function VuBattleRoyaleClient:StartWindTurbines()
 
 		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("F2E30E34-2E82-467B-B160-4BAD4502A465") then
 			m_Logger:Write("Start turbine")
-			s_Entity:FireEvent("Start")
+			local s_Delay = math.random(0, 5000) / 1000
+
+			g_Timers:Timeout(s_Delay, s_Entity, function(p_Entity)
+				p_Entity:FireEvent("Start")
+			end)
 		end
 
 		s_Entity = s_EntityIterator:Next()
