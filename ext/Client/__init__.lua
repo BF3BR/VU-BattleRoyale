@@ -242,6 +242,10 @@ function VuBattleRoyaleClient:OnSoldierHealthAction(p_Soldier, p_Action)
 end
 
 function VuBattleRoyaleClient:OnSoldierSpawn(p_Soldier)
+	if self.m_GameState < GameStates.Plane then
+		return
+	end
+
 	if p_Soldier.player == nil then
 		-- it is probably always this case
 		g_Timers:Timeout(1.0, self, function()
