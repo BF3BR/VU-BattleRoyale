@@ -1,9 +1,8 @@
 require "__shared/Libs/Queue"
 require "Utils/CachedJsExecutor"
 
-local MIN_ITEMS_TO_GROUP = 1
-local MAX_ITEMS_TO_GROUP = 25
-local UPDATES_TO_SKIP = 5
+local MAX_ITEMS_TO_GROUP = 100 	-- for now, batch all
+local UPDATES_TO_SKIP = 12			-- maybe replace with delta diff
 
 local m_Logger = Logger("HudUpdateQueue", true)
 
@@ -14,8 +13,8 @@ function HudUpdateQueue:__init()
 	self.m_SkippedUpdates = 0
 end
 
-function HudUpdateQueue:CreateExecutor(p_FuncTemplate, p_InitialValue)
-	return CachedJsExecutor(self, p_FuncTemplate, p_InitialValue)
+function HudUpdateQueue:CreateExecutor(p_FuncTemplate, p_InitialValue, p_Disabled)
+	return CachedJsExecutor(self, p_FuncTemplate, p_InitialValue, p_Disabled)
 end
 
 function HudUpdateQueue:Enqueue(p_Executor)
@@ -34,7 +33,7 @@ function HudUpdateQueue:OnUIDrawHud()
 
 	-- items to update in this batch
 	local s_ItemsNumber = math.min(MAX_ITEMS_TO_GROUP, self.m_Queue:Size())
-	if s_ItemsNumber < MIN_ITEMS_TO_GROUP then
+	if s_ItemsNumber < 1 then
 		return
 	end
 
@@ -48,8 +47,6 @@ function HudUpdateQueue:OnUIDrawHud()
 		s_Executor.m_IsQueued = false
 		table.insert(s_ExecStrings, s_Executor:JSString())
 	end
-
-	-- m_Logger:Write("Items batched #" .. s_ItemsNumber)
 
 	-- concat and send the js strings as one js call
 	-- reduces the total overhead of sending each one to CEF for

@@ -1,11 +1,12 @@
 class "CachedJsExecutor"
 
-function CachedJsExecutor:__init(p_UpdateQueue, p_FuncTemplate, p_InitialValue)
+function CachedJsExecutor:__init(p_UpdateQueue, p_FuncTemplate, p_InitialValue, p_Disabled)
 	self.m_UpdateQueue = p_UpdateQueue
 	self.m_IsQueued = false
 
 	self.m_FuncTemplate = p_FuncTemplate
 	self.m_PrevValue = nil
+	self.m_Disabled = p_Disabled or false
 
 	self:Update(p_InitialValue)
 end
@@ -16,7 +17,10 @@ function CachedJsExecutor:Update(p_Value, p_Forced)
 	end
 
 	self.m_PrevValue = p_Value
-	self.m_UpdateQueue:Enqueue(self)
+
+	if not self.m_IsQueued and not self.m_Disabled then
+		self.m_UpdateQueue:Enqueue(self)
+	end
 
 	return p_Value
 end
