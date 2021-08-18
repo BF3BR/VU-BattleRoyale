@@ -11,6 +11,7 @@ function LootPointHelper:__init()
 	self.m_SelectedIndex = nil
 	self.m_ActiveIndex = nil
 	self.m_SavedPosition = nil
+	self.m_PointColor = Vec4(1, 1, 1, 0.5)
 
 	if ServerConfig["Debug"]["EnableLootPointSpheres"] then
 		Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
@@ -41,7 +42,7 @@ function LootPointHelper:OnUIDrawHud()
 
 	for i, l_Point in pairs(self.m_Points) do
 		if i ~= self.m_ActiveIndex and s_Position:Distance(l_Point.trans) < 50 then
-			DebugRenderer:DrawSphere(l_Point.trans, 0.3, Vec4(1, 1, 1, 0.5), true, false)
+			DebugRenderer:DrawSphere(l_Point.trans, 0.3, self.m_PointColor, true, false)
 		end
 	end
 
