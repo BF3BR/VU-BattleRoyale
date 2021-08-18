@@ -241,11 +241,17 @@ function BRPlayer:Spawn(p_Trans)
 			s_CharacterSpawnReferenceObjectData:MakeWritable()
 			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Trans
 
+			-- trick the engine
+			-- we can't spawn a soldier with a higher teamId then the #TeamEntities which is limited to 16 atm
+			-- and would cause issues if you add more of them
+			-- so we just put the player in Team2 spawn him and then move him back
 			local s_TeamId = self.m_Player.teamId
 			self.m_Player.teamId = TeamId.Team2
 
+			-- spawn the player
 			s_Entity:FireEvent(s_Event)
 
+			-- move him back to his team
 			self.m_Player.teamId = s_TeamId
 			m_Logger:Write("Spawning player " .. self.m_Player.name)
 			break
