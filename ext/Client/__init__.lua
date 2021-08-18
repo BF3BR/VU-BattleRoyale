@@ -88,6 +88,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 	Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate)
 	Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove)
 
+	Events:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers)
+
 	NetEvents:Subscribe(ManDownLootEvents.UpdateLootPosition, self, self.OnUpdateLootPosition)
 	NetEvents:Subscribe(ManDownLootEvents.OnInteractionFinished, self, self.OnLootInteractionFinished)
 
@@ -343,6 +345,14 @@ end
 
 function VuBattleRoyaleClient:OnOuterCircleMove(p_OuterCircle)
 	m_Hud:OnOuterCircleMove(p_OuterCircle)
+end
+
+-- =============================================
+	-- ManDownLoot Events
+-- =============================================
+
+function VuBattleRoyaleClient:OnSpectatedPlayerTeamMembers(p_PlayerNames)
+	m_TeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
 end
 
 -- =============================================
