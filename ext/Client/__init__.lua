@@ -26,6 +26,7 @@ local m_TeamManager = require "BRTeamManager"
 local m_OOCFires = require "Visuals/OOCFires"
 local m_OOCVision = require "Visuals/OOCVision"
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
+local m_HudUpdateQueue = require "Utils/HudUpdateQueue"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -186,6 +187,7 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
 		m_Hud:OnUIDrawHud()
 		m_Ping:OnUIDrawHud(p_DeltaTime)
+		m_HudUpdateQueue:OnUIDrawHud()
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PostFrame then
 		m_Gunship:OnUpdatePassPostFrame(p_DeltaTime)
 	end

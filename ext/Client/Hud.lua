@@ -1,9 +1,10 @@
 class "VuBattleRoyaleHud"
 
-require "__shared/Utils/CachedJsExecutor"
 require "__shared/Utils/Timers"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/UiStates"
+-- require "Utils/CachedJsExecutor"
+local m_HudUpdateQueue = require "Utils/HudUpdateQueue"
 
 local m_EscMenu = require "UI/EscMenu"
 local m_DeployScreen = require "UI/DeployScreen"
@@ -28,34 +29,34 @@ function VuBattleRoyaleHud:__init()
 end
 
 function VuBattleRoyaleHud:RegisterVars()
-	self.m_HudOnPlayerPos = CachedJsExecutor("OnPlayerPos(%s)", nil)
-	self.m_HudOnPlayerYaw = CachedJsExecutor("OnPlayerYaw(%s)", 0)
-	self.m_HudOnPlayerIsOnPlane = CachedJsExecutor("OnPlayerIsOnPlane(%s)", false)
-	self.m_HudOnPlanePos = CachedJsExecutor("OnPlanePos(%s)", nil)
-	self.m_HudOnPlaneYaw = CachedJsExecutor("OnPlaneYaw(%s)", 0)
-	self.m_HudOnUpdateCircles = CachedJsExecutor("OnUpdateCircles(%s)", nil)
-	self.m_HudOnGameState = CachedJsExecutor("OnGameState('%s')", GameStates.None)
-	self.m_HudOnPlayersInfo = CachedJsExecutor("OnPlayersInfo(%s)", nil)
-	self.m_HudOnLocalPlayerInfo = CachedJsExecutor("OnLocalPlayerInfo(%s)", nil)
-	self.m_HudOnUpdateTimer = CachedJsExecutor("OnUpdateTimer(%s)", nil)
-	self.m_HudOnMinPlayersToStart = CachedJsExecutor("OnMinPlayersToStart(%s)", nil)
-	self.m_HudOnPlayerHealth = CachedJsExecutor("OnPlayerHealth(%s)", 0)
-	self.m_HudOnPlayerArmor = CachedJsExecutor("OnPlayerArmor(%s)", 0)
-	self.m_HudOnPlayerPrimaryAmmo = CachedJsExecutor("OnPlayerPrimaryAmmo(%s)", 0)
-	self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
-	self.m_HudOnPlayerFireLogic = CachedJsExecutor("OnPlayerFireLogic(%s)", 0)
-	self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", "")
-	self.m_HudOnPlayerWeapons = CachedJsExecutor("OnPlayerWeapons(%s)", nil)
-	self.m_HudOnUpdateTeamPlayers = CachedJsExecutor("OnUpdateTeamPlayers(%s)", nil)
-	self.m_HudOnUpdateTeamLocked = CachedJsExecutor("OnUpdateTeamLocked(%s)", false)
-	self.m_HudOnUpdateTeamId = CachedJsExecutor("OnUpdateTeamId('%s')", "-")
-	self.m_HudOnUpdateTeamSize = CachedJsExecutor("OnUpdateTeamSize(%s)", 0)
-	self.m_HudOnTeamJoinError = CachedJsExecutor("OnTeamJoinError(%s)", nil)
-	self.m_HudOnNotifyInflictorAboutKillOrKnock = CachedJsExecutor("OnNotifyInflictorAboutKillOrKnock(%s)", nil)
-	self.m_HudOnInteractiveMessageAndKey = CachedJsExecutor("OnInteractiveMessageAndKey(%s)", nil)
-	self.m_HudOnGameOverScreen = CachedJsExecutor("OnGameOverScreen(%s)", nil)
-	self.m_HudOnUpdatePlacement = CachedJsExecutor("OnUpdatePlacement(%s)", 99)
-	self.m_HudOnSetUIState = CachedJsExecutor("OnSetUIState('%s')", UiStates.Loading)
+	self.m_HudOnPlayerPos = m_HudUpdateQueue:CreateExecutor("OnPlayerPos(%s)", nil)
+	self.m_HudOnPlayerYaw = m_HudUpdateQueue:CreateExecutor("OnPlayerYaw(%s)", 0)
+	self.m_HudOnPlayerIsOnPlane = m_HudUpdateQueue:CreateExecutor("OnPlayerIsOnPlane(%s)", false)
+	self.m_HudOnPlanePos = m_HudUpdateQueue:CreateExecutor("OnPlanePos(%s)", nil)
+	self.m_HudOnPlaneYaw = m_HudUpdateQueue:CreateExecutor("OnPlaneYaw(%s)", 0)
+	self.m_HudOnUpdateCircles = m_HudUpdateQueue:CreateExecutor("OnUpdateCircles(%s)", nil)
+	self.m_HudOnGameState = m_HudUpdateQueue:CreateExecutor("OnGameState('%s')", GameStates.None)
+	self.m_HudOnPlayersInfo = m_HudUpdateQueue:CreateExecutor("OnPlayersInfo(%s)", nil)
+	self.m_HudOnLocalPlayerInfo = m_HudUpdateQueue:CreateExecutor("OnLocalPlayerInfo(%s)", nil)
+	self.m_HudOnUpdateTimer = m_HudUpdateQueue:CreateExecutor("OnUpdateTimer(%s)", nil)
+	self.m_HudOnMinPlayersToStart = m_HudUpdateQueue:CreateExecutor("OnMinPlayersToStart(%s)", nil)
+	self.m_HudOnPlayerHealth = m_HudUpdateQueue:CreateExecutor("OnPlayerHealth(%s)", 0)
+	self.m_HudOnPlayerArmor = m_HudUpdateQueue:CreateExecutor("OnPlayerArmor(%s)", 0)
+	self.m_HudOnPlayerPrimaryAmmo = m_HudUpdateQueue:CreateExecutor("OnPlayerPrimaryAmmo(%s)", 0)
+	self.m_HudOnPlayerSecondaryAmmo = m_HudUpdateQueue:CreateExecutor("OnPlayerSecondaryAmmo(%s)", 0)
+	self.m_HudOnPlayerFireLogic = m_HudUpdateQueue:CreateExecutor("OnPlayerFireLogic(%s)", 0)
+	self.m_HudOnPlayerCurrentWeapon = m_HudUpdateQueue:CreateExecutor("OnPlayerCurrentWeapon('%s')", "")
+	self.m_HudOnPlayerWeapons = m_HudUpdateQueue:CreateExecutor("OnPlayerWeapons(%s)", nil)
+	self.m_HudOnUpdateTeamPlayers = m_HudUpdateQueue:CreateExecutor("OnUpdateTeamPlayers(%s)", nil)
+	self.m_HudOnUpdateTeamLocked = m_HudUpdateQueue:CreateExecutor("OnUpdateTeamLocked(%s)", false)
+	self.m_HudOnUpdateTeamId = m_HudUpdateQueue:CreateExecutor("OnUpdateTeamId('%s')", "-")
+	self.m_HudOnUpdateTeamSize = m_HudUpdateQueue:CreateExecutor("OnUpdateTeamSize(%s)", 0)
+	self.m_HudOnTeamJoinError = m_HudUpdateQueue:CreateExecutor("OnTeamJoinError(%s)", nil)
+	self.m_HudOnNotifyInflictorAboutKillOrKnock = m_HudUpdateQueue:CreateExecutor("OnNotifyInflictorAboutKillOrKnock(%s)", nil)
+	self.m_HudOnInteractiveMessageAndKey = m_HudUpdateQueue:CreateExecutor("OnInteractiveMessageAndKey(%s)", nil)
+	self.m_HudOnGameOverScreen = m_HudUpdateQueue:CreateExecutor("OnGameOverScreen(%s)", nil)
+	self.m_HudOnUpdatePlacement = m_HudUpdateQueue:CreateExecutor("OnUpdatePlacement(%s)", 99)
+	self.m_HudOnSetUIState = m_HudUpdateQueue:CreateExecutor("OnSetUIState('%s')", UiStates.Loading)
 end
 
 -- =============================================
