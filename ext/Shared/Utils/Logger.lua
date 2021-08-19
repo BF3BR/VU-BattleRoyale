@@ -4,19 +4,18 @@ class "Logger"
 
 function Logger:__init(p_ClassName, p_ActivateLogging)
 	if type(p_ClassName) ~= "string" then
-		error("Logger: Wrong arguments creating object, className is not a string. ClassName: "..tostring(p_ClassName))
+		error("Logger: Wrong arguments creating object, className is not a string. ClassName: ".. tostring(p_ClassName))
 		return
 	elseif type(p_ActivateLogging) ~= "boolean" then
-		error("Logger: Wrong arguments creating object, ActivateLogging is not a boolean. ActivateLogging: " ..tostring(p_ActivateLogging))
+		error("Logger: Wrong arguments creating object, ActivateLogging is not a boolean. ActivateLogging: " .. tostring(p_ActivateLogging))
 		return
 	end
 
-	-- print("Creating object with: "..p_ClassName..", "..tostring(p_ActivateLogging))
 	self.m_Debug = p_ActivateLogging
 	self.m_ClassName = p_ClassName
 end
 
-function Logger:Write(p_Message)
+function Logger:Write(p_Message, p_Highlight)
 	if not ServerConfig.Debug.Logger_Enabled then
 		return
 	end
@@ -29,17 +28,33 @@ function Logger:Write(p_Message)
 
 	::continue::
 
-	if(type(p_Message) == "table") then
+	if type(p_Message) == "table" then
 		print("["..self.m_ClassName.."]")
 		print(p_Message)
 	else
-		print("["..self.m_ClassName.."] " .. tostring(p_Message))
+		if p_Highlight and SharedUtils:IsClientModule() then
+			print("["..self.m_ClassName.."] *" .. tostring(p_Message))
+		else
+			print("["..self.m_ClassName.."] " .. tostring(p_Message))
+		end
 	end
 end
 
-function Logger:WriteTable(p_Table)
+function Logger:WriteTable(p_Table, p_Highlight, p_Key)
+	if p_Key == nil then
+		p_Key = ""
+	else
+		p_Key = tostring(p_Key) .. " - "
+	end
+
 	for l_Key, l_Value in pairs(p_Table) do
-		self:Write(tostring(l_Key) .. " - " .. tostring(l_Value))
+		local s_Key = p_Key .. tostring(l_Key)
+
+		if type(l_Value) == "table" then
+			self:WriteTable(l_Value, p_Highlight, s_Key)
+		else
+			self:Write(s_Key .. " - " .. tostring(l_Value), p_Highlight)
+		end
 	end
 end
 
@@ -48,7 +63,11 @@ function Logger:Warning(p_Message)
 		return
 	end
 
-	print("["..self.m_ClassName.."] WARNING: " .. tostring(p_Message))
+	if SharedUtils:IsClientModule() then
+		print("["..self.m_ClassName.."] *WARNING: " .. tostring(p_Message))
+	else
+		print("["..self.m_ClassName.."] WARNING: " .. tostring(p_Message))
+	end
 end
 
 function Logger:Error(p_Message)
@@ -56,7 +75,12 @@ function Logger:Error(p_Message)
 		return
 	end
 
-	print("["..self.m_ClassName.."] ERROR: " .. tostring(p_Message))
+	if SharedUtils:IsClientModule() then
+		print("["..self.m_ClassName.."] *ERROR: " .. tostring(p_Message))
+	else
+		print("["..self.m_ClassName.."] ERROR: " .. tostring(p_Message))
+	end
+
 end
 
 return Logger
