@@ -3,6 +3,7 @@ class 'AntiCheat'
 function AntiCheat:__init()
 	self.m_GunSwayTimer = 0
 	self.m_EngineTimer = 0
+	self.m_LastYaw = 0
 end
 
 -- =============================================
@@ -75,6 +76,7 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 		end
 
 		::continue::
+
 		local s_SoldierSuppressionComponentData = ResourceManager:FindInstanceByGuid(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('5ECC8031-8DF7-4A38-ACC7-9EFC730B3528'))
 
 		if s_SoldierSuppressionComponentData == nil then
@@ -86,6 +88,35 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 		if s_SoldierSuppressionComponentData.suppressionSphereRadius < 1.5 or s_SoldierSuppressionComponentData.fallOffDelay > 2 or s_SoldierSuppressionComponentData.suppressionAbortsHealthRegeneration == false or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionHighThreshold > 0.4001 or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionLowThreshold > 0.3001 or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionUIThreshold > 0.15001 then
 			NetEvents:SendLocal('Cheat', {"No Suppression 2", s_SoldierSuppressionComponentData.suppressionSphereRadius, s_SoldierSuppressionComponentData.fallOffDelay, s_SoldierSuppressionComponentData.suppressionAbortsHealthRegeneration, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionHighThreshold, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionLowThreshold, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionUIThreshold})
 		end
+	end
+end
+
+function AntiCheat:OnUpdatePassPostSim(p_DeltaTime)
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil or s_LocalPlayer.soldier == nil
+	or s_LocalPlayer.soldier.weaponsComponent.currentWeapon == nil
+	or s_LocalPlayer.soldier.weaponsComponent.currentWeapon.aimingSimulation == nil
+	or s_LocalPlayer.soldier.weaponsComponent.currentWeapon.aimingSimulation.aimAssist == nil then
+		return
+	end
+
+	local s_YawDifference = s_LocalPlayer.soldier.weaponsComponent.currentWeapon.aimingSimulation.aimAssist.yaw - self.m_LastYaw
+
+	if s_YawDifference == 0.0 then
+		return
+	end
+
+	self.m_LastYaw = s_LocalPlayer.soldier.weaponsComponent.currentWeapon.aimingSimulation.aimAssist.yaw
+
+	if s_LocalPlayer.soldier.weaponsComponent.currentWeapon.aimingSimulation.aimYawTimer == 0.0 then
+		return
+	end
+
+	local s_Yaw = InputManager:GetLevel(InputConceptIdentifiers.ConceptYaw)
+
+	if s_Yaw == 0.0 then
+		NetEvents:SendLocal('Cheat', {"Aimbot"})
 	end
 end
 
