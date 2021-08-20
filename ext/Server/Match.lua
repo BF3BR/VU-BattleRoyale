@@ -6,7 +6,7 @@ require "__shared/Utils/LevelNameHelper"
 require "__shared/Mixins/TimersMixin"
 
 require "Gunship"
-require "PhaseManagerServer"
+local m_PhaseManagerServer = require "PhaseManagerServer"
 
 class("Match", TimersMixin)
 
@@ -33,9 +33,6 @@ function Match:__init(p_Server, p_TeamManager)
 	-- self.m_Airdrop = Airdrop(self)
 	-- self.m_AirdropTimer = 0.0
 	-- self.m_AirdropNextDrop = nil
-
-	-- PhaseManagerServer
-	self.m_PhaseManager = PhaseManagerServer()
 
 	self.m_RestartQueue = false
 
@@ -107,7 +104,7 @@ function Match:NextMatchState()
 	if s_State == GameStates.Plane then
 		NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
 	elseif s_State == GameStates.PlaneToFirstCircle then
-		self.m_PhaseManager:Start()
+		m_PhaseManagerServer:Start()
 	elseif s_State == GameStates.EndGame then
 		self.m_RestartQueue = true
 	end
@@ -170,7 +167,7 @@ function Match:OnMatchFirstTick()
 		-- Remove gunship after a short delay
 		self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
 	elseif s_State == GameStates.EndGame then
-		self.m_PhaseManager:End()
+		m_PhaseManagerServer:End()
 		self.m_Gunship:Disable()
 		-- self.m_Airdrop:Spawn(nil, false)
 

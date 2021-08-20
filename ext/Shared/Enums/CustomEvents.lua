@@ -46,10 +46,6 @@ PhaseManagerEvent = {
 	CircleMove = "PhaseManager:CircleMove"
 }
 
-SpectatorEvent = {
-	PlayerChanged = "Spectator:PlayerChanged"
-}
-
 GunshipEvents = {
 	Enable = "Gunship:Enable",
 	Disable = "Gunship:Disable",

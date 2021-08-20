@@ -18,35 +18,79 @@ function PhaseManagerClient:RegisterVars()
 	self.m_InnerCircle = RenderableCircle()
 	self.m_OuterCircle = RenderableCircle()
 
-	-- events/hooks
-	self.m_LevelLoadedEvent = nil
+	-- we want to get the state only once
+	self.m_RequestedInitialState = false
 end
 
-function PhaseManagerClient:RegisterEvents()
-	PhaseManagerShared.RegisterEvents(self)
+-- =============================================
+-- Events
+-- =============================================
 
-	if self.m_LevelLoadedEvent == nil then
-		self.m_LevelLoadedEvent = Events:Subscribe("Level:Loaded", self, self.RequestInitialState)
+function PhaseManagerClient:OnExtensionUnloading()
+	PhaseManagerShared.Destroy(self)
+end
+
+function PhaseManagerClient:OnLevelLoaded()
+	PhaseManagerShared.OnLevelLoaded(self)
+
+	self:RequestInitialState()
+end
+
+function PhaseManagerClient:OnLevelDestroy()
+	PhaseManagerShared.Destroy(self)
+end
+
+function PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
+	if self:IsIdle() then
+		return
 	end
 
-	Events:Subscribe("UpdatePass_PreSim", self, self.OnPreSim)
-	Events:Subscribe(SpectatorEvent.PlayerChanged, self, self.OnSpectatingPlayer)
-	Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnRender)
-	NetEvents:Subscribe(PhaseManagerNetEvent.UpdateState, self, self.OnUpdateState)
-end
+	-- get active player position
+	local s_PlayerPos = self:GetActivePlayerPosition()
 
--- Requests initial state update
-function PhaseManagerClient:RequestInitialState()
-	NetEvents:SendLocal(PhaseManagerNetEvent.InitialState)
+	if s_PlayerPos == nil then
+		return
+	end
 
-	if self.m_LevelLoadedEvent then
-		self.m_LevelLoadedEvent:Unsubscribe()
-		self.m_LevelLoadedEvent = nil
+	-- toggle OOB vision
+	if self.m_OuterCircle:IsInnerPoint(s_PlayerPos) then
+		m_OOCVision:Disable()
+	else
+		m_OOCVision:Enable()
+	end
+
+	-- calculate render points for both circles
+	self.m_OuterCircle:CalculateRenderPoints(s_PlayerPos)
+	if CircleConfig.RenderInnerCircle and not self.m_Completed then
+		self.m_InnerCircle:CalculateRenderPoints(s_PlayerPos)
 	end
 end
+
+-- Renders the two circles
+function PhaseManagerClient:OnUIDrawHud()
+	if self:IsIdle() then
+		return
+	end
+
+	-- get active player position
+	local s_PlayerPos = self:GetActivePlayerPosition()
+	if s_PlayerPos == nil then
+		return
+	end
+
+	-- render circles
+	self.m_OuterCircle:Render(OuterCircleRenderer, s_PlayerPos)
+	if CircleConfig.RenderInnerCircle and not self.m_Completed then
+		self.m_InnerCircle:Render(InnerCircleRenderer, s_PlayerPos)
+	end
+end
+
+-- =============================================
+-- Custom (Net-) Events
+-- =============================================
 
 -- Updates the state of the PhaseManager from the server
-function PhaseManagerClient:OnUpdateState(p_State)
+function PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
 	-- destroy moving circle update timer
 	self:RemoveTimer("MovingCircle")
 
@@ -79,6 +123,18 @@ function PhaseManagerClient:OnUpdateState(p_State)
 	Events:DispatchLocal(PhaseManagerEvent.Update, p_State)
 end
 
+-- =============================================
+-- Functions
+-- =============================================
+
+-- Requests initial state update
+function PhaseManagerClient:RequestInitialState()
+	if not self.m_RequestedInitialState then
+		self.m_RequestedInitialState = true
+		NetEvents:SendLocal(PhaseManagerNetEvent.InitialState)
+	end
+end
+
 -- Returns the position of the local or the spectated player
 function PhaseManagerClient:GetActivePlayerPosition()
 	local s_Player = PlayerManager:GetLocalPlayer()
@@ -102,47 +158,8 @@ function PhaseManagerClient:GetActivePlayerPosition()
 	return s_Player.soldier.transform.trans
 end
 
-function PhaseManagerClient:OnPreSim(p_DeltaTime)
-	if self:IsIdle() then
-		return
-	end
-
-	-- get active player position
-	local s_PlayerPos = self:GetActivePlayerPosition()
-
-	if s_PlayerPos == nil then
-		return
-	end
-
-	-- toggle OOB vision
-	if self.m_OuterCircle:IsInnerPoint(s_PlayerPos) then
-		m_OOCVision:Disable()
-	else
-		m_OOCVision:Enable()
-	end
-
-	-- calculate render points for both circles
-	self.m_OuterCircle:CalculateRenderPoints(s_PlayerPos)
-	if CircleConfig.RenderInnerCircle and not self.m_Completed then
-		self.m_InnerCircle:CalculateRenderPoints(s_PlayerPos)
-	end
+if g_PhaseManagerClient == nil then
+	g_PhaseManagerClient = PhaseManagerClient()
 end
 
--- Renders the two circles
-function PhaseManagerClient:OnRender()
-	if self:IsIdle() then
-		return
-	end
-
-	-- get active player position
-	local s_PlayerPos = self:GetActivePlayerPosition()
-	if s_PlayerPos == nil then
-		return
-	end
-
-	-- render circles
-	self.m_OuterCircle:Render(OuterCircleRenderer, s_PlayerPos)
-	if CircleConfig.RenderInnerCircle and not self.m_Completed then
-		self.m_InnerCircle:Render(InnerCircleRenderer, s_PlayerPos)
-	end
-end
+return g_PhaseManagerClient

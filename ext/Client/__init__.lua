@@ -10,8 +10,7 @@ require "__shared/Utils/LootPointHelper"
 require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 
-require "PhaseManagerClient"
-
+local m_PhaseManagerClient = require "PhaseManagerClient"
 local m_BrPlayer = require "BRPlayer"
 local m_HudUtils = require "Utils/HudUtils"
 local m_Gunship = require "Gunship"
@@ -48,7 +47,6 @@ end
 function VuBattleRoyaleClient:RegisterVars()
 	-- The current gamestate, it's read-only and can only be changed by the SERVER
 	self.m_GameState = GameStates.None
-	self.m_PhaseManager = PhaseManagerClient()
 end
 
 function VuBattleRoyaleClient:RegisterEvents()
@@ -88,6 +86,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 
 	Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate)
 	Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove)
+	NetEvents:Subscribe(PhaseManagerNetEvent.UpdateState, self, self.OnPhaseManagerUpdateState)
 
 	Events:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers)
 
@@ -151,6 +150,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnLevelLoaded(p_LevelName, p_GameMode)
+	m_PhaseManagerClient:OnLevelLoaded()
 	m_Settings:OnLevelLoaded()
 	m_Hud:OnLevelLoaded()
 	m_Ping:OnLevelLoaded()
@@ -184,11 +184,13 @@ end
 
 function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
+		m_PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 		m_Ping:OnUpdatePassPreSim(p_DeltaTime)
 		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PostSim then
 		m_AntiCheat:OnUpdatePassPostSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
+		m_PhaseManagerClient:OnUIDrawHud(p_DeltaTime)
 		m_Hud:OnUIDrawHud()
 		m_Ping:OnUIDrawHud(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PostFrame then
@@ -363,6 +365,10 @@ end
 
 function VuBattleRoyaleClient:OnOuterCircleMove(p_OuterCircle)
 	m_Hud:OnOuterCircleMove(p_OuterCircle)
+end
+
+function VuBattleRoyaleClient:OnPhaseManagerUpdateState(p_State)
+	m_PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
 end
 
 -- =============================================

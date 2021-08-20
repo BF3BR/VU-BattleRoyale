@@ -19,11 +19,29 @@ function PhaseManagerServer:RegisterVars()
 	self.m_OuterCircle = Circle(Vec3(0, 0, 0), 5000)
 end
 
-function PhaseManagerServer:RegisterEvents()
-	PhaseManagerShared.RegisterEvents(self)
+-- =============================================
+-- Events
+-- =============================================
 
-	NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.BroadcastState)
+function PhaseManagerServer:OnLevelLoaded()
+	PhaseManagerShared.OnLevelLoaded(self)
 end
+
+function PhaseManagerServer:OnLevelDestroy()
+	PhaseManagerShared.Destroy(self)
+end
+
+function PhaseManagerServer:OnExtensionUnloading()
+	PhaseManagerShared.Destroy(self)
+end
+
+function PhaseManagerServer:OnPhaseManagerInitialState(p_Player)
+	self:BroadcastState(p_Player)
+end
+
+-- =============================================
+-- Functions
+-- =============================================
 
 -- Starts the PhaseManager logic
 function PhaseManagerServer:Start()
@@ -233,3 +251,9 @@ function PhaseManagerServer:DebugMessage()
 
 	m_Logger:Write(string.format("[%d] %s for %.2f seconds", self.m_PhaseIndex, s_Messages[self.m_SubphaseIndex], s_Delay))
 end
+
+if g_PhaseManagerServer == nil then
+	g_PhaseManagerServer = PhaseManagerServer()
+end
+
+return g_PhaseManagerServer

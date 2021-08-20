@@ -12,7 +12,6 @@ function PhaseManagerShared:__init()
 	TimersMixin.__init(self)
 
 	self:RegisterVars()
-	self:RegisterEvents()
 end
 
 function PhaseManagerShared:RegisterVars()
@@ -28,11 +27,9 @@ function PhaseManagerShared:RegisterVars()
 	self.m_Completed = false
 end
 
-function PhaseManagerShared:RegisterEvents()
-	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-	Events:Subscribe("Level:Destroy", self, self.Destroy)
-	Events:Subscribe("Extension:Unloading", self, self.Destroy)
-end
+-- =============================================
+-- Events
+-- =============================================
 
 function PhaseManagerShared:OnLevelLoaded()
 	-- get and check config for the current map
@@ -46,6 +43,10 @@ function PhaseManagerShared:OnLevelLoaded()
 	self.m_Phases = s_MapConfig.Phases
 	self.m_InitialDelay = s_MapConfig.BeforeFirstCircleDelay
 end
+
+-- =============================================
+-- Functions
+-- =============================================
 
 function PhaseManagerShared:GetCurrentPhase()
 	return self.m_Phases[self.m_PhaseIndex]
@@ -94,8 +95,4 @@ end
 function PhaseManagerShared:Destroy()
 	self:RemoveTimers()
 	self:RegisterVars()
-end
-
-function PhaseManagerShared:__gc()
-	self:Destroy()
 end

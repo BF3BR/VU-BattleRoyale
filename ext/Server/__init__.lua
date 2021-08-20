@@ -14,6 +14,7 @@ require "Match"
 
 local m_Whitelist = require "Whitelist"
 local m_ServerManDownLoot = require "ServerManDownLoot"
+local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_PingServer = require "PingServer"
 local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
@@ -79,6 +80,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 	NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute)
 	NetEvents:Subscribe("ChatMessage:SquadSend", self, self.OnChatMessageSquadSend)
 	NetEvents:Subscribe("ChatMessage:AllSend", self, self.OnChatMessageAllSend)
+	NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnPhaseManagerInitialState)
 end
 
 function VuBattleRoyaleServer:RegisterHooks()
@@ -97,6 +99,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleServer:OnExtensionUnloading()
+	m_PhaseManagerServer:OnExtensionUnloading()
 	self.m_Match:OnExtensionUnloading()
 end
 
@@ -114,6 +117,7 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
 	self.m_Match:OnRestartRound()
 	self.m_WaitForStart = false
 	self.m_ForcedWarmup = false
+	m_PhaseManagerServer:OnLevelLoaded()
 	m_PingServer:OnLevelLoaded()
 	m_ServerManDownLoot:OnLevelLoaded()
 	m_AntiCheat:OnLevelLoaded()
@@ -122,6 +126,7 @@ end
 function VuBattleRoyaleServer:OnLevelDestroy()
 	self.m_WaitForStart = true
 	self.m_ForcedWarmup = false
+	m_PhaseManagerServer:OnLevelDestroy()
 	m_TeamManager:OnLevelDestroy()
 end
 
@@ -332,6 +337,10 @@ end
 function VuBattleRoyaleServer:OnChatMessageAllSend(p_Player, p_Message)
 	NetEvents:BroadcastLocal("ChatMessage:AllReceive", p_Player.name, p_Message)
 	RCON:TriggerEvent("player.onChat", {p_Player.name, p_Message, "all"})
+end
+
+function VuBattleRoyaleServer:OnPhaseManagerInitialState(p_Player)
+	m_PhaseManagerServer:OnPhaseManagerInitialState(p_Player)
 end
 
 -- =============================================
