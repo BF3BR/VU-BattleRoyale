@@ -4,9 +4,10 @@ local m_Logger = Logger("OOCVision", false)
 
 local m_OutOfCirclePreset = require "Visuals/Presets/Common/OutOfCirclePreset"
 local m_OutOfCirclePresetName = "OutOfCircle"
+local m_OOBSoundEntityData = DC(Guid("9C1F7ED0-61F0-4987-82FA-469AD965DCAB"), Guid("0047C675-053C-4D84-860E-661555D20D27"))
 
 function OOCVision:__init()
-	m_Logger:Write("OOCVision init.")
+	self.m_SoundEntity = nil
 end
 
 function OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
@@ -14,11 +15,48 @@ function OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	Events:Dispatch("VEManager:RegisterPreset", m_OutOfCirclePresetName, m_OutOfCirclePreset)
 end
 
+function OOCVision:CreateSoundEntity()
+	if self.m_SoundEntity ~= nil then
+		return
+	end
+
+	-- oob sound resource
+	local s_EntityData = m_OOBSoundEntityData:GetInstance()
+
+	-- create sound entity
+	if s_EntityData ~= nil then
+		local s_EntityPos = LinearTransform()
+		s_EntityPos.trans = Vec3(0.0, 0.0, 0.0)
+
+		local s_Entity = EntityManager:CreateEntity(s_EntityData, s_EntityPos)
+
+		if s_Entity ~= nil then
+			s_Entity:Init(Realm.Realm_Client, true)
+			self.m_SoundEntity = SoundEntity(s_Entity)
+		end
+	end
+end
+
+function OOCVision:GetSoundEntity()
+	if self.m_SoundEntity == nil then
+		self:CreateSoundEntity()
+	end
+
+	return self.m_SoundEntity
+end
+
 function OOCVision:Enable()
 	if self.m_IsEnabled then
 		return
 	end
 
+	-- start OOB sound
+	local s_SoundEntity = self:GetSoundEntity()
+	if s_SoundEntity ~= nil then
+		s_SoundEntity:FireEvent("Start")
+	end
+
+	-- change VE state
 	Events:Dispatch("VEManager:FadeIn", m_OutOfCirclePresetName, 400)
 	self.m_IsEnabled = true
 end
@@ -29,12 +67,29 @@ function OOCVision:Disable()
 		return
 	end
 
+	-- stop OOB sound
+	local s_SoundEntity = self:GetSoundEntity()
+	if s_SoundEntity ~= nil then
+		s_SoundEntity:FireEvent("Stop")
+	end
+
+	-- change VE state
 	Events:Dispatch("VEManager:FadeOut", m_OutOfCirclePresetName, 400)
 	self.m_IsEnabled = false
 end
 
+function OOCVision:OnLevelDestroy()
+	self:Disable()
+
+	-- destroy sound entity
+	if self.m_SoundEntity ~= nil then
+		self.m_SoundEntity:Destroy()
+		self.m_SoundEntity = nil
+	end
+end
+
 if g_OOCVision == nil then
-    g_OOCVision = OOCVision()
+	g_OOCVision = OOCVision()
 end
 
 return g_OOCVision

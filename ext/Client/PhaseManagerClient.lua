@@ -24,17 +24,13 @@ end
 -- =============================================
 
 function PhaseManagerClient:OnExtensionUnloading()
-	PhaseManagerShared.Destroy(self)
+	PhaseManagerShared.OnLevelDestroy(self)
 end
 
 function PhaseManagerClient:OnLevelLoaded()
 	PhaseManagerShared.OnLevelLoaded(self)
 
 	self:RequestInitialState()
-end
-
-function PhaseManagerClient:OnLevelDestroy()
-	PhaseManagerShared.Destroy(self)
 end
 
 function PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)

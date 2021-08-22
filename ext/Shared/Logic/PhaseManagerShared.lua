@@ -92,7 +92,7 @@ function PhaseManagerShared:MoveOuterCircle(p_Timer)
 	Events:DispatchLocal(PhaseManagerEvent.CircleMove, self.m_OuterCircle:AsTable())
 end
 
-function PhaseManagerShared:Destroy()
+function PhaseManagerShared:OnLevelDestroy()
 	self:RemoveTimers()
 	self:RegisterVars()
 end
