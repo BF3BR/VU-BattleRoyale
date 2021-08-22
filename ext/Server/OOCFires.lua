@@ -21,13 +21,8 @@ function OOCFires:ResetVars()
 end
 
 function OOCFires:RegisterEvents()
-	NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected)
 	Events:Subscribe(PhaseManagerEvent.Update, self, self.OnCircleUpdate)
 	Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnCircleMove)
-
-	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-	Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
-	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
 end
 
 function OOCFires:GetRandomCircumPositions(p_Circle, p_Num)
@@ -156,10 +151,6 @@ function OOCFires:OnCircleMove(p_Circle)
 	self:AddItems(s_Positions)
 end
 
-function OOCFires:OnLevelLoaded()
-
-end
-
 function OOCFires:OnLevelDestroy()
 	self:ResetVars()
 end
@@ -168,4 +159,8 @@ function OOCFires:OnExtensionUnloading()
 	self:ResetVars()
 end
 
-OOCFires()
+if g_OOCFires == nil then
+	g_OOCFires = OOCFires()
+end
+
+return g_OOCFires

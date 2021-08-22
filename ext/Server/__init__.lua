@@ -8,8 +8,6 @@ require "__shared/Enums/GameStates"
 require "__shared/Enums/CustomEvents"
 require "__shared/Utils/Timers"
 
-require "OOCFires"
-
 require "Match"
 
 local m_Whitelist = require "Whitelist"
@@ -20,6 +18,7 @@ local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
 local m_SpectatorServer = require "SpectatorServer"
 local m_AntiCheat = require "AntiCheat"
+local m_OOCFires = require "OOCFires"
 local m_Logger = Logger("VuBattleRoyaleServer", true)
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
 
@@ -100,6 +99,7 @@ end
 
 function VuBattleRoyaleServer:OnExtensionUnloading()
 	m_PhaseManagerServer:OnExtensionUnloading()
+	m_OOCFires:OnExtensionUnloading()
 	self.m_Match:OnExtensionUnloading()
 end
 
@@ -128,6 +128,7 @@ function VuBattleRoyaleServer:OnLevelDestroy()
 	self.m_ForcedWarmup = false
 	m_PhaseManagerServer:OnLevelDestroy()
 	m_TeamManager:OnLevelDestroy()
+	m_OOCFires:OnLevelDestroy()
 end
 
 -- =============================================
@@ -237,6 +238,7 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 		return
 	end
 
+	m_OOCFires:OnPlayerConnected(p_Player)
 	m_PingServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
 	NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, self.m_GameState)
