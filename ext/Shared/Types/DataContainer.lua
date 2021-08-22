@@ -46,6 +46,8 @@ function DC:Deregister()
 	for _, l_ContainerCallback in ipairs(self.m_ContainerCallbacks) do
 		l_ContainerCallback:Deregister()
 	end
+
+	self.m_ContainerCallbacks = {}
 end
 
 function DC:_RegisterLoadHandlerInternal(p_Once, p_Userdata, p_Callback)
