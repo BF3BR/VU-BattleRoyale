@@ -1,5 +1,3 @@
-require "__shared/Configs/CircleConfig"
-require "__shared/Enums/CustomEvents"
 require "__shared/Utils/Timers"
 require "__shared/Utils/EventRouter"
 require "__shared/Types/Circle"

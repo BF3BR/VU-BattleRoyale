@@ -18,7 +18,7 @@ function OOCVision:Enable()
 	if self.m_IsEnabled then
 		return
 	end
-	
+
 	Events:Dispatch("VEManager:FadeIn", m_OutOfCirclePresetName, 400)
 	self.m_IsEnabled = true
 end
@@ -33,10 +33,8 @@ function OOCVision:Disable()
 	self.m_IsEnabled = false
 end
 
--- Singleton.
 if g_OOCVision == nil then
     g_OOCVision = OOCVision()
 end
 
 return g_OOCVision
-

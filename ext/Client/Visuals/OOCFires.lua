@@ -125,7 +125,6 @@ function OOCFires:OnExtensionUnloading()
 	self:UnspawnAll()
 end
 
--- define global
 if g_OOCFires == nil then
 	g_OOCFires = OOCFires()
 end

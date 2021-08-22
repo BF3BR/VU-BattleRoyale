@@ -1,5 +1,3 @@
-require "__shared/Configs/CircleConfig"
-
 local s_EasingFunctions = require "__shared/Libs/easing"
 local s_WhiteColor = Vec3(1, 1, 1)
 local s_BlueColor = Vec3(0.1, 0.3, 1)

@@ -1,5 +1,4 @@
 require "__shared/Utils/MathHelper"
-require "__shared/Configs/CircleConfig"
 require "__shared/Types/Circle"
 
 local m_Logger = Logger("RenderableCircle", false)

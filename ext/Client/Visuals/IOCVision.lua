@@ -1,19 +1,24 @@
-require "__shared/Enums/CustomEvents"
-require "__shared/Configs/CircleConfig"
-
 class "IOCVision"
 
-function IOCVision:__init()
-	self:RegisterEvents()
+function IOCVision:OnPlayerRespawn(p_Player)
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer ~= p_Player or p_Player.soldier == nil then
+		return
+	end
+
+	self:FixedVisionUpdates()
 end
 
-function IOCVision:RegisterEvents()
+function IOCVision:OnPhaseManagerUpdate(p_State)
 	if CircleConfig.UseFog then
-		-- should move to initial data mod
-		Events:Subscribe("Player:Respawn", self, self.FixedVisionUpdates)
+		self:UpdateFog(p_State.OuterCircle.Radius * 2)
+	end
+end
 
-		Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseUpdate)
-		Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnCircleMove)
+function IOCVision:OnOuterCircleMove(p_OuterCircle)
+	if CircleConfig.UseFog then
+		self:UpdateFog(p_OuterCircle.Radius * 2)
 	end
 end
 
@@ -43,15 +48,6 @@ function IOCVision:UpdateFog(p_Diameter)
 	VisualEnvironmentManager:SetDirty(true)
 end
 
-function IOCVision:OnPhaseUpdate(p_State)
-	self:UpdateFog(p_State.OuterCircle.Radius * 2)
-end
-
-function IOCVision:OnCircleMove(p_OuterCircle)
-	self:UpdateFog(p_OuterCircle.Radius * 2)
-end
-
--- define global
 if g_IOCVision == nil then
 	g_IOCVision = IOCVision()
 end
