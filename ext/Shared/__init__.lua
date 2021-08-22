@@ -3,7 +3,6 @@ class "VuBattleRoyaleShared"
 require "__shared/Enums/AttachmentTypes"
 
 require "__shared/Utils/Logger"
-require "__shared/Utils/EventRouter"
 require "__shared/Utils/LevelNameHelper"
 
 require "__shared/Types/DataContainer"

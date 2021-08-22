@@ -1,7 +1,6 @@
 class "LootPointHelper"
 
 require "__shared/Utils/LevelNameHelper"
-require "__shared/Utils/EventRouter"
 require "__shared/Configs/MapsConfig"
 
 function LootPointHelper:__init()
@@ -14,7 +13,6 @@ function LootPointHelper:__init()
 
 	if ServerConfig["Debug"]["EnableLootPointSpheres"] then
 		Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-		Events:Subscribe(EventRouterEvents.UIDrawHudCustom, self, self.OnUIDrawHud)
 		Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
 		Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
 	end
@@ -128,6 +126,10 @@ end
 function LootPointHelper:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	-- Only do raycast on presimulation UpdatePass
 	if p_UpdatePass ~= UpdatePass.UpdatePass_PreSim then
+		if p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
+			self:OnUIDrawHud()
+		end
+
 		return
 	end
 

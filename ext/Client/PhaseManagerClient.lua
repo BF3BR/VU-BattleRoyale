@@ -1,5 +1,4 @@
 require "__shared/Utils/Timers"
-require "__shared/Utils/EventRouter"
 require "__shared/Types/Circle"
 require "__shared/Logic/PhaseManagerShared"
 require "Visuals/CircleRenderers"
