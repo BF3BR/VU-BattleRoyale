@@ -151,6 +151,7 @@ function VuBattleRoyaleServer:OnLevelDestroy()
 	m_PhaseManagerServer:OnLevelDestroy()
 	m_TeamManager:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
+	m_PhaseManagerServer:OnLevelDestroy()
 end
 
 -- =============================================

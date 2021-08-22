@@ -4,7 +4,7 @@ class "WindowsCircleSpawner"
 
 local m_RotationHelper = require "__shared/Utils/RotationHelper"
 
-local m_Logger = Logger("WindowsCircleSpawner", true)
+local m_Logger = Logger("WindowsCircleSpawner", false)
 local m_MagicScalingNumber = 2.5
 
 -- 'Architecture/Warehouse_02/DebrisClusters/Warehouse_02_WindowBroken_01'

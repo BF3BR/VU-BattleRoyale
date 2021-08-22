@@ -23,16 +23,8 @@ end
 -- Events
 -- =============================================
 
-function PhaseManagerServer:OnLevelLoaded()
-	PhaseManagerShared.OnLevelLoaded(self)
-end
-
-function PhaseManagerServer:OnLevelDestroy()
-	PhaseManagerShared.Destroy(self)
-end
-
 function PhaseManagerServer:OnExtensionUnloading()
-	PhaseManagerShared.Destroy(self)
+	PhaseManagerShared.OnLevelDestroy(self)
 end
 
 function PhaseManagerServer:OnPhaseManagerInitialState(p_Player)
