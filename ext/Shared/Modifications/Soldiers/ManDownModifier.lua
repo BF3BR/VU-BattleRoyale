@@ -68,13 +68,14 @@ local m_SoldierInteraction_Inputs = {
 	"prone"
 }
 
-function ManDownModifier:__init()
-
-end
-
 function ManDownModifier:RegisterCallbacks()
 	m_ReviveCustomizeSoldierData:RegisterLoadHandler(self, self.OnReviveCustomizeSoldierData)
 	m_AimingConstraints:RegisterLoadHandler(self, self.OnAimingConstraintsData)
+end
+
+function ManDownModifier:DeregisterCallbacks()
+	m_ReviveCustomizeSoldierData:Deregister()
+	m_AimingConstraints:Deregister()
 end
 
 function ManDownModifier:OnReviveCustomizeSoldierData(p_CustomizeSoldierData)

@@ -16,8 +16,14 @@ function FireEffectsModifier:RegisterVars()
 end
 
 function FireEffectsModifier:RegisterCallbacks()
-	for l_Index, l_Effect in ipairs(FireEffectsConfig.Effects) do
+	for _, l_Effect in ipairs(FireEffectsConfig.Effects) do
 		l_Effect:RegisterLoadHandler(self, self.DisableLightComponent)
+	end
+end
+
+function FireEffectsModifier:DeregisterCallbacks()
+	for _, l_Effect in ipairs(FireEffectsConfig.Effects) do
+		l_Effect:Deregister()
 	end
 end
 

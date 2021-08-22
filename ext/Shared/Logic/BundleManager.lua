@@ -8,7 +8,13 @@ end
 
 function BundleManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	if self.m_LevelName == p_LevelName then
-		m_Logger:Write("Return OnLoadResources")
+		m_Logger:Write("Return OnLoadResources, because it is the same level")
+		return
+	end
+
+	self.m_LevelName = p_LevelName
+
+	if MapsConfig[LevelNameHelper:GetLevelName()] == nil then
 		return
 	end
 
@@ -18,8 +24,6 @@ function BundleManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedSer
 		ResourceManager:MountSuperBundle(l_SuperBundle)
 		m_Logger:Write(l_Index .. ": " .. l_SuperBundle)
 	end
-
-	self.m_LevelName = p_LevelName
 end
 
 function BundleManager:OnLoadBundles(p_Hook, p_Bundles, p_Compartment)

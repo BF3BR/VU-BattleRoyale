@@ -16,6 +16,13 @@ function PhysicsModifier:RegisterCallbacks()
 	m_PronePoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)
 end
 
+function PhysicsModifier:DeregisterCallbacks()
+	m_InAirStateData:Deregister()
+	m_StandPoseInfo:Deregister()
+	m_CrouchPoseInfo:Deregister()
+	m_PronePoseInfo:Deregister()
+end
+
 -- Change the free fall velocity so free fall state kicks in later
 function PhysicsModifier:OnInAirStateDataLoaded(p_InAirStateData)
 	p_InAirStateData.freeFallVelocity = 20.0

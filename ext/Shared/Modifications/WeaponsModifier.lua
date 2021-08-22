@@ -18,6 +18,14 @@ function WeaponsModifier:RegisterCallbacks()
 	m_MeleeEntityCommonData:RegisterLoadHandler(self, self.DisableKnifeTakedownAnimation)
 end
 
+function WeaponsModifier:DeregisterCallbacks()
+	m_AmmobagFiringData:Deregister()
+	m_AmmobagResupplyData:Deregister()
+	m_MedkitFiringData:Deregister()
+	m_MedkitHealingData:Deregister()
+	m_MeleeEntityCommonData:Deregister()
+end
+
 -- Disable infinite medkit and ammobag capacity
 function WeaponsModifier:DisableAutoReplenish(p_FiringData)
 	p_FiringData.ammo.autoReplenishMagazine = false

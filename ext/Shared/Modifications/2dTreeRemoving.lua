@@ -12,6 +12,11 @@ function TreeRemoving:RegisterCallbacks()
 	m_XP3_Shield:RegisterLoadHandler(self, self.OnMeshVariationDatabase)
 end
 
+function TreeRemoving:DeregisterCallbacks()
+	m_XP5_003:Deregister()
+	m_XP3_Shield:Deregister()
+end
+
 function TreeRemoving:OnMeshVariationDatabase(p_Instance)
 	p_Instance = MeshVariationDatabase(p_Instance)
 	ModifyDatabase(p_Instance)

@@ -10,6 +10,10 @@ function WeaponSwitchingModifier:RegisterCallbacks()
 	m_SoldierWeaponSwitchingData:RegisterLoadHandler(self, self.OnSoldierWeaponSwitchingData)
 end
 
+function WeaponSwitchingModifier:DeregisterCallbacks()
+	m_SoldierWeaponSwitchingData:Deregister()
+end
+
 function WeaponSwitchingModifier:OnSoldierWeaponSwitchingData(p_WeaponSwitchingData)
 	-- add EIASwitchPrimaryWeapon from Slot0 to Slot9 if there is no weapon in Slot1
 	p_WeaponSwitchingData.switchMap[1].toWeapon:add(WeaponSwitchingEnum.wsSlot9)
