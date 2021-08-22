@@ -349,13 +349,9 @@ function SpectatorClient:Enable(p_InflictorId)
 
 		if not self.m_IsDefaultFreeCamSet then
 			m_Logger:Write("Set freecam transform")
-			local s_Transform = LinearTransform(
-					Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588),
-					Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069),
-					Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139),
-					Vec3(98.216575622559, 889.53924560547, -815.45764160156))
+			local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
 			SpectatorManager:SetFreecameraTransform(s_Transform)
-			g_Timers:Timeout(0.01, self, self.OnSetFreecameraTransform)
+			g_Timers:Interval(0.1, self, self.OnSetFreecameraTransform)
 		end
 	end
 
@@ -397,16 +393,13 @@ end
 	-- Set Freecamera transform
 -- =============================================
 
-function SpectatorClient:OnSetFreecameraTransform()
+function SpectatorClient:OnSetFreecameraTransform(p_Timer)
 	local s_CameraTransform = ClientUtils:GetCameraTransform()
-	local s_Transform = LinearTransform(
-			Vec3(-0.9988129734993, 0.048187829554081, -0.0071058692410588),
-			Vec3(-0.00787671841681, -0.015825755894184, 0.99984383583069),
-			Vec3(0.048067845404148, 0.99871289730072, 0.016186531633139),
-			Vec3(98.216575622559, 889.53924560547, -815.45764160156))
+	local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
 
 	if s_Transform.trans:Distance(s_CameraTransform.trans) < 15.0 then
 		self.m_IsDefaultFreeCamSet = true
+		p_Timer:Destroy()
 	else
 		m_Logger:Write("Setting freecam transform failed.")
 		m_Logger:Write(s_Transform.trans:Distance(s_CameraTransform.trans))
