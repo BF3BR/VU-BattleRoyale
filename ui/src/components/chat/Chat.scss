@@ -40,14 +40,10 @@
     position: absolute;
     width: 25.2vw;
     height: 13.15vh;
-    top: 5vw;
-    left: 2.5vw;
+    top: 7vw;
+    right: 2.5vw;
+    left: auto;
     z-index: 9999;
-
-    &.isDeploy {
-        right: 2.5vw;
-        left: auto;
-    }
 
     .chatWindow {
         overflow-x: hidden;
@@ -313,8 +309,8 @@
 #VuChatStatePopup {
     color: #fff;
     position: absolute;
-    left: 2.5vw;
-    top: 28vh;
+    right: 2.5vw;
+    top: 17vw;
     width: 25.2vw;
     height: 3vh;
     font-size: .75vw;
