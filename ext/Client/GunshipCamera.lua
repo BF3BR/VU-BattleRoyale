@@ -1,6 +1,7 @@
 class "GunshipCamera"
 
 local m_Hud = require "Hud"
+local m_Logger = Logger("GunshipCamera", true)
 
 function GunshipCamera:__init()
 	self.m_Distance = 50.0
@@ -147,6 +148,9 @@ function GunshipCamera:CreateCamera()
 	if s_Entity ~= nil then
 		s_Entity:Init(Realm.Realm_Client, true)
 		self.m_Entity = s_Entity
+	else
+		m_Logger:Write("Creating CameraEntity failed. The player is probably still loading the game. Activating Spectator.")
+    	SpectatorManager:SetSpectating(true)
 	end
 end
 
