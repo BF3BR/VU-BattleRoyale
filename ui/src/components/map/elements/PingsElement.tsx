@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { connect } from "react-redux";
 import { RootState } from "../../../store/RootReducer";
 
-import { GlowFilter } from "@pixi/filter-glow";
 import * as PIXI from 'pixi.js';
 import { Graphics, Sprite } from '@inlet/react-pixi';
 
@@ -54,9 +53,9 @@ const PingsElement: React.FC<Props> = ({
                 var color = getConvertedPlayerColor(ping.color);
                 var f = new PIXI.Graphics();
                 f.clear();
-                f.beginFill(color, 0.3)
-                g.lineStyle({
-                    width: 3, 
+                f.beginFill(color, 0.4)
+                f.lineStyle({
+                    width: 2, 
                     color: color, 
                     alpha: 1,
                     join: PIXI.LINE_JOIN.MITER,
@@ -65,16 +64,10 @@ const PingsElement: React.FC<Props> = ({
                 f.drawCircle(
                     getMapPos(ping.position.x, topLeftPos.x, textureWidthHeight, worldWidthHeight),
                     getMapPos(ping.position.z, topLeftPos.z, textureWidthHeight, worldWidthHeight),
-                    15
+                    12
                 );
                 f.closePath();
                 f.endFill();
-                f.filters = [new GlowFilter({ 
-                    distance: 7.5, 
-                    outerStrength: 1.5, 
-                    innerStrength: .1,
-                    color: color,
-                })];
                 g.addChild(f);
             });
             // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,17 +98,17 @@ const PingsElement: React.FC<Props> = ({
         switch (type) {
             default:
             case 0:
-                return 0.04;
+                return 0.03;
             case 1:
-                return 0.135;
+                return 0.09;
             case 2:
-                return 0.125;
+                return 0.09;
             case 3:
-                return 0.15;
+                return 0.1;
             case 4:
-                return 0.035;
+                return 0.025;
             case 5:
-                return 0.035;
+                return 0.025;
         }
     }
 
@@ -123,7 +116,7 @@ const PingsElement: React.FC<Props> = ({
         <>
             {(pingsTable !== null && pingsTable.length > 0) &&
                 <>
-                    {/*<Pings />*/}
+                    <Pings />
                     {pingsTable.map((ping: Ping) => 
                         <Sprite
                             texture={getPingTexture(ping.type)}
@@ -134,14 +127,6 @@ const PingsElement: React.FC<Props> = ({
                             y={getMapPos(ping.position.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
                             scale={getPingScale(ping.type)}
                             angle={(open || !minimapRotation) ? 0 : playerYaw}
-                            filters={[
-                                new GlowFilter({
-                                    distance: 35,
-                                    outerStrength: 5,
-                                    innerStrength: 0,
-                                    color: getConvertedPlayerColor(ping.color),
-                                })
-                            ]}
                         />
                     )}
                 </>

@@ -234,13 +234,6 @@ const MapPixi: React.FC<Props> = ({ open }) => {
                     textureWidthHeight={textureWidthHeight}
                     worldWidthHeight={worldWidthHeight}
                 />
-                
-                <PlayerElement 
-                    forwardRef={followPlayer}
-                    topLeftPos={topLeftPos}
-                    textureWidthHeight={textureWidthHeight}
-                    worldWidthHeight={worldWidthHeight}
-                />
 
                 <PlaneElement 
                     topLeftPos={topLeftPos}
@@ -249,6 +242,13 @@ const MapPixi: React.FC<Props> = ({ open }) => {
                 />
 
                 <PingsElement
+                    topLeftPos={topLeftPos}
+                    textureWidthHeight={textureWidthHeight}
+                    worldWidthHeight={worldWidthHeight}
+                />
+
+                <PlayerElement 
+                    forwardRef={followPlayer}
                     topLeftPos={topLeftPos}
                     textureWidthHeight={textureWidthHeight}
                     worldWidthHeight={worldWidthHeight}

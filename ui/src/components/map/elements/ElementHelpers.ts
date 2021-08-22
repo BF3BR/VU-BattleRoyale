@@ -1,6 +1,5 @@
 import React from "react";
 import * as PIXI from 'pixi.js';
-import { GlowFilter } from '@pixi/filter-glow';
 import '@pixi/graphics-extras';
 
 import viewAngles from "../../../assets/img/viewangles_texture.png";
@@ -24,12 +23,6 @@ export const drawPlayer = (g: any, color: number) => {
     g.lineTo(0, 0 + sideLength / 2);
     g.closePath();
     g.endFill();
-    g.filters = [new GlowFilter({
-        distance: 35,
-        outerStrength: .8,
-        innerStrength: 0,
-        color: color,
-    })];
 };
 
 export const drawPlayerVision = (g: any) => {

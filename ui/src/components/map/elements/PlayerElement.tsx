@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { RootState } from "../../../store/RootReducer";
 
-import { GlowFilter } from "@pixi/filter-glow";
 import * as PIXI from 'pixi.js';
 import { Graphics } from '@inlet/react-pixi';
 
@@ -66,12 +65,6 @@ const PlayerElement: React.FC<Props> = ({
         });
         g.moveTo(x, y);
         g.lineTo(Px, Py);
-        g.filters = [new GlowFilter({ 
-            distance: 15, 
-            outerStrength: 1.5, 
-            innerStrength: .1,
-            color: 0xffffff,
-        })];
     }, []);
         
     return (

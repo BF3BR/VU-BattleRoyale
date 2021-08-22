@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { connect } from "react-redux";
 import { RootState } from "../../../store/RootReducer";
 
-import { GlowFilter } from "@pixi/filter-glow";
 import * as PIXI from 'pixi.js';
 import { Graphics } from '@inlet/react-pixi';
 
@@ -60,12 +59,6 @@ const CircleElement: React.FC<Props> = ({
                     getMapPos(props.circle.center.z, topLeftPos.z, textureWidthHeight, worldWidthHeight),
                     radius
                 );
-                f.filters = [new GlowFilter({ 
-                    distance: 20, 
-                    outerStrength: 1.5, 
-                    innerStrength: .1,
-                    color: 0xff9900,
-                })];
                 g.addChild(f);
             } else {
                 g.lineStyle({
@@ -80,12 +73,6 @@ const CircleElement: React.FC<Props> = ({
                     getMapPos(props.circle.center.z, topLeftPos.z, textureWidthHeight, worldWidthHeight),
                     radius
                 );
-                g.filters = [new GlowFilter({ 
-                    distance: 20, 
-                    outerStrength: 1.5, 
-                    innerStrength: .1,
-                    color: 0xffffff,
-                })];
             }
         }, [props]);
       
