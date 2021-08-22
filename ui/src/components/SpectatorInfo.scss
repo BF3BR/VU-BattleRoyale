@@ -1,9 +1,10 @@
 #SpectatorInfo {
     position: absolute;
-    bottom: 4.5vw;
-    left: 2.5vw;
-    width: 12vw;
+    bottom: 2.5vw;
+    left: 50%;
+    width: 20vw;
     opacity: 0;
+    transform: translateX(-50%);
 
     &.show {
         opacity: 1;
@@ -13,6 +14,53 @@
         h1 {
             font-size: .65vw;
             color: var(--warning);
+        }
+    }
+
+    .card-footer {
+        top: -2vw;
+        position: absolute;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .right,
+        .left {
+            display: flex;
+            align-items: center;
+            font-size: .75vw;
+        }
+
+        .keyboard {
+            border: .15vw solid #fff;
+            border-radius: 0.25vw;
+            margin: 0 .85vw 0 0;
+            background: rgba(255, 255, 255, 0.1);
+            height: 1vw;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+            padding: 0 .25vw .15vw;
+            font-size: .55vw;
+            
+            img {
+                max-width: .8vw;
+                transform: rotate(180deg);
+            }
+        }
+
+        .right {
+            .keyboard {
+                margin: 0 0 0 .85vw;
+
+                img {
+                    transform: rotate(0deg);
+                }
+            }
         }
     }
 }

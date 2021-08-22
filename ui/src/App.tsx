@@ -632,7 +632,12 @@ const App: React.FC<Props> = ({
                             5,
                             Sounds.Alert
                         ))}>Set alert</button>
-                        <button onClick={() => dispatch(updateSpectatorEnabled(true))}>Set Spectator</button>
+                        <button onClick={() => {
+                            dispatch(updateSpectatorEnabled(true));
+                            dispatch(updateSpectatorTarget("Test"));
+                        }}>
+                            Set Spectator
+                        </button>
                         <button onClick={() => dispatch(updateGameover(true))}>Set Gameover Screen</button>
                         <button onClick={() => window.OnLocalPlayerInfo({
                             name: 'KVN',
