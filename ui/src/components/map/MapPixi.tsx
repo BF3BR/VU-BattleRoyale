@@ -152,7 +152,7 @@ const MapPixi: React.FC<Props> = ({ open }) => {
         viewport.plugins.pause('bounce');
 
         viewport.snapZoom({ width: snapZoomHeight, height: snapZoomHeight, time: 100 });
-        if (followPlayer.current !== null) {
+        if (followPlayer && followPlayer.current !== null) {
             viewport.follow(followPlayer.current, { speed: 50 });
         }
     }, []);
