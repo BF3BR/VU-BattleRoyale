@@ -148,7 +148,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 		return
 	end
 
-	WebUI:ExecuteJS("OnMapShow(true)")
+	WebUI:ExecuteJS("OnMapShow(true);")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
 	g_Timers:Timeout(0.75, function()
@@ -313,6 +313,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnGunshipEnable()
+	WebUI:ExecuteJS("OnMapShow(true);") -- Just to be sure
 	self.m_HudOnPlayerIsOnPlane:Update(true)
 	self.m_IsPlayerOnPlane = true
 end
@@ -323,6 +324,7 @@ function VuBattleRoyaleHud:OnGunshipDisable()
 end
 
 function VuBattleRoyaleHud:OnJumpOutOfGunship()
+	WebUI:ExecuteJS("OnMapShow(true);") -- Just to be sure
 	self.m_HudOnPlayerIsOnPlane:Update(false)
 	self.m_IsPlayerOnPlane = false
 end
