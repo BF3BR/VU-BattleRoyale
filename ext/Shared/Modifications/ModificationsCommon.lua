@@ -53,6 +53,7 @@ function ModificationsCommon:OnExtensionUnloading()
 end
 
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
+	m_FireEffectsModifier:OnRegisterEntityResources()
 	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
 end
 
