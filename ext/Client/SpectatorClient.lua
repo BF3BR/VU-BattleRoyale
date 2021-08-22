@@ -135,11 +135,12 @@ function SpectatorClient:OnClientUpdateInput()
 		return
 	end
 
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight) then
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Space)
+	or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight)
+	or InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_0) then
 		self:SpectateNextPlayer()
-	end
-
-	if InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft) then
+	elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft)
+	or InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_1) then
 		self:SpectatePreviousPlayer()
 	end
 
