@@ -28,6 +28,7 @@ end
 
 function VuBattleRoyaleServer:OnExtensionLoaded()
 	self:RegisterVars()
+	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
 	self:RegisterEvents()
 	self:RegisterHooks()
 	self:RegisterRconCommands()
@@ -53,38 +54,41 @@ function VuBattleRoyaleServer:RegisterVars()
 end
 
 function VuBattleRoyaleServer:RegisterEvents()
-	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
+	self.m_Events = {
+		Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading),
 
-	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
-	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-	Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
+		Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded),
+		Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy),
 
-	Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
-	Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
+		Events:Subscribe("Engine:Update", self, self.OnEngineUpdate),
+		Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate),
 
-	Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated)
-	Events:Subscribe("Player:Created", self, self.OnPlayerCreated)
-	Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput)
-	Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon)
-	Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived)
-	Events:Subscribe("Player:Killed", self, self.OnPlayerKilled)
-	Events:Subscribe("Player:Left", self, self.OnPlayerLeft)
+		Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated),
+		Events:Subscribe("Player:Created", self, self.OnPlayerCreated),
+		Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput),
+		Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon),
+		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
+		Events:Subscribe("Player:Killed", self, self.OnPlayerKilled),
+		Events:Subscribe("Player:Left", self, self.OnPlayerLeft),
 
-	NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected)
-	NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy)
-	NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw)
-	NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing)
-	NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing)
-	NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
-	NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute)
-	NetEvents:Subscribe("ChatMessage:SquadSend", self, self.OnChatMessageSquadSend)
-	NetEvents:Subscribe("ChatMessage:AllSend", self, self.OnChatMessageAllSend)
-	NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnPhaseManagerInitialState)
+		NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected),
+		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
+		NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw),
+		NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing),
+		NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing),
+		NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship),
+		NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute),
+		NetEvents:Subscribe("ChatMessage:SquadSend", self, self.OnChatMessageSquadSend),
+		NetEvents:Subscribe("ChatMessage:AllSend", self, self.OnChatMessageAllSend),
+		NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnPhaseManagerInitialState)
+	}
 end
 
 function VuBattleRoyaleServer:RegisterHooks()
-	Hooks:Install("Player:RequestJoin", 100, self, self.OnPlayerRequestJoin)
-	Hooks:Install("Soldier:Damage", 1, self, self.OnSoldierDamage)
+	self.m_Hooks = {
+		Hooks:Install("Player:RequestJoin", 100, self, self.OnPlayerRequestJoin),
+		Hooks:Install("Soldier:Damage", 1, self, self.OnSoldierDamage)
+	}
 end
 
 function VuBattleRoyaleServer:RegisterRconCommands()
@@ -108,6 +112,24 @@ end
 -- =============================================
 
 function VuBattleRoyaleServer:OnLevelLoadResources()
+	if MapsConfig[LevelNameHelper:GetLevelName()] == nil then
+		for _, l_Event in pairs(self.m_Events) do
+			l_Event:Unsubscribe()
+		end
+
+		for _, l_Hook in pairs(self.m_Hooks) do
+			l_Hook:Uninstall()
+		end
+
+		self.m_Events = {}
+		self.m_Hooks = {}
+
+		return
+	elseif #self.m_Events == 0 then
+		self:RegisterEvents()
+		self:RegisterHooks()
+	end
+
 	m_LootManager:OnLevelLoadResources()
 end
 

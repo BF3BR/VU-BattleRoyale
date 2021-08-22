@@ -7,6 +7,7 @@ function DC:__init(p_PartitionGuid, p_InstanceGuid)
 
 	self.m_PartitionGuid = p_PartitionGuid
 	self.m_InstanceGuid = p_InstanceGuid
+	self.m_ContainerCallbacks = {}
 end
 
 function DC:GetInstance()
@@ -41,6 +42,14 @@ function DC:RegisterLoadHandlerOnce(p_Userdata, p_Callback)
 	self:_RegisterLoadHandlerInternal(true, p_Userdata, p_Callback)
 end
 
+function DC:Deregister()
+	for _, l_ContainerCallback in ipairs(self.m_ContainerCallbacks) do
+		l_ContainerCallback:Deregister()
+	end
+
+	self.m_ContainerCallbacks = {}
+end
+
 function DC:_RegisterLoadHandlerInternal(p_Once, p_Userdata, p_Callback)
 	local s_Args
 
@@ -51,9 +60,11 @@ function DC:_RegisterLoadHandlerInternal(p_Once, p_Userdata, p_Callback)
 	end
 
 	if p_Once then
-		ResourceManager:RegisterInstanceLoadHandlerOnce(self.m_PartitionGuid, self.m_InstanceGuid, table.unpack(s_Args))
+		local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandlerOnce(self.m_PartitionGuid, self.m_InstanceGuid, table.unpack(s_Args))
+		table.insert(self.m_ContainerCallbacks, s_ContainerCallback)
 	else
-		ResourceManager:RegisterInstanceLoadHandler(self.m_PartitionGuid, self.m_InstanceGuid, table.unpack(s_Args))
+		local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandler(self.m_PartitionGuid, self.m_InstanceGuid, table.unpack(s_Args))
+		table.insert(self.m_ContainerCallbacks, s_ContainerCallback)
 	end
 end
 
@@ -67,7 +78,7 @@ function DC.static:WaitForInstances(p_Instances, p_Userdata, p_Callback)
 	local s_Instances = {}
 
 	for l_Index, l_DC in ipairs(p_Instances) do
-		ResourceManager:RegisterInstanceLoadHandlerOnce(l_DC.m_PartitionGuid, l_DC.m_InstanceGuid, function(p_Instance)
+		local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandlerOnce(l_DC.m_PartitionGuid, l_DC.m_InstanceGuid, function(p_Instance)
 			s_Instances[l_Index] = p_Instance
 
 			for i = 1, #p_Instances do
@@ -86,6 +97,8 @@ function DC.static:WaitForInstances(p_Instances, p_Userdata, p_Callback)
 
 			self:WaitForInstances(p_Instances, p_Userdata, p_Callback)
 		end)
+
+		table.insert(l_DC.m_ContainerCallbacks, s_ContainerCallback)
 	end
 end
 

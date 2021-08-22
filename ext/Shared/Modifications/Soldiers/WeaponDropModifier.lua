@@ -8,6 +8,10 @@ function WeaponDropModifier:RegisterCallbacks()
 	m_LootBoxRigid:RegisterLoadHandler(self, self.OnLootBoxRigid)
 end
 
+function WeaponDropModifier:DeregisterCallbacks()
+	m_LootBoxRigid:Deregister()
+end
+
 -- =============================================
 -- Events
 -- =============================================

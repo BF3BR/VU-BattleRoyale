@@ -19,10 +19,6 @@ local m_TimeOutFix = require "__shared/Modifications/TimeOutFix"
 
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 
-function ModificationsCommon:__init()
-
-end
-
 function ModificationsCommon:RegisterCallbacks()
 	m_SoldierBlueprint:RegisterLoadHandler(self, self.OnSoldierBlueprintLoaded)
 
@@ -57,6 +53,7 @@ function ModificationsCommon:OnExtensionUnloading()
 end
 
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
+	m_FireEffectsModifier:OnRegisterEntityResources()
 	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
 end
 
@@ -66,8 +63,20 @@ function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_Dedica
 	local s_MapId = LevelNameHelper:GetLevelName()
 	local s_Config = MapsConfig[s_MapId]
 
-	if s_Config == nil then
-		m_Logger:Write("Unsupported map!")
+	if s_Config == nil or s_Config.MapPreset == nil then
+		m_Logger:Write("This map is not supported.")
+		m_SoldierBlueprint:Deregister()
+		m_WeaponSwitchingModifier:DeregisterCallbacks()
+		m_WeaponsModifier:DeregisterCallbacks()
+		m_DropShipModifier:DeregisterCallbacks()
+		m_VanillaUIModifier:DeregisterCallbacks()
+		m_TempMapPatches:DeregisterCallbacks()
+		m_PhysicsModifier:DeregisterCallbacks()
+		m_WeaponDropModifier:DeregisterCallbacks()
+		m_2dTreeRemoving:DeregisterCallbacks()
+		m_FireEffectsModifier:DeregisterCallbacks()
+		m_ManDownModifier:DeregisterCallbacks()
+		m_RemoveAutotriggerVO:DeregisterCallbacks()
 		return
 	end
 

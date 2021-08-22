@@ -65,6 +65,31 @@ function VanillaUIModifier:RegisterCallbacks()
 	DC:WaitForInstances({ m_MPMenuScreenAsset, m_UISquadCompData }, self, self.ModifyMenu)
 end
 
+function VanillaUIModifier:DeregisterCallbacks()
+	m_HudScreenAsset:Deregister()
+	m_HudMpScreenAsset:Deregister()
+	m_HudConquestScreenAsset:Deregister()
+
+	m_UINametagCompData:Deregister()
+
+	m_UITrackingtagCompData:Deregister()
+	m_UI3dIconCompData:Deregister()
+	m_CapturepointtagCompData:Deregister()
+	m_3dLaserTagCompData:Deregister()
+	m_MapmarkertagCompData:Deregister()
+	m_TeamSupportTagCompData:Deregister()
+	--m_InteractionCompData:Deregister()
+	m_ColorCorrectionCompData:Deregister()
+	m_DofComponentData:Deregister()
+
+	m_ShowRoomCameraData:Deregister()
+
+	m_IconTextureAtlas:Deregister()
+
+	m_MPMenuScreenAsset:Deregister()
+	m_UISquadCompData:Deregister()
+end
+
 function VanillaUIModifier:OnHudScreen(p_ScreenAsset)
 	self:KeepNodes(p_ScreenAsset, {"InteractionManager", "DamageIndicator"})
 end

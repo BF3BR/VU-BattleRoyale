@@ -16,9 +16,19 @@ function FireEffectsModifier:RegisterVars()
 end
 
 function FireEffectsModifier:RegisterCallbacks()
-	for l_Index, l_Effect in ipairs(FireEffectsConfig.Effects) do
+	for _, l_Effect in ipairs(FireEffectsConfig.Effects) do
 		l_Effect:RegisterLoadHandler(self, self.DisableLightComponent)
 	end
+end
+
+function FireEffectsModifier:DeregisterCallbacks()
+	for _, l_Effect in ipairs(FireEffectsConfig.Effects) do
+		l_Effect:Deregister()
+	end
+end
+
+function FireEffectsModifier:OnRegisterEntityResources()
+	self.m_NumberOfAddedFireEffects = 1
 end
 
 function FireEffectsModifier:DisableLightComponent(p_EffectBlueprint)
@@ -38,7 +48,7 @@ function FireEffectsModifier:DisableLightComponent(p_EffectBlueprint)
 			local s_EmitterEntityData = EmitterEntityData(l_Component)
 
 			if s_EmitterEntityData.emitter.isLazyLoaded then
-				s_EmitterEntityData.emitter:RegisterLoadHandler({s_EffectEntityData, l_Index}, function(p_Table, p_Instance)
+				s_EmitterEntityData.emitter:RegisterLoadHandlerOnce({s_EffectEntityData, l_Index}, function(p_Table, p_Instance)
 					local s_EmitterDocument = EmitterDocument(s_EmitterEntityData.emitter)
 
 					if s_EmitterDocument.templateData ~= nil then

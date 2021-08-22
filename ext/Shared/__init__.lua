@@ -20,12 +20,15 @@ local m_BundleManager = require "__shared/Logic/BundleManager"
 local m_GunSwayManager = require "__shared/Logic/GunSwayManager"
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
 local m_MapLoader = require "__shared/Logic/MapLoader"
+local m_Logger = Logger("VuBattleRoyaleShared", true)
 
 function VuBattleRoyaleShared:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
 end
 
 function VuBattleRoyaleShared:OnExtensionLoaded()
+	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
+
 	self:RegisterEvents()
 	self:RegisterHooks()
 	self:RegisterCallbacks()
@@ -33,19 +36,22 @@ function VuBattleRoyaleShared:OnExtensionLoaded()
 end
 
 function VuBattleRoyaleShared:RegisterEvents()
-	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
-	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
-	Events:Subscribe("Level:RegisterEntityResources", self, self.OnRegisterEntityResources)
-	Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate)
-	Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded)
-	Events:Subscribe('Level:LoadingInfo', self, self.OnLevelLoadingInfo)
-	Events:Subscribe('Level:Destroy', self, self.OnLevelDestroy)
+	self.m_Events = {
+		Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading),
+		Events:Subscribe("Level:RegisterEntityResources", self, self.OnRegisterEntityResources),
+		Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate),
+		Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded),
+		Events:Subscribe('Level:LoadingInfo', self, self.OnLevelLoadingInfo),
+		Events:Subscribe('Level:Destroy', self, self.OnLevelDestroy)
+	}
 end
 
 function VuBattleRoyaleShared:RegisterHooks()
-	Hooks:Install("ResourceManager:LoadBundles", 100, self, self.OnLoadBundles)
-	Hooks:Install("Terrain:Load", 100, self, self.OnTerrainLoad)
-	Hooks:Install("VisualTerrain:Load", 100, self, self.OnTerrainLoad)
+	self.m_Hooks = {
+		Hooks:Install("ResourceManager:LoadBundles", 100, self, self.OnLoadBundles),
+		Hooks:Install("Terrain:Load", 100, self, self.OnTerrainLoad),
+		Hooks:Install("VisualTerrain:Load", 100, self, self.OnTerrainLoad)
+	}
 end
 
 function VuBattleRoyaleShared:RegisterCallbacks()
@@ -61,9 +67,31 @@ function VuBattleRoyaleShared:OnExtensionUnloading()
 end
 
 function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_BundleManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_RegistryManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_BundleManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+
+	if MapsConfig[LevelNameHelper:GetLevelName()] == nil then
+		m_Logger:Write("Wrong map. Unsubscribe, uninstall & deregister everything.")
+		for _, l_Event in pairs(self.m_Events) do
+			l_Event:Unsubscribe()
+		end
+
+		for _, l_Hook in pairs(self.m_Hooks) do
+			l_Hook:Uninstall()
+		end
+
+		self.m_Events = {}
+		self.m_Hooks = {}
+
+		return
+	elseif #self.m_Events == 0 then
+		m_Logger:Write("Subscribe, install & register everything again.")
+		self:RegisterEvents()
+		self:RegisterHooks()
+		m_ModificationsCommon:RegisterCallbacks()
+	end
+
+	m_RegistryManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_MapLoader:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 end
 

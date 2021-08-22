@@ -5,48 +5,30 @@ local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifi
 
 local m_Logger = Logger("TempMapPatches", true)
 
-function TempMapPatches:__init()
-
-end
+local m_XP5_003_Conquest_WorldPartData = DC(Guid("6C0D021C-80D8-4BDE-85F7-CDF6231F95D5"), Guid("DA506D40-69C7-4670-BB8B-25EDC9F1A526"))
+local m_Conquest_PreRoundEntityData = DC(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"))
+local m_Conquest_SpatialPrefabBlueprint = DC(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"))
+local m_XP5_003_CQL_WorldPartData = DC(Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"), Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"))
+local m_GameModeSettings = DC(Guid("C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4"), Guid("AD413546-DEAF-8115-B89C-D666E801C67A"))
+local m_RU_Large_TeamEntityData = DC(Guid("19631E31-2E3A-432B-8929-FB57BAA7D28E"), Guid("B4BB6CFA-0E53-45F9-B190-1287DCC093A9"))
 
 function TempMapPatches:RegisterCallbacks()
-	ResourceManager:RegisterInstanceLoadHandler(
-		Guid("6C0D021C-80D8-4BDE-85F7-CDF6231F95D5"),
-		Guid("DA506D40-69C7-4670-BB8B-25EDC9F1A526"),
-		self, self.OnWorldPartLoaded
-	)
-
-	ResourceManager:RegisterInstanceLoadHandler(
-		Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"),
-		Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"),
-		self, self.OnPreRoundEntityData
-	)
-
-	ResourceManager:RegisterInstanceLoadHandler(
-		Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"),
-		Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"),
-		self, self.OnDisableCamerasOnUnspawn
-	)
-
-	ResourceManager:RegisterInstanceLoadHandler(
-		Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"),
-		Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
-		self, self.OnVehiclesWorldPartData
-	)
-
-	ResourceManager:RegisterInstanceLoadHandler(
-		Guid("C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4"),
-		Guid("AD413546-DEAF-8115-B89C-D666E801C67A"),
-		self, self.OnGameModeSettings
-	)
-
-	ResourceManager:RegisterInstanceLoadHandler(
-		Guid("19631E31-2E3A-432B-8929-FB57BAA7D28E"),
-		Guid("B4BB6CFA-0E53-45F9-B190-1287DCC093A9"),
-		self, self.OnTeamEntityData
-	)
+	m_XP5_003_Conquest_WorldPartData:RegisterLoadHandler(self, self.OnWorldPartLoaded)
+	m_Conquest_PreRoundEntityData:RegisterLoadHandler(self, self.OnPreRoundEntityData)
+	m_Conquest_SpatialPrefabBlueprint:RegisterLoadHandler(self, self.OnDisableCamerasOnUnspawn)
+	m_XP5_003_CQL_WorldPartData:RegisterLoadHandler(self, self.OnVehiclesWorldPartData)
+	m_GameModeSettings:RegisterLoadHandler(self, self.OnGameModeSettings)
+	m_RU_Large_TeamEntityData:RegisterLoadHandler(self, self.OnTeamEntityData)
 end
 
+function TempMapPatches:DeregisterCallbacks()
+	m_XP5_003_Conquest_WorldPartData:Deregister()
+	m_Conquest_PreRoundEntityData:Deregister()
+	m_Conquest_SpatialPrefabBlueprint:Deregister()
+	m_XP5_003_CQL_WorldPartData:Deregister()
+	m_GameModeSettings:Deregister()
+	m_RU_Large_TeamEntityData:Deregister()
+end
 
 function TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	-- Add 1 CharacterSpawnReference
