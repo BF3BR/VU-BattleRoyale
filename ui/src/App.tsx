@@ -423,6 +423,7 @@ const App: React.FC<Props> = ({
                     yaw: teamPlayer.Yaw,
                     health: teamPlayer.Health ? teamPlayer.Health - 100 : null,
                     armor: teamPlayer.Armor ?? null,
+                    posInSquad: teamPlayer.PosInSquad ?? 1,
                 });
 
                 if (teamPlayer.State === 2 && teamPlayer.Name !== localName) {
@@ -456,6 +457,7 @@ const App: React.FC<Props> = ({
             },
             yaw: 60,
             health: Math.random() * 100,
+            posInSquad: 4,
         });
         tempTeam.push({
             name: "Test 2",
@@ -470,6 +472,7 @@ const App: React.FC<Props> = ({
             },
             yaw: 110,
             health: Math.random() * 100,
+            posInSquad: 3,
         });
         tempTeam.push({
             name: "Test",
@@ -484,6 +487,7 @@ const App: React.FC<Props> = ({
             },
             yaw: 30,
             health: Math.random() * 100,
+            posInSquad: 1,
         });
         tempTeam.push({
             name: "Test 3",
@@ -498,6 +502,7 @@ const App: React.FC<Props> = ({
             },
             yaw: 10,
             health: Math.random() * 100,
+            posInSquad: 2,
         });
         dispatch(updateTeam(tempTeam));
     }
@@ -627,7 +632,12 @@ const App: React.FC<Props> = ({
                             5,
                             Sounds.Alert
                         ))}>Set alert</button>
-                        <button onClick={() => dispatch(updateSpectatorEnabled(true))}>Set Spectator</button>
+                        <button onClick={() => {
+                            dispatch(updateSpectatorEnabled(true));
+                            dispatch(updateSpectatorTarget("Test"));
+                        }}>
+                            Set Spectator
+                        </button>
                         <button onClick={() => dispatch(updateGameover(true))}>Set Gameover Screen</button>
                         <button onClick={() => window.OnLocalPlayerInfo({
                             name: 'KVN',

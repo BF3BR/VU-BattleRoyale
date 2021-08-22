@@ -127,6 +127,10 @@ const DeployScreen: React.FC<Props> = ({
         }
     }
 
+    const OnLeaveTeam = () => {
+        OnChangeTeamType(1);
+    }
+
     const items = []
     for (let index = 0; index < (teamSize - team.length); index++) {
         items.push(
@@ -214,6 +218,9 @@ const DeployScreen: React.FC<Props> = ({
                                     ))}
                                     {items??''}
                                 </div>
+                                <button className="btn btn-small btn-leave-team" onClick={OnLeaveTeam}>
+                                    Leave team
+                                </button>
                             </div>
                         </div>
 

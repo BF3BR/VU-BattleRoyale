@@ -2,6 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { RootState } from "../store/RootReducer";
 
+import arrow from "../assets/img/arrow.svg";
+
 import "./SpectatorInfo.scss";
 
 
@@ -16,17 +18,32 @@ const SpectatorInfo: React.FC<Props> = ({ spectating, spectatorTarget }) => {
 
     return (
         <>
-            <div id="SpectatorInfo" className={"card " + (spectating ? 'show' : '')}>
-                <div className="card-header">
-                    <h1>
-                        Spectating
-                        <span>
-                            {spectatorTarget??''}
-                        </span>
-                    </h1>
+            {spectatorTarget &&
+                <div id="SpectatorInfo" className={"card " + (spectating ? 'show' : '')}>
+                    <div className="card-header">
+                        <h1>
+                            You are spectating
+                        </h1>
+                    </div>
+                    <div className="card-content">
+                        {spectatorTarget ? spectatorTarget : ""}
+                    </div>
+                    <div className="card-footer">
+                        <div className="left">
+                            <span className="keyboard">
+                                {"Arrow Left"}
+                            </span>
+                            Prev. player
+                        </div>
+                        <div className="right">
+                            Next player
+                            <span className="keyboard">
+                                {"Arrow Right"}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
+            }
         </>
     );
 };

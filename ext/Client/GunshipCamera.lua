@@ -91,8 +91,8 @@ function GunshipCamera:OnInputPreUpdate(p_Hook, p_Cache, p_DeltaTime)
 		return
 	end
 
-	local s_RotateYaw = p_Cache[InputConceptIdentifiers.ConceptYaw] * 2.016686
-	local s_RotatePitch = p_Cache[InputConceptIdentifiers.ConceptPitch] * 2.016686
+	local s_RotateYaw = p_Cache[InputConceptIdentifiers.ConceptYaw] * 48.016686 * p_DeltaTime
+	local s_RotatePitch = p_Cache[InputConceptIdentifiers.ConceptPitch] * 48.016686 * p_DeltaTime
 
 	self.m_LockedCameraYaw = self.m_LockedCameraYaw + s_RotateYaw
 	self.m_LockedCameraPitch = self.m_LockedCameraPitch + s_RotatePitch

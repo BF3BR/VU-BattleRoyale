@@ -114,7 +114,7 @@ const GameReducer = (
                     teamId: action.payload.teamId ?? state.deployScreen.teamId,
                     teamSize: action.payload.teamSize ?? state.deployScreen.teamSize,
                     teamLocked: action.payload.teamLocked ?? state.deployScreen.teamLocked,
-                    teamJoinError: action.payload.teamJoinError ?? state.deployScreen.teamJoinError,
+                    teamJoinError: action.payload.teamJoinError !== undefined ? action.payload.teamJoinError : state.deployScreen.teamJoinError,
                 }
             };
         case UPDATE_DEPLOY_APPEARANCE:

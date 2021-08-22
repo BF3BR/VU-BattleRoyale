@@ -591,7 +591,7 @@ function VuBattleRoyaleServer:SetupRconVariables()
 		["vu.ColorCorrectionEnabled"] = "false",
 		["vu.SunFlareEnabled"] = "false",
 		["vu.SuppressionMultiplier"] = "0",
-		["vu.DestructionEnabled"] = "false",
+		["vu.DestructionEnabled"] = "true",
 		["vu.DesertingAllowed"] = "true",
 	}
 

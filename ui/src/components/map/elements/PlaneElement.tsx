@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { RootState } from "../../../store/RootReducer";
 
 import * as PIXI from 'pixi.js';
-import { GlowFilter } from "@pixi/filter-glow";
 import { Sprite } from '@inlet/react-pixi';
 
 import Vec3 from '../../../helpers/Vec3Helper';
@@ -49,14 +48,6 @@ const PlaneElement: React.FC<Props> = ({
                         y={getMapPos(planePos.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
                         angle={planeYaw}
                         scale={open ? .2 : 0.15}
-                        filters={[
-                            new GlowFilter({
-                                distance: 25,
-                                outerStrength: 1,
-                                innerStrength: 0,
-                                color: 0x9EC555,
-                            })
-                        ]}
                     />
                 </>
             }

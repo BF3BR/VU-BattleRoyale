@@ -4,7 +4,6 @@ import { RootState } from "../../../store/RootReducer";
 
 import * as PIXI from 'pixi.js';
 import { Graphics, Sprite } from '@inlet/react-pixi';
-import { GlowFilter } from "@pixi/filter-glow";
 
 import { drawPlayer, drawPlayerVision, getConvertedPlayerColor, getMapPos } from './ElementHelpers';
 import { Player } from "../../../helpers/PlayerHelper";
@@ -68,14 +67,6 @@ const TeamElement: React.FC<Props> = ({
                             angle={0}
                             scale={.05}
                             tint={getConvertedPlayerColor(player.color)}
-                            filters={[
-                                new GlowFilter({
-                                    distance: 25,
-                                    outerStrength: 1,
-                                    innerStrength: 0,
-                                    color: getConvertedPlayerColor(player.color),
-                                })
-                            ]}
                             key={key}
                         />
                     )

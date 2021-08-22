@@ -35,11 +35,13 @@ const TeamInfo: React.FC<Props> = ({ team, deployScreen }) => {
         <>
             {team.length > 1 &&
                 <div id="TeamInfo" className={deployScreen ? "deployScreen" : ""}>
-                    {team.map((player: Player, index: number) => (
+                    {team
+                    .sort((a: Player, b: Player) => a.posInSquad - b.posInSquad)
+                    .map((player: Player, index: number) => (
                         <div className={"TeamPlayer state" + player.state.toString()} key={index}>
                             <div className="TeamPlayerName">
                                 <div className="index" style={{ background: rgbaToRgb(player.color) }}>
-                                    {index + 1}
+                                    {player.posInSquad??index}
                                 </div>
                                 <span style={{ color: rgbaToRgb(player.color), textShadow: "0 0 0.2vw " + player.color }}>
                                     {player.name ?? ''}

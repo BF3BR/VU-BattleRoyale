@@ -10,6 +10,7 @@ export interface Player {
     yaw?: number;
     health?: number|null;
     armor?: number|null;
+    posInSquad?: number|null;
 }
 
 export const rgbaToRgb = (input: string) => {

@@ -91,13 +91,14 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 		return
 	end
 
-	if m_BrPlayer.m_Team ~= nil then
-		self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
-		self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
-	end
-
 	if self.m_Ticks >= ServerConfig.HudUpdateRate then
 		self.m_HudOnMinPlayersToStart:Update(self.m_MinPlayersToStart)
+
+		if m_BrPlayer.m_Team ~= nil then
+			self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
+			self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
+		end
+
 		self:PushUpdatePlayersInfo()
 		self:PushLocalPlayerTeam()
 		self.m_Ticks = 0.0
@@ -147,7 +148,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 		return
 	end
 
-	WebUI:ExecuteJS("OnMapShow(true)")
+	WebUI:ExecuteJS("OnMapShow(true);")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
 	g_Timers:Timeout(0.75, function()
@@ -312,6 +313,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnGunshipEnable()
+	WebUI:ExecuteJS("OnMapShow(true);") -- Just to be sure
 	self.m_HudOnPlayerIsOnPlane:Update(true)
 	self.m_IsPlayerOnPlane = true
 end
@@ -322,6 +324,7 @@ function VuBattleRoyaleHud:OnGunshipDisable()
 end
 
 function VuBattleRoyaleHud:OnJumpOutOfGunship()
+	WebUI:ExecuteJS("OnMapShow(true);") -- Just to be sure
 	self.m_HudOnPlayerIsOnPlane:Update(false)
 	self.m_IsPlayerOnPlane = false
 end
