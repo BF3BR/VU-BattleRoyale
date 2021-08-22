@@ -187,8 +187,6 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 		m_Ping:OnUpdatePassPreSim(p_DeltaTime)
 		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
-	elseif p_UpdatePass == UpdatePass.UpdatePass_PostSim then
-		m_AntiCheat:OnUpdatePassPostSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
 		m_PhaseManagerClient:OnUIDrawHud(p_DeltaTime)
 		m_Hud:OnUIDrawHud()

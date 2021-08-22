@@ -1,15 +1,3 @@
-Events:Subscribe('Level:RegisterEntityResources', function(p_LevelData)
-	if SharedUtils:GetLevelName() ~= 'Levels/XP5_003/XP5_003' then
-		return
-	end
-
-	local s_XP3_Shield_LevelPropsLargeReferenceData = WorldPartReferenceObjectData(ResourceManager:FindInstanceByGuid(Guid('69AFE35D-259F-11E1-98E7-C42BEF8FFB67'), Guid('080E0293-4B9D-479C-A663-912BDC6CB24D')))
-	local s_Cloned_LevelPropsLargeReferenceData = WorldPartReferenceObjectData(s_XP3_Shield_LevelPropsLargeReferenceData:Clone(Guid('B813FFD1-B3B4-1A0D-F0AE-C07B73399DEE')))
-
-	p_LevelData = LevelData(p_LevelData)
-	p_LevelData:MakeWritable()
-	p_LevelData.objects:add(s_Cloned_LevelPropsLargeReferenceData)
-end)
 
 -- =============================================
 -- Cull Distance & Lod
