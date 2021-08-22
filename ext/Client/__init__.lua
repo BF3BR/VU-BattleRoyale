@@ -166,6 +166,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_Chat:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 	m_WindowsCircleSpawner:OnLevelDestroy()
+	m_OOCVision:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
