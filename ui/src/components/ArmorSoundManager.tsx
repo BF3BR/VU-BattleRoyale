@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { VolumeConst } from "../helpers/SoundHelper";
 
 import shieldBreak from "../assets/sounds/shield_break.mp3";
-import shield from "../assets/img/armor.svg";
+import shield from "../assets/img/broken_shield.svg";
 
 import "./ArmorSoundManager.scss";
 
@@ -21,7 +21,7 @@ const ArmorSoundManager: React.FC = () => {
 
         setTimeout(() => {
             setShowShield(false);
-        }, 1500);
+        }, 2150);
 
         shieldBreakAudio.currentTime = 0.0;
         shieldBreakAudio.pause();
@@ -36,7 +36,7 @@ const ArmorSoundManager: React.FC = () => {
     return (
         <>
             {showShield &&
-                <div id="shieldBreak" >
+                <div id="shieldBreak">
                     <img src={shield} alt="" />
                 </div>
             }
