@@ -63,9 +63,9 @@ const MatchInfo: React.FC<Props> = ({
                         <span>
                             {(state === 'None')
                             ?
-                                <span>
+                                <>
                                     {players??0} / {minPlayersToStart??0}
-                                </span> 
+                                </> 
                             :
                                 <Timer time={time} />
                             }

@@ -9,6 +9,10 @@
     .card-header {
         h1 {
             font-size: .65vw;
+
+            span {
+                font-variant-numeric: tabular-nums;
+            }
         }
     }
 
