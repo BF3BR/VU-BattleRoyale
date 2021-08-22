@@ -1,7 +1,6 @@
 require "__shared/Libs/Queue"
 require "__shared/Types/Circle"
 require "__shared/Configs/FireEffectsConfig"
-require "__shared/Utils/RaycastHelper"
 
 class "OOCFires"
 
@@ -25,40 +24,48 @@ end
 function OOCFires:SpawnItem(p_Item)
 	local s_Blueprint = ResourceManager:SearchForInstanceByGuid(FireEffectsConfig.CustomEffectsGuid[p_Item.Effect])
 
-	-- convert to 3d position
-	local s_Position = Vec3(p_Item.Position.x, 0, p_Item.Position.y)
-	s_Position.y = g_RaycastHelper:GetY(s_Position, 600)
+	-- do a raycast to get the correct height
+	local s_From = Vec3(p_Item.Position.x, 600.0, p_Item.Position.y)
+	local s_To = Vec3(p_Item.Position.x, -600.0, p_Item.Position.y)
+	local s_RaycastHit = RaycastManager:Raycast(s_From, s_To, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter |
+											RayCastFlags.DontCheckRagdoll)
+
+	if s_RaycastHit == nil then
+		-- wouldn't make any sense to spawn something at the default height
+		return
+	end
 
 	local s_Transform = LinearTransform()
-	s_Transform.trans = s_Position
+	s_Transform.trans = s_RaycastHit.position
 
 	local s_Params = EntityCreationParams()
 	s_Params.transform = s_Transform
 	s_Params.networked = false
 
-	if s_Blueprint ~= nil then
-		local s_EntityBus = EntityBus(EntityManager:CreateEntitiesFromBlueprint(s_Blueprint, s_Params))
-
-		local s_SpawnedEntities = {}
-
-		for _, l_Entity in pairs(s_EntityBus.entities) do
-			l_Entity = Entity(l_Entity)
-			l_Entity:Init(Realm.Realm_Client, true)
-
-			table.insert(s_SpawnedEntities, l_Entity)
-
-			l_Entity:FireEvent("Start")
-			l_Entity:FireEvent("Enable")
-		end
-
-		-- add created entities in the queue
-		self.m_Queue:Enqueue(s_SpawnedEntities)
-
-		-- remove oldest fire if needed
-		self:UnspawnOldest()
-	else
+	if s_Blueprint == nil then
 		m_Logger:Error("No blueprint")
+		return
 	end
+
+	local s_EntityBus = EntityBus(EntityManager:CreateEntitiesFromBlueprint(s_Blueprint, s_Params))
+
+	local s_SpawnedEntities = {}
+
+	for _, l_Entity in pairs(s_EntityBus.entities) do
+		l_Entity = Entity(l_Entity)
+		l_Entity:Init(Realm.Realm_Client, true)
+
+		table.insert(s_SpawnedEntities, l_Entity)
+
+		l_Entity:FireEvent("Start")
+		l_Entity:FireEvent("Enable")
+	end
+
+	-- add created entities in the queue
+	self.m_Queue:Enqueue(s_SpawnedEntities)
+
+	-- remove oldest fire if needed
+	self:UnspawnOldest()
 end
 
 function OOCFires:UnspawnOldest(p_Forced)
