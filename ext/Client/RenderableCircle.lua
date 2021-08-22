@@ -69,9 +69,6 @@ function RenderableCircle:UpdateRenderParameters()
 	-- set updated values
 	self.m_RectsToRender = math.max(s_RectsNum, CircleConfig.RenderPoints.Min)
 	self.m_ThetaStep = (s_Circumference / self.m_RectsToRender) / self.m_Radius
-
-	m_Logger:Write("m_RectsToRender = " .. self.m_RectsToRender)
-	m_Logger:Write("m_ThetaStep = " .. self.m_ThetaStep)
 end
 
 function RenderableCircle:Render()

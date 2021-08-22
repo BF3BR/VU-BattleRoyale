@@ -4,6 +4,7 @@ local m_Logger = Logger("OOCVision", false)
 
 local m_OutOfCirclePreset = require "Visuals/Presets/Common/OutOfCirclePreset"
 local m_OutOfCirclePresetName = "OutOfCircle"
+local m_OOBSoundEntityData = DC(Guid("9C1F7ED0-61F0-4987-82FA-469AD965DCAB"), Guid("0047C675-053C-4D84-860E-661555D20D27"))
 
 function OOCVision:__init()
 	self.m_SoundEntity = nil
@@ -20,7 +21,7 @@ function OOCVision:CreateSoundEntity()
 	end
 
 	-- oob sound resource
-	local s_EntityData = ResourceManager:SearchForInstanceByGuid(Guid("0047C675-053C-4D84-860E-661555D20D27"))
+	local s_EntityData = m_OOBSoundEntityData:GetInstance()
 
 	-- create sound entity
 	if s_EntityData ~= nil then
@@ -78,6 +79,8 @@ function OOCVision:Disable()
 end
 
 function OOCVision:OnLevelDestroy()
+	self:Disable()
+
 	-- destroy sound entity
 	if self.m_SoundEntity ~= nil then
 		self.m_SoundEntity:Destroy()
