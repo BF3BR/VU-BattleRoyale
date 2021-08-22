@@ -91,13 +91,14 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 		return
 	end
 
-	if m_BrPlayer.m_Team ~= nil then
-		self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
-		self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
-	end
-
 	if self.m_Ticks >= ServerConfig.HudUpdateRate then
 		self.m_HudOnMinPlayersToStart:Update(self.m_MinPlayersToStart)
+
+		if m_BrPlayer.m_Team ~= nil then
+			self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
+			self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
+		end
+
 		self:PushUpdatePlayersInfo()
 		self:PushLocalPlayerTeam()
 		self.m_Ticks = 0.0
