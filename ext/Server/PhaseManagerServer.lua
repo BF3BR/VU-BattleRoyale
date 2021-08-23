@@ -23,10 +23,6 @@ end
 -- Events
 -- =============================================
 
-function PhaseManagerServer:OnExtensionUnloading()
-	PhaseManagerShared.OnLevelDestroy(self)
-end
-
 function PhaseManagerServer:OnPhaseManagerInitialState(p_Player)
 	self:BroadcastState(p_Player)
 end

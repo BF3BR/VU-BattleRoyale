@@ -31,6 +31,10 @@ end
 -- Events
 -- =============================================
 
+function PhaseManagerShared:OnExtensionUnloading()
+	self:Destroy()
+end
+
 function PhaseManagerShared:OnLevelLoaded()
 	-- get and check config for the current map
 	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
@@ -42,6 +46,10 @@ function PhaseManagerShared:OnLevelLoaded()
 
 	self.m_Phases = s_MapConfig.Phases
 	self.m_InitialDelay = s_MapConfig.BeforeFirstCircleDelay
+end
+
+function PhaseManagerShared:OnLevelDestroy()
+	self:Destroy()
 end
 
 -- =============================================
@@ -92,7 +100,7 @@ function PhaseManagerShared:MoveOuterCircle(p_Timer)
 	Events:DispatchLocal(PhaseManagerEvent.CircleMove, self.m_OuterCircle:AsTable())
 end
 
-function PhaseManagerShared:OnLevelDestroy()
+function PhaseManagerShared:Destroy()
 	self:RemoveTimers()
 	self:RegisterVars()
 end

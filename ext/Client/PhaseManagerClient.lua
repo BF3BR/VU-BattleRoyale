@@ -23,10 +23,6 @@ end
 -- Events
 -- =============================================
 
-function PhaseManagerClient:OnExtensionUnloading()
-	PhaseManagerShared.OnLevelDestroy(self)
-end
-
 function PhaseManagerClient:OnLevelLoaded()
 	PhaseManagerShared.OnLevelLoaded(self)
 
