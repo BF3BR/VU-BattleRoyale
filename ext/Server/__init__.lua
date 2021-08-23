@@ -148,7 +148,6 @@ end
 function VuBattleRoyaleServer:OnLevelDestroy()
 	self.m_WaitForStart = true
 	self.m_ForcedWarmup = false
-	m_PhaseManagerServer:OnLevelDestroy()
 	m_TeamManager:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 	m_PhaseManagerServer:OnLevelDestroy()
