@@ -1,6 +1,7 @@
 class 'AntiCheat'
 
 function AntiCheat:__init()
+	self.m_DisabledDebugRenderer = false
 	self.m_GunSwayTimer = 0
 	self.m_EngineTimer = 0
 end
@@ -78,13 +79,31 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 		local s_SoldierSuppressionComponentData = ResourceManager:FindInstanceByGuid(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('5ECC8031-8DF7-4A38-ACC7-9EFC730B3528'))
 
 		if s_SoldierSuppressionComponentData == nil then
-			return
+			goto continue2
 		end
 
 		s_SoldierSuppressionComponentData = SoldierSuppressionComponentData(s_SoldierSuppressionComponentData)
 
 		if s_SoldierSuppressionComponentData.suppressionSphereRadius < 1.5 or s_SoldierSuppressionComponentData.fallOffDelay > 2 or s_SoldierSuppressionComponentData.suppressionAbortsHealthRegeneration == false or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionHighThreshold > 0.4001 or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionLowThreshold > 0.3001 or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionUIThreshold > 0.15001 then
 			NetEvents:SendLocal('Cheat', {"No Suppression 2", s_SoldierSuppressionComponentData.suppressionSphereRadius, s_SoldierSuppressionComponentData.fallOffDelay, s_SoldierSuppressionComponentData.suppressionAbortsHealthRegeneration, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionHighThreshold, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionLowThreshold, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionUIThreshold})
+		end
+
+		::continue2::
+		local s_DebugRenderSettings = ResourceManager:GetSettings('DebugRenderSettings')
+
+		if s_DebugRenderSettings == nil or ServerConfig.Debug.EnableLootPointSpheres then
+			return
+		end
+
+		s_DebugRenderSettings = DebugRenderSettings(s_DebugRenderSettings)
+
+		if s_DebugRenderSettings.enable then
+			if not self.m_DisabledDebugRenderer then
+				s_DebugRenderSettings.enable = false
+				self.m_DisabledDebugRenderer = true
+			else
+				NetEvents:SendLocal('Cheat', {"Wallhack"})
+			end
 		end
 	end
 end
