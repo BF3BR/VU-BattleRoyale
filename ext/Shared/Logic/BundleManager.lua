@@ -52,7 +52,7 @@ function BundleManager:OnRegisterEntityResources(p_LevelData)
 	m_Logger:Write("Adding registries")
 
 	for _, l_Registry in ipairs(MapsConfig[LevelNameHelper:GetLevelName()].BundleRegistries) do
-		ResourceManager:AddRegistry(l_Registry:GetInstance(), ResourceCompartment.ResourceCompartment_Game)
+		--ResourceManager:AddRegistry(l_Registry:GetInstance(), ResourceCompartment.ResourceCompartment_Game)
 	end
 end
 
