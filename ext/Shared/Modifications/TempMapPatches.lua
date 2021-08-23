@@ -11,6 +11,8 @@ local m_Conquest_SpatialPrefabBlueprint = DC(Guid("0C342A8C-BCDE-11E0-8467-9159D
 local m_XP5_003_CQL_WorldPartData = DC(Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"), Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"))
 local m_GameModeSettings = DC(Guid("C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4"), Guid("AD413546-DEAF-8115-B89C-D666E801C67A"))
 local m_RU_Large_TeamEntityData = DC(Guid("19631E31-2E3A-432B-8929-FB57BAA7D28E"), Guid("B4BB6CFA-0E53-45F9-B190-1287DCC093A9"))
+local m_CapturePointPrefab_HQ_US_XP_CameraEntityData = DC(Guid("694A231C-4439-461D-A7FF-764915FC3E7C"), Guid("6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30"))
+local m_CapturePointPrefab_HQ_RU_XP_CameraEntityData = DC(Guid("5D4B1096-3089-45A7-9E3A-422E15E0D8F6"), Guid("A4281E60-7557-4BFF-ADD4-18D7E8780873"))
 
 function TempMapPatches:RegisterCallbacks()
 	m_XP5_003_Conquest_WorldPartData:RegisterLoadHandler(self, self.OnWorldPartLoaded)
@@ -19,6 +21,8 @@ function TempMapPatches:RegisterCallbacks()
 	m_XP5_003_CQL_WorldPartData:RegisterLoadHandler(self, self.OnVehiclesWorldPartData)
 	m_GameModeSettings:RegisterLoadHandler(self, self.OnGameModeSettings)
 	m_RU_Large_TeamEntityData:RegisterLoadHandler(self, self.OnTeamEntityData)
+	m_CapturePointPrefab_HQ_US_XP_CameraEntityData:RegisterLoadHandler(self, self.OnCameraEntityData)
+	m_CapturePointPrefab_HQ_RU_XP_CameraEntityData:RegisterLoadHandler(self, self.OnCameraEntityData)
 end
 
 function TempMapPatches:DeregisterCallbacks()
@@ -28,6 +32,8 @@ function TempMapPatches:DeregisterCallbacks()
 	m_XP5_003_CQL_WorldPartData:Deregister()
 	m_GameModeSettings:Deregister()
 	m_RU_Large_TeamEntityData:Deregister()
+	m_CapturePointPrefab_HQ_US_XP_CameraEntityData:Deregister()
+	m_CapturePointPrefab_HQ_RU_XP_CameraEntityData:Deregister()
 end
 
 function TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
@@ -153,6 +159,10 @@ function TempMapPatches:OnTeamEntityData(p_Instance)
 		s_LogicPrefabBlueprint.objects:add(s_NewTeamId)
 		s_LogicPrefabBlueprint.partition:AddInstance(s_NewTeamId)
 	end
+end
+
+function TempMapPatches:OnCameraEntityData(p_CameraEntityData)
+	p_CameraEntityData.enabled = false
 end
 
 function TempMapPatches:CreateMapMarkers(p_WorldPartData, p_Registry)

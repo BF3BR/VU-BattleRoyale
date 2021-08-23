@@ -34,11 +34,11 @@ function VuBattleRoyaleClient:__init()
 end
 
 function VuBattleRoyaleClient:OnExtensionLoaded()
+	Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
 	self.m_IsHotReload = self:GetIsHotReload()
 	self:RegisterVars()
 	self:RegisterEvents()
 	self:RegisterWebUIEvents()
-	self:RegisterCallbacks()
 	self:RegisterHooks()
 
 	m_Hud:OnExtensionLoaded()
@@ -51,85 +51,86 @@ function VuBattleRoyaleClient:RegisterVars()
 end
 
 function VuBattleRoyaleClient:RegisterEvents()
-	Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading)
+	self.m_Events = {
+		Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading),
 
-	Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded)
-	Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
-	Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
+		Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded),
+		Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy),
 
-	Events:Subscribe("Engine:Update", self, self.OnEngineUpdate)
-	Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
-	Events:Subscribe("Client:UpdateInput", self, self.OnClientUpdateInput)
+		Events:Subscribe("Engine:Update", self, self.OnEngineUpdate),
+		Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate),
+		Events:Subscribe("Client:UpdateInput", self, self.OnClientUpdateInput),
 
-	Events:Subscribe("Player:Connected", self, self.OnPlayerConnected)
-	Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn)
-	Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted)
-	Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange)
+		Events:Subscribe("Player:Connected", self, self.OnPlayerConnected),
+		Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn),
+		Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted),
+		Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange),
 
-	Events:Subscribe('Soldier:HealthAction', self, self.OnSoldierHealthAction)
-	Events:Subscribe('Soldier:Spawn', self, self.OnSoldierSpawn)
+		Events:Subscribe('Soldier:HealthAction', self, self.OnSoldierHealthAction),
+		Events:Subscribe('Soldier:Spawn', self, self.OnSoldierSpawn),
 
-	Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate)
+		Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate),
 
-	NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled)
-	NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown)
-	NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill)
-	NetEvents:Subscribe("Player:BrokeShield", self, self.OnPlayerBrokeShield)
+		NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled),
+		NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown),
+		NetEvents:Subscribe(DamageEvent.PlayerKill, self, self.OnDamageConfirmPlayerKill),
+		NetEvents:Subscribe("Player:BrokeShield", self, self.OnPlayerBrokeShield),
 
-	NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify)
-	NetEvents:Subscribe(PingEvents.RemoveServerPing, self, self.OnPingRemoveNotify)
-	NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig)
+		NetEvents:Subscribe(PingEvents.ServerPing, self, self.OnPingNotify),
+		NetEvents:Subscribe(PingEvents.RemoveServerPing, self, self.OnPingRemoveNotify),
+		NetEvents:Subscribe(PingEvents.UpdateConfig, self, self.OnPingUpdateConfig),
 
-	NetEvents:Subscribe(GunshipEvents.Enable, self, self.OnGunshipEnable)
-	NetEvents:Subscribe(GunshipEvents.Disable, self, self.OnGunshipDisable)
-	NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship)
-	NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship)
+		NetEvents:Subscribe(GunshipEvents.Enable, self, self.OnGunshipEnable),
+		NetEvents:Subscribe(GunshipEvents.Disable, self, self.OnGunshipDisable),
+		NetEvents:Subscribe(GunshipEvents.JumpOut, self, self.OnJumpOutOfGunship),
+		NetEvents:Subscribe(GunshipEvents.ForceJumpOut, self, self.OnForceJumpOufOfGunship),
 
-	Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate)
-	Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove)
-	NetEvents:Subscribe(PhaseManagerNetEvent.UpdateState, self, self.OnPhaseManagerUpdateState)
+		Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate),
+		Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove),
+		NetEvents:Subscribe(PhaseManagerNetEvent.UpdateState, self, self.OnPhaseManagerUpdateState),
 
-	Events:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers)
+		Events:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers),
 
-	NetEvents:Subscribe(ManDownLootEvents.UpdateLootPosition, self, self.OnUpdateLootPosition)
-	NetEvents:Subscribe(ManDownLootEvents.OnInteractionFinished, self, self.OnLootInteractionFinished)
+		NetEvents:Subscribe(ManDownLootEvents.UpdateLootPosition, self, self.OnUpdateLootPosition),
+		NetEvents:Subscribe(ManDownLootEvents.OnInteractionFinished, self, self.OnLootInteractionFinished),
 
-	NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied)
-	NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
-	NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer)
-	NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged)
-	NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate)
-	NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate)
-	NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw)
-	NetEvents:Subscribe("UpdateSpectatorCount", self, self.OnUpdateSpectatorCount)
-	NetEvents:Subscribe("ChatMessage:SquadReceive", self, self.OnChatMessageSquadReceive)
-	NetEvents:Subscribe("ChatMessage:AllReceive", self, self.OnChatMessageAllReceive)
+		NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied),
+		NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
+		NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer),
+		NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged),
+		NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate),
+		NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate),
+		NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw),
+		NetEvents:Subscribe("UpdateSpectatorCount", self, self.OnUpdateSpectatorCount),
+		NetEvents:Subscribe("ChatMessage:SquadReceive", self, self.OnChatMessageSquadReceive),
+		NetEvents:Subscribe("ChatMessage:AllReceive", self, self.OnChatMessageAllReceive)
+	}
 end
 
 function VuBattleRoyaleClient:RegisterWebUIEvents()
-	Events:Subscribe("WebUI:Deploy", self, self.OnWebUIDeploy)
-	Events:Subscribe("WebUI:SetTeamJoinStrategy", self, self.OnWebUISetTeamJoinStrategy)
-	Events:Subscribe("WebUI:ToggleLock", self, self.OnWebUIToggleLock)
-	Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam)
-	Events:Subscribe("WebUI:PingFromMap", self, self.OnWebUIPingFromMap)
-	Events:Subscribe("WebUI:PingRemoveFromMap", self, self.OnWebUIPingRemoveFromMap)
-	Events:Subscribe("WebUI:TriggerMenuFunction", self, self.OnWebUITriggerMenuFunction)
-	Events:Subscribe("WebUI:OutgoingChatMessage", self, self.OnWebUIOutgoingChatMessage)
-	Events:Subscribe("WebUI:SetCursor", self, self.OnWebUISetCursor)
-	Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose)
-end
-
-function VuBattleRoyaleClient:RegisterCallbacks()
-	m_Gunship:RegisterCallbacks()
+	self.m_WebUIEvents = {
+		Events:Subscribe("WebUI:Deploy", self, self.OnWebUIDeploy),
+		Events:Subscribe("WebUI:SetTeamJoinStrategy", self, self.OnWebUISetTeamJoinStrategy),
+		Events:Subscribe("WebUI:ToggleLock", self, self.OnWebUIToggleLock),
+		Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam),
+		Events:Subscribe("WebUI:PingFromMap", self, self.OnWebUIPingFromMap),
+		Events:Subscribe("WebUI:PingRemoveFromMap", self, self.OnWebUIPingRemoveFromMap),
+		Events:Subscribe("WebUI:TriggerMenuFunction", self, self.OnWebUITriggerMenuFunction),
+		Events:Subscribe("WebUI:OutgoingChatMessage", self, self.OnWebUIOutgoingChatMessage),
+		Events:Subscribe("WebUI:SetCursor", self, self.OnWebUISetCursor),
+		Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose)
+	}
 end
 
 function VuBattleRoyaleClient:RegisterHooks()
-	Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent)
-	Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen)
-	Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage)
-	Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage)
-	Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate)
-	Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag)
+	self.m_Hooks = {
+		Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent),
+		Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen),
+		Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage),
+		Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage),
+		Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate),
+		Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag)
+	}
 end
 
 -- =============================================
@@ -171,6 +172,31 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	if MapsConfig[LevelNameHelper:GetLevelName()] == nil then
+		for _, l_Event in pairs(self.m_Events) do
+			l_Event:Unsubscribe()
+		end
+
+		for _, l_Event in pairs(self.m_WebUIEvents) do
+			l_Event:Unsubscribe()
+		end
+
+		for _, l_Hook in pairs(self.m_Hooks) do
+			l_Hook:Uninstall()
+		end
+
+		self.m_Events = {}
+		self.m_WebUIEvents = {}
+		self.m_Hooks = {}
+		WebUI:Hide()
+		return
+	elseif #self.m_Events == 0 then
+		self:RegisterEvents()
+		self:RegisterWebUIEvents()
+		self:RegisterHooks()
+		WebUI:Show()
+	end
+
 	m_OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 end
 

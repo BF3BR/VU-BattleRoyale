@@ -12,32 +12,6 @@ function Gunship:__init()
 	self.m_CumulatedTime = 0.0
 end
 
-function Gunship:RegisterCallbacks()
-	-- CameraEntityUs
-	ResourceManager:RegisterInstanceLoadHandler(
-		Guid("694A231C-4439-461D-A7FF-764915FC3E7C"),
-		Guid("6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30"),
-		self, self.OnCameraEntityData
-	)
-
-	-- CameraEntityRu
-	ResourceManager:RegisterInstanceLoadHandler(
-		Guid("5D4B1096-3089-45A7-9E3A-422E15E0D8F6"),
-		Guid("A4281E60-7557-4BFF-ADD4-18D7E8780873"),
-		self, self.OnCameraEntityData
-	)
-end
-
--- =============================================
--- Callbacks
--- =============================================
-
-function Gunship:OnCameraEntityData(p_Instance)
-	p_Instance = CameraEntityData(p_Instance)
-	p_Instance:MakeWritable()
-	p_Instance.enabled = false
-end
-
 -- =============================================
 -- Events
 -- =============================================
