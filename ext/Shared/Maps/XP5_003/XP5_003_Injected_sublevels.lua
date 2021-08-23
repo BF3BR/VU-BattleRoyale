@@ -31,6 +31,7 @@ ResourceManager:RegisterInstanceLoadHandler(Guid('381A69CF-695D-4055-B0AD-521871
     p_Instance = EffectEntityData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.cullDistance = 10000000
+	p_Instance.maxInstanceCount = 100
 
 end)
 
@@ -40,6 +41,7 @@ ResourceManager:RegisterInstanceLoadHandler(Guid('0C1ECED7-AA15-4206-A62F-7D44FE
     p_Instance = EffectEntityData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.cullDistance = 10000000
+	p_Instance.maxInstanceCount = 100
 
 end)
 
@@ -49,5 +51,6 @@ ResourceManager:RegisterInstanceLoadHandler(Guid('5F470049-4215-4E97-B07E-BA422A
     p_Instance = EffectEntityData(p_Instance)
     p_Instance:MakeWritable()
     p_Instance.cullDistance = 10000000
+	p_Instance.maxInstanceCount = 100
 
 end)
