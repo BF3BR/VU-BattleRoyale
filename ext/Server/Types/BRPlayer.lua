@@ -138,7 +138,7 @@ function BRPlayer:IncrementKills(p_Victim)
 	NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self:GetName())
 end
 
-function BRPlayer:OnManDownDamage(timer)
+function BRPlayer:OnManDownDamage(p_Timer)
 	local s_Soldier = self:GetSoldier()
 
 	-- check if not in interactiveManDown
@@ -150,7 +150,7 @@ function BRPlayer:OnManDownDamage(timer)
 			Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, nil)
 		end
 
-		timer:Destroy()
+		p_Timer:Destroy()
 		return
 	end
 
@@ -263,7 +263,8 @@ function BRPlayer:Spawn(p_Trans)
 	g_Timers:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
 		if p_Player.soldier ~= nil then
 			p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
-			p_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 8
+			p_Player.soldier.weaponsComponent.currentWeapon.primaryAmmo = 8
+			p_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 4
 			p_Player.soldier:SetTransform(p_Trans)
 			p_Timer:Destroy()
 		end
