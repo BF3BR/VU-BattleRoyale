@@ -123,11 +123,12 @@ function VuBattleRoyaleServer:OnLevelLoadResources()
 
 		self.m_Events = {}
 		self.m_Hooks = {}
-
+		ServerUtils:ClearCustomGameModeName()
 		return
 	elseif #self.m_Events == 0 then
 		self:RegisterEvents()
 		self:RegisterHooks()
+		ServerUtils:SetCustomGameModeName("Battle Royale - " .. self:CurrentTeamSize())
 	end
 
 	m_LootManager:OnLevelLoadResources()
