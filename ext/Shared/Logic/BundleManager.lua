@@ -29,7 +29,6 @@ end
 function BundleManager:OnLoadBundles(p_Hook, p_Bundles, p_Compartment)
 	if #p_Bundles == 1 and p_Bundles[1] == SharedUtils:GetLevelName() then
 		local s_Bundles = MapsConfig[LevelNameHelper:GetLevelName()].Bundles
-		table.insert(s_Bundles, p_Bundles[1])
 
 		m_Logger:Write("Injecting bundles:")
 		for l_Index, l_Bundle in pairs(s_Bundles) do
