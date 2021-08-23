@@ -82,9 +82,15 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
-function Gunship:OnJumpOutOfGunship(p_Player)
+function Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
 	local s_Transform = self:GetVehicleEntityTransform()
 	s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 20, s_Transform.trans.z)
+
+	if p_Transform ~= nil then
+		s_Transform.left = p_Transform.left * - 1
+		s_Transform.up = p_Transform.up * - 1
+		s_Transform.forward = p_Transform.forward * - 1
+	end
 
 	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
 

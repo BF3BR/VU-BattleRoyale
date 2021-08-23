@@ -327,12 +327,12 @@ end
 	-- Gunship Events
 -- =============================================
 
-function VuBattleRoyaleServer:OnJumpOutOfGunship(p_Player)
+function VuBattleRoyaleServer:OnJumpOutOfGunship(p_Player, p_Transform)
 	if p_Player == nil then
 		return
 	end
 
-	self.m_Match:OnJumpOutOfGunship(p_Player)
+	self.m_Match:OnJumpOutOfGunship(p_Player, p_Transform)
 end
 
 function VuBattleRoyaleServer:OnOpenParachute(p_Player)

@@ -101,7 +101,7 @@ function Gunship:OnClientUpdateInput()
 	end
 
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_E) then
-		NetEvents:SendLocal(GunshipEvents.JumpOut)
+		NetEvents:SendLocal(GunshipEvents.JumpOut, m_GunshipCamera:GetTransform())
 		self.m_IsInFreeFall = true
 		m_GunshipCamera:Disable()
 	end
@@ -129,7 +129,7 @@ function Gunship:OnForceJumpOufOfGunship()
 	end
 
 	if self.m_Type == "Paradrop" then
-		NetEvents:SendLocal(GunshipEvents.JumpOut)
+		NetEvents:SendLocal(GunshipEvents.JumpOut, m_GunshipCamera:GetTransform())
 		self.m_IsInFreeFall = true
 		-- self:OnGunshipDisable()
 	end
