@@ -24,3 +24,30 @@ ResourceManager:RegisterInstanceLoadHandler(Guid('1E857D81-FFDF-1EBC-D6F2-082F30
 	p_Instance.cullScale = 50.0
 	p_Instance.lodScale = 3.0
 end)
+
+--FX_DLC3_XP3_Shield_Pollen_CamProx
+ResourceManager:RegisterInstanceLoadHandler(Guid('381A69CF-695D-4055-B0AD-5218711E3411'), Guid('A24EEEDF-FCF3-46EA-804F-765657A612DE'), function(p_Instance)
+    
+    p_Instance = EffectEntityData(p_Instance)
+    p_Instance:MakeWritable()
+    p_Instance.cullDistance = 10000000
+
+end)
+
+--FX_DLC3_XP3_Shield_Pollen_CamProx_02
+ResourceManager:RegisterInstanceLoadHandler(Guid('0C1ECED7-AA15-4206-A62F-7D44FE153E3C'), Guid('401F99D9-3093-4F1E-9B23-498C634B9BF5'), function(p_Instance)
+    
+    p_Instance = EffectEntityData(p_Instance)
+    p_Instance:MakeWritable()
+    p_Instance.cullDistance = 10000000
+
+end)
+
+--FX_DLC3_XP3_Shield_Pollen_CamProx_03
+ResourceManager:RegisterInstanceLoadHandler(Guid('5F470049-4215-4E97-B07E-BA422A57C14C'), Guid('657F2376-0B99-4C78-9024-C7FB74C3C3A0'), function(p_Instance)
+    
+    p_Instance = EffectEntityData(p_Instance)
+    p_Instance:MakeWritable()
+    p_Instance.cullDistance = 10000000
+
+end)
