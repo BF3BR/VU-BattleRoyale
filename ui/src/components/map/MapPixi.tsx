@@ -122,11 +122,12 @@ const MapPixi: React.FC<Props> = ({ open }) => {
 
     const focus = useCallback(() => {
         const viewport = viewportRef.current;
-        const [x, y, width, height] = [512, 512, 1024, 1024];
 
-        if (viewport == null) {
+        if (viewport === null || viewport === undefined) {
             return;
         }
+
+        const [x, y, width, height] = [512, 512, 1024, 1024];
 
         // pause following
         viewport.plugins.pause('follow');
@@ -143,7 +144,7 @@ const MapPixi: React.FC<Props> = ({ open }) => {
     const follow = useCallback((snapZoomHeight: number) => {
         const viewport = viewportRef.current;
 
-        if (viewport == null) {
+        if (viewport === null || viewport === undefined) {
             return;
         }
 

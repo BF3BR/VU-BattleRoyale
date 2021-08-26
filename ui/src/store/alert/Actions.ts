@@ -1,7 +1,7 @@
 import { Sounds } from "../../helpers/SoundsHelper";
 import { 
     AlertActionTypes,
-    ADD_ALERT
+    ADD_ALERT,
 } from "./ActionTypes";
 
 export function addAlert(message: string, duration?: number, sound?: Sounds): AlertActionTypes {
@@ -10,7 +10,8 @@ export function addAlert(message: string, duration?: number, sound?: Sounds): Al
         payload: { 
             message,
             duration,
-            sound
+            sound,
+            date: Date.now(),
         },
     };
 }

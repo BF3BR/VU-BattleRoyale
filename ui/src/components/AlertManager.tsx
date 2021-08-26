@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { RootState } from "../RootReducer";
-import { useSelector } from "react-redux";
-import { AlertState } from "./Types";
+import { connect } from "react-redux";
+import { RootState } from "../store/RootReducer";
+import { AlertState } from "../store/alert/Types";
 
-import { Sounds } from "../../helpers/SoundsHelper";
+import { VolumeConst } from "../helpers/SoundHelper";
+import { Sounds } from "../helpers/SoundsHelper";
 
-import exclamation from "../../assets/img/warning.svg";
-import alert from "../../assets/sounds/alarm.mp3";
-import objective from "../../assets/sounds/objective.mp3";
-import countdown from "../../assets/sounds/countdown.mp3";
+import exclamation from "../assets/img/warning.svg";
+import alert from "../assets/sounds/alarm.mp3";
+import objective from "../assets/sounds/objective.mp3";
+import countdown from "../assets/sounds/countdown.mp3";
 
-import "./Alert.scss";
-import { VolumeConst } from "../../helpers/SoundHelper";
+import "./AlertManager.scss";
 
 const alertAudio = new Audio(alert);
 alertAudio.volume = VolumeConst;
@@ -28,17 +28,22 @@ countdownAudio.volume = VolumeConst;
 countdownAudio.autoplay = false;
 countdownAudio.loop = false;
 
-const Alert: React.FC = () => {
-    const alertFromReducer = useSelector(
-        (state: RootState) => state.AlertReducer
-    );
+interface StateFromReducer {
+    message: string,
+    duration: number,
+    sound: Sounds,
+    date: number|null,
+}
 
+type Props = StateFromReducer;
+
+const AlertManager: React.FC<Props> = ({ message, duration, sound, date }) => {
     const [localAlert, setLocalAlert] = useState<AlertState|null>(null);
 
     let interval: any = null;
     useEffect(() => {
-        if (alertFromReducer.message) {
-            switch (alertFromReducer.sound) {
+        if (message) {
+            switch (sound) {
                 case Sounds.Alert:
                     alertAudio.play();
                     break;
@@ -54,21 +59,22 @@ const Alert: React.FC = () => {
             }
 
             setLocalAlert({
-                message: alertFromReducer.message,
-                duration: alertFromReducer.duration,
-                sound: alertFromReducer.sound,
+                message: message,
+                duration: duration,
+                sound: sound,
+                date: date,
             });
             
             interval = setInterval(() => {
                 onEnd();
-            }, alertFromReducer.duration * 1000);
+            }, duration * 1000);
         }
 
         return () => {
             onEnd();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [alertFromReducer]);
+    }, [date]);
 
     const onEnd = () => {
         alertAudio.currentTime = 0.0;
@@ -102,4 +108,17 @@ const Alert: React.FC = () => {
     );
 };
 
-export default Alert;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // AlertReducer
+        duration: state.AlertReducer.duration,
+        message: state.AlertReducer.message,
+        sound: state.AlertReducer.sound,
+        date: state.AlertReducer.date,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(AlertManager);
+

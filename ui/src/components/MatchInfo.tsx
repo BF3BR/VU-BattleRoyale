@@ -9,10 +9,10 @@ import "./MatchInfo.scss";
 
 interface StateFromReducer {
     state: string;
-    time: number|null;
+    time: number;
     noMap: boolean;
-    players: Player[]|null;
-    minPlayersToStart: number|null;
+    players: number;
+    minPlayersToStart: number;
     subPhaseIndex: number;
     spectating: boolean;
     deployScreen: boolean;
