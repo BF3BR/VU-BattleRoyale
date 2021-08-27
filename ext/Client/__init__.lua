@@ -23,7 +23,7 @@ local m_AntiCheat = require "AntiCheat"
 local m_Settings = require "Settings"
 local m_TeamManager = require "BRTeamManager"
 local m_OOCFires = require "Visuals/OOCFires"
-local m_IOCVision = require "Visuals/IOCVision"
+local m_CircleEffects = require "Visuals/CircleEffects"
 local m_OOCVision = require "Visuals/OOCVision"
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 
@@ -258,7 +258,7 @@ function VuBattleRoyaleClient:OnPlayerRespawn(p_Player)
 	m_TeamManager:OnPlayerRespawn(p_Player)
 	m_Hud:OnPlayerRespawn(p_Player)
 	m_SpectatorClient:OnPlayerRespawn(p_Player)
-	m_IOCVision:OnPlayerRespawn(p_Player)
+	m_CircleEffects:OnPlayerRespawn(p_Player)
 end
 
 function VuBattleRoyaleClient:OnPlayerDeleted(p_Player)
@@ -389,12 +389,12 @@ end
 
 function VuBattleRoyaleClient:OnPhaseManagerUpdate(p_Data)
 	m_Hud:OnPhaseManagerUpdate(p_Data)
-	m_IOCVision:OnPhaseManagerUpdate(p_Data)
+	m_CircleEffects:OnPhaseManagerUpdate(p_Data)
 end
 
 function VuBattleRoyaleClient:OnOuterCircleMove(p_OuterCircle)
 	m_Hud:OnOuterCircleMove(p_OuterCircle)
-	m_IOCVision:OnOuterCircleMove(p_OuterCircle)
+	m_CircleEffects:OnOuterCircleMove(p_OuterCircle)
 end
 
 function VuBattleRoyaleClient:OnPhaseManagerUpdateState(p_State)

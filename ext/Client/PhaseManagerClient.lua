@@ -6,7 +6,6 @@ require "RenderableCircle"
 
 class("PhaseManagerClient", PhaseManagerShared)
 
-local m_IOCVision = require "Visuals/IOCVision"
 local m_OOCVision = require "Visuals/OOCVision"
 
 function PhaseManagerClient:RegisterVars()
