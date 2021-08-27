@@ -22,9 +22,9 @@ function CircleEffects:CreateSoundEntity()
 	end
 
 	local s_SoundAsset = m_SoundAsset:GetInstance()
-  if s_SoundAsset == nil then
-    return
-  end
+	if s_SoundAsset == nil then
+		return
+	end
 
 	-- update sound properties
 	s_SoundAsset = SoundPatchAsset(s_SoundAsset):Clone()
@@ -35,7 +35,7 @@ function CircleEffects:CreateSoundEntity()
 
 	-- create sound effect data
 	local s_EntityData = SoundEffectEntityData()
-  s_EntityData.sound = s_SoundAsset
+	s_EntityData.sound = s_SoundAsset
 
 	-- create sound effect entity
 	if s_EntityData ~= nil then
