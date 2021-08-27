@@ -86,6 +86,11 @@ function CircleEffects:UpdateSoundPosition(p_Forced)
 	local s_CameraAngle = MathHelper:VectorAngle(self.m_Circle.m_Center, s_CameraPosition)
 	local s_ClosestCircumferencePoint = self.m_Circle:CircumferencePoint(s_CameraAngle, s_CameraPosition.y)
 
+	-- skip moving if camera is away from circle edge
+	if s_ClosestCircumferencePoint:Distance(s_CameraPosition) > 15 then
+		return
+	end
+
 	-- reset .transform, cause just updating .trans doesnt move the sound
 	local s_Transform = s_SoundEntity.transform
 	s_Transform.trans = s_ClosestCircumferencePoint
