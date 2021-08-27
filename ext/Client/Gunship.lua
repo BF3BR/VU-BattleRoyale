@@ -2,7 +2,7 @@ class "Gunship"
 
 require "__shared/Enums/CustomEvents"
 
-local m_Hud = require "Hud"
+local m_Hud = require "UI/Hud"
 local m_Logger = Logger("Gunship", true)
 local m_GunshipCamera = require "GunshipCamera"
 

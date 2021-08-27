@@ -1,6 +1,6 @@
 class 'EscMenu'
 
-local m_HudUtils = require "Utils/HudUtils"
+local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Logger = Logger("EscMenu", true)
 
 function EscMenu:__init()

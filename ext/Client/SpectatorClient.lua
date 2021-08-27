@@ -5,7 +5,7 @@ require "__shared/Mixins/TimersMixin"
 
 class("SpectatorClient", TimersMixin)
 
-local m_HudUtils = require "Utils/HudUtils"
+local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Logger = Logger("SpectatorClient", true)
 
 function SpectatorClient:__init()

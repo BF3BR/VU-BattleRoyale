@@ -1,6 +1,6 @@
 class 'DeployScreen'
 
-local m_HudUtils = require "Utils/HudUtils"
+local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Logger = Logger("DeployScreen", true)
 
 function DeployScreen:OnLevelLoaded()

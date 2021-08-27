@@ -2,7 +2,7 @@ class 'Chat'
 
 require "__shared/Utils/Timers"
 
-local m_HudUtils = require "Utils/HudUtils"
+local m_HudUtils = require "UI/Utils/HudUtils"
 
 -- =============================================
 -- Events

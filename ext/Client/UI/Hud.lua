@@ -7,7 +7,7 @@ require "__shared/Enums/UiStates"
 
 local m_EscMenu = require "UI/EscMenu"
 local m_DeployScreen = require "UI/DeployScreen"
-local m_HudUtils = require "Utils/HudUtils"
+local m_HudUtils = require "UI/Utils/HudUtils"
 local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("VuBattleRoyaleHud", true)
 

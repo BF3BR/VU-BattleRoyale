@@ -1,6 +1,6 @@
 class "GunshipCamera"
 
-local m_Hud = require "Hud"
+local m_Hud = require "UI/Hud"
 local m_Logger = Logger("GunshipCamera", true)
 
 function GunshipCamera:__init()
