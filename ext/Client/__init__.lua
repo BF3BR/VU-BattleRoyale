@@ -145,6 +145,7 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_Chat:OnExtensionUnloading()
 	m_OOCFires:OnExtensionUnloading()
 	m_WindowsCircleSpawner:OnExtensionUnloading()
+	m_CircleEffects:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -169,6 +170,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_WindowsCircleSpawner:OnLevelDestroy()
 	m_OOCVision:OnLevelDestroy()
 	m_PhaseManagerClient:OnLevelDestroy()
+	m_CircleEffects:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
@@ -220,6 +222,7 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_PhaseManagerClient:OnUIDrawHud(p_DeltaTime)
 		m_Hud:OnUIDrawHud()
 		m_Ping:OnUIDrawHud(p_DeltaTime)
+		m_CircleEffects:OnUIDrawHud()
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PostFrame then
 		m_Gunship:OnUpdatePassPostFrame(p_DeltaTime)
 	end

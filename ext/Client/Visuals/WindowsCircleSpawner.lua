@@ -85,7 +85,6 @@ function WindowsCircleSpawner:DestroyEntities(p_StartIndex)
 		local s_Entity = self.m_Entities[l_Index]
 
 		if s_Entity ~= nil then
-			m_Logger:Write("Destroying window#" .. l_Index)
 			s_Entity:Destroy()
 			table.remove(self.m_Entities, l_Index)
 		end
