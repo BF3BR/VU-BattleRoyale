@@ -3,9 +3,6 @@ class 'RemoveVanillaLoadingScreen'
 local m_Logger = Logger("RemoveVanillaLoadingScreen", false)
 local m_LoadingScreenLookup = require "__shared/Modifications/LoadingScreen/LoadingScreenLookup"
 
-function RemoveVanillaLoadingScreen:__init()
-end
-
 function RemoveVanillaLoadingScreen:OnExtensionLoaded()
 	for _, l_LevelLoadingScreenInfo in pairs(m_LoadingScreenLookup) do
 		local s_UILevelDescriptionComponent = ResourceManager:FindInstanceByGuid(table.unpack(l_LevelLoadingScreenInfo.Guids))
@@ -23,6 +20,10 @@ function RemoveVanillaLoadingScreen:OnExtensionLoaded()
 end
 
 function RemoveVanillaLoadingScreen:OnExtensionUnloading()
+	if SharedUtils:IsServerModule() then
+		return
+	end
+
 	for _, l_LevelLoadingScreenInfo in pairs(m_LoadingScreenLookup) do
 		local s_UILevelDescriptionComponent = ResourceManager:FindInstanceByGuid(table.unpack(l_LevelLoadingScreenInfo.Guids))
 
