@@ -24,5 +24,8 @@ CircleConfig = {
 	ClientUpdateMs = 0.08,
 
 	-- Use fog to give the player a better sense of the playable area
-	UseFog = true
+	EanbleFog = true
+
+	-- Sound when player is close to the circle edge
+	EnableCircleSound = true,
 }

@@ -61,6 +61,10 @@ function CircleEffects:GetSoundEntity()
 end
 
 function CircleEffects:UpdateSoundPosition(p_Forced)
+	if not CircleConfig.EnableCircleSound then
+		return
+	end
+
 	local s_Camera = ClientUtils:GetCameraTransform()
 	if s_Camera == nil then
 		return
@@ -94,7 +98,7 @@ function CircleEffects:GetVEState()
 end
 
 function CircleEffects:FixedVisionUpdates()
-	if not CircleConfig.UseFog then
+	if not CircleConfig.EanbleFog then
 		return
 	end
 
@@ -113,7 +117,7 @@ function CircleEffects:FixedVisionUpdates()
 end
 
 function CircleEffects:UpdateFog()
-	if not CircleConfig.UseFog then
+	if not CircleConfig.EanbleFog then
 		return
 	end
 
