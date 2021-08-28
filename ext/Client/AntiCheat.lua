@@ -1,7 +1,6 @@
 class 'AntiCheat'
 
 function AntiCheat:__init()
-	self.m_DisabledDebugRenderer = false
 	self.m_GunSwayTimer = 0
 	self.m_EngineTimer = 0
 end
@@ -97,13 +96,8 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 
 		s_DebugRenderSettings = DebugRenderSettings(s_DebugRenderSettings)
 
-		if s_DebugRenderSettings.enable then
-			if not self.m_DisabledDebugRenderer then
-				s_DebugRenderSettings.enable = false
-				self.m_DisabledDebugRenderer = true
-			else
-				NetEvents:SendLocal('Cheat', {"Wallhack"})
-			end
+		if s_DebugRenderSettings.enable and not ServerConfig.Debug.EnableDebugRenderer and not ServerConfig.Debug.EnableLootPointSpheres then
+			NetEvents:SendLocal('Cheat', {"Wallhack"})
 		end
 	end
 end

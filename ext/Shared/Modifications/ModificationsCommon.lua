@@ -16,6 +16,7 @@ local m_FireEffectsModifier = require "__shared/Modifications/FX/FireEffectsModi
 local m_RemoveVanillaLoadingScreen = require "__shared/Modifications/LoadingScreen/RemoveVanillaLoadingScreen"
 local m_RemoveAutotriggerVO = require "__shared/Modifications/Sound/RemoveAutoTriggerVO"
 local m_TimeOutFix = require "__shared/Modifications/TimeOutFix"
+local m_DisableDebugRenderer = require "__shared/Modifications/DisableDebugRenderer"
 
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 
@@ -46,10 +47,12 @@ end
 
 function ModificationsCommon:OnExtensionLoaded()
 	m_RemoveVanillaLoadingScreen:OnExtensionLoaded()
+	m_DisableDebugRenderer:OnExtensionLoaded()
 end
 
 function ModificationsCommon:OnExtensionUnloading()
 	m_RemoveVanillaLoadingScreen:OnExtensionUnloading()
+	m_DisableDebugRenderer:OnExtensionUnloading()
 end
 
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
