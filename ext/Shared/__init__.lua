@@ -11,6 +11,8 @@ require "__shared/Enums/TeamJoinStrategy"
 require "__shared/Enums/TeamManagerErrors"
 require "__shared/Enums/UiStates"
 
+require "__shared/Libs/Queue"
+
 require "__shared/Mixins/TimersMixin"
 
 require "__shared/Types/Circle"

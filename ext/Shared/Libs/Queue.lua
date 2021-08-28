@@ -48,5 +48,3 @@ function Queue:AsList()
 
 	return s_List
 end
-
-return Queue()
