@@ -1,19 +1,15 @@
 class("Match", TimersMixin)
 
+local m_GameStateManager = require "GameStateManager"
+local m_TeamManager = require "BRTeamManager"
 local m_Gunship = require "Gunship"
 local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_LootManager = require("LootManagerServer")
 local m_Logger = Logger("Match", true)
 
-function Match:__init(p_Server, p_TeamManager)
+function Match:__init()
 	-- call TimersMixin's constructor
 	TimersMixin.__init(self)
-
-	-- Save server reference
-	self.m_Server = p_Server
-
-	-- Save team manager reference
-	self.m_TeamManager = p_TeamManager
 
 	-- Winner
 	self.m_WinnerTeam = nil
@@ -34,32 +30,26 @@ end
 -- Events
 -- =============================================
 
-function Match:OnExtensionUnloading()
-	m_Gunship:OnExtensionUnloading()
-end
-
+--[[
 function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
-	--[[ if self:GetCurrentState() == GameStates.Match then
+	if m_ServerGameStateManager:IsGameState(GameStates.Match) then
 		self:AirdropManager(p_DeltaTime)
-	end]]
+	end
 end
+]]
 
-function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
-	m_Gunship:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
+function Match:OnUpdatePassPreSim(p_DeltaTime)
+	if self.m_RestartQueue then
+		m_Logger:Write("INFO: Restart triggered.")
+		local s_Result = RCON:SendCommand("mapList.restartRound")
 
-	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
-		if self.m_RestartQueue then
-			m_Logger:Write("INFO: Restart triggered.")
-			local s_Result = RCON:SendCommand("mapList.restartRound")
-
-			if #s_Result >= 1 then
-				if s_Result[1] ~= "OK" then
-					m_Logger:Write("INFO: Command: mapList.restartRound returned: " .. s_Result[1])
-				end
+		if #s_Result >= 1 then
+			if s_Result[1] ~= "OK" then
+				m_Logger:Write("INFO: Command: mapList.restartRound returned: " .. s_Result[1])
 			end
-
-			self.m_RestartQueue = false
 		end
+
+		self.m_RestartQueue = false
 	end
 end
 
@@ -73,7 +63,7 @@ function Match:InitMatch()
 	self:SetTimer("WhileMatchState", g_Timers:Interval(1, self, self.OnMatchEveryTick))
 
 	-- start the timer for the next match state
-	local s_Delay = ServerConfig.MatchStateTimes[self:GetCurrentState()]
+	local s_Delay = ServerConfig.MatchStateTimes[m_GameStateManager:GetGameState()]
 
 	if s_Delay ~= nil then
 		self:SetTimer("NextMatchState", g_Timers:Timeout(s_Delay, self, self.NextMatchState))
@@ -82,13 +72,9 @@ function Match:InitMatch()
 	end
 end
 
-function Match:GetCurrentState()
-	return self.m_Server.m_GameState
-end
-
 function Match:NextMatchState()
 	-- before switching state
-	local s_State = self:GetCurrentState()
+	local s_State = m_GameStateManager:GetGameState()
 
 	if s_State == GameStates.Plane then
 		NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
@@ -103,12 +89,12 @@ function Match:NextMatchState()
 		return
 	end
 
-	self.m_Server:ChangeGameState(s_State + 1)
+	m_GameStateManager:SetGameState(s_State + 1)
 end
 
 function Match:OnMatchEveryTick()
 	local s_CurrentTimer = self:GetTimer("NextMatchState")
-	local s_State = self:GetCurrentState()
+	local s_State = m_GameStateManager:GetGameState()
 
 	if s_State == GameStates.Warmup then
 		if s_CurrentTimer ~= nil and s_CurrentTimer:Remaining() <= 2.0 and not self.m_IsFadeOutSet then
@@ -125,14 +111,14 @@ function Match:OnMatchEveryTick()
 end
 
 function Match:OnMatchFirstTick()
-	local s_State = self:GetCurrentState()
+	local s_State = m_GameStateManager:GetGameState()
 
 	if s_State == GameStates.WarmupToPlane then
 		-- Fade out then unspawn all soldiers
-		self.m_TeamManager:UnspawnAllSoldiers()
+		m_TeamManager:UnspawnAllSoldiers()
 
 		-- Assign all players to teams
-		self.m_TeamManager:AssignTeams()
+		m_TeamManager:AssignTeams()
 
 		-- Enable regular pickups
 		m_LootManager:EnableMatchPickups()
@@ -179,19 +165,7 @@ end
 function Match:OnRestartRound()
 	self.m_RestartQueue = false
 	self.m_WinnerTeam = nil
-	self.m_Server:ChangeGameState(GameStates.None)
-end
-
-function Match:OnJumpOutOfGunship(p_Player, p_Transform)
-	m_Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
-end
-
-function Match:OnOpenParachute(p_Player)
-	m_Gunship:OnOpenParachute(p_Player)
-end
-
-function Match:OnPlayerUpdateInput(p_Player)
-	m_Gunship:OnPlayerUpdateInput(p_Player)
+	m_GameStateManager:SetGameState(GameStates.None)
 end
 
 -- =============================================
@@ -303,7 +277,7 @@ end]]
 
 function Match:DoWeHaveAWinner()
 	if PlayerManager:GetPlayerCount() == 0 then
-		self.m_Server:ChangeGameState(GameStates.EndGame)
+		m_GameStateManager:SetGameState(GameStates.EndGame)
 		return
 	end
 
@@ -312,17 +286,16 @@ function Match:DoWeHaveAWinner()
 		return
 	end
 
-	local s_WinningTeam = self.m_TeamManager:GetWinningTeam()
+	local s_WinningTeam = m_TeamManager:GetWinningTeam()
 
 	if s_WinningTeam ~= nil then
 		self.m_WinnerTeam = s_WinningTeam
-		self.m_Server:ChangeGameState(GameStates.EndGame)
+		m_GameStateManager:SetGameState(GameStates.EndGame)
 	end
 end
 
--- causes issues cause it needs params + its instantiated again in server init
--- if g_Match == nil then
-	-- g_Match = Match()
--- end
+if g_Match == nil then
+	g_Match = Match()
+end
 
--- return g_Match
+return g_Match

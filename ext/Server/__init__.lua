@@ -1,6 +1,5 @@
 class "VuBattleRoyaleServer"
 
-require "Match"
 require "Types/BRTeam"
 require "Types/BRPlayer"
 
@@ -13,6 +12,9 @@ local m_TeamManager = require "BRTeamManager"
 local m_SpectatorServer = require "SpectatorServer"
 local m_AntiCheat = require "AntiCheat"
 local m_OOCFires = require "OOCFires"
+local m_GameStateManager = require "GameStateManager"
+local m_Match = require "Match"
+local m_Gunship = require "Gunship"
 local m_Logger = Logger("VuBattleRoyaleServer", true)
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
 
@@ -31,15 +33,10 @@ end
 
 function VuBattleRoyaleServer:RegisterVars()
 	self.m_IsHotReload = self:GetIsHotReload()
-	-- Holds the gamestate information
-	self.m_GameState = GameStates.None
 
 	self.m_WaitForStart = true
 	self.m_CumulatedTime = 0
 	self.m_ForcedWarmup = false
-
-	-- Create a new match
-	self.m_Match = Match(self, m_TeamManager)
 
 	self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
 
@@ -74,7 +71,9 @@ function VuBattleRoyaleServer:RegisterEvents()
 		NetEvents:Subscribe(GunshipEvents.OpenParachute, self, self.OnOpenParachute),
 		NetEvents:Subscribe("ChatMessage:SquadSend", self, self.OnChatMessageSquadSend),
 		NetEvents:Subscribe("ChatMessage:AllSend", self, self.OnChatMessageAllSend),
-		NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnPhaseManagerInitialState)
+		NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnPhaseManagerInitialState),
+
+		Events:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
 	}
 end
 
@@ -98,7 +97,7 @@ end
 function VuBattleRoyaleServer:OnExtensionUnloading()
 	m_PhaseManagerServer:OnExtensionUnloading()
 	m_OOCFires:OnExtensionUnloading()
-	self.m_Match:OnExtensionUnloading()
+	m_Gunship:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -133,7 +132,7 @@ end
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 	self:DisablePreRound()
 	self:SetupRconVariables()
-	self.m_Match:OnRestartRound()
+	m_Match:OnRestartRound()
 	self.m_WaitForStart = false
 	self.m_ForcedWarmup = false
 	m_PhaseManagerServer:OnLevelLoaded()
@@ -161,8 +160,6 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 
 	m_PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	m_AntiCheat:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
-	-- Update the match
-	self.m_Match:OnEngineUpdate(self.m_GameState, p_DeltaTime)
 
 	if self.m_CumulatedTime < 1 then
 		self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
@@ -181,16 +178,19 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 			end
 		end
 
-		if self.m_GameState == GameStates.None and s_SpawnedPlayerCount >= self.m_MinPlayersToStart then
-			self:ChangeGameState(GameStates.Warmup)
+		if m_GameStateManager:IsGameState(GameStates.None) and s_SpawnedPlayerCount >= self.m_MinPlayersToStart then
+			m_GameStateManager:SetGameState(GameStates.Warmup)
 		end
-	elseif self.m_GameState == GameStates.Warmup and self.m_ForcedWarmup == false then
-		self:ChangeGameState(GameStates.None)
+	elseif m_GameStateManager:IsGameState(GameStates.Warmup) and self.m_ForcedWarmup == false then
+		m_GameStateManager:SetGameState(GameStates.None)
 	end
 end
 
 function VuBattleRoyaleServer:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
-	self.m_Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
+	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
+		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+		m_Match:OnUpdatePassPreSim(p_DeltaTime)
+	end
 end
 
 -- =============================================
@@ -220,7 +220,7 @@ function VuBattleRoyaleServer:OnPlayerUpdateInput(p_Player)
 		return
 	end
 
-	self.m_Match:OnPlayerUpdateInput(p_Player)
+	m_Gunship:OnPlayerUpdateInput(p_Player)
 end
 
 function VuBattleRoyaleServer:OnPlayerChangingWeapon(p_Player)
@@ -260,7 +260,7 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	m_OOCFires:OnPlayerConnected(p_Player)
 	m_PingServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
-	NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, self.m_GameState)
+	NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, m_GameStateManager:GetGameState())
 
 	-- Fade in the default (showroom) camera
 	p_Player:Fade(1.0, false)
@@ -272,14 +272,14 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 	end
 
 	-- Spawn player if the current gamestate is warmup
-	if self.m_GameState == GameStates.Warmup or self.m_GameState == GameStates.None then
+	if m_GameStateManager:IsGameState(GameStates.Warmup) or m_GameStateManager:IsGameState(GameStates.None) then
 		local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
 
 		if s_BrPlayer == nil then
 			return
 		end
 
-		local s_SpawnTrans = self.m_Match:GetRandomWarmupSpawnpoint()
+		local s_SpawnTrans = m_Match:GetRandomWarmupSpawnpoint()
 
 		if s_SpawnTrans == nil then
 			return
@@ -329,7 +329,7 @@ function VuBattleRoyaleServer:OnJumpOutOfGunship(p_Player, p_Transform)
 		return
 	end
 
-	self.m_Match:OnJumpOutOfGunship(p_Player, p_Transform)
+	m_Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
 end
 
 function VuBattleRoyaleServer:OnOpenParachute(p_Player)
@@ -337,7 +337,7 @@ function VuBattleRoyaleServer:OnOpenParachute(p_Player)
 		return
 	end
 
-	self.m_Match:OnOpenParachute(p_Player)
+	m_Gunship:OnOpenParachute(p_Player)
 end
 
 function VuBattleRoyaleServer:OnChatMessageSquadSend(p_Player, p_Message)
@@ -365,6 +365,14 @@ function VuBattleRoyaleServer:OnPhaseManagerInitialState(p_Player)
 end
 
 -- =============================================
+	-- GameState Event
+-- =============================================
+
+function VuBattleRoyaleServer:OnGameStateChanged(p_OldGameState, p_GameState)
+	m_Match:InitMatch()
+end
+
+-- =============================================
 -- Hooks
 -- =============================================
 
@@ -374,7 +382,7 @@ end
 
 function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_GiverInfo)
 	-- If we are in warmup we should disable all damages
-	if self.m_GameState <= GameStates.WarmupToPlane or self.m_GameState >= GameStates.EndGame then
+	if m_GameStateManager:GetGameState() <= GameStates.WarmupToPlane or m_GameStateManager:GetGameState() >= GameStates.EndGame then
 		-- if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
 			-- return
 		-- end
@@ -414,7 +422,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleServer:OnForceWarmupCommand(p_Command, p_Args, p_LoggedIn)
-	if self.m_GameState ~= GameStates.None then
+	if not m_GameStateManager:IsGameState(GameStates.None) then
 		return {
 			"ERROR",
 			"You can only start the warmup pre-round!"
@@ -422,7 +430,7 @@ function VuBattleRoyaleServer:OnForceWarmupCommand(p_Command, p_Args, p_LoggedIn
 	end
 
 	self.m_ForcedWarmup = true
-	self:ChangeGameState(GameStates.Warmup)
+	m_GameStateManager:SetGameState(GameStates.Warmup)
 
 	return {
 		"OK",
@@ -431,7 +439,7 @@ function VuBattleRoyaleServer:OnForceWarmupCommand(p_Command, p_Args, p_LoggedIn
 end
 
 function VuBattleRoyaleServer:OnForceEndgameCommand(p_Command, p_Args, p_LoggedIn)
-	self:ChangeGameState(GameStates.EndGame)
+	m_GameStateManager:SetGameState(GameStates.EndGame)
 
 	return {
 		"OK",
@@ -502,7 +510,7 @@ function VuBattleRoyaleServer:OnHotReload()
 
 		-- OnPlayerConnected
 		NetEvents:BroadcastLocal(PingEvents.UpdateConfig, m_PingServer:GetPingDisplayCooldownTime())
-		NetEvents:Broadcast(PlayerEvents.GameStateChanged, GameStates.None, self.m_GameState)
+		NetEvents:Broadcast(PlayerEvents.GameStateChanged, GameStates.None, m_GameStateManager:GetGameState())
 	end)
 
 	if SharedUtils:GetLevelName() == nil then
@@ -559,31 +567,6 @@ function VuBattleRoyaleServer:DisablePreRound()
 		s_RoundOverEntity:FireEvent("RoundStarted")
 		s_RoundOverEntity = s_RoundOverIterator:Next()
 	end
-end
-
-function VuBattleRoyaleServer:ChangeGameState(p_GameState)
-	if p_GameState < GameStates.None or p_GameState > GameStates.EndGame then
-		m_Logger:Error("Attempted to switch to an invalid gamestate.")
-		return
-	end
-
-	if p_GameState == self.m_GameState then
-		return
-	end
-
-	-- Reset tickets for CQL
-	TicketManager:SetTicketCount(TeamId.Team1, 999)
-	TicketManager:SetTicketCount(TeamId.Team2, 999)
-
-	m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
-
-	local s_OldGameState = self.m_GameState
-	self.m_GameState = p_GameState
-
-	self.m_Match:InitMatch()
-
-	-- Broadcast the gamestate changes to the clients
-	NetEvents:Broadcast(PlayerEvents.GameStateChanged, s_OldGameState, p_GameState)
 end
 
 function VuBattleRoyaleServer:SetupRconVariables()

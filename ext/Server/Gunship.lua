@@ -27,7 +27,7 @@ function Gunship:OnExtensionUnloading()
 	self:Disable()
 end
 
-function Gunship:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
+function Gunship:OnUpdatePassPreSim(p_DeltaTime)
 	if not self.m_Enabled then
 		return
 	end
@@ -36,22 +36,20 @@ function Gunship:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		return
 	end
 
-	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
-		local s_Transform = LinearTransform()
-		s_Transform:LookAtTransform(self.m_StartPos, self.m_EndPos)
-		s_Transform.trans = self:GetCurrentPosition(self.m_CalculatedTime)
+	local s_Transform = LinearTransform()
+	s_Transform:LookAtTransform(self.m_StartPos, self.m_EndPos)
+	s_Transform.trans = self:GetCurrentPosition(self.m_CalculatedTime)
 
-		if self.m_CalculatedTime == 0.0 then
-			self:SetVehicleEntityTransform(s_Transform)
-		end
-
-		self:SetLocatorEntityTransform(s_Transform)
-		self.m_CalculatedTime = self.m_CalculatedTime + p_DeltaTime / self.m_TimeToFly
-
-		--[[if self.m_CalculatedTime >= 1.0 then
-			self:Disable()
-		end]]
+	if self.m_CalculatedTime == 0.0 then
+		self:SetVehicleEntityTransform(s_Transform)
 	end
+
+	self:SetLocatorEntityTransform(s_Transform)
+	self.m_CalculatedTime = self.m_CalculatedTime + p_DeltaTime / self.m_TimeToFly
+
+	--[[if self.m_CalculatedTime >= 1.0 then
+		self:Disable()
+	end]]
 end
 
 function Gunship:OnPlayerUpdateInput(p_Player)
