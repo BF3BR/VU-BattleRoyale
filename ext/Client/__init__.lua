@@ -638,17 +638,29 @@ function VuBattleRoyaleClient:FixParachuteSound(p_Soldier)
 		return
 	end
 
-	if s_LocalPlayer.soldier ~= nil and s_LocalPlayer == p_Soldier.player then
-		m_Logger:Write("FixParachuteSound: Ignore local player.")
-		return
-	end
-
 	-- Get the parachute and freefall SoundEntity for all soldiers except the local soldier
 	local s_SoundEntity = p_Soldier.bus:GetEntity(ResourceManager:FindInstanceByGuid(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("63CDCA57-2E2C-45FF-A465-CF3EE42E5EE1")))
 
 	-- Should never happen.
 	if s_SoundEntity == nil then
 		m_Logger:Write("Error - SoundEntity not found.")
+		return
+	end
+
+	-- sometimes the freefall sound isn't working properly
+	-- roll effect while parachuting misses
+	-- jumping after landing gets/is bugged
+	if s_LocalPlayer.soldier ~= nil and s_LocalPlayer == p_Soldier.player then
+		m_Logger:Write("FixParachuteSound: Block freefall sound for local player.")
+
+		s_SoundEntity:RegisterEventCallback(function(p_Entity, p_EntityEvent)
+			if p_EntityEvent.eventId == MathUtils:FNVHash("FreefallEnd") then
+				return false
+			elseif p_EntityEvent.eventId == MathUtils:FNVHash("FreefallBegin") then
+				return false
+			end
+		end)
+
 		return
 	end
 
