@@ -1,5 +1,3 @@
-require "__shared/Types/Circle"
-
 class "CircleEffects"
 
 local m_Logger = Logger("CircleEffects", true)

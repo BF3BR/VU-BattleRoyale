@@ -1,10 +1,8 @@
-require "__shared/Utils/MapHelper"
-require "__shared/Enums/CustomEvents"
-require "__shared/Enums/TeamJoinStrategy"
-
 class "BRTeam"
 
 local m_Logger = Logger("BRTeam", true)
+
+local m_MapHelper = require "__shared/Utils/MapHelper"
 
 function BRTeam:__init(p_Id)
 	-- the unique id of the team
@@ -48,7 +46,7 @@ function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
 	-- add references
 	self.m_Players[p_BrPlayer:GetName()] = p_BrPlayer
 	p_BrPlayer.m_Team = self
-	p_BrPlayer.m_PosInSquad = MapHelper:Size(self.m_Players)
+	p_BrPlayer.m_PosInSquad = m_MapHelper:Size(self.m_Players)
 
 	-- assign thew player as team leader if needed
 	self:AssignLeader()
@@ -69,7 +67,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	end
 
 	-- check if team only has one player
-	if not p_Forced and MapHelper:Size(self.m_Players) == 1 then
+	if not p_Forced and m_MapHelper:Size(self.m_Players) == 1 then
 		return false
 	end
 
@@ -85,7 +83,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	self:AssignLeader()
 
 	-- updates the position of the player in the squad
-	local s_Size = MapHelper:Size(self.m_Players)
+	local s_Size = m_MapHelper:Size(self.m_Players)
 
 	for _, l_Player in pairs(self.m_Players) do
 		if l_Player.m_PosInSquad > s_Size then
@@ -99,7 +97,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	end
 
 	-- check if team should be destroyed
-	if MapHelper:Size(self.m_Players) < 1 then
+	if m_MapHelper:Size(self.m_Players) < 1 then
 		Events:DispatchLocal(TeamManagerEvent.DestroyTeam, self)
 	end
 
@@ -161,17 +159,17 @@ end
 
 -- Checks if the team is full and has no space for more players
 function BRTeam:IsFull()
-	return MapHelper:Size(self.m_Players) >= ServerConfig.PlayersPerTeam
+	return m_MapHelper:Size(self.m_Players) >= ServerConfig.PlayersPerTeam
 end
 
 -- Checks if the team has any players
 function BRTeam:IsEmpty()
-	return MapHelper:Empty(self.m_Players)
+	return m_MapHelper:Empty(self.m_Players)
 end
 
 -- Returns the number of players of the team
 function BRTeam:PlayerCount()
-	return MapHelper:Size(self.m_Players)
+	return m_MapHelper:Size(self.m_Players)
 end
 
 -- Checks if the team has any alive players
@@ -217,7 +215,7 @@ function BRTeam:AssignLeader()
 	end
 
 	-- pick a player to assign as team leader
-	local s_BrPlayer = MapHelper:Item(self.m_Players)
+	local s_BrPlayer = m_MapHelper:Item(self.m_Players)
 
 	if s_BrPlayer ~= nil then
 		s_BrPlayer.m_IsTeamLeader = true
@@ -231,8 +229,8 @@ end
 function BRTeam:CanBeJoinedById()
 	-- if the team has only one player and no Custom team join strategy selected
 	-- then it can't be joined by id
-	if MapHelper:Size(self.m_Players) == 1 then
-		local s_BrPlayer = MapHelper:Item(self.m_Players)
+	if m_MapHelper:Size(self.m_Players) == 1 then
+		local s_BrPlayer = m_MapHelper:Item(self.m_Players)
 
 		if s_BrPlayer ~= nil and s_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
 			return false

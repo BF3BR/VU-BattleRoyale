@@ -5,10 +5,6 @@ local m_StandPoseInfo = DC(Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"), Guid("6
 local m_CrouchPoseInfo = DC(Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"), Guid("CC8C3596-EEC5-4959-A644-8E5D5677CE15"))
 local m_PronePoseInfo = DC(Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"), Guid("64357471-E246-4FCD-B0EF-6F693FA98D71"))
 
-function PhysicsModifier:__init()
-
-end
-
 function PhysicsModifier:RegisterCallbacks()
 	m_InAirStateData:RegisterLoadHandler(self, self.OnInAirStateDataLoaded)
 	m_StandPoseInfo:RegisterLoadHandler(self, self.OnCharacterStatePoseInfoLoaded)

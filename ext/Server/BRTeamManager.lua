@@ -1,8 +1,3 @@
-require "__shared/Enums/TeamManagerErrors"
-require "__shared/Enums/CustomEvents"
-require "Types/BRTeam"
-require "Types/BRPlayer"
-
 class "BRTeamManager"
 
 local m_Logger = Logger("BRTeamManager", true)

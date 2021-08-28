@@ -1,6 +1,10 @@
 class "Queue"
 
 function Queue:__init()
+	self:ResetVars()
+end
+
+function Queue:ResetVars()
 	self.m_Data = {}
 	self.m_First = 0
 	self.m_Last = -1
@@ -44,3 +48,5 @@ function Queue:AsList()
 
 	return s_List
 end
+
+return Queue()

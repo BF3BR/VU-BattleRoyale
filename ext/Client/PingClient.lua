@@ -1,8 +1,5 @@
 class "PingClient"
 
-require "__shared/Enums/CustomEvents"
-require "__shared/Enums/PingTypes"
-
 local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Hud = require "UI/Hud"
 local m_BrPlayer = require "BRPlayer"

@@ -455,6 +455,11 @@ function HudUtils:EnableShowroomSoldier(p_Enable)
 		local s_ShowSoldierGraphEntityData = self:GetShowSoldierGraphEntityData()
 		local s_ShowSoldierGraphEntity = EntityManager:CreateEntity(s_ShowSoldierGraphEntityData, LinearTransform())
 
+		if s_ShowSoldierGraphEntity == nil then
+			m_Logger:Write("EnableShowroomSoldier: Creating Entity failed.")
+			return
+		end
+
 		s_ShowSoldierGraphEntity:FireEvent(s_EventId)
 		self.m_ShowSoldierInstanceId = s_ShowSoldierGraphEntity.instanceId
 	else

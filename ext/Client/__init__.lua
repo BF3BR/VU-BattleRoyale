@@ -1,13 +1,7 @@
 class "VuBattleRoyaleClient"
 
-require "__shared/Configs/ServerConfig"
-require "__shared/Configs/MapsConfig"
 require "__shared/Configs/SettingsConfig"
-require "__shared/Utils/Logger"
-require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/LootPointHelper"
-require "__shared/Enums/GameStates"
-require "__shared/Enums/CustomEvents"
 require "__shared/Configs/CircleConfig"
 
 local m_PhaseManagerClient = require "PhaseManagerClient"
@@ -640,10 +634,12 @@ function VuBattleRoyaleClient:FixParachuteSound(p_Soldier)
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if s_LocalPlayer == nil then
+		m_Logger:Write("FixParachuteSound: Local player not found.")
 		return
 	end
 
 	if s_LocalPlayer.soldier ~= nil and s_LocalPlayer == p_Soldier.player then
+		m_Logger:Write("FixParachuteSound: Ignore local player.")
 		return
 	end
 

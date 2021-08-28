@@ -1,7 +1,5 @@
 class "FireEffectsModifier"
 
-require "__shared/Configs/FireEffectsConfig"
-
 local m_EmitterHelper = require "__shared/Utils/EmitterHelper"
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
 

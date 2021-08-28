@@ -150,7 +150,7 @@ function GunshipCamera:CreateCamera()
 		self.m_Entity = s_Entity
 	else
 		m_Logger:Write("Creating CameraEntity failed. The player is probably still loading the game. Activating Spectator.")
-    	SpectatorManager:SetSpectating(true)
+		SpectatorManager:SetSpectating(true)
 	end
 end
 

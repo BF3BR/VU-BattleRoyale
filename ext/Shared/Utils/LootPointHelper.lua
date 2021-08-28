@@ -1,8 +1,5 @@
 class "LootPointHelper"
 
-require "__shared/Utils/LevelNameHelper"
-require "__shared/Configs/MapsConfig"
-
 function LootPointHelper:__init()
 	self.m_Points = {}
 	self.m_Center = ClientUtils:GetWindowSize() / 2

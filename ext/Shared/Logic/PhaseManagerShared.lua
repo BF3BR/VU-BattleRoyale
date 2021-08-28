@@ -1,9 +1,3 @@
-require "__shared/Configs/MapsConfig"
-require "__shared/Enums/CustomEvents"
-require "__shared/Enums/SubphaseTypes"
-require "__shared/Utils/LevelNameHelper"
-require "__shared/Mixins/TimersMixin"
-
 class ("PhaseManagerShared", TimersMixin)
 
 local m_Logger = Logger("PhaseManagerShared", true)

@@ -1,8 +1,5 @@
 class "PingServer"
 
-require "BRTeamManager"
-require "__shared/Enums/CustomEvents"
-
 local m_Logger = Logger("PingServer", true)
 
 function PingServer:__init()

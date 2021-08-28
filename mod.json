@@ -1,13 +1,13 @@
 {
-    "Name": "VU-BattleRoyale",
-    "Description": "Battle Royale gamemode for VU.",
-    "Authors": [ "KVN", "Flash_Hit", "breaknix", "Janssent", "kiwidog" ],
-    "Version": "1.0.0",
-    "HasVeniceEXT": true,
-    "HasWebUI": true,
-    "Dependencies": {
-        "veniceext": "^1.1.3",
-        "VEManager": "^0.2.0-rc.1"
-    },
-    "RequiredXPacks": [1, 3, 5]
+	"Name": "VU-BattleRoyale",
+	"Description": "Battle Royale gamemode for VU.",
+	"Authors": [ "KVN", "Flash_Hit", "breaknix", "Janssent", "kiwidog" ],
+	"Version": "1.0.0",
+	"HasVeniceEXT": true,
+	"HasWebUI": true,
+	"Dependencies": {
+		"veniceext": "^1.1.3",
+		"VEManager": "^0.2.0-rc.1"
+	},
+	"RequiredXPacks": [1, 3, 5]
 }

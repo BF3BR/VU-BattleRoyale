@@ -1,15 +1,7 @@
-require "__shared/Configs/MapsConfig"
-require "__shared/Enums/GameStates"
-require "__shared/Enums/CustomEvents"
-require "__shared/Utils/Timers"
-require "__shared/Utils/LevelNameHelper"
-require "__shared/Mixins/TimersMixin"
-
-require "Gunship"
-local m_PhaseManagerServer = require "PhaseManagerServer"
-
 class("Match", TimersMixin)
 
+local m_Gunship = require "Gunship"
+local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_LootManager = require("LootManagerServer")
 local m_Logger = Logger("Match", true)
 
@@ -25,9 +17,6 @@ function Match:__init(p_Server, p_TeamManager)
 
 	-- Winner
 	self.m_WinnerTeam = nil
-
-	-- Gunship
-	self.m_Gunship = Gunship()
 
 	-- Airdrop
 	-- self.m_Airdrop = Airdrop(self)
@@ -46,7 +35,7 @@ end
 -- =============================================
 
 function Match:OnExtensionUnloading()
-	self.m_Gunship:OnExtensionUnloading()
+	m_Gunship:OnExtensionUnloading()
 end
 
 function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
@@ -56,7 +45,7 @@ function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
 end
 
 function Match:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
-	self.m_Gunship:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
+	m_Gunship:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 
 	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
 		if self.m_RestartQueue then
@@ -152,7 +141,7 @@ function Match:OnMatchFirstTick()
 		local s_Path = self:GetRandomGunshipPath()
 
 		if s_Path ~= nil then
-			self.m_Gunship:Enable(
+			m_Gunship:Enable(
 				s_Path.StartPos,
 				s_Path.EndPos,
 				ServerConfig.MatchStateTimes[GameStates.Plane],
@@ -168,7 +157,7 @@ function Match:OnMatchFirstTick()
 		self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
 	elseif s_State == GameStates.EndGame then
 		m_PhaseManagerServer:End()
-		self.m_Gunship:Disable()
+		m_Gunship:Disable()
 		-- self.m_Airdrop:Spawn(nil, false)
 
 		if self.m_WinnerTeam ~= nil then
@@ -183,7 +172,7 @@ function Match:OnMatchFirstTick()
 end
 
 function Match:OnRemoveGunship()
-	self.m_Gunship:Disable()
+	m_Gunship:Disable()
 	self:RemoveTimer("RemoveGunship")
 end
 
@@ -194,15 +183,15 @@ function Match:OnRestartRound()
 end
 
 function Match:OnJumpOutOfGunship(p_Player, p_Transform)
-	self.m_Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
+	m_Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
 end
 
 function Match:OnOpenParachute(p_Player)
-	self.m_Gunship:OnOpenParachute(p_Player)
+	m_Gunship:OnOpenParachute(p_Player)
 end
 
 function Match:OnPlayerUpdateInput(p_Player)
-	self.m_Gunship:OnPlayerUpdateInput(p_Player)
+	m_Gunship:OnPlayerUpdateInput(p_Player)
 end
 
 -- =============================================

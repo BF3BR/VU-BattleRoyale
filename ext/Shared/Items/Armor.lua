@@ -1,5 +1,3 @@
-require "__shared/Enums/ArmorTypes"
-
 class "Armor"
 
 function Armor:__init(p_ArmorType, p_CurrentDurability)

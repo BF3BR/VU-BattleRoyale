@@ -6,10 +6,6 @@ local m_MedkitFiringData = DC(Guid("B54E9BDA-1F2E-11E0-8602-946E2AD98284"), Guid
 local m_MedkitHealingData = DC(Guid("1D6061B2-2234-11E0-92F5-C9B649EF6972"), Guid("A867A678-615B-3FA6-7AF5-0DEE6ED69EA0"))
 local m_MeleeEntityCommonData = DC(Guid("B6CDC48A-3A8C-11E0-843A-AC0656909BCB"), Guid("F21FB5EA-D7A6-EE7E-DDA2-C776D604CD2E"))
 
-function WeaponsModifier:__init()
-
-end
-
 function WeaponsModifier:RegisterCallbacks()
 	m_AmmobagFiringData:RegisterLoadHandler(self, self.DisableAutoReplenish)
 	m_AmmobagResupplyData:RegisterLoadHandler(self, self.SetResupplyCapacity)

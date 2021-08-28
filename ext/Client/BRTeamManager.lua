@@ -3,9 +3,6 @@ class 'BRTeamManager'
 local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("BRTeamManager", true)
 
-function BRTeamManager:__init()
-end
-
 -- =============================================
 -- Events
 -- =============================================

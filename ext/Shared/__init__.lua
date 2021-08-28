@@ -1,11 +1,24 @@
 class "VuBattleRoyaleShared"
 
+require "__shared/Enums/ArmorTypes"
 require "__shared/Enums/AttachmentTypes"
+require "__shared/Enums/BRPlayerState"
+require "__shared/Enums/CustomEvents"
+require "__shared/Enums/GameStates"
+require "__shared/Enums/PingTypes"
+require "__shared/Enums/SubphaseTypes"
+require "__shared/Enums/TeamJoinStrategy"
+require "__shared/Enums/TeamManagerErrors"
+require "__shared/Enums/UiStates"
+
+require "__shared/Mixins/TimersMixin"
+
+require "__shared/Types/Circle"
+require "__shared/Types/DataContainer"
 
 require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
-
-require "__shared/Types/DataContainer"
+require "__shared/Utils/Timers"
 
 require "__shared/Weapons/Attachments"
 require "__shared/Weapons/Weapons"
@@ -14,12 +27,17 @@ require "__shared/Weapons/Gadgets"
 require "__shared/Configs/ServerConfig"
 require "__shared/Configs/MapsConfig"
 require "__shared/Configs/PickupsConfig"
+require "__shared/Configs/FireEffectsConfig"
 
-local m_ModificationsCommon = require "__shared/Modifications/ModificationsCommon"
+require "__shared/Logic/PhaseManagerShared"
+
+require "__shared/Items/Armor"
+
 local m_BundleManager = require "__shared/Logic/BundleManager"
 local m_GunSwayManager = require "__shared/Logic/GunSwayManager"
-local m_RegistryManager = require "__shared/Logic/RegistryManager"
 local m_MapLoader = require "__shared/Logic/MapLoader"
+local m_RegistryManager = require "__shared/Logic/RegistryManager"
+local m_ModificationsCommon = require "__shared/Modifications/ModificationsCommon"
 local m_Logger = Logger("VuBattleRoyaleShared", true)
 
 function VuBattleRoyaleShared:__init()

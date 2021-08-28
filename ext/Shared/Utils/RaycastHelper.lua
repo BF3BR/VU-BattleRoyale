@@ -1,5 +1,3 @@
-require "__shared/Enums/CustomEvents"
-
 class "RaycastHelper"
 
 function RaycastHelper:__init()

@@ -1,8 +1,3 @@
-require "__shared/Enums/TeamJoinStrategy"
-require "__shared/Enums/BRPlayerState"
-require "__shared/Enums/CustomEvents"
-require "__shared/Items/Armor"
-
 class "BRPlayer"
 
 local m_Logger = Logger("BRPlayer", true)

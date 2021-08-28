@@ -1,11 +1,8 @@
-require "__shared/Utils/MathHelper"
-require "__shared/Types/Circle"
+class ("RenderableCircle", Circle)
 
 local m_Logger = Logger("RenderableCircle", false)
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 local m_2PI = 2 * math.pi
-
-class ("RenderableCircle", Circle)
 
 function RenderableCircle:__init(p_Center, p_Radius)
 	Circle.__init(self, p_Center, p_Radius)

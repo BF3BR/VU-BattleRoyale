@@ -41,3 +41,9 @@ function ArrayHelper:ToMap(p_Array, p_Value)
 
 	return s_Map
 end
+
+if g_ArrayHelper == nil then
+	g_ArrayHelper = ArrayHelper()
+end
+
+return g_ArrayHelper

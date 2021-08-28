@@ -1,6 +1,5 @@
 class "LootManagerServer"
 
-require "__shared/Enums/CustomEvents"
 local m_Logger = Logger("LootManagerServer", true)
 
 function LootManagerServer:__init()

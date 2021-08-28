@@ -1,6 +1,3 @@
-require "__shared/Utils/Timers"
-require "__shared/Types/Circle"
-require "__shared/Logic/PhaseManagerShared"
 require "Visuals/CircleRenderers"
 require "RenderableCircle"
 

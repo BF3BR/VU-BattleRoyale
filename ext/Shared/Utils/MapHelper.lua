@@ -71,3 +71,9 @@ function MapHelper:Item(p_Map)
 
 	return nil
 end
+
+if g_MapHelper == nil then
+	g_MapHelper = MapHelper()
+end
+
+return g_MapHelper

@@ -1,8 +1,8 @@
-require "__shared/Libs/Queue"
-
 class "OOCFires"
 
 local m_Logger = Logger("OOCFires", true)
+
+local m_Queue = require "__shared/Libs/Queue"
 
 local m_MaxEffectsNumber = 256
 local m_GridSize = 16
@@ -13,7 +13,7 @@ function OOCFires:__init()
 end
 
 function OOCFires:ResetVars()
-	self.m_Queue = Queue()
+	m_Queue:ResetVars()
 	self.m_LastSpawnRadius = 0
 
 	-- use spawn grid to avoid spawning effects too close
@@ -92,7 +92,7 @@ function OOCFires:AddItem(p_Position)
 	end
 
 	-- add to queue and grid
-	self.m_Queue:Enqueue(s_Item)
+	m_Queue:Enqueue(s_Item)
 	self.m_SpawnGrid[self:GridKey(s_Item)] = true
 
 	return s_Item
@@ -103,12 +103,12 @@ function OOCFires:RemoveOldestItem(p_Force)
 	p_Force = not (not p_Force)
 
 	-- check if queue is over the limit
-	if not p_Force and self.m_Queue:Size() <= m_MaxEffectsNumber then
+	if not p_Force and m_Queue:Size() <= m_MaxEffectsNumber then
 		return
 	end
 
 	-- remove from queue
-	local s_Item = self.m_Queue:Dequeue()
+	local s_Item = m_Queue:Dequeue()
 	if s_Item == nil then
 		return
 	end
@@ -120,7 +120,7 @@ end
 function OOCFires:SendState(p_Player)
 	local s_State = {
 		MaxEffectsNumber = m_MaxEffectsNumber,
-		Items = self.m_Queue:AsList()
+		Items = m_Queue:AsList()
 	}
 
 	NetEvents:SendToLocal("OOCF:State", p_Player, s_State)

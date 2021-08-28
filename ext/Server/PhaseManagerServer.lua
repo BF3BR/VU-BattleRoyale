@@ -1,14 +1,6 @@
-require "__shared/Configs/MapsConfig"
-require "__shared/Enums/CustomEvents"
-require "__shared/Enums/SubphaseTypes"
-require "__shared/Utils/MathHelper"
-require "__shared/Utils/LevelNameHelper"
-require "__shared/Utils/Timers"
-require "__shared/Logic/PhaseManagerShared"
-require "__shared/Types/Circle"
-
 class("PhaseManagerServer", PhaseManagerShared)
 
+local m_MathHelper = require "__shared/Utils/MathHelper"
 local m_BRTeamManager = require "BRTeamManager"
 local m_Logger = Logger("PhaseManagerServer", true)
 
@@ -215,7 +207,7 @@ function PhaseManagerServer:GetRandomInitialCenter()
 
 	-- get random point from the triangle
 	local s_Triangle = MapsConfig[s_LevelName].InitialCircle.Triangles[s_Index]
-	local s_Center2 = MathHelper:RandomTrianglePoint(s_Triangle)
+	local s_Center2 = m_MathHelper:RandomTrianglePoint(s_Triangle)
 
 	return Vec3(s_Center2.x, 0, s_Center2.y)
 end

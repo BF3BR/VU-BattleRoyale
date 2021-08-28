@@ -1,7 +1,3 @@
-require "__shared/Enums/BRPlayerState"
-require "__shared/Enums/TeamJoinStrategy"
-require "__shared/Enums/CustomEvents"
-require "__shared/Items/Armor"
 require "BRTeam"
 
 class "BRPlayer"

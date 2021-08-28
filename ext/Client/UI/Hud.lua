@@ -1,9 +1,6 @@
 class "VuBattleRoyaleHud"
 
 require "__shared/Utils/CachedJsExecutor"
-require "__shared/Utils/Timers"
-require "__shared/Enums/GameStates"
-require "__shared/Enums/UiStates"
 
 local m_EscMenu = require "UI/EscMenu"
 local m_DeployScreen = require "UI/DeployScreen"

@@ -56,3 +56,9 @@ function MathHelper:LerpRadians(p_PointA, p_PointB, p_Time)
 
 	return s_Result
 end
+
+if g_MathHelper == nil then
+	g_MathHelper = MathHelper()
+end
+
+return g_MathHelper

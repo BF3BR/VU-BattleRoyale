@@ -1,14 +1,8 @@
 class "VuBattleRoyaleServer"
 
-require "__shared/Configs/ServerConfig"
-require "__shared/Utils/Logger"
-require "__shared/Utils/LevelNameHelper"
-require "__shared/Configs/MapsConfig"
-require "__shared/Enums/GameStates"
-require "__shared/Enums/CustomEvents"
-require "__shared/Utils/Timers"
-
 require "Match"
+require "Types/BRTeam"
+require "Types/BRPlayer"
 
 local m_Whitelist = require "Whitelist"
 local m_ServerManDownLoot = require "ServerManDownLoot"
@@ -123,7 +117,9 @@ function VuBattleRoyaleServer:OnLevelLoadResources()
 
 		self.m_Events = {}
 		self.m_Hooks = {}
+
 		ServerUtils:ClearCustomGameModeName()
+
 		return
 	elseif #self.m_Events == 0 then
 		self:RegisterEvents()

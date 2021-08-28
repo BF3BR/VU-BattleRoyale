@@ -2,9 +2,6 @@ class 'ClientManDownLoot'
 
 local m_Logger = Logger("ClientManDownLoot", true)
 
-function ClientManDownLoot:__init()
-end
-
 -- =============================================
 -- Custom (Net-)Events
 -- =============================================

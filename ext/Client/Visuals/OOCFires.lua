@@ -1,10 +1,8 @@
-require "__shared/Libs/Queue"
-require "__shared/Types/Circle"
-require "__shared/Configs/FireEffectsConfig"
-
 class "OOCFires"
 
 local m_Logger = Logger("OOCFires", true)
+
+local m_Queue = require "__shared/Libs/Queue"
 
 function OOCFires:__init()
 	self:ResetVars()
@@ -12,7 +10,7 @@ function OOCFires:__init()
 end
 
 function OOCFires:ResetVars()
-	self.m_Queue = Queue()
+	m_Queue:ResetVars()
 	self.m_MaxEffectsNumber = self.m_MaxEffectsNumber or 128
 end
 
@@ -62,7 +60,7 @@ function OOCFires:SpawnItem(p_Item)
 	end
 
 	-- add created entities in the queue
-	self.m_Queue:Enqueue(s_SpawnedEntities)
+	m_Queue:Enqueue(s_SpawnedEntities)
 
 	-- remove oldest fire if needed
 	self:UnspawnOldest()
@@ -70,12 +68,12 @@ end
 
 function OOCFires:UnspawnOldest(p_Forced)
 	-- check if fire effects are over the limit
-	if not p_Forced and self.m_Queue:Size() < self.m_MaxEffectsNumber then
+	if not p_Forced and m_Queue:Size() < self.m_MaxEffectsNumber then
 		return
 	end
 
 	-- get oldest entities
-	local s_Entities = self.m_Queue:Dequeue()
+	local s_Entities = m_Queue:Dequeue()
 	if s_Entities == nil then
 		return
 	end
@@ -94,7 +92,7 @@ function OOCFires:UnspawnOldest(p_Forced)
 end
 
 function OOCFires:UnspawnAll()
-	while not self.m_Queue:IsEmpty() do
+	while not m_Queue:IsEmpty() do
 		self:UnspawnOldest(true)
 	end
 end

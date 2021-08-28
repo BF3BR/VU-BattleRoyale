@@ -1,9 +1,8 @@
 class "VanillaUIModifier"
 
-require "__shared/Utils/ArrayHelper"
 
 local m_Logger = Logger("VanillaUIModifier", true)
-local m_ConnectionHelper = require("__shared/Utils/ConnectionHelper")
+local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
 
 local m_HudScreenAsset = DC(Guid("D05E6145-8816-11DF-AA1B-BA7094D44A63"), Guid("E63B81E3-67FA-F6C3-2980-D899055DAB0C"))
 local m_HudMpScreenAsset = DC(Guid("3343E3E3-F3C4-11DF-90D5-D8126D045289"), Guid("241F5AE9-2027-508E-98D1-506928AA1E3A"))
@@ -194,7 +193,7 @@ end
 
 -- Edit selected UIScreenAsset's nodes
 function VanillaUIModifier:EditNodes(p_Screen, p_NodeNames, p_CheckValue)
-	p_NodeNames = ArrayHelper:ToMap(p_NodeNames, true)
+	p_NodeNames = m_ArrayHelper:ToMap(p_NodeNames, true)
 
 	-- erase nodes
 	for i = #p_Screen.nodes, 1, -1 do

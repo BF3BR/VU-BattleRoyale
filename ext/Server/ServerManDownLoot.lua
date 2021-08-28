@@ -1,7 +1,5 @@
 class 'ServerManDownLoot'
 
-require "Types/BRPlayer"
-
 local m_Logger = Logger("ServerManDownLoot", true)
 
 function ServerManDownLoot:__init()

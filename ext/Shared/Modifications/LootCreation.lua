@@ -1,7 +1,5 @@
 class "LootCreation"
 
-require "__shared/Enums/CustomEvents"
-
 local m_ConnectionHelper = require("__shared/Utils/ConnectionHelper")
 local m_Logger = Logger("LootCreation", true)
 

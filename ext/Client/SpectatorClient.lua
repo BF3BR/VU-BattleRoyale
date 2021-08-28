@@ -1,10 +1,6 @@
-require "__shared/Enums/CustomEvents"
-require "__shared/Utils/MathHelper"
-require "__shared/Utils/Timers"
-require "__shared/Mixins/TimersMixin"
-
 class("SpectatorClient", TimersMixin)
 
+local m_MathHelper = require "__shared/Utils/MathHelper"
 local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Logger = Logger("SpectatorClient", true)
 
@@ -74,7 +70,7 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	NetEvents:Send(SpectatorEvents.RequestPitchAndYaw, s_Player.id)
 
 	-- Get the soldier's aiming angles.
-	local s_Yaw = MathHelper:LerpRadians(self.m_LastYaw, self.m_SpectatingPlayerYaw, p_DeltaTime * 10)
+	local s_Yaw = m_MathHelper:LerpRadians(self.m_LastYaw, self.m_SpectatingPlayerYaw, p_DeltaTime * 10)
 	self.m_LastYaw = s_Yaw
 
 	local s_Pitch = MathUtils:Lerp(self.m_LastPitch, self.m_SpectatingPlayerPitch, p_DeltaTime * 10)

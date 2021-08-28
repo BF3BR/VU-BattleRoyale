@@ -1,8 +1,5 @@
 class "Gunship"
 
-require "__shared/Utils/MathHelper"
-require "__shared/Enums/CustomEvents"
-
 local m_TeamManager = require "BRTeamManager"
 local m_Logger = Logger("Gunship", true)
 
