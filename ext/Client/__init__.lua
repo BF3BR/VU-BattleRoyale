@@ -20,6 +20,7 @@ local m_OOCFires = require "Visuals/OOCFires"
 local m_CircleEffects = require "Visuals/CircleEffects"
 local m_OOCVision = require "Visuals/OOCVision"
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
+local m_MapVEManager = require "Visuals/MapVEManager"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -97,7 +98,10 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw),
 		NetEvents:Subscribe("UpdateSpectatorCount", self, self.OnUpdateSpectatorCount),
 		NetEvents:Subscribe("ChatMessage:SquadReceive", self, self.OnChatMessageSquadReceive),
-		NetEvents:Subscribe("ChatMessage:AllReceive", self, self.OnChatMessageAllReceive)
+		NetEvents:Subscribe("ChatMessage:AllReceive", self, self.OnChatMessageAllReceive),
+
+		NetEvents:Subscribe("MapVEManager:SetMapVEPreset", self, self.SetMapVEPreset),
+		Events:Subscribe("VEManager:PresetsLoaded", self, self.OnPresetsLoaded),
 	}
 end
 
@@ -112,7 +116,7 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 		Events:Subscribe("WebUI:TriggerMenuFunction", self, self.OnWebUITriggerMenuFunction),
 		Events:Subscribe("WebUI:OutgoingChatMessage", self, self.OnWebUIOutgoingChatMessage),
 		Events:Subscribe("WebUI:SetCursor", self, self.OnWebUISetCursor),
-		Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose)
+		Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose),
 	}
 end
 
@@ -123,7 +127,7 @@ function VuBattleRoyaleClient:RegisterHooks()
 		Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage),
 		Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage),
 		Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate),
-		Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag)
+		Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag),
 	}
 end
 
@@ -165,6 +169,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_OOCVision:OnLevelDestroy()
 	m_PhaseManagerClient:OnLevelDestroy()
 	m_CircleEffects:OnLevelDestroy()
+	m_MapVEManager:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
@@ -194,6 +199,7 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 	end
 
 	m_OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 end
 
 -- =============================================
@@ -474,6 +480,14 @@ end
 
 function VuBattleRoyaleClient:OnChatMessageAllReceive(p_PlayerName, p_Message)
 	m_Chat:OnChatMessageAllReceive(p_PlayerName, p_Message)
+end
+
+function VuBattleRoyaleClient:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
+	m_MapVEManager:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
+end
+
+function VuBattleRoyaleClient:OnPresetsLoaded()
+	m_MapVEManager:OnPresetsLoaded()
 end
 
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)

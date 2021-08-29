@@ -15,6 +15,7 @@ local m_OOCFires = require "OOCFires"
 local m_GameStateManager = require "GameStateManager"
 local m_Match = require "Match"
 local m_Gunship = require "Gunship"
+local m_MapVEManager = require "MapVEManager"
 local m_Logger = Logger("VuBattleRoyaleServer", true)
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
 
@@ -49,6 +50,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading),
 
 		Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded),
+		Events:Subscribe("Level:LoadResources", self, self.OnLoadResources),
 		Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy),
 
 		Events:Subscribe("Engine:Update", self, self.OnEngineUpdate),
@@ -139,6 +141,11 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
 	m_PingServer:OnLevelLoaded()
 	m_ServerManDownLoot:OnLevelLoaded()
 	m_AntiCheat:OnLevelLoaded()
+	m_MapVEManager:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
+end
+
+function VuBattleRoyaleServer:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()
@@ -147,6 +154,7 @@ function VuBattleRoyaleServer:OnLevelDestroy()
 	m_TeamManager:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 	m_PhaseManagerServer:OnLevelDestroy()
+	m_MapVEManager:OnLevelDestroy()
 end
 
 -- =============================================
@@ -204,6 +212,7 @@ function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
 
 	m_LootManager:OnPlayerAuthenticated(p_Player)
 	m_TeamManager:OnPlayerAuthenticated(p_Player)
+	m_MapVEManager:OnPlayerAuthenticated(p_Player)
 end
 
 function VuBattleRoyaleServer:OnPlayerCreated(p_Player)
