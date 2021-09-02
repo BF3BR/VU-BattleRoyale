@@ -50,7 +50,6 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading),
 
 		Events:Subscribe("Level:Loaded", self, self.OnLevelLoaded),
-		Events:Subscribe("Level:LoadResources", self, self.OnLoadResources),
 		Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy),
 
 		Events:Subscribe("Engine:Update", self, self.OnEngineUpdate),
@@ -129,6 +128,7 @@ function VuBattleRoyaleServer:OnLevelLoadResources()
 	end
 
 	m_LootManager:OnLevelLoadResources()
+	m_MapVEManager:OnLevelLoadResources()
 end
 
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
@@ -142,10 +142,6 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
 	m_ServerManDownLoot:OnLevelLoaded()
 	m_AntiCheat:OnLevelLoaded()
 	m_MapVEManager:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
-end
-
-function VuBattleRoyaleServer:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 end
 
 function VuBattleRoyaleServer:OnLevelDestroy()

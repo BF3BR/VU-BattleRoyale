@@ -19,7 +19,7 @@ function MapVEManager:ResetVars()
 	--self.m_TransitionInProgress = false
 end
 
-function MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+function MapVEManager:OnLevelLoadResources()
 	local m_Map = MapsConfig[LevelNameHelper:GetLevelName()]
 
 	-- Update new map presets
@@ -55,7 +55,7 @@ function MapVEManager:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
 		m_Logger:Write("Ignored preset change because it's currently enabled")
 		return
 	end
-	
+
 	self.m_CurrentMapPresetIndex = p_VEIndex
 	NetEvents:BroadcastLocal("MapVEManager:SetMapVEPreset", p_VEIndex, p_OldFadeTime, p_NewFadeTime)
 end
