@@ -43,9 +43,4 @@ function WeaponsModifier:DisableKnifeTakedownAnimation(p_MeleeEntityCommonData)
 	p_MeleeEntityCommonData.maxAttackHeightDifference = 0
 end
 
-
-if g_WeaponsModifier == nil then
-	g_WeaponsModifier = WeaponsModifier()
-end
-
-return g_WeaponsModifier
+return WeaponsModifier()

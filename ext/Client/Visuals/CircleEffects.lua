@@ -177,8 +177,4 @@ function CircleEffects:OnExtensionUnloading()
 	self:Destroy()
 end
 
-if g_CircleEffects == nil then
-	g_CircleEffects = CircleEffects()
-end
-
-return g_CircleEffects
+return CircleEffects()

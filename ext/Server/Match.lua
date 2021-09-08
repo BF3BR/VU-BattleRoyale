@@ -294,8 +294,4 @@ function Match:DoWeHaveAWinner()
 	end
 end
 
-if g_Match == nil then
-	g_Match = Match()
-end
-
-return g_Match
+return Match()

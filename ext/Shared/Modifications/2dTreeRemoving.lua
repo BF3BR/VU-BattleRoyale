@@ -135,8 +135,4 @@ function CreateParamaterIndexMap(p_Parameters)
 	return s_IndexMap
 end
 
-if g_TreeRemoving == nil then
-	g_TreeRemoving = TreeRemoving()
-end
-
-return g_TreeRemoving
+return TreeRemoving()

@@ -205,8 +205,4 @@ function EscMenu:GetQuitEntityData()
 	return s_QuitPopupGraphEntityData
 end
 
-if g_EscMenu == nil then
-	g_EscMenu = EscMenu()
-end
-
-return g_EscMenu
+return EscMenu()

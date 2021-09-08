@@ -29,8 +29,4 @@ function DeployScreen:CloseDeployScreen()
 	m_HudUtils:HUDEnterUIGraph()
 end
 
-if g_DeployScreen == nil then
-	g_DeployScreen = DeployScreen()
-end
-
-return g_DeployScreen
+return DeployScreen()

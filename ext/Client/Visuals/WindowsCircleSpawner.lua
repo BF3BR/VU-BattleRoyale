@@ -113,9 +113,4 @@ function WindowsCircleSpawner:__gc()
 	self:Destroy()
 end
 
--- define global
-if g_WindowsCircleSpawner == nil then
-	g_WindowsCircleSpawner = WindowsCircleSpawner()
-end
-
-return g_WindowsCircleSpawner
+return WindowsCircleSpawner()

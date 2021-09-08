@@ -121,8 +121,4 @@ NetEvents:Subscribe('Verify', function()
 	-- NetEvents:SendLocal('Debug', {"Verify"})
 end)
 
-if g_AntiCheat == nil then
-	g_AntiCheat = AntiCheat()
-end
-
-return g_AntiCheat
+return AntiCheat()

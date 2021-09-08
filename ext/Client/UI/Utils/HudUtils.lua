@@ -582,8 +582,4 @@ function HudUtils:DestroyEntities()
 	end
 end
 
-if g_HudUtils == nil then
-	g_HudUtils = HudUtils()
-end
-
-return g_HudUtils
+return HudUtils()

@@ -30,8 +30,4 @@ function PhysicsModifier:OnCharacterStatePoseInfoLoaded(p_CharacterStatePoseInfo
 	p_CharacterStatePoseInfo.accelerationGain = 0.1
 end
 
-if g_PhysicsModifier == nil then
-	g_PhysicsModifier = PhysicsModifier()
-end
-
-return g_PhysicsModifier
+return PhysicsModifier()

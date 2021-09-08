@@ -38,8 +38,4 @@ function RemoveVanillaLoadingScreen:OnExtensionUnloading()
 	m_Logger:Write("Added back all vanilla LoadingScreens")
 end
 
-if g_RemoveVanillaLoadingScreen == nil then
-	g_RemoveVanillaLoadingScreen = RemoveVanillaLoadingScreen()
-end
-
-return g_RemoveVanillaLoadingScreen
+return RemoveVanillaLoadingScreen()

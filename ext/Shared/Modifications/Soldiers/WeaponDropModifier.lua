@@ -166,8 +166,4 @@ function WeaponDropModifier:CreateBlueprint()
 	return s_Blueprint
 end
 
-if g_WeaponDropModifier == nil then
-	g_WeaponDropModifier = WeaponDropModifier()
-end
-
-return g_WeaponDropModifier
+return WeaponDropModifier()

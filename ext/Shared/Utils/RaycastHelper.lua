@@ -46,4 +46,4 @@ function RaycastHelper:Clear()
 	self.m_RaycastMemo = {}
 end
 
-g_RaycastHelper = RaycastHelper()
+return RaycastHelper()

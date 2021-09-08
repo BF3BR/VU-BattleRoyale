@@ -1,4 +1,4 @@
-local LoadingScreenLookup = {
+return {
 	COOP_002 = {
 		Guids = {
 			Guid("9B93894C-8F7A-6A04-1658-504D64B5B4DA"), Guid("283899FA-19F2-0193-76B9-1EF41ACDA03E")
@@ -343,5 +343,3 @@ local LoadingScreenLookup = {
 		LoadingImagePath = "Levels/XP5_004/UI/XP5_004_Loading",
 	}
 }
-
-return LoadingScreenLookup

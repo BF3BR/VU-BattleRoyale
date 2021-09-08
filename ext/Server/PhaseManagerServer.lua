@@ -232,8 +232,4 @@ function PhaseManagerServer:DebugMessage()
 	m_Logger:Write(string.format("[%d] %s for %.2f seconds", self.m_PhaseIndex, s_Messages[self.m_SubphaseIndex], s_Delay))
 end
 
-if g_PhaseManagerServer == nil then
-	g_PhaseManagerServer = PhaseManagerServer()
-end
-
-return g_PhaseManagerServer
+return PhaseManagerServer()

@@ -70,9 +70,4 @@ function MapVEManager:OnPlayerAuthenticated(p_Player)
 	NetEvents:SendToLocal("MapVEManager:SetMapVEPreset", p_Player, self.m_CurrentMapPresetIndex)
 end
 
--- Singleton.
-if g_MapVEManager == nil then
-	g_MapVEManager = MapVEManager()
-end
-
-return g_MapVEManager
+return MapVEManager()

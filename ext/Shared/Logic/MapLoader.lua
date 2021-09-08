@@ -2,7 +2,7 @@ class 'MapLoader'
 
 local m_Logger = Logger("MapLoader", true)
 
-GameObjectOriginType = {
+local GameObjectOriginType = {
 	Vanilla = 1,
 	Custom = 2,
 	CustomChild = 3
@@ -296,8 +296,4 @@ function MapLoader:CreateWorldPart(p_PrimaryLevel, p_RegistryContainer)
 	return s_WorldPartReference
 end
 
-if g_MapLoader == nil then
-	g_MapLoader = MapLoader()
-end
-
-return g_MapLoader
+return MapLoader()

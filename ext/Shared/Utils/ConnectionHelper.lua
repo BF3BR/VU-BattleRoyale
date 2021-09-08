@@ -131,8 +131,4 @@ function ConnectionHelper:CloneConnections(p_Blueprint, p_OriginalData, p_Custom
 	end
 end
 
-if g_ConnectionHelper == nil then
-	g_ConnectionHelper = ConnectionHelper()
-end
-
-return g_ConnectionHelper
+return ConnectionHelper()

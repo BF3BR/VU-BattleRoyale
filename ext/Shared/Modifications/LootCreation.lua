@@ -129,8 +129,4 @@ function LootCreation:CreateAndRegisterPickupBlueprints(p_Registry)
 	end
 end
 
-if g_LootCreation == nil then
-	g_LootCreation = LootCreation()
-end
-
-return g_LootCreation
+return LootCreation()

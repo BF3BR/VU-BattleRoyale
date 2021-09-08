@@ -260,8 +260,4 @@ function VanillaUIModifier:_GetStaticItem(p_Name)
 	return s_ListItem
 end
 
-if g_VanillaUIModifier == nil then
-	g_VanillaUIModifier = VanillaUIModifier()
-end
-
-return g_VanillaUIModifier
+return VanillaUIModifier()

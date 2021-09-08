@@ -106,8 +106,4 @@ function LootManagerServer:OnModReload()
 	end
 end
 
-if g_LootManagerServer == nil then
-	g_LootManagerServer = LootManagerServer()
-end
-
-return g_LootManagerServer
+return LootManagerServer()

@@ -9,7 +9,7 @@ local EMPTY_SHADER_CONFIG = {
 	}
 }
 
-local TreeConfig = {
+return {
 	-- levels/mp_017/terrain/mesh_scattering/mp_017_billboardtree_02_mesh/
 	['A8BCB882-A365-4278-B97C-9ECA4B598703'] = EMPTY_SHADER_CONFIG,
 	-- levels/mp_017/terrain/mesh_scattering/mp_017_billboardtree_02_mesh/
@@ -149,5 +149,3 @@ local TreeConfig = {
 		}
 	},
 }
-
-return TreeConfig

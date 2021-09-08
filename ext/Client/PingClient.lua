@@ -430,8 +430,4 @@ function PingClient:GetRgbaColorByPlayerName(p_PlayerName)
 	return string.format("rgba(%s, %s, %s, %s)", s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)
 end
 
-if g_PingClient == nil then
-	g_PingClient = PingClient()
-end
-
-return g_PingClient
+return PingClient()

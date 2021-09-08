@@ -14,8 +14,4 @@ function DropShipModifier:Something(p_Something)
 
 end
 
-if g_DropShipModifier == nil then
-	g_DropShipModifier = DropShipModifier()
-end
-
-return g_DropShipModifier
+return DropShipModifier()

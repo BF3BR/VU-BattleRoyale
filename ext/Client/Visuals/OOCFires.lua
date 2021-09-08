@@ -123,8 +123,4 @@ function OOCFires:OnExtensionUnloading()
 	self:UnspawnAll()
 end
 
-if g_OOCFires == nil then
-	g_OOCFires = OOCFires()
-end
-
-return g_OOCFires
+return OOCFires()

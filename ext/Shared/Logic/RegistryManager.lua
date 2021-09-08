@@ -27,8 +27,4 @@ function RegistryManager:OnRegisterEntityResources(p_LevelData)
 	self:ResetVars()
 end
 
-if g_RegistryManager == nil then
-	g_RegistryManager = RegistryManager()
-end
-
-return g_RegistryManager
+return RegistryManager()

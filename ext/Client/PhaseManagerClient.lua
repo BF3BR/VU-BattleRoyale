@@ -143,8 +143,4 @@ function PhaseManagerClient:GetActivePlayerPosition()
 	return s_Player.soldier.transform.trans
 end
 
-if g_PhaseManagerClient == nil then
-	g_PhaseManagerClient = PhaseManagerClient()
-end
-
-return g_PhaseManagerClient
+return PhaseManagerClient()

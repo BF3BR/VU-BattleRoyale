@@ -23,8 +23,4 @@ function SpectatorServer:OnSpectatorRequestPitchAndYaw(p_Player, p_SpectatingId)
 	)
 end
 
-if g_SpectatorServer == nil then
-	g_SpectatorServer = SpectatorServer()
-end
-
-return g_SpectatorServer
+return SpectatorServer()

@@ -357,8 +357,4 @@ function ManDownModifier:OnWorldPartLoaded(p_WorldPartData, p_Registry)
 	m_Logger:Write("Created mandown mapmarkers")
 end
 
-if g_ManDownModifier == nil then
-	g_ManDownModifier = ManDownModifier()
-end
-
-return g_ManDownModifier
+return ManDownModifier()

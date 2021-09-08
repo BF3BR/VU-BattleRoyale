@@ -201,8 +201,4 @@ function GunshipCamera:GetTransform()
 	return self.m_Data ~= nil and self.m_Data.transform
 end
 
-if g_GunshipCamera == nil then
-	g_GunshipCamera = GunshipCamera()
-end
-
-return g_GunshipCamera
+return GunshipCamera()

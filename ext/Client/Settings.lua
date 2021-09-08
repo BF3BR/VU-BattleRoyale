@@ -49,8 +49,4 @@ function Settings:ResetSettings()
 	self.m_UserSettings = {}
 end
 
-if g_Settings == nil then
-	g_Settings = Settings()
-end
-
-return g_Settings
+return Settings()

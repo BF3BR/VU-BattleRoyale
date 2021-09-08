@@ -80,8 +80,4 @@ function ServerManDownLoot:RegisterLootInteractionCallback()
 	end
 end
 
-if g_ServerManDownLoot == nil then
-	g_ServerManDownLoot = ServerManDownLoot()
-end
-
-return g_ServerManDownLoot
+return ServerManDownLoot()

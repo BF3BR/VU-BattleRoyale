@@ -124,8 +124,4 @@ function ModificationsCommon:OnOOBLoaded(p_VolumeVectorShape)
 	p_VolumeVectorShape.normals:add(Vec3())
 end
 
-if g_ModificationsCommon == nil then
-	g_ModificationsCommon = ModificationsCommon()
-end
-
-return g_ModificationsCommon
+return ModificationsCommon()

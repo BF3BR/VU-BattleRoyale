@@ -25,8 +25,4 @@ function TimeOutFix:OnServerSettings(p_Instance)
 	m_Logger:Write("Changed ServerSettings")
 end
 
-if g_TimeOutFix == nil then
-	g_TimeOutFix = TimeOutFix()
-end
-
-return g_TimeOutFix
+return TimeOutFix()

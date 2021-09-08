@@ -212,4 +212,4 @@ function LootPointHelper:PrintPointsAsLinearTransforms()
 	print(s_Result.."}")
 end
 
-g_LootPointHelper = LootPointHelper()
+return LootPointHelper()

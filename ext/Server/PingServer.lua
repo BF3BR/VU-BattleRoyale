@@ -168,8 +168,4 @@ function PingServer:GetPingDisplayCooldownTime()
 	return self.m_PingDisplayCooldownTime
 end
 
-if g_PingServer == nil then
-	g_PingServer = PingServer()
-end
-
-return g_PingServer
+return PingServer()

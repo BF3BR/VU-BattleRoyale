@@ -40,8 +40,4 @@ function ClientManDownLoot:OnLootInteractionFinished(p_ManDownLootTable)
 	-- Do stuff like open the ui
 end
 
-if g_ClientManDownLoot == nil then
-	g_ClientManDownLoot = ClientManDownLoot()
-end
-
-return g_ClientManDownLoot
+return ClientManDownLoot()

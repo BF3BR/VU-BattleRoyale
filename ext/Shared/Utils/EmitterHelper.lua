@@ -56,8 +56,4 @@ function EmitterHelper:FindData(p_ProcessorData, p_DataType)
 	return nil
 end
 
-if g_EmitterHelper == nil then
-	g_EmitterHelper = EmitterHelper()
-end
-
-return g_EmitterHelper
+return EmitterHelper()

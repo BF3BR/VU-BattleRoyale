@@ -98,8 +98,4 @@ function AntiCheat:OnDebug(p_Player, p_Args)
 	end
 end
 
-if g_AntiCheat == nil then
-	g_AntiCheat = AntiCheat()
-end
-
-return g_AntiCheat
+return AntiCheat()

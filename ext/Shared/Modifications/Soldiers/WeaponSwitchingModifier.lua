@@ -43,8 +43,4 @@ function WeaponSwitchingModifier:OnSoldierWeaponSwitchingData(p_WeaponSwitchingD
 	p_WeaponSwitchingData.switchMap[#p_WeaponSwitchingData.switchMap].fireAndSwitchBackToPrev = false
 end
 
-if g_WeaponSwitchingModifier == nil then
-	g_WeaponSwitchingModifier = WeaponSwitchingModifier()
-end
-
-return g_WeaponSwitchingModifier
+return WeaponSwitchingModifier()

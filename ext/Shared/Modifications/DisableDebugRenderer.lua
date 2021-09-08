@@ -27,8 +27,4 @@ function DisableDebugRenderer:OnExtensionUnloading()
 	s_DebugRenderSettings.enable = true
 end
 
-if g_DisableDebugRenderer == nil then
-	g_DisableDebugRenderer = DisableDebugRenderer()
-end
-
-return g_DisableDebugRenderer
+return DisableDebugRenderer()

@@ -56,4 +56,4 @@ function BundleManager:OnRegisterEntityResources(p_LevelData)
 	end
 end
 
-return BundleManager
+return BundleManager()

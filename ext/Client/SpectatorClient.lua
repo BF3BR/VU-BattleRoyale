@@ -780,8 +780,4 @@ function SpectatorClient:ExitSoundState()
 	end
 end
 
-if g_SpectatorClient == nil then
-	g_SpectatorClient = SpectatorClient()
-end
-
-return g_SpectatorClient
+return SpectatorClient()

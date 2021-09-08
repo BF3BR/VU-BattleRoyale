@@ -41,8 +41,4 @@ function GameStateManager:IsGameState(p_GameState)
 	return self.m_GameState == p_GameState
 end
 
-if g_GameStateManager == nil then
-	g_GameStateManager = GameStateManager()
-end
-
-return g_GameStateManager
+return GameStateManager()

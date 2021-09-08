@@ -7,8 +7,4 @@ function GunSwayManager:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_D
 	end
 end
 
-if g_GunSwayManager == nil then
-	g_GunSwayManager = GunSwayManager()
-end
-
-return g_GunSwayManager
+return GunSwayManager()

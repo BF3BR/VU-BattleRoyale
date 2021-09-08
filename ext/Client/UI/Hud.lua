@@ -757,8 +757,4 @@ function VuBattleRoyaleHud:HideCommoRose()
 	WebUI:ExecuteJS("OnHideCommoRose()")
 end
 
-if g_VuBattleRoyaleHud == nil then
-	g_VuBattleRoyaleHud = VuBattleRoyaleHud()
-end
-
-return g_VuBattleRoyaleHud
+return VuBattleRoyaleHud()

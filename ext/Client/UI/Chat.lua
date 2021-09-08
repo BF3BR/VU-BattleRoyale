@@ -206,8 +206,4 @@ function Chat:DisableWeapon(p_Disable)
 	s_LocalPlayer:EnableInput(EntryInputActionEnum.EIAFire, not p_Disable)
 end
 
-if g_Chat == nil then
-	g_Chat = Chat()
-end
-
-return g_Chat
+return Chat()

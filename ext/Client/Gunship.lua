@@ -148,8 +148,4 @@ function Gunship:GetGunshipEntity()
 	return nil
 end
 
-if g_Gunship == nil then
-	g_Gunship = Gunship()
-end
-
-return g_Gunship
+return Gunship()

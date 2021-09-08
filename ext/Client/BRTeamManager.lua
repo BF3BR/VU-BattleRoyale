@@ -99,8 +99,4 @@ function BRTeamManager:IsTeamMate(p_Player)
 	return false
 end
 
-if g_BRTeamManager == nil then
-	g_BRTeamManager = BRTeamManager()
-end
-
-return g_BRTeamManager
+return BRTeamManager()

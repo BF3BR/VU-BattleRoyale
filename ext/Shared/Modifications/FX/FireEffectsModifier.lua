@@ -87,8 +87,4 @@ function FireEffectsModifier:DisableLightComponent(p_EffectBlueprint)
 	m_Logger:Write("Custom effect bp created")
 end
 
-if g_FireEffectsModifier == nil then
-	g_FireEffectsModifier = FireEffectsModifier()
-end
-
-return g_FireEffectsModifier
+return FireEffectsModifier()

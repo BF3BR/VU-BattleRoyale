@@ -88,8 +88,4 @@ function OOCVision:OnLevelDestroy()
 	end
 end
 
-if g_OOCVision == nil then
-	g_OOCVision = OOCVision()
-end
-
-return g_OOCVision
+return OOCVision()

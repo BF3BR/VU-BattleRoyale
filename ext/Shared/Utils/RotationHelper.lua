@@ -117,4 +117,4 @@ function RotationHelper:AdjustRangeRad(angle)
 	return angle
 end
 
-return RotationHelper
+return RotationHelper()

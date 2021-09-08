@@ -493,9 +493,4 @@ function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayer
 	end
 end
 
--- define global
-if g_BRTeamManager == nil then
-	g_BRTeamManager = BRTeamManager()
-end
-
-return g_BRTeamManager
+return BRTeamManager()
