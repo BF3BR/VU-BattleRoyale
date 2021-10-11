@@ -1,8 +1,24 @@
 class "VuBattleRoyaleClient"
 
+require "ClientCommands"
+
 require "__shared/Configs/SettingsConfig"
+require "__shared/Configs/ServerConfig"
 require "__shared/Utils/LootPointHelper"
 require "__shared/Configs/CircleConfig"
+require "__shared/Enums/CustomEvents"
+require "__shared/Types/BRLootPickup"
+
+require "__shared/Items/BRItemWeapon"
+require "__shared/Items/BRItemAmmo"
+require "__shared/Items/BRItemArmor"
+require "__shared/Items/BRItemHelmet"
+require "__shared/Items/BRItemAttachment"
+require "__shared/Items/BRItemConsumable"
+require "__shared/Items/BRItemGadget"
+
+require "Types/BRInventory"
+require "Types/BRLooting"
 
 local m_PhaseManagerClient = require "PhaseManagerClient"
 local m_BrPlayer = require "BRPlayer"
@@ -21,6 +37,7 @@ local m_CircleEffects = require "Visuals/CircleEffects"
 local m_OOCVision = require "Visuals/OOCVision"
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 local m_MapVEManager = require "Visuals/MapVEManager"
+local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -35,6 +52,7 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
 	self:RegisterEvents()
 	self:RegisterWebUIEvents()
 	self:RegisterHooks()
+	self:RegisterCommands()
 
 	m_Hud:OnExtensionLoaded()
 	self:OnHotReload()
@@ -43,6 +61,9 @@ end
 function VuBattleRoyaleClient:RegisterVars()
 	-- The current gamestate, it's read-only and can only be changed by the SERVER
 	self.m_GameState = GameStates.None
+
+	self.m_Invetnory = BRInventory()
+	self.m_Looting = BRLooting()
 end
 
 function VuBattleRoyaleClient:RegisterEvents()
@@ -102,6 +123,12 @@ function VuBattleRoyaleClient:RegisterEvents()
 
 		NetEvents:Subscribe("MapVEManager:SetMapVEPreset", self, self.SetMapVEPreset),
 		Events:Subscribe("VEManager:PresetsLoaded", self, self.OnPresetsLoaded),
+
+		NetEvents:Subscribe(InventoryNetEvent.InventoryState, self, self.OnReceiveInventoryState),
+		NetEvents:Subscribe(InventoryNetEvent.CreateLootPickup, self, self.OnCreateLootPickup),
+		NetEvents:Subscribe(InventoryNetEvent.UnregisterLootPickup, self, self.OnUnregisterLootPickup),
+		NetEvents:Subscribe(InventoryNetEvent.UpdateLootPickup, self, self.OnUpdateLootPickup),
+		NetEvents:Subscribe(InventoryNetEvent.ItemActionCanceled, self, self.OnItemActionCanceled),
 	}
 end
 
@@ -117,6 +144,10 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 		Events:Subscribe("WebUI:OutgoingChatMessage", self, self.OnWebUIOutgoingChatMessage),
 		Events:Subscribe("WebUI:SetCursor", self, self.OnWebUISetCursor),
 		Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose),
+		Events:Subscribe("WebUI:MoveItem", self, self.OnWebUIMoveItem),
+		Events:Subscribe("WebUI:DropItem", self, self.OnWebUIDropItem),
+		Events:Subscribe("WebUI:UseItem", self, self.OnWebUIUseItem),
+		Events:Subscribe("WebUI:PickupItem", self, self.OnWebUIPickupItem),
 	}
 end
 
@@ -128,6 +159,21 @@ function VuBattleRoyaleClient:RegisterHooks()
 		Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage),
 		Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate),
 		Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag),
+	}
+end
+
+function VuBattleRoyaleClient:RegisterCommands()
+	if ServerConfig.Debug.DisableDebugCommands then
+		self.m_Commands = {}
+		return
+	end
+
+	self.m_Commands = {
+		Console:Register("give", "Gives player items", ClientCommands.Give),
+		Console:Register("spawn", "Spawns items under the player", ClientCommands.Spawn),
+		Console:Register("list", "List all the items", ClientCommands.List),
+		Console:Register("spawn-kiasar-loot", "spawn-kiasar-loot", ClientCommands.SpawnKiasarLoot),
+		Console:Register("spawn-airdrop", "spawn-airdrop", ClientCommands.SpawnAirdrop),
 	}
 end
 
@@ -186,9 +232,14 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 			l_Hook:Uninstall()
 		end
 
+		for _, l_Command in pairs(self.m_Commands) do
+			l_Command:Deregister()
+		end
+
 		self.m_Events = {}
 		self.m_WebUIEvents = {}
 		self.m_Hooks = {}
+		self.m_Commands = {}
 		WebUI:Hide()
 		return
 	elseif #self.m_Events == 0 then
@@ -233,6 +284,7 @@ function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
 	m_SpectatorClient:OnClientUpdateInput()
 	m_Hud:OnClientUpdateInput()
 	m_Ping:OnClientUpdateInput(p_DeltaTime)
+	self.m_Looting:OnClientUpdateInput(p_DeltaTime)
 end
 
 -- =============================================
@@ -709,6 +761,42 @@ function VuBattleRoyaleClient:StartWindTurbines()
 
 		s_Entity = s_EntityIterator:Next()
 	end
+end
+
+function VuBattleRoyaleClient:OnWebUIMoveItem(p_JsonData)
+    self.m_Invetnory:OnWebUIMoveItem(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnWebUIDropItem(p_JsonData)
+    self.m_Invetnory:OnWebUIDropItem(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnWebUIUseItem(p_JsonData)
+    self.m_Invetnory:OnWebUIUseItem(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnWebUIPickupItem(p_JsonData)
+    self.m_Invetnory:OnWebUIPickupItem(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnReceiveInventoryState(p_State)
+    self.m_Invetnory:OnReceiveInventoryState(p_State)
+end
+
+function VuBattleRoyaleClient:OnCreateLootPickup(p_DataArray)
+    m_BRLootPickupDatabase:OnCreateLootPickup(p_DataArray)
+end
+
+function VuBattleRoyaleClient:OnUnregisterLootPickup(p_LootPickupId)
+    self.m_Looting:OnUnregisterLootPickup(p_LootPickupId)
+end
+
+function VuBattleRoyaleClient:OnUpdateLootPickup(p_DataArray)
+    self.m_Looting:OnUpdateLootPickup(p_DataArray)
+end
+
+function VuBattleRoyaleClient:OnItemActionCanceled()
+    self.m_Invetnory:OnItemActionCanceled()
 end
 
 return VuBattleRoyaleClient()

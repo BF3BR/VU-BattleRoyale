@@ -1,3 +1,4 @@
+-- TODO: Remove this after the new inventory code implemented
 class "Armor"
 
 function Armor:__init(p_ArmorType, p_CurrentDurability)

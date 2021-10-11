@@ -9,7 +9,6 @@ import ContextBridge from "./map/elements/ContextBridge";
 import { Stage } from "@inlet/react-pixi";
 import * as PIXI from 'pixi.js';
 import { Graphics } from '@inlet/react-pixi';
-import { GlowFilter } from "@pixi/filter-glow";
 
 import "./MapMarkers.scss";
 import { getConvertedPlayerColor } from "./map/elements/ElementHelpers";
@@ -59,12 +58,6 @@ const MapMarkers: React.FC<Props> = ({ pingsTable }) => {
             });
             g.drawCircle(props.x, props.y, 25);
             g.endFill();
-            g.filters = [new GlowFilter({
-                distance: 20,
-                outerStrength: 1.5,
-                innerStrength: .1,
-                color: color,
-            })];
         }, [props]);
         return <Graphics x={0} y={0} draw={draw} />;
     }

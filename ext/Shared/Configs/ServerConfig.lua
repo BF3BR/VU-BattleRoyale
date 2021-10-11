@@ -39,7 +39,7 @@ ServerConfig = {
 
 		EnableLootPointSpheres = false,
 
-		EnableDebugRenderer = false,
+		EnableDebugRenderer = true,
 
 		Logger_Enabled = true,
 
@@ -50,6 +50,8 @@ ServerConfig = {
 		DisableMapLoader = true,
 
 		EnableWhitelist = true,
+
+		DisableDebugCommands = false,
 
 		Whitelist = {
 			"voteban_flash",

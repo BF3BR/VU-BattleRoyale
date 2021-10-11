@@ -2,12 +2,26 @@ class "VuBattleRoyaleServer"
 
 require "Types/BRTeam"
 require "Types/BRPlayer"
+require "Types/BRInventory"
+
+require "__shared/Enums/ItemEnums"
+require "__shared/Enums/CustomEvents"
+require "__shared/Types/BRLootPickup"
+
+require "__shared/Items/BRItemWeapon"
+require "__shared/Items/BRItemAmmo"
+require "__shared/Items/BRItemArmor"
+require "__shared/Items/BRItemHelmet"
+require "__shared/Items/BRItemAttachment"
+require "__shared/Items/BRItemConsumable"
+require "__shared/Items/BRItemGadget"
+
+require "DebugCommands"
 
 local m_Whitelist = require "Whitelist"
 local m_ServerManDownLoot = require "ServerManDownLoot"
 local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_PingServer = require "PingServer"
-local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
 local m_SpectatorServer = require "SpectatorServer"
 local m_AntiCheat = require "AntiCheat"
@@ -16,8 +30,13 @@ local m_GameStateManager = require "GameStateManager"
 local m_Match = require "Match"
 local m_Gunship = require "Gunship"
 local m_MapVEManager = require "MapVEManager"
-local m_Logger = Logger("VuBattleRoyaleServer", true)
+local m_InventoryManager = require "BRInventoryManager"
+local m_LootRandomizer = require "BRLootRandomizer"
+local m_ItemDatabase = require "Types/BRItemDatabase"
+local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
+
+local m_Logger = Logger("VuBattleRoyaleServer", true)
 
 function VuBattleRoyaleServer:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -62,6 +81,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
 		Events:Subscribe("Player:Killed", self, self.OnPlayerKilled),
 		Events:Subscribe("Player:Left", self, self.OnPlayerLeft),
+		Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn),
 
 		NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected),
 		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
@@ -127,7 +147,6 @@ function VuBattleRoyaleServer:OnLevelLoadResources()
 		ServerUtils:SetCustomGameModeName("Battle Royale - " .. self:CurrentTeamSize())
 	end
 
-	m_LootManager:OnLevelLoadResources()
 	m_MapVEManager:OnLevelLoadResources()
 end
 
@@ -151,6 +170,7 @@ function VuBattleRoyaleServer:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 	m_PhaseManagerServer:OnLevelDestroy()
 	m_MapVEManager:OnLevelDestroy()
+	m_LootPickupDatabase:OnLevelDestroy()
 end
 
 -- =============================================
@@ -206,7 +226,6 @@ function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
 		return
 	end
 
-	m_LootManager:OnPlayerAuthenticated(p_Player)
 	m_TeamManager:OnPlayerAuthenticated(p_Player)
 	m_MapVEManager:OnPlayerAuthenticated(p_Player)
 end
@@ -247,6 +266,20 @@ end
 function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
 	m_Logger:Write(p_Player.name .. " left")
 	m_TeamManager:OnPlayerLeft(p_Player)
+	m_InventoryManager:OnPlayerLeft(p_Player)
+end
+
+function VuBattleRoyaleServer:OnPlayerRespawn(p_Player)
+	if p_Player == nil then
+        return
+    end
+
+    local s_Inventory = m_InventoryManager:GetOrCreateInventory(p_Player)
+
+	-- Add default inventory items if needed
+
+	s_Inventory:DeferUpdateSoldierCustomization()
+    s_Inventory:SendState()
 end
 
 -- =============================================
@@ -523,7 +556,6 @@ function VuBattleRoyaleServer:OnHotReload()
 		return
 	end
 
-	m_LootManager:OnModReload()
 	self:OnLevelLoaded()
 	PlayerManager:FadeInAll(1.0)
 end

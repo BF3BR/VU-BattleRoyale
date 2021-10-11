@@ -7,31 +7,57 @@
     height: 100vh;
     max-height: 100vh;
     overflow: hidden;
-    z-index: 9999;
+    z-index: 80;
     display: none;
 
     &.open {
         display: block;
 
         .InventoryWrapper {
-            width: 25vw;
-            background: rgba(0, 0, 0, 0.35);
+            position: absolute;
+            right: 0;
+            width: 26vw;
             height: 100vh;
-            padding: 5vw 2vw;
+            padding: 4vw 2vw 4vw 0;
+            background: linear-gradient(90deg, rgba(0,0,0,0) 2%, rgba(0,0,0,0.8) 100%);
+        }
+
+        .ProximityWrapper {
+            position: absolute;
+            right: 30vw;
+            width: 13vw;
+            height: 100vh;
+            padding: 4vw 0;
+            //background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 98%);
+
+            .item-slot {
+                height: 5.25vw;
+            }
         }
 
         .itemDrop {
             position: absolute;
             top: 0;
-            right: 0;
-            width: 71vw;
-            background: rgba(0, 0, 0, 0.15);
+            left: 0;
+            right: 43vw;
+            background: transparent;
             height: 100vh;
+            display: flex;
 
             .item-slot {
                 position: relative;
                 width: 100%;
                 height: 100%;
+                background: transparent;
+                
+                &.isOver {
+                    background: rgba(7,7,7,.45) !important;
+                }
+
+                .overlay-placeholder {
+                    font-size: 1.25vw;
+                    bottom: 2vw;
+                }
             }
         }
 
@@ -56,110 +82,22 @@
             background: transparent;
         }
 
-        .weapon-grid {
-            padding: 0;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-gap: .1vw;
-
-            .weapon-holder {
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 1.25vw 6vw 1.25vw 1vw;
-                grid-column: span 3 / auto;
-
-                img {
-                    width: 9vw;
-                }
-
-                &.tier3 {
-                    background: rgb(255, 153, 0);
-                    background: linear-gradient(90deg, rgba(255, 153, 0, 0.3) 0%, rgba(255, 153, 0, 0) 30%);
-
-                    &::after {
-                        content: "";
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        height: 100%;
-                        width: 0.125vw;
-                        background: rgb(255, 153, 0);
-                    }
-                }
-
-                &.tier2 {
-                    background: rgb(82, 176, 223);
-                    background: linear-gradient(90deg, rgba(82, 176, 223, 0.3) 0%, rgba(255, 153, 0, 0) 30%);
-
-                    &::after {
-                        content: "";
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        height: 100%;
-                        width: 0.125vw;
-                        background: #52b0df;
-                    }
-                }
-
-                span {
-                    text-transform: uppercase;
-                    margin: 0;
-                    font-style: normal;
-                    font-weight: 600;
-                    font-size: 1vw;
-                    line-height: 1vw;
-
-                    &.name {
-                        position: absolute;
-                        top: 0.75vw;
-                        right: 0.75vw;
-                        color: #d5dde5;
-                    }
-
-                    &.ammoType {
-                        position: absolute;
-                        bottom: 0.75vw;
-                        right: 0.75vw;
-                        font-size: 0.85vw;
-
-                        &.ammo556mm {
-                            color: #ff9f80;
-                        }
-
-                        &.ammo9mm {
-                            color: #52b0df;
-                        }
-                    }
-                }
+        &.proximity-card {
+            .near-grid {
+                padding: 0;
+                display: grid;
+                grid-template-columns: repeat(1, 1fr);
+                grid-gap: .1vw;
             }
-
-            /*.attachment-holder {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0.75vw 0.5vw;
-                border-right: 1px solid rgba(255, 255, 255, 0.25);
-
-                img {
-                    max-width: 1.25vw;
-                }
-
-                &:last-of-type {
-                    border: 0;
-                }
-            }*/
         }
 
         &.BackpackBox {
-            margin: 2vw 0 0;
+            margin: 1vw 0 0;
 
             .backpack-grid {
                 padding: 0;
                 display: grid;
-                grid-template-columns: repeat(5, 1fr);
+                grid-template-columns: repeat(3, 1fr);
                 grid-gap: .1vw;
             }
         }
@@ -177,7 +115,7 @@
     }
 
     .draggable {
-        z-index: 999999;
+        z-index: 80;
     }
 
     .item-slot {
@@ -185,41 +123,450 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: rgba(7, 7, 7, 0.5);
+        background-color: rgba(7, 7, 7, 0.65);
         padding: 0;
-        height: 3vw;
+        height: 4vw;
+        font-size: 1vw;
+
+        &.isOver {
+            background-color: rgba(75, 75, 75, 0.65) !important;
+        }
 
         img {
-            max-width: 2vw;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 5vw;
+            pointer-events: none;
         }
-
-        /*&:nth-child(-n + 3) {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-        }
-
-        &:nth-child(3n + 1) {
-            border-right: 1px solid rgba(255, 255, 255, 0.25);
-        }
-
-        &:nth-child(3n) {
-            border-left: 1px solid rgba(255, 255, 255, 0.25);
-        }
-
-        &:nth-child(n + 7) {
-            border-top: 1px solid rgba(255, 255, 255, 0.25);
-        }*/
 
         span {
             text-transform: uppercase;
             margin: 0;
             font-style: normal;
             font-weight: 600;
-            font-size: .75vw;
+            font-size: .625vw;
             line-height: 1vw;
             position: absolute;
-            bottom: 0.5vw;
-            right: 0.5vw;
+            bottom: 0.25vw;
             color: #d5dde5;
+
+            &.name {
+                left: 0.5vw;
+                font-weight: 600;
+                line-height: 1vw;
+            }
+
+            &.count {
+                right: 0.5vw;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 1vw;
+            }
+
+            &.ammoType {
+                display: none;
+            }
+
+            &.tier {
+                position: absolute;
+                top: .35vw;
+                left: -.25vw;
+                width: 3vw;
+
+                img {
+                    transform: translate(0, 0);
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                }
+            }
+        }
+
+        div {
+            &.progressWrapper {
+                width: .3vw;
+                background: transparent;
+                position: absolute;
+                right: .75vw;
+                top: .5vw;
+                bottom: .5vw;
+                
+                .progressWrapperBg {
+                    flex: 1 1 auto;
+                    height: 100%;
+                    background-color: rgba(255, 255, 255, 0.4);
+                    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 24%, transparent 25%, transparent);
+                    background-size: 100% 0.175vw;
+                }
+                
+                .progressWrapperFg {
+                    position: absolute;
+                    bottom: 0;
+                    width: 100%;
+                    transition: height 0.1s ease;
+                    background-color: #fff;
+                    box-shadow: 0 0 0.2vw 0.05vw #fff inset, 0 0 0.15vw 0.05vw rgba(255, 255, 255, 0.5);
+                    opacity: .75;
+            
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 24%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0));
+                        background-size: 100% 0.175vw;
+                        z-index: 99;
+                    }
+                }
+            }
+        }
+
+        button {
+            border: 0;
+            background: transparent;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            display: block;
+            height: 100%;
+            width: 100%;
+
+            &:hover {
+                z-index: 9999 !important;
+            }
+
+            & > div {
+                display: flex;
+                width: 100%;
+                height: 100%;
+
+                & > div {
+                    &:hover {
+                        z-index: 9999 !important;
+                    }
+                }
+
+                h5 {
+                    margin: 0 0 1vw;
+                    text-align: left;
+                    font-size: 1vw;
+                }
+
+                p {
+                    margin: 0;
+                    text-align: left;
+                    font-size: .65vw;
+                }
+
+                &.tier-1 {
+                    background: radial-gradient(circle, rgba(133, 193, 223, 0.07) 0%, rgba(173, 200, 218, 0.3) 100%);
+
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        height: 100%;
+                        width: 0.1vw;
+                        background: #fff;
+                        box-shadow: 0 0 .5vw .075vw rgba(255, 255, 255, .45);
+                    }
+                }
+
+                &.tier-2 {
+                    background: radial-gradient(circle, rgba(144, 200, 228, 0.07) 0%, rgba(82, 176, 223, 0.3) 100%);
+    
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        height: 100%;
+                        width: 0.1vw;
+                        background: rgb(82, 176, 223);
+                        box-shadow: 0 0 .5vw .075vw rgba(82, 176, 223, .45);
+                    }
+                }
+
+                &.tier-3 {
+                    background: radial-gradient(circle, rgba(255, 153, 0, 0.07) 0%, rgba(255, 153, 0, 0.3) 100%);
+    
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        height: 100%;
+                        width: 0.1vw;
+                        background: rgb(255, 153, 0);
+                        box-shadow: 0 0 .5vw .075vw rgba(255, 153, 0, .45);
+                    }
+                }
+            }
         }
     }
+
+    .weapon-grid {
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: .1vw;
+
+        .weapon-slot {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            grid-column: span 3 / auto;
+            height: 6.5vw;
+
+            img {
+                width: 12vw;
+                left: 50%;
+            }
+
+            span {
+                text-transform: uppercase;
+                margin: 0;
+                font-style: normal;
+                font-weight: 600;
+                font-size: 1vw;
+                line-height: 1vw;
+
+                &.name {
+                    display: block;
+                    position: absolute;
+                    bottom: 0.55vw;
+                    left: 0.85vw;
+                    font-size: 1.25vw;
+                    height: 1.25vw;
+                    text-shadow: 0 0 .75vw rgba(255, 255, 255, 0.45);
+                }
+
+                &.count {
+                    display: none;
+                }
+
+                &.ammoType {
+                    display: flex;
+                    position: absolute;
+                    bottom: 0.55vw;
+                    right: 0.55vw;
+                    font-size: 0.85vw;
+                    text-shadow: 0 0 .75vw rgba(255, 255, 255, 0.45);
+                }
+
+                &.tier {
+                    position: absolute;
+                    top: .55vw;
+                    right: -.45vw;
+                    left: auto;
+                    width: 4vw;
+
+                    img {
+                        transform: translate(0, 0);
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.empty-slot {
+    font-size: .7vw;
+    opacity: .4;
+    text-transform: uppercase;
+}
+
+
+.dragoverlay-object {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border: .1vw dashed #fff;
+    position: relative;
+
+    & > div {
+        display: flex;
+        width: 100%;
+        height: 100%;
+
+        h5 {
+            margin: 0 0 1vw;
+            text-align: left;
+            font-size: 1vw;
+        }
+
+        p {
+            margin: 0;
+            text-align: left;
+            font-size: .65vw;
+        }
+    }
+
+    img {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 5vw;
+    }
+
+    span {
+        text-transform: uppercase;
+        margin: 0;
+        font-style: normal;
+        font-weight: 600;
+        font-size: .75vw;
+        line-height: 1vw;
+        position: absolute;
+        bottom: 0.25vw;
+        color: #d5dde5;
+
+        &.tier,
+        &.ammoType,
+        &.name {
+            display: none !important;
+        }
+
+        &.count {
+            right: 0.25vw;
+            font-style: normal;
+            font-weight: 600;
+            font-size: .75vw;
+            line-height: 1vw;
+        }
+    }
+}
+
+.split-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    &.show {
+        display: flex;
+    }
+
+    .split-modal-inner {
+        width: 35vw;
+        height: 15vw;
+        background: rgba(0,0,0,1);
+        padding: 1vw 2vw;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+
+        .range-grid {
+            display: grid;
+            grid-template-columns: 10% 1fr 10%;
+            grid-gap: .5vw;
+
+            input,
+            button {
+                padding: 0;
+                margin: 0;
+                border: 0;
+            }
+
+            div,
+            button {
+                height: 3vw;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            margin: 1vw 0 1vw;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: .5vw;
+            margin-top: 1vw;
+            
+            button {
+                padding: 0;
+                margin: 0;
+                border: 0;
+                height: 3vw;
+            }
+        }
+
+        .slidecontainer {
+            width: 100%;
+        }
+          
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 3vw;
+            background: rgba(255,255,255,.5);
+            outline: none;
+            opacity: 1;
+        }
+          
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 2vw;
+            height: 3vw;
+            background: rgb(255, 153, 0);
+            cursor: pointer;
+        }
+          
+        .slider::-moz-range-thumb {
+            width: 2vw;
+            height: 3vw;
+            background: rgb(255, 153, 0);
+            cursor: pointer;
+        }
+    }
+}
+
+.inventoryTimer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,.65);
+    border-radius: 50%;
+
+    div {
+        font-size: 1vw;
+        color: #fff !important;
+    }
+}
+
+#InventoryTimerName {
+    position: absolute;
+    left: 50%;
+    top: 56%;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+
+    line-height: 1vw;
+    color: #fff;
+    font-size: .8vw;
+    text-transform: uppercase;
+    margin: 0;
+    font-style: normal;
+    font-weight: 600;
 }

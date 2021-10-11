@@ -1,4 +1,5 @@
 /*eslint no-useless-computed-key: off*/
+// -- TODO: UI / WeaponNamesHelper - fill out the remaining weapon names #293
 export var WeaponNames:any = {
     ['Weapons/Knife/Knife']: 'Knife',
 

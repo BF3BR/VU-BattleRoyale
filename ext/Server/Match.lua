@@ -4,7 +4,8 @@ local m_GameStateManager = require "GameStateManager"
 local m_TeamManager = require "BRTeamManager"
 local m_Gunship = require "Gunship"
 local m_PhaseManagerServer = require "PhaseManagerServer"
-local m_LootManager = require("LootManagerServer")
+local m_BRLootManager = require "BRLootManager"
+local m_BRInventoryManager = require "BRInventoryManager"
 local m_Logger = Logger("Match", true)
 
 function Match:__init()
@@ -120,8 +121,14 @@ function Match:OnMatchFirstTick()
 		-- Assign all players to teams
 		m_TeamManager:AssignTeams()
 
-		-- Enable regular pickups
-		m_LootManager:EnableMatchPickups()
+		-- Clear out all inventories
+		m_BRInventoryManager:Clear()
+
+		-- Clear out all dropped / non-dropped items
+		m_BRLootManager:Clear()
+
+		-- Spawn new loot pickups
+		m_BRLootManager:SpawnMapSpecificLootPickups()
 	elseif s_State == GameStates.Plane then
 		-- Spawn the gunship and set its course
 		local s_Path = self:GetRandomGunshipPath()
@@ -166,6 +173,9 @@ function Match:OnRestartRound()
 	self.m_RestartQueue = false
 	self.m_WinnerTeam = nil
 	m_GameStateManager:SetGameState(GameStates.None)
+
+	-- Spawn loot pickups for warmup
+	m_BRLootManager:SpawnMapSpecificLootPickups()
 end
 
 -- =============================================

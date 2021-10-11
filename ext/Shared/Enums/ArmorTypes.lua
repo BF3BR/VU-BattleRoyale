@@ -1,3 +1,4 @@
+-- TODO: Remove this after the new inventory code implemented
 ArmorTypes = {
 	NoArmor = {
 		Name = "NoArmor",

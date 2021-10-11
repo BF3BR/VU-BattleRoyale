@@ -1,7 +1,6 @@
 class "VuBattleRoyaleShared"
 
 require "__shared/Enums/ArmorTypes"
-require "__shared/Enums/AttachmentTypes"
 require "__shared/Enums/BRPlayerState"
 require "__shared/Enums/CustomEvents"
 require "__shared/Enums/GameStates"
@@ -10,6 +9,7 @@ require "__shared/Enums/SubphaseTypes"
 require "__shared/Enums/TeamJoinStrategy"
 require "__shared/Enums/TeamManagerErrors"
 require "__shared/Enums/UiStates"
+require "__shared/Enums/Attachments"
 
 require "__shared/Libs/Queue"
 
@@ -17,18 +17,17 @@ require "__shared/Mixins/TimersMixin"
 
 require "__shared/Types/Circle"
 require "__shared/Types/DataContainer"
+require "__shared/Types/MeshModel/MeshModel"
+require "__shared/Types/MeshModel/SkeletonMeshModel"
+require "__shared/Types/MeshModel/WeaponSkeletonMeshModel"
 
 require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/Timers"
-
-require "__shared/Weapons/Attachments"
-require "__shared/Weapons/Weapons"
-require "__shared/Weapons/Gadgets"
+require "__shared/Utils/PostReloadEvent"
 
 require "__shared/Configs/ServerConfig"
 require "__shared/Configs/MapsConfig"
-require "__shared/Configs/PickupsConfig"
 require "__shared/Configs/FireEffectsConfig"
 
 require "__shared/Logic/PhaseManagerShared"
@@ -60,9 +59,9 @@ function VuBattleRoyaleShared:RegisterEvents()
 		Events:Subscribe("Extension:Unloading", self, self.OnExtensionUnloading),
 		Events:Subscribe("Level:RegisterEntityResources", self, self.OnRegisterEntityResources),
 		Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate),
-		Events:Subscribe('Partition:Loaded', self, self.OnPartitionLoaded),
-		Events:Subscribe('Level:LoadingInfo', self, self.OnLevelLoadingInfo),
-		Events:Subscribe('Level:Destroy', self, self.OnLevelDestroy)
+		Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded),
+		Events:Subscribe("Level:LoadingInfo", self, self.OnLevelLoadingInfo),
+		Events:Subscribe("Level:Destroy", self, self.OnLevelDestroy)
 	}
 end
 

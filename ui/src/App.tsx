@@ -87,6 +87,8 @@ import AlertManager from "./components/AlertManager";
 
 /* Style */
 import './App.scss';
+import Overlay from "./components/Overlay";
+import { updateCloseLootPickup, updateInventory, updateOverlayLoot } from "./store/inventory/Actions";
 
 interface StateFromReducer {
     gameState: string;
@@ -584,6 +586,38 @@ const App: React.FC<Props> = ({
         dispatch(updateCommoRose(false));
     }
 
+    const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
+    window.OnInventoryOpen = (p_Open: boolean) => {
+        setIsInventoryOpen(p_Open);
+    }
+
+    window.SyncInventory = (p_DataJson: any) => {
+        dispatch(updateInventory(p_DataJson));
+    }
+
+    window.SyncOverlayLoot = (p_DataJson: any) => {
+        dispatch(updateOverlayLoot(p_DataJson));
+    }
+
+    window.SyncCloseLootPickupData = (p_DataJson: any) => {
+        if (p_DataJson === null || p_DataJson.length === undefined) {
+            dispatch(updateCloseLootPickup([]));
+            return;
+        }
+        
+        let tempData: any = [];
+        p_DataJson.forEach((loot: any, key: number) => {
+            if (loot.Items.length > 0) {
+                loot.Items.forEach((item: any, key: number) => {
+                    item.lootId = loot.Id;
+                    tempData.push(item);
+                });
+            }
+        });
+
+        dispatch(updateCloseLootPickup(tempData));
+    }
+
     return (
         <>
             {debugMode &&
@@ -692,9 +726,6 @@ const App: React.FC<Props> = ({
                                 <SpectatorInfo />
                                 <AmmoAndHealthCounter />
                                 <Gameover />
-                                <Rose />
-                                {/*<MapMarkers />*/}
-
                                 {!spectating &&
                                     <>
                                         <MiniMap />
@@ -702,7 +733,12 @@ const App: React.FC<Props> = ({
                                             time={interactTimeout}
                                             onComplete={() => setInteractTimeout(null)}
                                         />
-                                        {/*<Inventory />*/}
+                                        <Rose />
+                                        {isInventoryOpen ?
+                                            <Inventory />
+                                        :
+                                            <Overlay />
+                                        }
                                     </>
                                 }
                             </>
@@ -792,5 +828,10 @@ declare global {
 
         OnShowCommoRose: () => void;
         OnHideCommoRose: () => void;
+
+        OnInventoryOpen: (p_Open: boolean) => void;
+        SyncInventory: (p_DataJson: any) => void;
+        SyncOverlayLoot: (p_DataJson: any) => void;
+        SyncCloseLootPickupData: (p_DataJson: any) => void;
     }
 }
