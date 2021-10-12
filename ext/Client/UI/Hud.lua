@@ -404,6 +404,12 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 			m_HudUtils:HUDEnterUIGraph()
 			m_HudUtils:ShowCrosshair(true)
 		else
+			-- close the inventory before opening the minimap
+			if m_HudUtils:GetIsInventoryOpened() then
+				m_HudUtils:SetIsInventoryOpened(false)
+				WebUI:ExecuteJS("OnInventoryOpen(false);")
+			end
+
 			m_HudUtils:SetIsMapOpened(true)
 			WebUI:ExecuteJS("OnOpenCloseMap(true);")
 			m_HudUtils:OnEnableMouse()
@@ -423,6 +429,37 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		WebUI:ExecuteJS("OnMapSwitchRotation();")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
+	end
+
+	-- Open / Close Inventory UI
+	if p_Action == UIInputAction.UIInputAction_Tab then
+		-- make sure the player is in no other menu
+		if not m_HudUtils:GetIsInOptionsMenu()
+		and not m_HudUtils:GetIsInEscMenu()
+		and not m_HudUtils:GetIsInDeployScreen() then
+			if m_HudUtils:GetIsInventoryOpened() then
+				m_Logger:Write("Close Inventory")
+				m_HudUtils:SetIsInventoryOpened(false)
+				WebUI:ExecuteJS("OnInventoryOpen(false);")
+				m_HudUtils:HUDEnterUIGraph()
+				m_HudUtils:ShowCrosshair(true)
+			else
+				m_Logger:Write("Open Inventory")
+
+				-- if the minimap is opened we close it
+				if m_HudUtils:GetIsMapOpened() then
+					m_HudUtils:SetIsMapOpened(false)
+					WebUI:ExecuteJS("OnOpenCloseMap(false);")
+				end
+
+				m_HudUtils:SetIsInventoryOpened(true)
+				WebUI:ExecuteJS("OnInventoryOpen(true);")
+				m_HudUtils:OnEnableMouse()
+			end
+
+			p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
+			return
+		end
 	end
 end
 
