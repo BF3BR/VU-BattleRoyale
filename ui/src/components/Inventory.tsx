@@ -23,13 +23,18 @@ import "./Inventory.scss";
 interface StateFromReducer {
     slots: any;
     closeItems: any;
+    isCtrlDown: boolean;
 }
 
-type Props = StateFromReducer;
+type Props = StateFromReducer & {
+    isOpen: boolean;
+};
 
 const Inventory: React.FC<Props> = ({
     slots,
     closeItems,
+    isOpen,
+    isCtrlDown,
 }) => {
     const sensors = [useSensor(PointerSensor)];
 
@@ -77,16 +82,20 @@ const Inventory: React.FC<Props> = ({
                 return;
             } else if (active.data.current.currentSlot.toString() !== slot) {
                 if (slot === "item-drop") {
-                    sendToLua('WebUI:DropItem', JSON.stringify({ item: active.id, quantity: slots[active.data.current.currentSlot].Quantity }));
-                } else if(slot === "item-drop-split") {
-                    if (slots[active.data.current.currentSlot].Quantity > 1) {
-                        setSplitModal({
-                            id: active.id,
-                            show: true,
-                            maxQuantity: slots[active.data.current.currentSlot].Quantity,
-                            value: Math.floor(slots[active.data.current.currentSlot].Quantity / 2),
-                        });
+                    if (isCtrlDown) {
+                        // Split drop
+                        if (slots[active.data.current.currentSlot].Quantity > 1) {
+                            setSplitModal({
+                                id: active.id,
+                                show: true,
+                                maxQuantity: slots[active.data.current.currentSlot].Quantity,
+                                value: Math.floor(slots[active.data.current.currentSlot].Quantity / 2),
+                            });
+                        } else {
+                            sendToLua('WebUI:DropItem', JSON.stringify({ item: active.id, quantity: slots[active.data.current.currentSlot].Quantity }));
+                        }
                     } else {
+                        // Normal drop
                         sendToLua('WebUI:DropItem', JSON.stringify({ item: active.id, quantity: slots[active.data.current.currentSlot].Quantity }));
                     }
                 } else {
@@ -255,64 +264,76 @@ const Inventory: React.FC<Props> = ({
 
     return (
         <>
-            <div className={"split-modal " + (splitModal.show?"show":"")}>
-                <div className="split-modal-inner">
-
-                    <div className="range-grid">
-                        <button 
-                            onClick={() => setSplitModal(prevState => ({
-                                id: prevState.id,
-                                show: prevState.show,
-                                maxQuantity: prevState.maxQuantity,
-                                value: 1,
-                            }))}
-                        >
-                            MIN
-                        </button>
-                        <div>
-                            <input 
-                                type="range" 
-                                min={1} 
-                                max={splitModal.maxQuantity} 
-                                value={splitModal.value} 
-                                className="slider" 
-                                id="myRange"
-                                step={1}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <button 
-                            onClick={() => setSplitModal(prevState => ({
-                                id: prevState.id,
-                                show: prevState.show,
-                                maxQuantity: prevState.maxQuantity,
-                                value: splitModal.maxQuantity,
-                            }))}
-                        >
-                            MAX
-                        </button>
+            <div id="SplitBox" className={(splitModal.show ? "show" : "")}>
+                <div className="card">
+                    <div className="card-header">
+                        <h1>Splitting</h1>
                     </div>
-                    <h1>{splitModal.value??0}</h1>
-                    <div className="button-grid">
-                        <button onClick={() => setSplitModal(prevState => ({
-                            id: null,
-                            show: false,
-                            maxQuantity: prevState.maxQuantity,
-                            value: prevState.value,
-                        }))}>
-                            Cancel
-                        </button>
-                        <button onClick={() => {
-                            setSplitModal(prevState => ({
-                                id: null,
-                                show: false,
-                                maxQuantity: prevState.maxQuantity,
-                                value: prevState.value,
-                            }));
-                            sendToLua('WebUI:DropItem', JSON.stringify({ item: splitModal.id, quantity: splitModal.value }));
-                        }}>
-                            Drop
-                        </button>
+                    <div className="card-content">
+                        <h1 className="split-val">{splitModal.value??0}</h1>
+                        <div className="range-grid">
+                            <button 
+                                onClick={() => setSplitModal(prevState => ({
+                                    id: prevState.id,
+                                    show: prevState.show,
+                                    maxQuantity: prevState.maxQuantity,
+                                    value: 1,
+                                }))}
+                                className="btn btn-small"
+                            >
+                                MIN
+                            </button>
+                            <div>
+                                <input 
+                                    type="range" 
+                                    min={1} 
+                                    max={splitModal.maxQuantity} 
+                                    value={splitModal.value} 
+                                    className="slider" 
+                                    id="myRange"
+                                    step={1}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <button 
+                                onClick={() => setSplitModal(prevState => ({
+                                    id: prevState.id,
+                                    show: prevState.show,
+                                    maxQuantity: prevState.maxQuantity,
+                                    value: splitModal.maxQuantity,
+                                }))}
+                                className="btn btn-small"
+                            >
+                                MAX
+                            </button>
+                        </div>
+                        <div className="button-grid">
+                            <button 
+                                onClick={() => setSplitModal(prevState => ({
+                                    id: null,
+                                    show: false,
+                                    maxQuantity: prevState.maxQuantity,
+                                    value: prevState.value,
+                                }))}
+                                className="btn"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setSplitModal(prevState => ({
+                                        id: null,
+                                        show: false,
+                                        maxQuantity: prevState.maxQuantity,
+                                        value: prevState.value,
+                                    }));
+                                    sendToLua('WebUI:DropItem', JSON.stringify({ item: splitModal.id, quantity: splitModal.value }));
+                                }}
+                                className="btn btn-primary"
+                            >
+                                Drop
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -322,7 +343,7 @@ const Inventory: React.FC<Props> = ({
                 onDragStart={handleDragStart}
                 sensors={sensors}
             >
-                <div id="Inventory" className="open">
+                <div id="Inventory" className={isOpen ? "open" : ""}>
                     <div className="InventoryWrapper">
                         <div className="card PrimaryWeaponBox">
                             <div className="card-header">
@@ -426,29 +447,31 @@ const Inventory: React.FC<Props> = ({
                             </div>
                         </div>
                     </div>
-                    <div className="itemDrop">
+                    <div className={"itemDrop " + (closeItems.length === 0 ? "noCloseItem" : "")}>
                         {(isDragging !== null && isDragging.currentSlot !== undefined) &&
-                            <Droppable id="item-drop" />
+                            <Droppable id="item-drop" isCtrlDown={isCtrlDown} />
                         }
                     </div>
-                    <div className="ProximityWrapper">
-                        <div className="card proximity-card">
-                            <div className="card-header">
-                                <h1>
-                                    Near you
-                                </h1>
-                            </div>
-                            <div className="card-content">
-                                {closeItems.map((item: any, key: number) => (
-                                    <div className="item-slot" key={key}>
-                                        <Draggable id={"loot-" + item.Id} item={item} lootId={item.lootId}>
-                                            {getSlotDrag(item, true)}
-                                        </Draggable>
-                                    </div>
-                                ))}
+                    {closeItems.length > 0 &&
+                        <div className="ProximityWrapper">
+                            <div className="card proximity-card">
+                                <div className="card-header">
+                                    <h1>
+                                        Near you
+                                    </h1>
+                                </div>
+                                <div className="card-content">
+                                    {closeItems.map((item: any, key: number) => (
+                                        <div className="item-slot" key={key}>
+                                            <Draggable id={"loot-" + item.Id} item={item} lootId={item.lootId}>
+                                                {getSlotDrag(item, true)}
+                                            </Draggable>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
                 <DragOverlay 
                     dropAnimation={null}
@@ -463,24 +486,24 @@ const Inventory: React.FC<Props> = ({
                         </div>
                     }
                 </DragOverlay>
+                {(progress.slot !== null) &&
+                    <>
+                        <InventoryTimer
+                            slot={progress.slot}
+                            onComplete={(slot: any) => {
+                                setProgress({
+                                    slot: null,
+                                    time: null
+                                });
+                            }}
+                            time={progress.time}
+                        />
+                        <h4 id="InventoryTimerName">
+                            Using {progress.slot.Name}
+                        </h4>
+                    </>
+                }
             </DndContext>
-            {(progress.slot !== null) &&
-                <>
-                    <InventoryTimer
-                        slot={progress.slot}
-                        onComplete={(slot: any) => {
-                            setProgress({
-                                slot: null,
-                                time: null
-                            });
-                        }}
-                        time={progress.time}
-                    />
-                    <h4 id="InventoryTimerName">
-                        Using {progress.slot.Name}
-                    </h4>
-                </>
-            }
         </>
     );
 };
@@ -490,6 +513,8 @@ const mapStateToProps = (state: RootState) => {
         // InventoryReducer
         slots: state.InventoryReducer.slots,
         closeItems: state.InventoryReducer.closeItems,
+        // PlayerReducer
+        isCtrlDown: state.PlayerReducer.isCtrlDown,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

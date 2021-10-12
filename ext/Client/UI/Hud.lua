@@ -134,6 +134,14 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 			m_DeployScreen:OpenDeployScreen()
 		end
 	end
+	
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_LeftCtrl) then
+		WebUI:ExecuteJS("OnLeftCtrl(true);")
+	end
+
+	if InputManager:WentKeyUp(InputDeviceKeys.IDK_LeftCtrl) then
+		WebUI:ExecuteJS("OnLeftCtrl(false);")
+	end
 
 	m_EscMenu:OnClientUpdateInput()
 end

@@ -11,4 +11,5 @@ export interface PlayerState {
     },
     isOnPlane: boolean,
     player: Player,
+    isCtrlDown: boolean,
 }

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { RootState } from "./store/RootReducer";
 import {
+    updateCtrlDown,
     updatePlayerArmor,
     updatePlayerCurrentWeapon,
     updatePlayerData,
@@ -618,6 +619,10 @@ const App: React.FC<Props> = ({
         dispatch(updateCloseLootPickup(tempData));
     }
 
+    window.OnLeftCtrl = (p_Down: boolean) => {
+        dispatch(updateCtrlDown(p_Down));
+    }
+
     return (
         <>
             {debugMode &&
@@ -734,9 +739,8 @@ const App: React.FC<Props> = ({
                                             onComplete={() => setInteractTimeout(null)}
                                         />
                                         <Rose />
-                                        {isInventoryOpen ?
-                                            <Inventory />
-                                        :
+                                        <Inventory isOpen={isInventoryOpen} />
+                                        {isInventoryOpen === false &&
                                             <Overlay />
                                         }
                                     </>
@@ -833,5 +837,6 @@ declare global {
         SyncInventory: (p_DataJson: any) => void;
         SyncOverlayLoot: (p_DataJson: any) => void;
         SyncCloseLootPickupData: (p_DataJson: any) => void;
+        OnLeftCtrl: (p_Down: boolean) => void;
     }
 }

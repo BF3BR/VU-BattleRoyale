@@ -1,6 +1,7 @@
 import { PlayerState } from "./Types";
 import { 
     PlayerActionTypes,
+    UPDATE_CTRL_DOWN,
     UPDATE_PLAYER_ARMOR,
     UPDATE_PLAYER_CURRENT_WEAPON,
     UPDATE_PLAYER_DATA,
@@ -31,7 +32,8 @@ const initialState: PlayerState = {
         color: "rgba(255, 0, 0, 0.3)",
         position: null,
         yaw: null,
-    }
+    },
+    isCtrlDown: false,
 };
 
 const PlayerReducer = (
@@ -119,6 +121,11 @@ const PlayerReducer = (
                     isTeamLeader: action.payload.playerData.isTeamLeader ?? false,
                     color: action.payload.playerData.color ?? "rgba(255, 0, 0, 0.3)",
                 },
+            };
+        case UPDATE_CTRL_DOWN:
+            return {
+                ...state,
+                isCtrlDown: action.payload.isDown,
             };
         default:
             return state;

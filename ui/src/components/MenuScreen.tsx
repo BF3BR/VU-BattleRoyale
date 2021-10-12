@@ -15,14 +15,14 @@ const MenuScreen: React.FC = () => {
             label: "Resume",
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "resume"),
         },
-        {
+        /*{
             label: "Team / Squad",
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "team"),
         },
         {
             label: "Inventory",
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "inventory"),
-        },
+        },*/
         {
             label: "Options",
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "options"),

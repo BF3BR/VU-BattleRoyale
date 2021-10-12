@@ -12,10 +12,13 @@ export function Droppable(props: any) {
             {active &&
                 <>
                     {props.id === "item-drop" &&
-                        <span className="overlay-placeholder">Item drop</span>
-                    }
-                    {props.id === "item-drop-split" &&
-                        <span className="overlay-placeholder">Item split</span>
+                        <span className="overlay-placeholder">
+                            {props.isCtrlDown ?
+                                "Split items here"
+                            :
+                                "Drop items here"
+                            }
+                        </span>
                     }
                 </>
             }
