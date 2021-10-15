@@ -59,10 +59,14 @@ end
 function VoipManager:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
 	m_Logger:Write('Player ' .. p_Player.name .. ' joined voip channel ' .. p_Channel.name)
 
-	-- We don't want to hear ourselves.
 	if p_Player == PlayerManager:GetLocalPlayer() then
+		-- We don't want to hear ourselves.
 		p_Emitter.volume = 0.0
 		p_Emitter.muted = true
+
+		-- Make sure it's push to talk
+		-- TODO: BACKLOG: add an option to change it as a player
+		p_Channel.transmissionMode = VoipTransmissionMode.PushToTalk
 
 		if p_Channel.name:match("BRTeam") then
 			self.m_BrTeamChannelName = p_Channel.name
