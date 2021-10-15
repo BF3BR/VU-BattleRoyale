@@ -23,6 +23,9 @@ function BRTeam:__init(p_Id)
 	-- vanilla team/squad ids
 	self.m_TeamId = TeamId.Team1
 	self.m_SquadId = SquadId.SquadNone
+
+	-- create a VoipChannel if the team has more then 1 member
+	self.m_VoipChannel = nil
 end
 
 -- Adds a player to the team
@@ -46,7 +49,7 @@ function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
 	-- add references
 	self.m_Players[p_BrPlayer:GetName()] = p_BrPlayer
 	p_BrPlayer.m_Team = self
-	p_BrPlayer.m_PosInSquad = m_MapHelper:Size(self.m_Players)
+	p_BrPlayer.m_PosInSquad = self:PlayerCount()
 
 	-- assign thew player as team leader if needed
 	self:AssignLeader()
@@ -54,6 +57,21 @@ function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
 	-- update client state
 	if not p_IgnoreBroadcast then
 		self:BroadcastState()
+	end
+
+	if self:PlayerCount() > 1 then
+		-- if we have no voip channel, create a voip channel (if the playercount is higher then 1)
+		if self.m_VoipChannel == nil then
+			self:CreateVoipChannel()
+
+			-- add all players to this channel
+			for _, l_BrPlayer in pairs(self.m_Players) do
+				self:AddPlayerToVoip(l_BrPlayer)
+			end
+		else
+			-- we already have a voip channel, just add this player to it
+			self:AddPlayerToVoip(p_BrPlayer)
+		end
 	end
 
 	return true
@@ -67,7 +85,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	end
 
 	-- check if team only has one player
-	if not p_Forced and m_MapHelper:Size(self.m_Players) == 1 then
+	if not p_Forced and self:PlayerCount() == 1 then
 		return false
 	end
 
@@ -83,7 +101,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	self:AssignLeader()
 
 	-- updates the position of the player in the squad
-	local s_Size = m_MapHelper:Size(self.m_Players)
+	local s_Size = self:PlayerCount()
 
 	for _, l_Player in pairs(self.m_Players) do
 		if l_Player.m_PosInSquad > s_Size then
@@ -97,8 +115,18 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	end
 
 	-- check if team should be destroyed
-	if m_MapHelper:Size(self.m_Players) < 1 then
+	if self:PlayerCount() < 1 then
 		Events:DispatchLocal(TeamManagerEvent.DestroyTeam, self)
+	end
+
+	-- if a voip channel exists, remove the player that left the team
+	if self.m_VoipChannel ~= nil then
+		self:RemovePlayerFromVoip(p_BrPlayer)
+
+		-- we have 1 or less players in this BRTeam, we can close the voip channel
+		if self:PlayerCount() <= 1 then
+			self:CloseVoipChannel()
+		end
 	end
 
 	return true
@@ -118,6 +146,27 @@ function BRTeam:Merge(p_OtherTeam)
 	self:BroadcastState()
 
 	return true
+end
+
+-- =============================================
+-- Voip Functions
+-- =============================================
+
+function BRTeam:CreateVoipChannel()
+	self.m_VoipChannel = Voip:CreateChannel("BRTeam_" .. tostring(self.m_Id), VoipEmitterType.Local)
+end
+
+function BRTeam:AddPlayerToVoip(p_BrPlayer)
+	self.m_VoipChannel:AddPlayer(p_BrPlayer:GetPlayer())
+end
+
+function BRTeam:RemovePlayerFromVoip(p_BrPlayer)
+	self.m_VoipChannel:RemovePlayer(p_BrPlayer:GetPlayer())
+end
+
+function BRTeam:CloseVoipChannel()
+	self.m_VoipChannel:Close()
+	self.m_VoipChannel = nil
 end
 
 -- Returns the members of the team that joined using the code
@@ -159,7 +208,7 @@ end
 
 -- Checks if the team is full and has no space for more players
 function BRTeam:IsFull()
-	return m_MapHelper:Size(self.m_Players) >= ServerConfig.PlayersPerTeam
+	return self:PlayerCount() >= ServerConfig.PlayersPerTeam
 end
 
 -- Checks if the team has any players
@@ -229,7 +278,7 @@ end
 function BRTeam:CanBeJoinedById()
 	-- if the team has only one player and no Custom team join strategy selected
 	-- then it can't be joined by id
-	if m_MapHelper:Size(self.m_Players) == 1 then
+	if self:PlayerCount() == 1 then
 		local s_BrPlayer = m_MapHelper:Item(self.m_Players)
 
 		if s_BrPlayer ~= nil and s_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
@@ -328,6 +377,11 @@ function BRTeam:Destroy()
 	end
 
 	self.m_Players = {}
+
+	-- if we have a voipchannel for this team, we want to close it
+	if self.m_VoipChannel ~= nil then
+		self:CloseVoipChannel()
+	end
 end
 
 -- Garbage collector metamethod
