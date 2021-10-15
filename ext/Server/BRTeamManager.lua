@@ -196,18 +196,13 @@ function BRTeamManager:AssignTeams()
 		l_BrTeam.m_Active = true
 
 		-- assign team/squad ids for each BRTeam
-		if l_BrTeam:PlayerCount() < 2 then
-			l_BrTeam.m_TeamId = TeamId.Team1
-			l_BrTeam.m_SquadId = SquadId.SquadNone
-		else
-			l_BrTeam.m_TeamId = s_Index % (s_AvailableTeamIds - 1) + 2
+		l_BrTeam.m_TeamId = s_Index % (s_AvailableTeamIds - 1) + 2
 
-			-- i guess the squad always will be 1 but i'll let it as is
-			-- in case we lower the number of team ids for some reason
-			l_BrTeam.m_SquadId = s_Index // (s_AvailableTeamIds - 1) + 1
+		-- i guess the squad always will be 1 but i'll let it as is
+		-- in case we lower the number of team ids for some reason
+		l_BrTeam.m_SquadId = s_Index // (s_AvailableTeamIds - 1) + 1
 
-			s_Index = s_Index + 1
-		end
+		s_Index = s_Index + 1
 
 		l_BrTeam:ApplyTeamSquadIds()
 	end
