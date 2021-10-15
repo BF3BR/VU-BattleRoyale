@@ -31,6 +31,8 @@ function BRPlayer:__init(p_Player)
 	-- The armor of the player (to be replaced by inventory)
 	self.m_Armor = Armor:BasicArmor()
 
+	self.m_Inventory = nil
+
 	-- The kill count of the player
 	self.m_Kills = 0
 
@@ -70,15 +72,15 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 
 		-- apply damage to the armor
 		if p_Giver ~= nil and not self:Equals(p_Giver) then
-			local s_Damage = self.m_Armor:ApplyDamage(p_Damage)
+			local s_Damage = self:GetArmor():ApplyDamage(p_Damage)
 
 			-- check if we really did damage to the armor
 			if s_Damage ~= p_Damage then
 				p_Damage = s_Damage
-				self:SetArmor(self.m_Armor)
+				self:SetArmor(self:GetArmor())
 
 				-- check if the player still has a shield or if the giver broke it
-				if self.m_Armor:GetPercentage() == 0 then
+				if self:GetArmor():GetPercentage() == 0 then
 					NetEvents:SendToLocal("Player:BrokeShield", p_Giver.m_Player, self:GetName())
 				end
 			end
@@ -383,7 +385,7 @@ end
 function BRPlayer:SetArmor(p_Armor)
 	self.m_Armor = p_Armor
 	local s_State = {
-		Armor = self.m_Armor:AsTable()
+		Armor = self:GetArmor():AsTable()
 	}
 	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, self.m_Player, s_State)
 
@@ -455,6 +457,11 @@ function BRPlayer:GetPosition()
 	return s_Soldier.transform.trans
 end
 
+-- Returns the current armor item equipped by the player
+function BRPlayer:GetArmor()
+	return self.m_Armor
+end
+
 -- Checks if the player is alive
 function BRPlayer:IsAlive()
 	local s_Player = self:GetPlayer()
@@ -514,7 +521,7 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 	-- state used for local player
 	return {
 		Team = s_Team,
-		Armor = self.m_Armor:AsTable(),
+		Armor = self:GetArmor():AsTable(),
 		Data = {
 			TeamJoinStrategy = self.m_TeamJoinStrategy,
 			IsTeamLeader = self.m_IsTeamLeader,

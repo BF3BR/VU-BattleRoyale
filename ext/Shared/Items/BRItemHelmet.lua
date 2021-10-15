@@ -1,6 +1,6 @@
 require "__shared/Items/BRItem"
 
-local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
+local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
 
 class("BRItemHelmet", BRItem)
 
@@ -25,7 +25,7 @@ function BRItemHelmet:AsTable(p_Extended)
 end
 
 function BRItemHelmet:CreateFromTable(p_Table)
-	return BRItemHelmet(p_Table.Id, m_ArmorDefinitions[p_Table.UId], p_Table.CurrentDurability)
+	return BRItemHelmet(p_Table.Id, m_HelmetDefinitions[p_Table.UId], p_Table.CurrentDurability)
 end
 
 --==============================
