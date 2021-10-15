@@ -32,10 +32,13 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 		self.m_LastDelta = 0.0
 
 		local s_Entity = self:OnRaycast()
+
 		if s_Entity ~= nil then
 			local s_LootPickup = m_BRLootPickupDatabase:GetByInstanceId(s_Entity.instanceId)
+
 			if s_LootPickup ~= nil then
 				self.m_LastSelectedLootPickup = s_LootPickup
+
 				if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
 					local s_SingleItem = m_MapHelper:NextItem(s_LootPickup.m_Items)
 					self:OnSendOverlayLoot(s_SingleItem, false)
@@ -53,6 +56,7 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 
 		if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and self.m_LastSelectedLootPickup ~= nil then
 			local s_LootPickup = self.m_LastSelectedLootPickup
+
 			if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
 				NetEvents:Send(
 					InventoryNetEvent.PickupItem,
@@ -69,6 +73,7 @@ end
 function BRLooting:OnUpdateLootPickup(p_LootPickupData)
 	-- update LootPickup in database
 	local s_LootPickup = m_BRLootPickupDatabase:Update(p_LootPickupData)
+
 	if s_LootPickup == nil then
 		return
 	end
@@ -230,6 +235,7 @@ end
 function BRLooting:OnSpatialRaycast()
 	-- Make sure we have a local player.
 	local s_Player = PlayerManager:GetLocalPlayer()
+
 	if s_Player == nil or s_Player.soldier == nil then
 		return nil
 	end
@@ -237,7 +243,8 @@ function BRLooting:OnSpatialRaycast()
 	-- Our prop-picking ray will start at what the camera is looking at and
 	-- extend forward by 3.0m.
 	local s_CameraTransform = ClientUtils:GetCameraTransform()
-	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0,0,0) then
+
+	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0, 0, 0) then
 		return
 	end
 
@@ -268,16 +275,16 @@ function BRLooting:OnSpatialRaycast()
 	self:SendCloseLootPickupData(s_LootPickups)
 end
 
-function BRLooting:GetMesh(entity)
-	local data = entity.data
+function BRLooting:GetMesh(p_Entity)
+	local s_Data = p_Entity.data
 
-	if data == nil then
+	if s_Data == nil then
 		return nil
 	end
 
-	if data:Is("StaticModelEntityData") then
-		data = StaticModelEntityData(data)
-		return data.mesh
+	if s_Data:Is("StaticModelEntityData") then
+		s_Data = StaticModelEntityData(s_Data)
+		return s_Data.mesh
 	end
 
 	return nil
@@ -368,7 +375,8 @@ function BRLooting:OnSendOverlayLootBox(p_LootPickupId, p_Items)
 		return
 	end
 
-	local s_ReturnVal = { }
+	local s_ReturnVal = {}
+
 	for l_Index, l_Item in pairs(p_Items) do
 		local l_ReturnVal = l_Item:AsTable(true)
 
@@ -385,6 +393,7 @@ function BRLooting:SendCloseLootPickupData(p_LootPickups)
 	end
 
 	local s_LootPickupData = {}
+
 	for _, l_LootPickup in pairs(p_LootPickups) do
 		local s_Data = l_LootPickup:AsTable(true)
 

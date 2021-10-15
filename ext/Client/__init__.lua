@@ -163,7 +163,7 @@ function VuBattleRoyaleClient:RegisterHooks()
 end
 
 function VuBattleRoyaleClient:RegisterCommands()
-	if ServerConfig.Debug.DisableDebugCommands then
+	if not ServerConfig.Debug.EnableDebugCommands then
 		self.m_Commands = {}
 		return
 	end
@@ -764,39 +764,39 @@ function VuBattleRoyaleClient:StartWindTurbines()
 end
 
 function VuBattleRoyaleClient:OnWebUIMoveItem(p_JsonData)
-    self.m_Invetnory:OnWebUIMoveItem(p_JsonData)
+	self.m_Invetnory:OnWebUIMoveItem(p_JsonData)
 end
 
 function VuBattleRoyaleClient:OnWebUIDropItem(p_JsonData)
-    self.m_Invetnory:OnWebUIDropItem(p_JsonData)
+	self.m_Invetnory:OnWebUIDropItem(p_JsonData)
 end
 
 function VuBattleRoyaleClient:OnWebUIUseItem(p_JsonData)
-    self.m_Invetnory:OnWebUIUseItem(p_JsonData)
+	self.m_Invetnory:OnWebUIUseItem(p_JsonData)
 end
 
 function VuBattleRoyaleClient:OnWebUIPickupItem(p_JsonData)
-    self.m_Invetnory:OnWebUIPickupItem(p_JsonData)
+	self.m_Invetnory:OnWebUIPickupItem(p_JsonData)
 end
 
 function VuBattleRoyaleClient:OnReceiveInventoryState(p_State)
-    self.m_Invetnory:OnReceiveInventoryState(p_State)
+	self.m_Invetnory:OnReceiveInventoryState(p_State)
 end
 
 function VuBattleRoyaleClient:OnCreateLootPickup(p_DataArray)
-    m_BRLootPickupDatabase:OnCreateLootPickup(p_DataArray)
+	m_BRLootPickupDatabase:OnCreateLootPickup(p_DataArray)
 end
 
 function VuBattleRoyaleClient:OnUnregisterLootPickup(p_LootPickupId)
-    self.m_Looting:OnUnregisterLootPickup(p_LootPickupId)
+	self.m_Looting:OnUnregisterLootPickup(p_LootPickupId)
 end
 
 function VuBattleRoyaleClient:OnUpdateLootPickup(p_DataArray)
-    self.m_Looting:OnUpdateLootPickup(p_DataArray)
+	self.m_Looting:OnUpdateLootPickup(p_DataArray)
 end
 
 function VuBattleRoyaleClient:OnItemActionCanceled()
-    self.m_Invetnory:OnItemActionCanceled()
+	self.m_Invetnory:OnItemActionCanceled()
 end
 
 return VuBattleRoyaleClient()

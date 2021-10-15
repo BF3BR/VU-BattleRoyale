@@ -271,15 +271,15 @@ end
 
 function VuBattleRoyaleServer:OnPlayerRespawn(p_Player)
 	if p_Player == nil then
-        return
-    end
+		return
+	end
 
-    local s_Inventory = m_InventoryManager:GetOrCreateInventory(p_Player)
+	local s_Inventory = m_InventoryManager:GetOrCreateInventory(p_Player)
 
 	-- Add default inventory items if needed
 
 	s_Inventory:DeferUpdateSoldierCustomization()
-    s_Inventory:SendState()
+	s_Inventory:SendState()
 end
 
 -- =============================================

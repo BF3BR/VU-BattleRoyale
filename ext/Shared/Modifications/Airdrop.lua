@@ -7,15 +7,18 @@ local m_HavokAsset = DC(Guid("A80588DC-4471-11DE-B7E8-80A76CACD9DC"), Guid("CB8B
 local m_Logger = Logger("Airdrop", true)
 
 function Airdrop:RegisterCallbacks()
-	DC:WaitForInstances({ m_AirdropObjectBlueprint, m_RigidMesh, m_HavokAsset }, self, self.CreateObjectBlueprint)
+	DC:WaitForInstances({m_AirdropObjectBlueprint, m_RigidMesh, m_HavokAsset}, self, self.CreateObjectBlueprint)
 end
 
 function Airdrop:DeregisterCallbacks()
+	m_AirdropObjectBlueprint:Deregister()
+	m_RigidMesh:Deregister()
+	m_HavokAsset:Deregister()
 end
 
 function Airdrop:CreateObjectBlueprint()
 	local s_AirdropBlueprint = m_AirdropObjectBlueprint:GetInstance()
-    local s_Partition = s_AirdropBlueprint.partition
+	local s_Partition = s_AirdropBlueprint.partition
 	local s_Registry = RegistryContainer()
 
 	local s_ObjectBlueprint = ObjectBlueprint(s_AirdropBlueprint:Clone(Guid("261E43BF-259B-BF3B-41D2-0000BBBDBBBF")))

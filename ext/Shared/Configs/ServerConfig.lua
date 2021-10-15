@@ -51,7 +51,7 @@ ServerConfig = {
 
 		EnableWhitelist = true,
 
-		DisableDebugCommands = false,
+		EnableDebugCommands = true,
 
 		Whitelist = {
 			"voteban_flash",

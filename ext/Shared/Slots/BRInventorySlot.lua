@@ -164,4 +164,3 @@ end
 function BRInventorySlot:BeforeCustomizationApply()
 	-- Empty
 end
-

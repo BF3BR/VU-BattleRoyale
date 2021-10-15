@@ -17,79 +17,80 @@ local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefi
 require "__shared/Utils/BRItemFactory"
 
 function BRInventoryManager:__init()
-    self:RegisterVars()
-    self:RegisterEvents()
+	self:RegisterVars()
+	self:RegisterEvents()
 end
 
 function BRInventoryManager:RegisterVars()
-    -- [Player.id] -> [BRInventory]
-    self.m_Inventories = {}
+	-- [Player.id] -> [BRInventory]
+	self.m_Inventories = {}
 end
 
 function BRInventoryManager:RegisterEvents()
-    NetEvents:Subscribe(InventoryNetEvent.PickupItem, self, self.OnInventoryPickupItem)
-    NetEvents:Subscribe(InventoryNetEvent.MoveItem, self, self.OnInventoryMoveItem)
-    NetEvents:Subscribe(InventoryNetEvent.UseItem, self, self.OnInventoryUseItem)
-    NetEvents:Subscribe(InventoryNetEvent.DropItem, self, self.OnInventoryDropItem)
+	NetEvents:Subscribe(InventoryNetEvent.PickupItem, self, self.OnInventoryPickupItem)
+	NetEvents:Subscribe(InventoryNetEvent.MoveItem, self, self.OnInventoryMoveItem)
+	NetEvents:Subscribe(InventoryNetEvent.UseItem, self, self.OnInventoryUseItem)
+	NetEvents:Subscribe(InventoryNetEvent.DropItem, self, self.OnInventoryDropItem)
 
-    -- Events:Subscribe("GunSway:UpdateRecoil", self, self.OnGunSwayUpdateRecoil)
-    Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon)
-    Events:Subscribe("Player:PostReload", self, self.OnPlayerPostReload)
-    Events:Subscribe("BRItem:DestroyItem", self, self.OnItemDestroy)
+	-- Events:Subscribe("GunSway:UpdateRecoil", self, self.OnGunSwayUpdateRecoil)
+	Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon)
+	Events:Subscribe("Player:PostReload", self, self.OnPlayerPostReload)
+	Events:Subscribe("BRItem:DestroyItem", self, self.OnItemDestroy)
 end
 
 function BRInventoryManager:OnPlayerLeft(p_Player)
-    m_Logger:Write(string.format("Destroying Inventory for '%s'", p_Player.name))
+	m_Logger:Write(string.format("Destroying Inventory for '%s'", p_Player.name))
 
-    if self.m_Inventories[p_Player.id] ~= nil then
-        self:RemoveInventory(p_Player.id)
-    end
+	if self.m_Inventories[p_Player.id] ~= nil then
+		self:RemoveInventory(p_Player.id)
+	end
 end
 
 function BRInventoryManager:OnPlayerChangingWeapon(p_Player)
-    if p_Player == nil or p_Player.soldier == nil then
-        return
-    end
+	if p_Player == nil or p_Player.soldier == nil then
+		return
+	end
 
-    local s_CurrentWeapon = p_Player.soldier.weaponsComponent.currentWeapon
-    local s_Inventory = self.m_Inventories[p_Player.id]
-    if s_CurrentWeapon == nil or s_Inventory == nil then
-        return
-    end
+	local s_CurrentWeapon = p_Player.soldier.weaponsComponent.currentWeapon
+	local s_Inventory = self.m_Inventories[p_Player.id]
 
-    -- destroy gadget if empty
-    s_Inventory:GetSlot(InventorySlot.Gadget):DestroyIfEmpty()
+	if s_CurrentWeapon == nil or s_Inventory == nil then
+		return
+	end
 
-    -- Update secondary ammo count
-    s_CurrentWeapon.secondaryAmmo = s_Inventory:GetAmmoTypeCount(s_CurrentWeapon.name)
+	-- destroy gadget if empty
+	s_Inventory:GetSlot(InventorySlot.Gadget):DestroyIfEmpty()
+
+	-- Update secondary ammo count
+	s_CurrentWeapon.secondaryAmmo = s_Inventory:GetAmmoTypeCount(s_CurrentWeapon.name)
 end
 
 function BRInventoryManager:GetOrCreateInventory(p_Player)
-    -- get existing inventory
-    local s_Inventory = self.m_Inventories[p_Player.id]
+	-- get existing inventory
+	local s_Inventory = self.m_Inventories[p_Player.id]
 
-    -- create a new one if needed
-    if s_Inventory == nil then
-        s_Inventory = BRInventory(p_Player)
-        self:AddInventory(s_Inventory, p_Player.id)
-    end
+	-- create a new one if needed
+	if s_Inventory == nil then
+		s_Inventory = BRInventory(p_Player)
+		self:AddInventory(s_Inventory, p_Player.id)
+	end
 
-    return s_Inventory
+	return s_Inventory
 end
 
 -- Adds a BRInventory
 -- @param p_Inventory BRInventory
 -- @param p_PlayerId integer
 function BRInventoryManager:AddInventory(p_Inventory, p_PlayerId)
-    self.m_Inventories[p_PlayerId] = p_Inventory
+	self.m_Inventories[p_PlayerId] = p_Inventory
 end
 
 -- Removes a BRInventory
 -- @param p_PlayerId integer
 function BRInventoryManager:RemoveInventory(p_PlayerId)
-    -- destroy inventory and clear reference
-    self.m_Inventories[p_PlayerId]:Destroy()
-    self.m_Inventories[p_PlayerId] = nil
+	-- destroy inventory and clear reference
+	self.m_Inventories[p_PlayerId]:Destroy()
+	self.m_Inventories[p_PlayerId] = nil
 end
 
 --============================================================
@@ -98,133 +99,139 @@ end
 
 -- Responds to the request of a player to pickup an item from a specified lootpickup
 function BRInventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
-    -- check if player is alive
-    if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
-        return
-    end
+	-- check if player is alive
+	if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
+		return
+	end
 
-    -- get inventory
-    local s_Inventory = self:GetOrCreateInventory(p_Player)
-    if s_Inventory == nil then
-        return
-    end
+	-- get inventory
+	local s_Inventory = self:GetOrCreateInventory(p_Player)
 
-    -- get lootpickup
-    local s_LootPickup = m_LootPickupDatabase:GetById(p_LootPickupId)
-    if s_LootPickup == nil or not s_LootPickup:ContainsItemId(p_ItemId) then
-        return
-    end
+	if s_Inventory == nil then
+		return
+	end
 
-    -- TODO get item (validate item exists)
+	-- get lootpickup
+	local s_LootPickup = m_LootPickupDatabase:GetById(p_LootPickupId)
 
-    -- check that player and lootpickup are close (TODO update 3?)
-    local s_LootPickupPos = s_LootPickup.m_Transform.trans
-    local s_PlayerPos = p_Player.soldier.transform.trans
-    if s_LootPickupPos:Distance(s_PlayerPos) > 3 then
-        return
-    end
+	if s_LootPickup == nil or not s_LootPickup:ContainsItemId(p_ItemId) then
+		return
+	end
 
-    -- add item to player and remove it from lootpickup
-    if s_LootPickup:ContainsItemId(p_ItemId) then
-        if s_Inventory:AddItem(p_ItemId, p_SlotIndex) then
-            m_LootPickupDatabase:RemoveItemFromLootPickup(p_LootPickupId, p_ItemId)
-        else
-            m_LootPickupDatabase:UpdateState(p_LootPickupId)
-        end
-    end
+	-- TODO get item (validate item exists)
+
+	-- check that player and lootpickup are close (TODO update 3?)
+	local s_LootPickupPos = s_LootPickup.m_Transform.trans
+	local s_PlayerPos = p_Player.soldier.transform.trans
+
+	if s_LootPickupPos:Distance(s_PlayerPos) > 3 then
+		return
+	end
+
+	-- add item to player and remove it from lootpickup
+	if s_LootPickup:ContainsItemId(p_ItemId) then
+		if s_Inventory:AddItem(p_ItemId, p_SlotIndex) then
+			m_LootPickupDatabase:RemoveItemFromLootPickup(p_LootPickupId, p_ItemId)
+		else
+			m_LootPickupDatabase:UpdateState(p_LootPickupId)
+		end
+	end
 end
 
 -- Responds to the request of a player to move an item between slots of his inventory
 function BRInventoryManager:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
-    -- check if player is alive
-    if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
-        return
-    end
+	-- check if player is alive
+	if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
+		return
+	end
 
-    -- get inventory
-    local s_Inventory = self:GetOrCreateInventory(p_Player)
-    if s_Inventory == nil then
-        return
-    end
+	-- get inventory
+	local s_Inventory = self:GetOrCreateInventory(p_Player)
 
-    s_Inventory:SwapItems(p_ItemId, p_SlotId)
+	if s_Inventory == nil then
+		return
+	end
+
+	s_Inventory:SwapItems(p_ItemId, p_SlotId)
 end
 
 -- Responds to the request of a player to drop an item from his inventory
 function BRInventoryManager:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
-    -- check if player is alive
-    if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
-        return
-    end
+	-- check if player is alive
+	if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
+		return
+	end
 
-    -- get inventory
-    local s_Inventory = self:GetOrCreateInventory(p_Player)
-    if s_Inventory == nil then
-        return
-    end
+	-- get inventory
+	local s_Inventory = self:GetOrCreateInventory(p_Player)
 
-    s_Inventory:DropItem(p_ItemId, p_Quantity)
+	if s_Inventory == nil then
+		return
+	end
+
+	s_Inventory:DropItem(p_ItemId, p_Quantity)
 end
 
 -- Responds to the request of a player to use an item from his inventory
 function BRInventoryManager:OnInventoryUseItem(p_Player, p_ItemId)
-    local s_Item = m_ItemDatabase:GetItem(p_ItemId)
+	local s_Item = m_ItemDatabase:GetItem(p_ItemId)
 
-    -- TODO validate that player is owner of this item
+	-- TODO validate that player is owner of this item
 
-    if s_Item ~= nil then
-        s_Item:Use()
-    end
+	if s_Item ~= nil then
+		s_Item:Use()
+	end
 end
 
 -- TODO move this into BRInventory.UpdateOwnerAmmo
 function BRInventoryManager:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
-    if p_Player == nil or p_Player.soldier == nil then
-        return
-    end
+	if p_Player == nil or p_Player.soldier == nil then
+		return
+	end
 
-    local s_Inventory = self.m_Inventories[p_Player.id]
-    local p_Weapon = p_Weapon or p_Player.soldier.weaponsComponent.currentWeapon
-    if s_Inventory == nil or p_Weapon == nil then
-        return
-    end
+	local s_Inventory = self.m_Inventories[p_Player.id]
+	local p_Weapon = p_Weapon or p_Player.soldier.weaponsComponent.currentWeapon
 
-    -- remove ammo that was added
-    s_Inventory:RemoveAmmo(p_Weapon.name, p_AmmoAdded)
+	if s_Inventory == nil or p_Weapon == nil then
+		return
+	end
 
-    -- Update ammo values
-    s_Inventory:SavePrimaryAmmo(p_Player.soldier.weaponsComponent.currentWeaponSlot, p_Weapon.primaryAmmo)
-    p_Weapon.secondaryAmmo = s_Inventory:GetAmmoTypeCount(p_Weapon.name)
+	-- remove ammo that was added
+	s_Inventory:RemoveAmmo(p_Weapon.name, p_AmmoAdded)
+
+	-- Update ammo values
+	s_Inventory:SavePrimaryAmmo(p_Player.soldier.weaponsComponent.currentWeaponSlot, p_Weapon.primaryAmmo)
+	p_Weapon.secondaryAmmo = s_Inventory:GetAmmoTypeCount(p_Weapon.name)
 end
 
 -- ugly solution for now
 -- BRItemDatabase should know where each item resides and
 -- destroy it and remove any references when needed
 function BRInventoryManager:DestroyItem(p_ItemId)
-    -- search for the item
-    for _, l_Inventory in pairs(self.m_Inventories) do
-        local s_Slot = l_Inventory:GetItemSlot(p_ItemId)
+	-- search for the item
+	for _, l_Inventory in pairs(self.m_Inventories) do
+		local s_Slot = l_Inventory:GetItemSlot(p_ItemId)
 
-        -- clear slot and send the updated inventory state
-        if s_Slot ~= nil then
-            s_Slot:Clear()
-            l_Inventory:SendState()
-            break
-        end
-    end
+		-- clear slot and send the updated inventory state
+		if s_Slot ~= nil then
+			s_Slot:Clear()
+			l_Inventory:SendState()
+			break
+		end
+	end
 
-    -- remove item from database
-    m_ItemDatabase:UnregisterItem(p_ItemId)
+	-- remove item from database
+	m_ItemDatabase:UnregisterItem(p_ItemId)
 end
 
 function BRInventoryManager:OnItemDestroy(p_ItemId)
-    return self:DestroyItem(p_ItemId)
+	return self:DestroyItem(p_ItemId)
 end
 
 function BRInventoryManager:Clear()
-    for _, l_Inventory in pairs(self.m_Inventories) do
-        l_Inventory:Clear()
-    end
+	for _, l_Inventory in pairs(self.m_Inventories) do
+		l_Inventory:Clear()
+	end
 end
 
 return BRInventoryManager()

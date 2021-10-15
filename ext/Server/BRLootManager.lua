@@ -8,7 +8,7 @@ local m_Logger = Logger("BRLootManager", true)
 local m_LootRandomizer = require "BRLootRandomizer"
 
 function BRLootManager:SpawnMapSpecificLootPickups()
-    local s_LevelName = LevelNameHelper:GetLevelName()
+	local s_LevelName = LevelNameHelper:GetLevelName()
 
 	if s_LevelName == nil then
 		return
@@ -25,9 +25,4 @@ function BRLootManager:Clear()
 	end]]
 end
 
--- define global
-if g_BRLootManager == nil then
-    g_BRLootManager = BRLootManager()
-end
-
-return g_BRLootManager
+return BRLootManager()

@@ -8,122 +8,128 @@ local m_GadgetDefinition = require "__shared/Items/Definitions/BRItemGadgetDefin
 
 ClientCommands = 
 {
-    errInvalidCommand = "Invalid command",
+	errInvalidCommand = "Invalid command",
 
-    Give = function(p_Args)
-        -- If we have any arguments, ignore them
-        if #p_Args == 0 then
-            return ClientCommands.errInvalidCommand
-        end
+	Give = function(p_Args)
+		-- If we have any arguments, ignore them
+		if #p_Args == 0 then
+			return ClientCommands.errInvalidCommand
+		end
 
-        -- Get the local player
-        local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-        if s_LocalPlayer == nil then
-            return ClientCommands.errInvalidCommand
-        end
+		-- Get the local player
+		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
-        -- Check to see if the player is alive
-        if s_LocalPlayer.alive == false then
-            return ClientCommands.errInvalidCommand
-        end
+		if s_LocalPlayer == nil then
+			return ClientCommands.errInvalidCommand
+		end
 
-        -- Get the local soldier instance
-        local s_LocalSoldier = s_LocalPlayer.soldier
-        if s_LocalSoldier == nil then
-            return ClientCommands.errInvalidCommand
-        end
+		-- Check to see if the player is alive
+		if s_LocalPlayer.alive == false then
+			return ClientCommands.errInvalidCommand
+		end
 
-        NetEvents:Send(InventoryNetEvent.InventoryGiveCommand, p_Args)
+		-- Get the local soldier instance
+		local s_LocalSoldier = s_LocalPlayer.soldier
 
-        return "Item given."        
-    end,
+		if s_LocalSoldier == nil then
+			return ClientCommands.errInvalidCommand
+		end
 
-    Spawn = function(p_Args)
-        -- If we have any arguments, ignore them
-        if #p_Args == 0 then
-            return ClientCommands.errInvalidCommand
-        end
+		NetEvents:Send(InventoryNetEvent.InventoryGiveCommand, p_Args)
 
-        -- Get the local player
-        local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-        if s_LocalPlayer == nil then
-            return ClientCommands.errInvalidCommand
-        end
+		return "Item given."		
+	end,
 
-        -- Check to see if the player is alive
-        if s_LocalPlayer.alive == false then
-            return ClientCommands.errInvalidCommand
-        end
+	Spawn = function(p_Args)
+		-- If we have any arguments, ignore them
+		if #p_Args == 0 then
+			return ClientCommands.errInvalidCommand
+		end
 
-        -- Get the local soldier instance
-        local s_LocalSoldier = s_LocalPlayer.soldier
-        if s_LocalSoldier == nil then
-            return ClientCommands.errInvalidCommand
-        end
+		-- Get the local player
+		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
-        NetEvents:Send(InventoryNetEvent.InventorySpawnCommand, p_Args)
+		if s_LocalPlayer == nil then
+			return ClientCommands.errInvalidCommand
+		end
 
-        return "Item spawned."        
-    end,
+		-- Check to see if the player is alive
+		if s_LocalPlayer.alive == false then
+			return ClientCommands.errInvalidCommand
+		end
 
-    SpawnAirdrop = function(p_Args)
-        -- Get the local player
-        local s_LocalPlayer = PlayerManager:GetLocalPlayer()
-        if s_LocalPlayer == nil then
-            return ClientCommands.errInvalidCommand
-        end
+		-- Get the local soldier instance
+		local s_LocalSoldier = s_LocalPlayer.soldier
 
-        -- Check to see if the player is alive
-        if s_LocalPlayer.alive == false then
-            return ClientCommands.errInvalidCommand
-        end
+		if s_LocalSoldier == nil then
+			return ClientCommands.errInvalidCommand
+		end
 
-        -- Get the local soldier instance
-        local s_LocalSoldier = s_LocalPlayer.soldier
-        if s_LocalSoldier == nil then
-            return ClientCommands.errInvalidCommand
-        end
+		NetEvents:Send(InventoryNetEvent.InventorySpawnCommand, p_Args)
 
-        NetEvents:Send("SpawnAirdropCommand")
+		return "Item spawned."		
+	end,
 
-        return "Airdrop spawned."        
-    end,
+	SpawnAirdrop = function(p_Args)
+		-- Get the local player
+		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
-    List = function(p_Args)
-        local s_Result = "";
-        
-        for l_Key, l_Definition in pairs(m_AmmoDefinitions) do
-            s_Result = s_Result .. l_Key .. "\n"
-        end
+		if s_LocalPlayer == nil then
+			return ClientCommands.errInvalidCommand
+		end
 
-        for l_Key, l_Definition in pairs(m_ArmorDefinitions) do
-            s_Result = s_Result .. l_Key .. "\n"
-        end
+		-- Check to see if the player is alive
+		if s_LocalPlayer.alive == false then
+			return ClientCommands.errInvalidCommand
+		end
 
-        for l_Key, l_Definition in pairs(m_AttachmentDefinitions) do
-            s_Result = s_Result .. l_Key .. "\n"
-        end
+		-- Get the local soldier instance
+		local s_LocalSoldier = s_LocalPlayer.soldier
 
-        for l_Key, l_Definition in pairs(m_ConsumableDefinitions) do
-            s_Result = s_Result .. l_Key .. "\n"
-        end
+		if s_LocalSoldier == nil then
+			return ClientCommands.errInvalidCommand
+		end
 
-        for l_Key, l_Definition in pairs(m_HelmetDefinitions) do
-            s_Result = s_Result .. l_Key .. "\n"
-        end
+		NetEvents:Send("SpawnAirdropCommand")
 
-        for l_Key, l_Definition in pairs(m_WeaponDefinitions) do
-            s_Result = s_Result .. l_Key .. "\n"
-        end
+		return "Airdrop spawned."		
+	end,
 
-        for l_Key, l_Definition in pairs(m_GadgetDefinition) do
-            s_Result = s_Result .. l_Key .. "\n"
-        end
+	List = function(p_Args)
+		local s_Result = "";
+		
+		for l_Key, l_Definition in pairs(m_AmmoDefinitions) do
+			s_Result = s_Result .. l_Key .. "\n"
+		end
 
-        return s_Result        
-    end,
+		for l_Key, l_Definition in pairs(m_ArmorDefinitions) do
+			s_Result = s_Result .. l_Key .. "\n"
+		end
 
-    SpawnKiasarLoot = function (p_Args)
-        NetEvents:Send("SpawnKiasarLoot")
-    end
+		for l_Key, l_Definition in pairs(m_AttachmentDefinitions) do
+			s_Result = s_Result .. l_Key .. "\n"
+		end
+
+		for l_Key, l_Definition in pairs(m_ConsumableDefinitions) do
+			s_Result = s_Result .. l_Key .. "\n"
+		end
+
+		for l_Key, l_Definition in pairs(m_HelmetDefinitions) do
+			s_Result = s_Result .. l_Key .. "\n"
+		end
+
+		for l_Key, l_Definition in pairs(m_WeaponDefinitions) do
+			s_Result = s_Result .. l_Key .. "\n"
+		end
+
+		for l_Key, l_Definition in pairs(m_GadgetDefinition) do
+			s_Result = s_Result .. l_Key .. "\n"
+		end
+
+		return s_Result		
+	end,
+
+	SpawnKiasarLoot = function (p_Args)
+		NetEvents:Send("SpawnKiasarLoot")
+	end
 }

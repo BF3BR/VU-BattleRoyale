@@ -40,6 +40,7 @@ end
 -- Removes and destroys an item from the item database
 function BRItemDatabase:UnregisterItem(p_Id)
 	local s_Item = self:GetItem(p_Id)
+
 	if s_Item == nil then
 		return
 	end
@@ -54,6 +55,7 @@ end
 -- Creates a new item by removing an
 function BRItemDatabase:SplitItem(p_Id, p_QuantityToRemove)
 	local s_Item = self:GetItem(p_Id)
+
 	if s_Item == nil or not s_Item.m_Definition.m_Stackable or p_QuantityToRemove >= s_Item.m_Quantity then
 		return nil
 	end
@@ -67,8 +69,4 @@ function BRItemDatabase:GetRandomId()
 	return tostring(MathUtils:RandomGuid())
 end
 
-if g_BRItemDatabase == nil then
-	g_BRItemDatabase = BRItemDatabase()
-end
-
-return g_BRItemDatabase
+return BRItemDatabase()

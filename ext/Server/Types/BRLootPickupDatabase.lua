@@ -33,6 +33,7 @@ function BRLootPickupDatabase:CreateLootPickup(p_Type, p_Transform, p_Items)
 
 	-- convert items array to map
 	local s_Items = {}
+
 	for _, l_Item in pairs(p_Items) do
 		s_Items[l_Item.m_Id] = l_Item
 	end
@@ -71,6 +72,7 @@ end
 
 function BRLootPickupDatabase:RemoveItemFromLootPickup(p_LootPickupId, p_ItemId)
 	local s_LootPickup = self.m_LootPickups[p_LootPickupId]
+
 	if s_LootPickup == nil then
 		return
 	end
@@ -88,6 +90,7 @@ end
 
 function BRLootPickupDatabase:UpdateState(p_LootPickupId)
 	local s_LootPickup = self.m_LootPickups[p_LootPickupId]
+
 	if s_LootPickup == nil then
 		return
 	end
