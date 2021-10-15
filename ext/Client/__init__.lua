@@ -21,6 +21,7 @@ local m_CircleEffects = require "Visuals/CircleEffects"
 local m_OOCVision = require "Visuals/OOCVision"
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 local m_MapVEManager = require "Visuals/MapVEManager"
+local m_VoipManager = require "VoipManager"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -65,6 +66,9 @@ function VuBattleRoyaleClient:RegisterEvents()
 		Events:Subscribe('Soldier:Spawn', self, self.OnSoldierSpawn),
 
 		Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate),
+
+		Events:Subscribe('VoipChannel:PlayerJoined', self, self.OnVoipChannelPlayerJoined),
+		Events:Subscribe('VoipChannel:PlayerLeft', self, self.OnVoipChannelPlayerLeft),
 
 		NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled),
 		NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown),
@@ -233,6 +237,7 @@ function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
 	m_SpectatorClient:OnClientUpdateInput()
 	m_Hud:OnClientUpdateInput()
 	m_Ping:OnClientUpdateInput(p_DeltaTime)
+	m_VoipManager:OnClientUpdateInput()
 end
 
 -- =============================================
@@ -297,6 +302,18 @@ end
 
 function VuBattleRoyaleClient:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
 	m_AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
+end
+
+-- =============================================
+	-- Voip Events
+-- =============================================
+
+function VuBattleRoyaleClient:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
+	m_VoipManager:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
+end
+
+function VuBattleRoyaleClient:OnVoipChannelPlayerLeft(p_Channel, p_Player)
+	m_VoipManager:OnVoipChannelPlayerLeft(p_Channel, p_Player)
 end
 
 -- =============================================
