@@ -6,6 +6,7 @@ local m_Gunship = require "Gunship"
 local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_BRLootManager = require "BRLootManager"
 local m_BRInventoryManager = require "BRInventoryManager"
+local m_BRAirdropManager = require "BRAirdropManager"
 local m_Logger = Logger("Match", true)
 
 function Match:__init()
@@ -16,9 +17,8 @@ function Match:__init()
 	self.m_WinnerTeam = nil
 
 	-- Airdrop
-	-- self.m_Airdrop = Airdrop(self)
-	-- self.m_AirdropTimer = 0.0
-	-- self.m_AirdropNextDrop = nil
+	self.m_AirdropTimer = 0.0
+	self.m_AirdropNextDrop = nil
 
 	self.m_RestartQueue = false
 
@@ -30,14 +30,6 @@ end
 -- =============================================
 -- Events
 -- =============================================
-
---[[
-function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
-	if m_ServerGameStateManager:IsGameState(GameStates.Match) then
-		self:AirdropManager(p_DeltaTime)
-	end
-end
-]]
 
 function Match:OnUpdatePassPreSim(p_DeltaTime)
 	if self.m_RestartQueue then
@@ -131,7 +123,7 @@ function Match:OnMatchFirstTick()
 		m_BRLootManager:SpawnMapSpecificLootPickups()
 	elseif s_State == GameStates.Plane then
 		-- Spawn the gunship and set its course
-		local s_Path = self:GetRandomGunshipPath()
+		local s_Path = m_Gunship:GetRandomGunshipPath()
 
 		if s_Path ~= nil then
 			m_Gunship:Enable(
@@ -195,59 +187,6 @@ function Match:GetRandomWarmupSpawnpoint()
 	return s_SpawnTrans
 end
 
-function Match:GetRandomGunshipPath()
-	local s_LevelName = LevelNameHelper:GetLevelName()
-
-	if s_LevelName == nil then
-		return nil
-	end
-
-	local s_Return = nil
-
-	local s_Side = math.random(1, 2)
-
-	if s_Side == 1 then
-		-- Left to right
-		s_Return = {
-			StartPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x,
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
-			),
-			EndPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - MapsConfig[s_LevelName]["MapWidthHeight"],
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
-			)
-		}
-	else
-		-- Top to bottom
-		s_Return = {
-			StartPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z
-			),
-			EndPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - MapsConfig[s_LevelName]["MapWidthHeight"]
-			)
-		}
-	end
-
-	local s_Invert = math.random(1, 2)
-
-	if s_Invert == 2 then
-		return {
-			StartPos = s_Return.EndPos,
-			EndPos = s_Return.StartPos
-		}
-	end
-
-	return s_Return
-end
-
 function Match:SetClientTimer(p_Time)
 	if p_Time == nil then
 		return
@@ -255,35 +194,6 @@ function Match:SetClientTimer(p_Time)
 
 	NetEvents:Broadcast(PlayerEvents.UpdateTimer, p_Time)
 end
-
---[[function Match:AirdropManager(p_DeltaTime)
-	if self.m_Airdrop:GetEnabled() then
-		self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
-
-		-- Remove the airdrop plane after 120 sec
-		if self.m_AirdropTimer >= 120.0 then
-			m_Logger:Write("INFO: Airdrop unspawned")
-			self.m_AirdropTimer = 0.0
-			self.m_Airdrop:Spawn(nil, false, nil)
-		end
-	end
-
-	if self.m_AirdropNextDrop == nil then
-		self.m_AirdropNextDrop = MathUtils:GetRandom(30, 180)
-	end
-
-	self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
-
-	if self.m_AirdropTimer >= self.m_AirdropNextDrop then
-		self.m_AirdropNextDrop = nil
-		self.m_AirdropTimer = 0.0
-
-		if not self.m_Airdrop:GetEnabled() then
-			m_Logger:Write("INFO: Airdrop spawned")
-			self.m_Airdrop:Spawn(self:GetRandomGunshipStart(), true, MathUtils:GetRandom(20, 60))
-		end
-	end
-end]]
 
 function Match:DoWeHaveAWinner()
 	if PlayerManager:GetPlayerCount() == 0 then

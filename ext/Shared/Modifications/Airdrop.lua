@@ -35,8 +35,8 @@ function Airdrop:CreateObjectBlueprint()
 	
 	local s_RigidBodyData = RigidBodyData(s_PhysicsData.rigidBodies[1])
 	s_RigidBodyData:MakeWritable()
-	s_RigidBodyData.mass = 750
-	s_RigidBodyData.linearVelocityDamping = 0.25
+	s_RigidBodyData.mass = 1500
+	s_RigidBodyData.linearVelocityDamping = 0.1
 
 	s_Partition:AddInstance(s_ObjectBlueprint)
 

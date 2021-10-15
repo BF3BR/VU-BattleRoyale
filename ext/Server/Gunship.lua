@@ -15,8 +15,10 @@ function Gunship:RegisterVars()
 	self.m_VehicleEntity = nil
 	self.m_Enabled = false
 	self.m_CalculatedTime = 0.0
-
+	
 	self.m_OpenParachuteList = {}
+
+	self.m_RemoveOnEnd = false
 end
 
 -- =============================================
@@ -47,9 +49,9 @@ function Gunship:OnUpdatePassPreSim(p_DeltaTime)
 	self:SetLocatorEntityTransform(s_Transform)
 	self.m_CalculatedTime = self.m_CalculatedTime + p_DeltaTime / self.m_TimeToFly
 
-	--[[if self.m_CalculatedTime >= 1.0 then
-		self:Disable()
-	end]]
+	if self.m_RemoveOnEnd and self.m_CalculatedTime >= 1.0 then
+		self:Destroy()
+	end
 end
 
 function Gunship:OnPlayerUpdateInput(p_Player)
@@ -78,8 +80,7 @@ end
 -- =============================================
 
 function Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
-	local s_Transform = self:GetVehicleEntityTransform()
-	s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 20, s_Transform.trans.z)
+	local s_Transform = self:GetDropPosition()
 
 	if p_Transform ~= nil then
 		s_Transform.left = p_Transform.left * - 1
@@ -113,13 +114,13 @@ end
 	-- Enable / Disable Gunship
 -- =============================================
 
-function Gunship:Enable(p_StartPos, p_EndPos, p_TimeToFly, p_Type)
-	if self.m_Enabled then
+function Gunship:Enable(p_StartPos, p_EndPos, p_TimeToFly, p_Type, p_RemoveOnEnd)
+	if p_StartPos == nil or p_EndPos == nil or p_TimeToFly == nil or p_Type == nil then
 		return
 	end
 
-	if p_StartPos == nil or p_EndPos == nil or p_TimeToFly == nil or p_Type == nil then
-		return
+	if self.m_Enabled then
+		self:Disable()
 	end
 
 	self.m_CalculatedTime = 0.0
@@ -127,6 +128,7 @@ function Gunship:Enable(p_StartPos, p_EndPos, p_TimeToFly, p_Type)
 	self.m_EndPos = p_EndPos
 	self.m_TimeToFly = p_TimeToFly
 	self.m_Enabled = true
+	self.m_RemoveOnEnd = p_RemoveOnEnd or false
 
 	self:Spawn()
 	NetEvents:BroadcastLocal(GunshipEvents.Enable, p_Type)
@@ -237,6 +239,65 @@ function Gunship:GetCurrentPosition(p_Time)
 		self.m_StartPos.y,
 		MathUtils:Lerp(self.m_StartPos.z, self.m_EndPos.z, p_Time)
 	)
+end
+
+function Gunship:GetDropPosition()
+	local s_Transform = self:GetVehicleEntityTransform()
+	s_Transform.trans = Vec3(s_Transform.trans.x, s_Transform.trans.y - 20, s_Transform.trans.z)
+	return s_Transform
+end
+
+function Gunship:GetRandomGunshipPath()
+	local s_LevelName = LevelNameHelper:GetLevelName()
+
+	if s_LevelName == nil then
+		return nil
+	end
+
+	local s_Return = nil
+
+	local s_Side = math.random(1, 2)
+
+	if s_Side == 1 then
+		-- Left to right
+		s_Return = {
+			StartPos = Vec3(
+				MapsConfig[s_LevelName]["MapTopLeftPos"].x,
+				MapsConfig[s_LevelName]["PlaneFlyHeight"],
+				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
+			),
+			EndPos = Vec3(
+				MapsConfig[s_LevelName]["MapTopLeftPos"].x - MapsConfig[s_LevelName]["MapWidthHeight"],
+				MapsConfig[s_LevelName]["PlaneFlyHeight"],
+				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
+			)
+		}
+	else
+		-- Top to bottom
+		s_Return = {
+			StartPos = Vec3(
+				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
+				MapsConfig[s_LevelName]["PlaneFlyHeight"],
+				MapsConfig[s_LevelName]["MapTopLeftPos"].z
+			),
+			EndPos = Vec3(
+				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
+				MapsConfig[s_LevelName]["PlaneFlyHeight"],
+				MapsConfig[s_LevelName]["MapTopLeftPos"].z - MapsConfig[s_LevelName]["MapWidthHeight"]
+			)
+		}
+	end
+
+	local s_Invert = math.random(1, 2)
+
+	if s_Invert == 2 then
+		return {
+			StartPos = s_Return.EndPos,
+			EndPos = s_Return.StartPos
+		}
+	end
+
+	return s_Return
 end
 
 return Gunship()

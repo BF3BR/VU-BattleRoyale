@@ -59,6 +59,11 @@ import {
 import { addAlert } from "./store/alert/Actions";
 import { addKillmsg } from "./store/killmsg/Actions";
 import { addInteractivemsg } from "./store/interactivemsg/Actions";
+import {
+    updateCloseLootPickup, 
+    updateInventory, 
+    updateOverlayLoot
+} from "./store/inventory/Actions";
 
 /* Helpers */
 import Player from "./helpers/PlayerHelper";
@@ -85,11 +90,10 @@ import PingSoundManager from "./components/PingSoundManager";
 import LoadingSoundManager from "./components/LoadingSoundManager";
 import ArmorSoundManager from "./components/ArmorSoundManager";
 import AlertManager from "./components/AlertManager";
+import Overlay from "./components/Overlay";
 
 /* Style */
 import './App.scss';
-import Overlay from "./components/Overlay";
-import { updateCloseLootPickup, updateInventory, updateOverlayLoot } from "./store/inventory/Actions";
 
 interface StateFromReducer {
     gameState: string;

@@ -25,6 +25,7 @@ local m_PingServer = require "PingServer"
 local m_TeamManager = require "BRTeamManager"
 local m_SpectatorServer = require "SpectatorServer"
 local m_AntiCheat = require "AntiCheat"
+local m_BRAirdropManager = require "BRAirdropManager"
 local m_OOCFires = require "OOCFires"
 local m_GameStateManager = require "GameStateManager"
 local m_Match = require "Match"
@@ -184,6 +185,7 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 
 	m_PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	m_AntiCheat:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+	m_BRAirdropManager:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 
 	if self.m_CumulatedTime < 1 then
 		self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime

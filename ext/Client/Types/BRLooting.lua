@@ -27,7 +27,19 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 		return
 	end
 
-	-- InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and
+	--[[if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and self.m_LastSelectedLootPickup ~= nil then
+		local s_LootPickup = self.m_LastSelectedLootPickup
+		if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
+			NetEvents:Send(
+				InventoryNetEvent.PickupItem,
+				s_LootPickup.m_Id,
+				m_MapHelper:NextItem(s_LootPickup.m_Items).m_Id
+			)
+		else
+			self:OnSendOverlayLootBox(s_LootPickup.m_Id, s_LootPickup.m_Items)
+		end
+	end
+
 	if self.m_LastDelta >= self.m_TimeToUpdateLootUi then
 		self.m_LastDelta = 0.0
 
@@ -67,7 +79,7 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 				self:OnSendOverlayLootBox(s_LootPickup.m_Id, s_LootPickup.m_Items)
 			end
 		end
-	end
+	end]]
 end
 
 function BRLooting:OnUpdateLootPickup(p_LootPickupData)
@@ -364,6 +376,8 @@ function BRLooting:OnSendOverlayLoot(p_Item, p_MultiItem)
 	end
 
 	local s_ReturnVal = p_Item:AsTable(true)
+
+	print(s_ReturnVal)
 
 	WebUI:ExecuteJS(string.format("SyncOverlayLoot(%s);", json.encode(s_ReturnVal)))
 end
