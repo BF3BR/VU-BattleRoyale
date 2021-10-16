@@ -419,17 +419,13 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 		return
 	end
 
-	if p_Soldier == nil or p_Info == nil or p_Soldier.player == nil then
+	if p_Soldier == nil or p_Info == nil or p_Soldier.player == nil or p_GiverInfo == nil then
 		return
 	end
 
-	if p_GiverInfo == nil then
-		return
-	end
-
-	if p_Soldier.player == nil then
-		-- already dead
-		return
+	-- let healing items "damage" pass
+	if p_Info.damage < 0 then
+		return p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
 	end
 
 	local s_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
