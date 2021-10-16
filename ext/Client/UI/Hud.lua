@@ -460,9 +460,11 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 					WebUI:ExecuteJS("OnOpenCloseMap(false);")
 				end
 
-				m_HudUtils:SetIsInventoryOpened(true)
-				WebUI:ExecuteJS("OnInventoryOpen(true);")
-				m_HudUtils:OnEnableMouse()
+				if not self.m_IsPlayerOnPlane then
+					m_HudUtils:SetIsInventoryOpened(true)
+					WebUI:ExecuteJS("OnInventoryOpen(true);")
+					m_HudUtils:OnEnableMouse()
+				end
 			end
 
 			p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
@@ -679,10 +681,14 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 	end
 
 	self.m_HudOnPlayerArmor:Update(m_BrPlayer.m_Armor:GetPercentage())
-	self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
-	self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
-	self.m_HudOnPlayerFireLogic:Update(s_LocalSoldier.weaponsComponent.currentWeapon.fireLogic)
-	self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
+
+	if s_LocalSoldier.weaponsComponent.currentWeapon then
+		self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
+		self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
+		self.m_HudOnPlayerFireLogic:Update(s_LocalSoldier.weaponsComponent.currentWeapon.fireLogic)
+		self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
+	end
+	
 	self.m_HudOnPlayerWeapons:Update(json.encode(s_Inventory))
 	--self.m_HudOnPlayerCurrentSlot:Update(s_LocalSoldier.weaponsComponent.currentWeaponSlot)
 	return

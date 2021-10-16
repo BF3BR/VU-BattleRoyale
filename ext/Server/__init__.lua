@@ -82,7 +82,6 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
 		Events:Subscribe("Player:Killed", self, self.OnPlayerKilled),
 		Events:Subscribe("Player:Left", self, self.OnPlayerLeft),
-		Events:Subscribe("Player:Respawn", self, self.OnPlayerRespawn),
 
 		NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected),
 		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
@@ -269,19 +268,6 @@ function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
 	m_Logger:Write(p_Player.name .. " left")
 	m_TeamManager:OnPlayerLeft(p_Player)
 	m_InventoryManager:OnPlayerLeft(p_Player)
-end
-
-function VuBattleRoyaleServer:OnPlayerRespawn(p_Player)
-	if p_Player == nil then
-		return
-	end
-
-	local s_Inventory = m_InventoryManager:GetOrCreateInventory(p_Player)
-
-	-- Add default inventory items if needed
-
-	s_Inventory:DeferUpdateSoldierCustomization()
-	s_Inventory:SendState()
 end
 
 -- =============================================

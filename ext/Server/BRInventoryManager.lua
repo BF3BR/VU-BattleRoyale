@@ -252,6 +252,7 @@ end
 function BRInventoryManager:Clear()
 	for _, l_Inventory in pairs(self.m_Inventories) do
 		l_Inventory:Clear()
+		l_Inventory:SendState()
 	end
 end
 

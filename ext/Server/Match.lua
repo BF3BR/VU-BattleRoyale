@@ -74,6 +74,12 @@ function Match:NextMatchState()
 	elseif s_State == GameStates.PlaneToFirstCircle then
 		m_PhaseManagerServer:Start()
 	elseif s_State == GameStates.EndGame then
+		-- Clear out all inventories
+		m_BRInventoryManager:Clear()
+
+		-- Clear out all dropped / non-dropped items
+		m_BRLootManager:Clear()
+
 		self.m_RestartQueue = true
 	end
 

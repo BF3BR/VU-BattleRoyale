@@ -1,5 +1,6 @@
 class "BRPlayer"
 
+local m_InventoryManager = require "BRInventoryManager"
 local m_Logger = Logger("BRPlayer", true)
 
 function BRPlayer:__init(p_Player)
@@ -226,11 +227,16 @@ function BRPlayer:Spawn(p_Trans)
 	-- save the teamId, we need this when the soldier is available
 	local s_TeamId = self.m_Player.teamId
 
-	self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+	--[[self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
 	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
 		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
-	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
+	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})]]
+
+	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
+	s_Inventory:DeferUpdateSoldierCustomization()
+	s_Inventory:SendState()
+
 	local s_Event = ServerPlayerEvent("Spawn", self.m_Player, true, false, false, false, false, false, self.m_Player.teamId)
 	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
 	local s_Entity = s_EntityIterator:Next()
@@ -262,9 +268,9 @@ function BRPlayer:Spawn(p_Trans)
 		-- p_Table[1] is the Player
 		-- p_Table[2] is the teamId
 		if p_Table[1].soldier ~= nil then
-			p_Table[1].soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+			--[[p_Table[1].soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
 			p_Table[1].soldier.weaponsComponent.currentWeapon.primaryAmmo = 8
-			p_Table[1].soldier.weaponsComponent.currentWeapon.secondaryAmmo = 4
+			p_Table[1].soldier.weaponsComponent.currentWeapon.secondaryAmmo = 4]]
 			p_Table[1].soldier:SetTransform(p_Trans)
 			p_Table[1].teamId = p_Table[2]
 			-- we are done, so we can destroy this timer

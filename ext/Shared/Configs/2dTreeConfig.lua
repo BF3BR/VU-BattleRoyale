@@ -140,9 +140,9 @@ return {
 					TYPE = ParameterModificationType.ModifyOrAddParameters,
 					PARAMETERS = {
 						ColorTint = { VALUE = Vec4(1.0, 0.365, 0.0, 1.0), TYPE = ShaderParameterType.ShaderParameterType_Color },
-						MaxOpacity = { VALUE = Vec4(0.65, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
-						MinOpacity = { VALUE = Vec4(0.65, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
-						OpacityMultiplier = { VALUE = Vec4(0.65, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
+						MaxOpacity = { VALUE = Vec4(0.75, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
+						MinOpacity = { VALUE = Vec4(0.75, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
+						OpacityMultiplier = { VALUE = Vec4(1.0, 0.0, 0.0, 0.0), TYPE = ShaderParameterType.ShaderParameterType_Scalar },
 					}
 				},
 			},

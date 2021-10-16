@@ -574,14 +574,20 @@ function BRInventory:CreateCustomizeSoldierData()
 	s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_7
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
 
-	local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
+	--[[local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
 	s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(
 		ResourceManager:FindInstanceByGuid(Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B"))
 	)
 	s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
-	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
+	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)]]
 
-	s_CustomizeSoldierData.activeSlot = self:GetOwnerSoldier().weaponsComponent.currentWeaponSlot
+	local s_CurrWeaponSlot = self:GetOwnerSoldier().weaponsComponent.currentWeaponSlot
+	if s_CurrWeaponSlot then
+		s_CustomizeSoldierData.activeSlot = self:GetOwnerSoldier().weaponsComponent.currentWeaponSlot
+	else
+		s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
+	end
+
 	s_CustomizeSoldierData.removeAllExistingWeapons = true
 	s_CustomizeSoldierData.disableDeathPickup = false
 

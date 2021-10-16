@@ -120,7 +120,10 @@ function BRAirdropManager:CreatePlane(p_Trans)
     local s_Center = p_Trans
 
     if s_Center == nil then
-        s_Center = m_PhaseManagerServer.m_InnerCircle:RandomInnerPoint(nil, MapsConfig[s_LevelName]["AirdropPlaneFlyHeight"])
+        s_Center = m_PhaseManagerServer.m_InnerCircle:RandomInnerPoint(
+			nil,
+			MapsConfig[s_LevelName]["AirdropPlaneFlyHeight"]
+		)
     end
 
     local s_Angle = math.random(0, 359)
@@ -134,7 +137,7 @@ function BRAirdropManager:CreatePlane(p_Trans)
     m_Gunship:Enable(
         self:RandomPointWithAngle(s_Center, math.rad(s_Angle), MapsConfig[s_LevelName]["MapWidthHeight"]),
         self:RandomPointWithAngle(s_Center, math.rad(s_OppositeAngle), MapsConfig[s_LevelName]["MapWidthHeight"]),
-        15,
+        60,
         "Airdrop",
         true
     )
