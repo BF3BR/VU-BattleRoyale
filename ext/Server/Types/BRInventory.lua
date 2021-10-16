@@ -19,7 +19,7 @@ class "BRInventory"
 local m_Logger = Logger("BRInventory", true)
 
 function BRInventory:__init(p_Owner)
-	-- BRPlayer (or Player for now)
+	-- the BRPlayer that owns this inventory
 	self.m_Owner = p_Owner
 
 	-- A table of slots
@@ -73,21 +73,14 @@ function BRInventory:__init(p_Owner)
 	self.m_UpdateCustomizationTimer = nil
 end
 
-function BRInventory:AsTable()
-	local s_Data = {}
+-- Returns the player instance of the owner of this inventory
+function BRInventory:GetOwnerPlayer()
+	return (self.m_Owner ~= nil and self.m_Owner:GetPlayer()) or nil
+end
 
-	-- Add only updated slots into the data that 
-	-- will be sent to the client
-	for l_SlotIndex = 1, 20 do
-		local s_Slot = self.m_Slots[l_SlotIndex]
-
-		if s_Slot.m_IsUpdated then
-			s_Data[l_SlotIndex] = s_Slot:AsTable()
-			s_Slot.m_IsUpdated = false
-		end
-	end
-
-	return s_Data
+-- Returns the soldier instance of the owner of this inventory
+function BRInventory:GetOwnerSoldier()
+	return (self.m_Owner ~= nil and self.m_Owner:GetSoldier()) or nil
 end
 
 function BRInventory:GetSlot(p_SlotIndex)
@@ -109,11 +102,12 @@ end
 
 -- Returns the inventory slot of the currently equipped weapon
 function BRInventory:GetCurrentWeaponSlot()
-	if self.m_Owner == nil or self.m_Owner.soldier == nil then
+	local s_Soldier = self:GetOwnerSoldier()
+	if s_Soldier == nil then
 		return nil
 	end
 
-	local s_WeaponSlot = self.m_Owner.soldier.weaponsComponent.currentWeaponSlot
+	local s_WeaponSlot = s_Soldier.weaponsComponent.currentWeaponSlot
 
 	if s_WeaponSlot == WeaponSlot.WeaponSlot_0 then
 		return self.m_Slots[InventorySlot.PrimaryWeapon]
@@ -131,7 +125,6 @@ end
 function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 	-- Check if item exists
 	local s_Item = m_ItemDatabase:GetItem(p_ItemId)
-
 	if s_Item == nil then
 		m_Logger:Write("Invalid item Id.")
 		return false
@@ -139,11 +132,11 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 
 	-- check if there's a free slot
 	local s_Slot = self.m_Slots[p_SlotIndex]
-
 	if s_Slot == nil or not s_Slot:IsAccepted(s_Item) then
 		s_Slot = self:GetFirstAvailableSlot(s_Item)
 	end
 
+	local s_Soldier = self:GetOwnerSoldier()
 	local s_CurrentWeaponSlot = self:GetCurrentWeaponSlot()
 
 	-- get current weapon slot if item is weapon and no other slot
@@ -172,8 +165,8 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 	if s_Slot == nil then
 		m_Logger:Write("No available slot in the inventory.")
 
-		if p_CreateLootPickup then
-			m_LootPickupDatabase:CreateBasicLootPickup(self.m_Owner.soldier.worldTransform, {s_Item})
+		if p_CreateLootPickup and s_Soldier ~= nil then
+			m_LootPickupDatabase:CreateBasicLootPickup(s_Soldier.worldTransform, {s_Item})
 		end
 
 		return false
@@ -222,8 +215,8 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 
 	local _, s_DroppedItems = s_Slot:Put(s_Item)
 
-	if #s_DroppedItems > 0 then
-		m_LootPickupDatabase:CreateBasicLootPickup(self.m_Owner.soldier.worldTransform, s_DroppedItems)
+	if #s_DroppedItems > 0 and s_Soldier ~= nil then
+		m_LootPickupDatabase:CreateBasicLootPickup(s_Soldier.worldTransform, s_DroppedItems)
 	end
 
 	m_Logger:Write("Item added to inventory. (" .. s_Item.m_Definition.m_Name .. ")")
@@ -265,9 +258,8 @@ function BRInventory:SwapItems(p_ItemId, p_SlotId)
 end
 
 function BRInventory:DropItem(p_ItemId, p_Quantity)
-	if self.m_Owner == nil or
-		self.m_Owner.soldier == nil or
-		self.m_Owner.soldier.worldTransform == nil then
+	local s_Soldier = self:GetOwnerSoldier()
+	if s_Soldier == nil or s_Soldier.worldTransform == nil then
 		return
 	end
 
@@ -277,7 +269,7 @@ function BRInventory:DropItem(p_ItemId, p_Quantity)
 
 	if s_Slot ~= nil then
 		local l_DroppedItems = s_Slot:Drop(p_Quantity)
-		m_LootPickupDatabase:CreateBasicLootPickup(self.m_Owner.soldier.worldTransform, l_DroppedItems)
+		m_LootPickupDatabase:CreateBasicLootPickup(s_Soldier.worldTransform, l_DroppedItems)
 
 		self:SendState()
 	end
@@ -376,13 +368,35 @@ function BRInventory:SavePrimaryAmmo(p_WeaponSlot, p_AmmoCount)
 	return s_Item ~= nil and s_Item:SetPrimaryAmmo(p_AmmoCount)
 end
 
--- Sends the state of the inventory to its owner
+function BRInventory:AsTable()
+	local s_Data = {}
+
+	-- Add only updated slots into the data that 
+	-- will be sent to the client
+	for l_SlotIndex = 1, 20 do
+		local s_Slot = self.m_Slots[l_SlotIndex]
+
+		if s_Slot.m_IsUpdated then
+			s_Data[l_SlotIndex] = s_Slot:AsTable()
+			s_Slot.m_IsUpdated = false
+		end
+	end
+
+	return s_Data
+end
+
+function BRInventory:DeferSendState()
+	-- TODO
+	return self:SendState()
+end
+
+-- Sends the state of the inventory to its owner and the spectators
 function BRInventory:SendState()
 	if self.m_Owner == nil then
 		return
 	end
 
-	NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self.m_Owner, self:AsTable())
+	NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self:GetOwnerPlayer(), self:AsTable())
 end
 
 function BRInventory:Clear()
@@ -499,7 +513,8 @@ function BRInventory:DeferUpdateSoldierCustomization()
 end
 
 function BRInventory:UpdateSoldierCustomization()
-	if self.m_Owner == nil or self.m_Owner.soldier == nil then
+	local s_Soldier = self:GetOwnerSoldier()
+	if s_Soldier == nil then
 		return
 	end
 
@@ -510,10 +525,10 @@ function BRInventory:UpdateSoldierCustomization()
 		l_Slot:BeforeCustomizationApply()
 	end
 
-	self.m_Owner.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+	s_Soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
 
 	-- Reset primary ammo for each weapon
-	for l_WeaponSlot, l_Weapon in pairs(self.m_Owner.soldier.weaponsComponent.weapons) do
+	for l_WeaponSlot, l_Weapon in pairs(s_Soldier.weaponsComponent.weapons) do
 		if l_Weapon ~= nil then
 			l_Weapon.primaryAmmo = self:GetSavedPrimaryAmmo(l_WeaponSlot - 1)
 			l_Weapon.secondaryAmmo = self:GetAmmoTypeCount(l_Weapon.name)
@@ -522,11 +537,12 @@ function BRInventory:UpdateSoldierCustomization()
 end
 
 function BRInventory:UpdateWeaponSecondaryAmmo()
-	if self.m_Owner == nil or self.m_Owner.soldier == nil then
+	local s_Soldier = self:GetOwnerSoldier()
+	if s_Soldier == nil then
 		return
 	end
 
-	for _, l_Weapon in pairs(self.m_Owner.soldier.weaponsComponent.weapons) do
+	for _, l_Weapon in pairs(s_Soldier.weaponsComponent.weapons) do
 		if l_Weapon ~= nil then
 			l_Weapon.secondaryAmmo = self:GetAmmoTypeCount(l_Weapon.name)
 		end
@@ -565,7 +581,7 @@ function BRInventory:CreateCustomizeSoldierData()
 	s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)
 
-	s_CustomizeSoldierData.activeSlot = self.m_Owner.soldier.weaponsComponent.currentWeaponSlot
+	s_CustomizeSoldierData.activeSlot = self:GetOwnerSoldier().weaponsComponent.currentWeaponSlot
 	s_CustomizeSoldierData.removeAllExistingWeapons = true
 	s_CustomizeSoldierData.disableDeathPickup = false
 
