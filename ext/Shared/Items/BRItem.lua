@@ -53,7 +53,15 @@ function BRItem:GetParentPlayer()
 	local s_Inventory = self:GetParentInventory()
 
 	if s_Inventory ~= nil then
-		return s_Inventory.m_Owner
+		return s_Inventory:GetOwnerPlayer()
+	end
+end
+
+-- Mark the slot of this item as updated
+function BRItem:SetUpdated()
+	local s_Slot = self:GetParentSlot()
+	if s_Slot ~= nil then
+		s_Slot.m_IsUpdated = true
 	end
 end
 
@@ -68,11 +76,7 @@ function BRItem:SetQuantity(p_Quantity)
 	self.m_Quantity = s_NewQuantity
 
 	-- mark item's slot as updated
-	local s_Slot = self:GetParentSlot()
-
-	if s_Slot ~= nil then
-		s_Slot.m_IsUpdated = true
-	end
+	self:SetUpdated()
 
 	-- destroy item if quantity is 0
 	if self.m_Quantity <= 0 then

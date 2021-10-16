@@ -6,6 +6,7 @@ local m_Logger = Logger("BRInventoryManager", true)
 
 local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
+local m_BRTeamManager = require "BRTeamManager"
 
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
@@ -42,7 +43,7 @@ function BRInventoryManager:OnPlayerLeft(p_Player)
 	m_Logger:Write(string.format("Destroying Inventory for '%s'", p_Player.name))
 
 	if self.m_Inventories[p_Player.id] ~= nil then
-		self:RemoveInventory(p_Player.id)
+		self:RemoveInventory(p_Player)
 	end
 end
 
@@ -69,10 +70,13 @@ function BRInventoryManager:GetOrCreateInventory(p_Player)
 	-- get existing inventory
 	local s_Inventory = self.m_Inventories[p_Player.id]
 
+	-- get BRPlayer for this player
+	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
+
 	-- create a new one if needed
 	if s_Inventory == nil then
-		s_Inventory = BRInventory(p_Player)
-		self:AddInventory(s_Inventory, p_Player.id)
+		s_Inventory = BRInventory(s_BRPlayer)
+		self:AddInventory(s_Inventory, p_Player)
 	end
 
 	return s_Inventory
@@ -80,17 +84,34 @@ end
 
 -- Adds a BRInventory
 -- @param p_Inventory BRInventory
--- @param p_PlayerId integer
-function BRInventoryManager:AddInventory(p_Inventory, p_PlayerId)
-	self.m_Inventories[p_PlayerId] = p_Inventory
+-- @param p_Player Player
+function BRInventoryManager:AddInventory(p_Inventory, p_Player)
+	self.m_Inventories[p_Player.id] = p_Inventory
+
+	-- set inventory reference in BRPlayer
+	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
+	if s_BRPlayer ~= nil then
+		m_Logger:Write("Set inventory for BRPlayer " .. s_BRPlayer:GetName())
+		s_BRPlayer.m_Inventory = p_Inventory
+	end
 end
 
 -- Removes a BRInventory
--- @param p_PlayerId integer
-function BRInventoryManager:RemoveInventory(p_PlayerId)
+-- @param p_Player Player
+function BRInventoryManager:RemoveInventory(p_Player)
+	if self.m_Inventories[p_Player.id] == nil then
+		return
+	end
+
 	-- destroy inventory and clear reference
-	self.m_Inventories[p_PlayerId]:Destroy()
-	self.m_Inventories[p_PlayerId] = nil
+	self.m_Inventories[p_Player.id]:Destroy()
+	self.m_Inventories[p_Player.id] = nil
+
+	-- clear inventory reference in BRPlayer
+	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
+	if s_BRPlayer ~= nil then
+		s_BRPlayer.m_Inventory = nil
+	end
 end
 
 --============================================================

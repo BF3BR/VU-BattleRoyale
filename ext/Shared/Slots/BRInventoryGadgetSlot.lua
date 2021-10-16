@@ -19,7 +19,6 @@ end
 
 function BRInventoryGadgetSlot:UpdateItemPrimaryAmmo()
 	local s_Owner = self:GetOwner()
-
 	if s_Owner == nil or s_Owner.soldier == nil then
 		m_Logger:Write("Slot owner is undefined")
 		return

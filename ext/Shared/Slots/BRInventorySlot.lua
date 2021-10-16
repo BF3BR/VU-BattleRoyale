@@ -8,6 +8,7 @@ function BRInventorySlot:__init(p_Inventory, p_AcceptedTypes)
 	self.m_Inventory = p_Inventory
 	self.m_AcceptedTypes = p_AcceptedTypes or {}
 	self.m_IsUpdated = true
+	self.m_SendToSpectator = false
 end
 
 -- Checks if the slot contains an item with the specified definition
@@ -138,7 +139,7 @@ function BRInventorySlot:ResolveSlot(p_Item)
 end
 
 function BRInventorySlot:GetOwner()
-	return self.m_Inventory.m_Owner
+	return self.m_Inventory:GetOwnerPlayer()
 end
 
 function BRInventorySlot:AsTable()
