@@ -438,7 +438,13 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 		s_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
 	end
 
-	p_Info.damage = s_BrPlayer:OnDamaged(p_Info.damage, s_BrGiver)
+	p_Info.damage = s_BrPlayer:OnDamaged(p_Info, s_BrGiver)
+
+	-- if we have a giver and it's not self damage then we update the damage that player dealt
+	if s_BrGiver ~= nil and not s_BrGiver:Equals(s_BrPlayer) then
+		s_BrGiver:IncreaseDamageDealt(p_Info.damage)
+	end
+
 	p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
 end
 

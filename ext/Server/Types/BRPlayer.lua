@@ -42,31 +42,38 @@ function BRPlayer:__init(p_Player)
 
 	-- The given revive count of the player
 	self.m_GivenRevives = 0
+
+	-- The headshot count of the player (when downing/killing an enemy)
+	self.m_Headshots = 0
+
+	-- The amount of damage this player dealt
+	self.m_DamageDealt = 0.0
+
+	-- The downed enemies count
+	self.m_DownedEnemies = 0
 end
 
 -- =============================================
 -- Hooks
 -- =============================================
 
-function BRPlayer:OnDamaged(p_Damage, p_Giver)
+function BRPlayer:OnDamaged(p_Info, p_Giver)
+	local s_Damage = p_Info.damage
+
 	-- check if giver isnt a teammate or the player himself
 	if p_Giver ~= nil and self:IsTeammate(p_Giver) and not self:Equals(p_Giver) then
 		return 0
 	end
 
-	if p_Giver ~= nil then
-		NetEvents:SendToLocal(DamageEvent.Hit, p_Giver.m_Player, p_Damage)
-	end
-
 	local s_Soldier = self:GetSoldier()
 
 	if s_Soldier == nil then
-		return p_Damage
+		return s_Damage
 	end
 
 	local s_Health = s_Soldier.health
 
-	if s_Soldier.isInteractiveManDown and p_Damage >= s_Health then
+	if s_Soldier.isInteractiveManDown and s_Damage >= s_Health then
 		self:Kill(true)
 		Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
 
@@ -76,11 +83,11 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 
 		-- apply damage to the armor
 		if p_Giver ~= nil and not self:Equals(p_Giver) then
-			local s_Damage = self.m_Armor:ApplyDamage(p_Damage)
+			local s_ArmorDamage = self.m_Armor:ApplyDamage(s_Damage)
 
 			-- check if we really did damage to the armor
-			if s_Damage ~= p_Damage then
-				p_Damage = s_Damage
+			if s_ArmorDamage ~= s_Damage then
+				s_Damage = s_ArmorDamage
 				self:SetArmor(self.m_Armor)
 
 				-- check if the player still has a shield or if the giver broke it
@@ -90,12 +97,22 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 			end
 		end
 
-		if p_Damage >= s_Health then
+		if s_Damage >= s_Health then
+			-- for stats
+			if p_Giver ~= nil then
+				local s_IsHeadshot = p_Info.boneIndex == 1
+
+				if s_IsHeadshot then
+					p_Giver:IncreaseHeadshotCount()
+				end
+			end
+
 			-- kill instantly if no teammates left
 			if self:HasAliveTeammates() then
 				if p_Giver ~= nil then
 					self.m_KillerName = p_Giver:GetName()
 					NetEvents:SendToLocal(DamageEvent.PlayerDown, p_Giver.m_Player, self:GetName())
+					p_Giver:IncreaseDownedEnemies()
 				else
 					self.m_KillerName = nil
 				end
@@ -116,7 +133,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 		end
 	end
 
-	return math.max(0.001, p_Damage)
+	return math.max(0.001, s_Damage)
 end
 
 -- =============================================
@@ -357,6 +374,9 @@ function BRPlayer:Reset()
 	self.m_Score = 0
 	self.m_ReceivedRevives = 0
 	self.m_GivenRevives = 0
+	self.m_Headshots = 0
+	self.m_DamageDealt = 0.0
+	self.m_DownedEnemies = 0
 	self.m_KillerName = nil
 	self.m_SpectatedPlayerName = nil
 	self.m_SpectatorNames = {}
@@ -394,6 +414,18 @@ end
 
 function BRPlayer:IncreaseGivenRevives()
 	self.m_GivenRevives = self.m_GivenRevives + 1
+end
+
+function BRPlayer:IncreaseHeadshotCount()
+	self.m_Headshots = self.m_Headshots + 1
+end
+
+function BRPlayer:IncreaseDamageDealt(p_Damage)
+	self.m_DamageDealt = self.m_DamageDealt + p_Damage
+end
+
+function BRPlayer:IncreaseDownedEnemies()
+	self.m_DownedEnemies = self.m_DownedEnemies + 1
 end
 
 -- =============================================
