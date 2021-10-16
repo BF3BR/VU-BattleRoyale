@@ -6,11 +6,11 @@ import viewAngles from "../../../assets/img/viewangles_texture.png";
 const viewAnglesTexture = PIXI.Texture.from(viewAngles);
 
 export const drawPlayer = (g: any, color: number) => {
-    var sideLength = 20;
+    var sideLength = 12;
     g.clear();
     g.beginFill(color, 0.4);    
     g.lineStyle({
-        width: 6,
+        width: 4,
         color: color,
         alpha: 1,
         join: PIXI.LINE_JOIN.ROUND,
@@ -26,7 +26,7 @@ export const drawPlayer = (g: any, color: number) => {
 };
 
 export const drawPlayerVision = (g: any) => {
-    var sideLength = 70;
+    var sideLength = 50;
     g.filters = [];
     g.clear();
     
@@ -39,11 +39,11 @@ export const drawPlayerVision = (g: any) => {
         matrix: textureMatrix,
         alpha: 0.35,
     });
-    g.moveTo(-10, -7);
+    g.moveTo(-5, -7);
     g.lineTo(0 - sideLength, -sideLength * 1.5);
     g.lineTo(0 + sideLength, -sideLength * 1.5);
-    g.lineTo(10, -7);
-    g.lineTo(0, -20);
+    g.lineTo(5, -7);
+    g.lineTo(0, -10);
     g.closePath();
     g.endFill();
 };

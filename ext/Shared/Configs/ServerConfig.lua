@@ -47,7 +47,7 @@ ServerConfig = {
 
 		DisableWinningCheck = true,
 
-		DisableMapLoader = true,
+		DisableMapLoader = false,
 
 		EnableWhitelist = true,
 

@@ -5,10 +5,6 @@ import { RootState } from '../../store/RootReducer';
 import { Stage, Sprite, PixiComponent, useApp } from '@inlet/react-pixi';
 import { Viewport } from 'pixi-viewport';
 
-import Vec3 from '../../helpers/Vec3Helper';
-import Player from '../../helpers/PlayerHelper';
-import Ping from '../../helpers/PingHelper';
-
 import XP5_003 from "../../assets/img/XP5_003.jpg";
 import { MapsConfig } from '../../helpers/MapsConfigHelper';
 import { sendToLua } from '../../Helpers';
@@ -37,7 +33,7 @@ const widthAndHeight = 1024;
 
 // Based on map config
 let textureWidthHeight: number = 1024;
-let worldWidthHeight: number = 1250;
+let worldWidthHeight: number = 2500;
 
 let topLeftPos = {
     x: 0,
@@ -118,7 +114,7 @@ const MapPixi: React.FC<Props> = ({ open }) => {
     const viewportRef = useRef(null);
     const followPlayer = useRef(null);
 
-    const [snapZoomHeight, setSnapZoomHeight] = useState<number>(300);
+    const [snapZoomHeight, setSnapZoomHeight] = useState<number>(150);
 
     const focus = useCallback(() => {
         const viewport = viewportRef.current;
@@ -170,18 +166,18 @@ const MapPixi: React.FC<Props> = ({ open }) => {
     window.OnMapZoomChange = () => {
         if (!open) {
             switch (snapZoomHeight) {
-                case 300:
-                    setSnapZoomHeight(500);
-                    follow(500);
-                    break;
-                case 500:
-                    setSnapZoomHeight(800);
-                    follow(800);
-                    break;
-                case 800:
-                default:
+                case 150:
                     setSnapZoomHeight(300);
                     follow(300);
+                    break;
+                case 300:
+                    setSnapZoomHeight(600);
+                    follow(600);
+                    break;
+                case 600:
+                default:
+                    setSnapZoomHeight(150);
+                    follow(150);
                     break;
             }
         }
