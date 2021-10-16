@@ -6,6 +6,7 @@ local m_Logger = Logger("BRPlayer", true)
 
 function BRPlayer:__init()
 	self.m_Team = BRTeam()
+	self.m_Inventory = BRInventory()
 	self.m_Armor = Armor:NoArmor()
 	self.m_IsTeamLeader = false
 	self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin

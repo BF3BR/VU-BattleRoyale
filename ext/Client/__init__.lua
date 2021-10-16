@@ -62,7 +62,6 @@ function VuBattleRoyaleClient:RegisterVars()
 	-- The current gamestate, it's read-only and can only be changed by the SERVER
 	self.m_GameState = GameStates.None
 
-	self.m_Invetnory = BRInventory()
 	self.m_Looting = BRLooting()
 end
 
@@ -764,23 +763,23 @@ function VuBattleRoyaleClient:StartWindTurbines()
 end
 
 function VuBattleRoyaleClient:OnWebUIMoveItem(p_JsonData)
-	self.m_Invetnory:OnWebUIMoveItem(p_JsonData)
+	m_BrPlayer.m_Inventory:OnWebUIMoveItem(p_JsonData)
 end
 
 function VuBattleRoyaleClient:OnWebUIDropItem(p_JsonData)
-	self.m_Invetnory:OnWebUIDropItem(p_JsonData)
+	m_BrPlayer.m_Inventory:OnWebUIDropItem(p_JsonData)
 end
 
 function VuBattleRoyaleClient:OnWebUIUseItem(p_JsonData)
-	self.m_Invetnory:OnWebUIUseItem(p_JsonData)
+	m_BrPlayer.m_Inventory:OnWebUIUseItem(p_JsonData)
 end
 
 function VuBattleRoyaleClient:OnWebUIPickupItem(p_JsonData)
-	self.m_Invetnory:OnWebUIPickupItem(p_JsonData)
+	m_BrPlayer.m_Inventory:OnWebUIPickupItem(p_JsonData)
 end
 
 function VuBattleRoyaleClient:OnReceiveInventoryState(p_State)
-	self.m_Invetnory:OnReceiveInventoryState(p_State)
+	m_BrPlayer.m_Inventory:OnReceiveInventoryState(p_State)
 end
 
 function VuBattleRoyaleClient:OnCreateLootPickup(p_DataArray)
@@ -796,7 +795,7 @@ function VuBattleRoyaleClient:OnUpdateLootPickup(p_DataArray)
 end
 
 function VuBattleRoyaleClient:OnItemActionCanceled()
-	self.m_Invetnory:OnItemActionCanceled()
+	m_BrPlayer.m_Inventory:OnItemActionCanceled()
 end
 
 return VuBattleRoyaleClient()
