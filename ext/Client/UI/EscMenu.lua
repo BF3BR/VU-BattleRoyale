@@ -90,6 +90,11 @@ end
 -- =============================================
 
 function EscMenu:OnOpenEscapeMenu()
+	if m_HudUtils:GetIsInventoryOpened() then
+		m_HudUtils:SetIsInventoryOpened(false)
+		WebUI:ExecuteJS("OnInventoryOpen(false);")
+	end
+
 	m_HudUtils:SetIsInOptionsMenu(false)
 	m_HudUtils:OnEnableMouse()
 	m_HudUtils:OnDisableGameInput()

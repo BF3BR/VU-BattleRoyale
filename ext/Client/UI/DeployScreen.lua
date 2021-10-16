@@ -12,6 +12,11 @@ function DeployScreen:OnLevelLoaded()
 end
 
 function DeployScreen:OpenDeployScreen()
+	if m_HudUtils:GetIsInventoryOpened() then
+		m_HudUtils:SetIsInventoryOpened(false)
+		WebUI:ExecuteJS("OnInventoryOpen(false);")
+	end
+
 	WebUI:ExecuteJS("ToggleDeployMenu(true);")
 	m_HudUtils:ShowroomCamera(true)
 	m_HudUtils:ShowCrosshair(false)
