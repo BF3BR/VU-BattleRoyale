@@ -148,7 +148,7 @@ function BRItemConsumable:UnsubscribeFromEngineUpdates()
 	end
 end
 
-function BRItemHelmet:AsTable(p_Extended)
+function BRItemConsumable:AsTable(p_Extended)
 	local s_Table = BRItem.AsTable(self, p_Extended)
 
 	if p_Extended then

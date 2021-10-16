@@ -29,23 +29,23 @@ function BRItemHelmet:CreateFromTable(p_Table)
 end
 
 --==============================
--- Armor related functions
+-- Helmet related functions
 --==============================
 
--- Applies damage to the armor. Returns the damage passed through.
+-- Applies damage to the helmet. Returns the damage passed through.
 -- @param p_Damage number
 function BRItemHelmet:ApplyDamage(p_Damage)
-	-- check if armor is fully damaged
+	-- check if helmet is fully damaged
 	if self.m_CurrentDurability <= 0 then
 		return p_Damage, false
 	end
 
 	-- calculate damage
-	local s_DamageToArmor = p_Damage * self.m_Definition.DamageReduction
-	local s_DamagePassed = p_Damage - s_DamageToArmor
+	local s_DamageToHelmet = p_Damage * self.m_Definition.DamageReduction
+	local s_DamagePassed = p_Damage - s_DamageToHelmet
 
-	-- update armor durability
-	self.m_CurrentDurability = self.m_CurrentDurability - s_DamageToArmor
+	-- update helmet durability
+	self.m_CurrentDurability = self.m_CurrentDurability - s_DamageToHelmet
 
 	if self.m_CurrentDurability < 0 then
 		s_DamagePassed = s_DamagePassed + math.abs(self.m_CurrentDurability)
@@ -55,7 +55,7 @@ function BRItemHelmet:ApplyDamage(p_Damage)
 	return s_DamagePassed, true
 end
 
--- Returns the current percentage of the armor
+-- Returns the current percentage of the helmet
 function BRItemHelmet:GetPercentage()
 	if self.m_Definition.Durability <= 0 then
 		return 0
