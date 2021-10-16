@@ -81,7 +81,7 @@ function BRItemConsumable:ApplyAction()
 	end
 
 	-- update player's health
-	s_Player.soldier.health = math.min(100, s_Player.soldier.health + self.m_Definition.m_HealthToRegen)
+	s_Player.soldier.health = math.min(200, s_Player.soldier.health + self.m_Definition.m_HealthToRegen)
 end
 
 function BRItemConsumable:SendNetEvent(p_Name)
