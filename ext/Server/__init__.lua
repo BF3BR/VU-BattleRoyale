@@ -238,6 +238,26 @@ end
 
 function VuBattleRoyaleServer:OnPlayerManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
 	p_Player.soldier.health = 130
+
+	-- for stats:
+	-- check if that player has a reviver
+	if p_Reviver == nil then
+		return
+	end
+
+	-- get the BRPlayer to update the stats
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
+	if s_BrPlayer ~= nil then
+		s_BrPlayer:IncreaseReceivedRevives()
+	end
+
+	-- get the BRPlayer of the reviver to update the stats
+	local s_Reviver_BrPlayer = m_TeamManager:GetPlayer(p_Reviver)
+
+	if s_Reviver_BrPlayer ~= nil then
+		s_Reviver_BrPlayer:IncreaseGivenRevives()
+	end
 end
 
 function VuBattleRoyaleServer:OnPlayerKilled(p_Player, p_Inflictor, p_Position, p_Weapon, p_IsRoadKill, p_IsHeadShot)

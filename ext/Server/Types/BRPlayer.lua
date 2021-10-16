@@ -36,6 +36,12 @@ function BRPlayer:__init(p_Player)
 
 	-- The score count of the player
 	self.m_Score = 0
+
+	-- The received revive count of the player
+	self.m_ReceivedRevives = 0
+
+	-- The given revive count of the player
+	self.m_GivenRevives = 0
 end
 
 -- =============================================
@@ -349,6 +355,8 @@ function BRPlayer:Reset()
 	self.m_Armor = Armor:BasicArmor()
 	self.m_Kills = 0
 	self.m_Score = 0
+	self.m_ReceivedRevives = 0
+	self.m_GivenRevives = 0
 	self.m_KillerName = nil
 	self.m_SpectatedPlayerName = nil
 	self.m_SpectatorNames = {}
@@ -374,6 +382,18 @@ function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
 	end
 
 	return false
+end
+
+-- =============================================
+	-- Some stat functions
+-- =============================================
+
+function BRPlayer:IncreaseReceivedRevives()
+	self.m_ReceivedRevives = self.m_ReceivedRevives + 1
+end
+
+function BRPlayer:IncreaseGivenRevives()
+	self.m_GivenRevives = self.m_GivenRevives + 1
 end
 
 -- =============================================
