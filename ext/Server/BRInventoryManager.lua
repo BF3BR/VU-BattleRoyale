@@ -127,14 +127,12 @@ function BRInventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_It
 
 	-- get inventory
 	local s_Inventory = self:GetOrCreateInventory(p_Player)
-
 	if s_Inventory == nil then
 		return
 	end
 
 	-- get lootpickup
 	local s_LootPickup = m_LootPickupDatabase:GetById(p_LootPickupId)
-
 	if s_LootPickup == nil or not s_LootPickup:ContainsItemId(p_ItemId) then
 		return
 	end
@@ -145,7 +143,7 @@ function BRInventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_It
 	local s_LootPickupPos = s_LootPickup.m_Transform.trans
 	local s_PlayerPos = p_Player.soldier.transform.trans
 
-	if s_LootPickupPos:Distance(s_PlayerPos) > 3 then
+	if s_LootPickupPos:Distance(s_PlayerPos) > InventoryConfig.CloseItemAllowedRadiusServer then
 		return
 	end
 
@@ -168,7 +166,6 @@ function BRInventoryManager:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
 
 	-- get inventory
 	local s_Inventory = self:GetOrCreateInventory(p_Player)
-
 	if s_Inventory == nil then
 		return
 	end
@@ -185,7 +182,6 @@ function BRInventoryManager:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
 
 	-- get inventory
 	local s_Inventory = self:GetOrCreateInventory(p_Player)
-
 	if s_Inventory == nil then
 		return
 	end

@@ -258,7 +258,7 @@ function BRLooting:UpdateCloseToPlayerItems()
 		return
 	end
 
-	local s_LootPickups = m_BRLootPickupDatabase:GetCloseLootPickups(s_CameraTransform.trans, 3)
+	local s_LootPickups = m_BRLootPickupDatabase:GetCloseLootPickups(s_CameraTransform.trans, InventoryConfig.CloseItemSearchRadiusClient)
 
 	-- PREV
 	-- local s_From = Vec3(s_CameraTransform.trans)

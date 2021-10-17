@@ -85,11 +85,11 @@ function BRLootPickupDatabase:GetCloseLootPickups(p_Position, p_Radius)
 end
 
 function BRLootPickupDatabase:UpdateCachedCloseLootPickups(p_Position, p_CachedRadius)
-	if p_Position == nil or SharedUtils:GetTime() - self.m_CachedCloseEntitiesUpdatedAt < 6 then
+	if p_Position == nil or SharedUtils:GetTime() - self.m_CachedCloseEntitiesUpdatedAt < InventoryConfig.CloseItemCacheFrequency then
 		return
 	end
 
-	p_CachedRadius = p_CachedRadius or 60
+	p_CachedRadius = p_CachedRadius or InventoryConfig.CloseItemCacheRadius
 	s_Pos2D = Vec2(p_Position.x, p_Position.z)
 
 	-- search the LootPickups that are inside the cache radius

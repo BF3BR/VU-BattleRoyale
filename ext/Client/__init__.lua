@@ -6,6 +6,7 @@ require "__shared/Configs/SettingsConfig"
 require "__shared/Configs/ServerConfig"
 require "__shared/Utils/LootPointHelper"
 require "__shared/Configs/CircleConfig"
+require "__shared/Configs/InventoryConfig"
 require "__shared/Enums/CustomEvents"
 require "__shared/Types/BRLootPickup"
 
