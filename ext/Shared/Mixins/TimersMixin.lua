@@ -28,6 +28,17 @@ function TimersMixin:RemoveTimer(p_Key)
 	end
 end
 
+-- Resets the timer
+-- returns true if it was successfully reset, false otherwise
+function TimersMixin:ResetTimer(p_Key)
+	if self.m__Timers[p_Key] ~= nil then
+		self.m__Timers[p_Key]:Reset()
+		return true
+	end
+
+	return false
+end
+
 -- Destroys every timer and empties the timers table
 function TimersMixin:RemoveTimers()
 	for l_Key, _ in pairs(self.m__Timers) do
