@@ -8,7 +8,7 @@ function BRLooting:__init()
 	self.m_LastDelta = 0
 	self.m_LastSelectedLootPickup = nil
 
-	g_Timers:Interval(0.25, self, self.OnSpatialRaycast)
+	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
 
 	self.m_TimeToUpdateLootUi = 0.15
 end
@@ -244,10 +244,9 @@ function BRLooting:OnRaycast()
 	return nil
 end
 
-function BRLooting:OnSpatialRaycast()
+function BRLooting:UpdateCloseToPlayerItems()
 	-- Make sure we have a local player.
 	local s_Player = PlayerManager:GetLocalPlayer()
-
 	if s_Player == nil or s_Player.soldier == nil then
 		return nil
 	end
@@ -255,34 +254,34 @@ function BRLooting:OnSpatialRaycast()
 	-- Our prop-picking ray will start at what the camera is looking at and
 	-- extend forward by 3.0m.
 	local s_CameraTransform = ClientUtils:GetCameraTransform()
-
 	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0, 0, 0) then
 		return
 	end
 
-	local s_From = Vec3(s_CameraTransform.trans)
+	local s_LootPickups = m_BRLootPickupDatabase:GetCloseLootPickups(s_CameraTransform.trans, 3)
 
-	-- We get the raycast end transform with the calculated direction and the max distance.
-	local s_Direction = s_CameraTransform.forward * -1
-	local s_Target = s_CameraTransform.trans + (s_Direction * 3)
+	-- PREV
+	-- local s_From = Vec3(s_CameraTransform.trans)
 
-	local s_Entities = RaycastManager:SpatialRaycast(s_From, s_Target, SpatialQueryFlags.AllGrids)
+	-- -- We get the raycast end transform with the calculated direction and the max distance.
+	-- local s_Direction = s_CameraTransform.forward * -1
+	-- local s_Target = s_CameraTransform.trans + (s_Direction * 3)
 
-	-- convert entities instance Ids to LootPickups
-	local s_LootPickups = {}
-	for _, l_Entity in ipairs(s_Entities) do
-		local s_LootPickup = m_BRLootPickupDatabase:GetByInstanceId(l_Entity.instanceId)
+	-- local s_Entities = RaycastManager:SpatialRaycast(s_From, s_Target, SpatialQueryFlags.AllGrids)
 
-		-- add LootPickup if it's not already in and it's close to player
-		if s_LootPickup ~= nil and 
-			s_LootPickups[s_LootPickup.m_Id] == nil and
-			s_LootPickup.m_Transform.trans:Distance(s_Player.soldier.transform.trans) <= 3 then
-			s_LootPickups[s_LootPickup.m_Id] = s_LootPickup
-		end
-	end
+	-- -- convert entities instance Ids to LootPickups
+	-- local s_LootPickups = {}
+	-- for _, l_Entity in ipairs(s_Entities) do
+	-- 	local s_LootPickup = m_BRLootPickupDatabase:GetByInstanceId(l_Entity.instanceId)
 
-	-- DEBUG
-	-- m_Logger:Write("FOUND #" .. m_MapHelper:Size(s_LootPickups) .. " LootPickups close to player")
+	-- 	-- add LootPickup if it's not already in and it's close to player
+	-- 	if s_LootPickup ~= nil and 
+	-- 		s_LootPickups[s_LootPickup.m_Id] == nil and
+	-- 		s_LootPickup.m_Transform.trans:Distance(s_Player.soldier.transform.trans) <= 3 then
+	-- 		s_LootPickups[s_LootPickup.m_Id] = s_LootPickup
+	-- 	end
+	-- end
+	-- /PREV
 
 	self:SendCloseLootPickupData(s_LootPickups)
 end

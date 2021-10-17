@@ -6,6 +6,9 @@ function BRLootPickupDatabase:ResetVars()
 	BRLootPickupDatabaseShared.ResetVars(self)
 
 	self.m_InstanceIdToLootPickup = {}
+
+	self.m_CachedCloseEntitiesUpdatedAt = 0
+	self.m_CachedCloseEntities = {}
 end
 
 function BRLootPickupDatabase:GetByInstanceId(p_InstanceId)
@@ -18,6 +21,10 @@ function BRLootPickupDatabase:Add(p_LootPickup)
 	end
 
 	-- TODO add required refs to grid
+
+	-- add a reference in close entities too. It will be cleaned up in
+	-- a bit if it's not close, anyways
+	self.m_CachedCloseEntities[p_LootPickup.m_Id] = p_LootPickup
 
 	self:CreateLootPickupEntities(p_LootPickup)
 	return true
@@ -47,10 +54,55 @@ function BRLootPickupDatabase:Remove(p_LootPickup)
 		return false
 	end
 
-	-- clear references to this LootPickup
+	-- clear it's reference from cached close items
+	self.m_CachedCloseEntities[p_LootPickup.m_Id] = nil
+
+	-- destroy entities for this LootPickup
 	self:DestroyLootPickupEntities(p_LootPickup)
 	p_LootPickup:Destroy()
+
 	return true
+end
+
+-- override with a temporary solution for client
+function BRLootPickupDatabase:GetCloseLootPickups(p_Position, p_Radius)
+	if p_Position == nil then
+		return
+	end
+
+	p_Radius = p_Radius or 3
+	self:UpdateCachedCloseLootPickups(p_Position)
+
+	-- search the LootPickups that are close (<= p_Radius)
+	local s_CloseLootPickups = {}
+	for _, l_LootPickup in pairs(self.m_CachedCloseEntities) do
+		if l_LootPickup.m_Transform.trans:Distance(p_Position) <= p_Radius then
+			s_CloseLootPickups[l_LootPickup.m_Id] = l_LootPickup
+		end
+	end
+
+	return s_CloseLootPickups
+end
+
+function BRLootPickupDatabase:UpdateCachedCloseLootPickups(p_Position, p_CachedRadius)
+	if p_Position == nil or SharedUtils:GetTime() - self.m_CachedCloseEntitiesUpdatedAt < 6 then
+		return
+	end
+
+	p_CachedRadius = p_CachedRadius or 60
+	s_Pos2D = Vec2(p_Position.x, p_Position.z)
+
+	-- search the LootPickups that are inside the cache radius
+	self.m_CachedCloseEntities = {}
+	for _, l_LootPickup in pairs(self.m_LootPickups) do
+		local s_LootPickupPos2D = Vec2(l_LootPickup.m_Transform.trans.x, l_LootPickup.m_Transform.trans.z)
+
+		if s_LootPickupPos2D:Distance(s_Pos2D) <= p_CachedRadius then
+			self.m_CachedCloseEntities[l_LootPickup.m_Id] = l_LootPickup
+		end
+	end
+
+	self.m_CachedCloseEntitiesUpdatedAt = SharedUtils:GetTime()
 end
 
 function BRLootPickupDatabase:CreateLootPickupEntities(p_LootPickup)

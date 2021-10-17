@@ -14,11 +14,13 @@ local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_InventoryManager = require "BRInventoryManager"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
-class "BRInventory"
+class ("BRInventory", TimersMixin)
 
 local m_Logger = Logger("BRInventory", true)
 
 function BRInventory:__init(p_Owner)
+	TimersMixin.__init(self)
+
 	-- the BRPlayer that owns this inventory
 	self.m_Owner = p_Owner
 
@@ -69,8 +71,6 @@ function BRInventory:__init(p_Owner)
 		self.m_Slots[InventorySlot.SecondaryWeaponAttachmentBarrel],
 		self.m_Slots[InventorySlot.SecondaryWeaponAttachmentOther]
 	)
-
-	self.m_UpdateCustomizationTimer = nil
 end
 
 -- Returns the player instance of the owner of this inventory
@@ -385,13 +385,18 @@ function BRInventory:AsTable()
 	return s_Data
 end
 
+-- Calls `SendState` with a delay.
+-- Avoids multiple uneeded firings that may happen during some operations
 function BRInventory:DeferSendState()
-	-- TODO
-	return self:SendState()
+	if not self:ResetTimer("SendState") then
+		self:SetTimer("SendState", g_Timers:Timeout(0.06, self, self.SendState))
+	end
 end
 
 -- Sends the state of the inventory to its owner and the spectators
 function BRInventory:SendState()
+	self:RemoveTimer("SendState")
+
 	if self.m_Owner == nil then
 		return
 	end
@@ -428,7 +433,6 @@ function BRInventory:GetAmmoTypeCount(p_WeaponName)
 	end
 
 	local s_AmmoDefinition = self:GetAmmoDefinition(p_WeaponName)
-
 	if s_AmmoDefinition == nil then
 		return 0
 	end
@@ -503,16 +507,17 @@ function BRInventory:RemoveAmmo(p_WeaponName, p_Quantity)
 	return p_Quantity - s_QuantityLeftToRemove
 end
 
+-- Calls `UpdateSoldierCustomization` with a delay.
+-- Avoids multiple uneeded firings that may happen during some operations
 function BRInventory:DeferUpdateSoldierCustomization()
-	if self.m_UpdateCustomizationTimer ~= nil then
-		self.m_UpdateCustomizationTimer:Destroy()
-		self.m_UpdateCustomizationTimer = nil
+	if not self:ResetTimer("UpdateCustomization") then
+		self:SetTimer("UpdateCustomization", g_Timers:Timeout(0.12, self, self.UpdateSoldierCustomization))
 	end
-
-	self.m_UpdateCustomizationTimer = g_Timers:Timeout(0.12, self, self.UpdateSoldierCustomization)
 end
 
 function BRInventory:UpdateSoldierCustomization()
+	self:RemoveTimer("UpdateCustomization")
+
 	local s_Soldier = self:GetOwnerSoldier()
 	if s_Soldier == nil then
 		return
@@ -595,8 +600,5 @@ function BRInventory:CreateCustomizeSoldierData()
 end
 
 function BRInventory:Destroy()
-	if self.m_UpdateCustomizationTimer ~= nil then
-		self.m_UpdateCustomizationTimer:Destroy()
-		self.m_UpdateCustomizationTimer = nil
-	end
+	self:RemoveTimers()
 end
