@@ -163,5 +163,12 @@ function Timer:Remaining()
 	return math.max(0, s_Time / 1000)
 end
 
+-- Resets the timer
+function Timer:Reset()
+	self.m_CurrentCycle = 0
+	self.m_StartedAt = SharedUtils:GetTimeMS()
+	self.m_UpdatedAt = self.m_StartedAt
+end
+
 -- TimerManager singleton
 g_Timers = TimerManager()
