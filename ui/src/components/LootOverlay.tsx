@@ -20,11 +20,6 @@ const LootOverlay: React.FC<Props> = ({ loot }) => {
                         }
                     </div>
                 }
-                {/*loot === "Basic" &&
-                    <div className="image">
-                        <img src="fb://UI/Art/Persistence/Award/Ribbons/Fancy/gunmaster3d" alt="" />
-                    </div>
-                */}
 
                 <div className="information">
                     {loot.Name &&
@@ -58,14 +53,12 @@ const LootOverlay: React.FC<Props> = ({ loot }) => {
                             }
                         </span>
                     }
-
-                    {loot === "Basic" &&
-                        <span className="name">Backpack</span>
-                    }
                 </div>
             </div>
             <div className="keyinfo">
-                <h4>Press E to pickup</h4>
+                <h4>
+                    Press E to {loot.Multi ? "Open" : "Pickup"}
+                </h4>
             </div>
         </div>
     )

@@ -125,7 +125,7 @@ const MenuScreen: React.FC = () => {
             </div>
             <div className="card CreditsBox">
                 <div className="card-header">
-                    <h1>Credits</h1>
+                    <h1>Developers</h1>
                 </div>
                 <div className="card-content">
                     <ul>
@@ -136,6 +136,23 @@ const MenuScreen: React.FC = () => {
                         <li>keku645</li>
                         <li>kiwidog</li>
                         <li>KVN</li>
+                    </ul>
+                </div>
+            </div>
+            <div className="card AssociatesBox">
+                <div className="card-header">
+                    <h1>Associates</h1>
+                </div>
+                <div className="card-content">
+                    <ul>
+                        <li>Nofate</li>
+                        <li>Milk</li>
+                        <li>Paul</li>
+                        <li>Imposter</li>
+                        <li>IllustrisJack</li>
+                        <li>Greatapo</li>
+                        <li>Powback</li>
+                        <li>Afroh Music</li>
                     </ul>
                 </div>
             </div>

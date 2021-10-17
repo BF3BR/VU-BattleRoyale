@@ -3,6 +3,7 @@ class "BRLooting"
 local m_Logger = Logger("BRLooting", true)
 local m_MapHelper = require "__shared/Utils/MapHelper"
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
+local m_Hud = require "UI/Hud"
 
 function BRLooting:__init()
 	self.m_LastDelta = 0
@@ -10,7 +11,7 @@ function BRLooting:__init()
 
 	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
 
-	self.m_TimeToUpdateLootUi = 0.15
+	self.m_TimeToUpdateLootUi = 0.2
 end
 
 -- =============================================
@@ -27,7 +28,7 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 		return
 	end
 
-	--[[if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and self.m_LastSelectedLootPickup ~= nil then
+	if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and self.m_LastSelectedLootPickup ~= nil then
 		local s_LootPickup = self.m_LastSelectedLootPickup
 		if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
 			NetEvents:Send(
@@ -36,212 +37,27 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 				m_MapHelper:NextItem(s_LootPickup.m_Items).m_Id
 			)
 		else
-			self:OnSendOverlayLootBox(s_LootPickup.m_Id, s_LootPickup.m_Items)
+			m_Hud:OpenInventory()
 		end
 	end
 
 	if self.m_LastDelta >= self.m_TimeToUpdateLootUi then
 		self.m_LastDelta = 0.0
 
-		local s_Entity = self:OnRaycast()
-
-		if s_Entity ~= nil then
-			local s_LootPickup = m_BRLootPickupDatabase:GetByInstanceId(s_Entity.instanceId)
-
-			if s_LootPickup ~= nil then
-				self.m_LastSelectedLootPickup = s_LootPickup
-
-				if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
-					local s_SingleItem = m_MapHelper:NextItem(s_LootPickup.m_Items)
-					self:OnSendOverlayLoot(s_SingleItem, false)
-				else
-					self:OnSendOverlayLoot(s_LootPickup.m_Type, true)
-				end
+		local s_LootPickup = self:OnSpatialRaycast()
+		if s_LootPickup ~= nil then
+			self.m_LastSelectedLootPickup = s_LootPickup
+			if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
+				local s_SingleItem = m_MapHelper:NextItem(s_LootPickup.m_Items)
+				self:OnSendOverlayLoot(s_SingleItem, false)
 			else
-				self:OnSendOverlayLoot(nil, false)
-				self.m_LastSelectedLootPickup = nil
+				self:OnSendOverlayLoot(s_LootPickup, true)
 			end
 		else
 			self:OnSendOverlayLoot(nil, false)
 			self.m_LastSelectedLootPickup = nil
 		end
-
-		if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and self.m_LastSelectedLootPickup ~= nil then
-			local s_LootPickup = self.m_LastSelectedLootPickup
-
-			if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
-				NetEvents:Send(
-					InventoryNetEvent.PickupItem,
-					s_LootPickup.m_Id,
-					m_MapHelper:NextItem(s_LootPickup.m_Items).m_Id
-				)
-			else
-				self:OnSendOverlayLootBox(s_LootPickup.m_Id, s_LootPickup.m_Items)
-			end
-		end
-	end]]
-end
-
-function BRLooting:OnUpdateLootPickup(p_LootPickupData)
-	-- update LootPickup in database
-	local s_LootPickup = m_BRLootPickupDatabase:Update(p_LootPickupData)
-
-	if s_LootPickup == nil then
-		return
 	end
-
-	-- update LootPickup in WebUI if needed
-	if self.m_LastSelectedLootPickup ~= nil and 
-		self.m_LastSelectedLootPickup.m_Id == s_LootPickup.m_Id then
-		self:OnSendOverlayLootBox(s_LootPickup.m_Id, s_LootPickup.m_Items)
-	end
-end
-
-function BRLooting:OnUnregisterLootPickup(p_LootPickupId)
-	if not m_BRLootPickupDatabase:RemoveById(p_LootPickupId) then
-		return
-	end
-
-	-- update LootPickup in WebUI if needed
-	if self.m_LastSelectedLootPickup ~= nil and 
-		self.m_LastSelectedLootPickup.m_Id == p_LootPickupId then
-		self:OnSendOverlayLootBox(nil, {})
-		self.m_LastSelectedLootPickup = nil
-	end
-end
-
-function BRLooting:OnRaycast()
-	-- Make sure we have a local player.
-	local s_Player = PlayerManager:GetLocalPlayer()
-
-	if s_Player == nil or s_Player.soldier == nil then
-		return nil
-	end
-
-	-- Our prop-picking ray will start at what the camera is looking at and
-	-- extend forward by 3.0m.
-	local s_Transform = ClientUtils:GetCameraTransform()
-	local s_Direction = Vec3(s_Transform.forward.x * -1, s_Transform.forward.y * -1, s_Transform.forward.z * -1)
-
-	if s_Transform.trans == Vec3(0,0,0) then
-		return
-	end
-
-	local s_From = Vec3(
-		s_Transform.trans.x,
-		s_Transform.trans.y,
-		s_Transform.trans.z
-	)
-
-	-- We get the raycast end transform with the calculated direction and the max distance.
-	local s_Target = Vec3(
-		s_Transform.trans.x + (s_Direction.x * 3.0),
-		s_Transform.trans.y + (s_Direction.y * 3.0),
-		s_Transform.trans.z + (s_Direction.z * 3.0)
-	)
-
-	-- Do a spatial raycast and a normal raycast.
-	-- We use the spatial raycast to find available props and the normal raycast
-	-- to see if there's anything between us and that prop and also help us select
-	-- the prop to pick.
-	local s_Entities = RaycastManager:SpatialRaycast(s_From, s_Target, SpatialQueryFlags.AllGrids)
-	local s_Hit = RaycastManager:Raycast(s_From, s_Target, RayCastFlags.CheckDetailMesh | RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter | RayCastFlags.DontCheckRagdoll)
-
-	local s_HitDistance = 3.0
-
-	if s_Hit ~= nil then
-		s_HitDistance = s_From:Distance(s_Hit.position)
-
-		-- Add 1.5cm to account for innacuracies.
-		s_HitDistance = s_HitDistance + 0.015
-	end
-
-	local s_RaycastObjects = {}
-	local s_Candidates = {}
-
-	local s_Heading = s_Target - s_From
-	local s_Direction = s_Heading:Normalize()
-
-	local s_WallHit = s_From + (s_Direction * s_HitDistance)
-
-	for _, l_Entity in pairs(s_Entities) do
-		-- We only care about spatial entities.
-		if not l_Entity:Is("SpatialEntity") then
-			goto continue
-		end
-
-		local l_Mesh = self:GetMesh(l_Entity)
-
-		if l_Mesh == nil then
-			goto continue
-		end
-
-		-- Now we need to do our own ray-tracing because the entities we get back do
-		-- not necessarily intersect with our selection ray.
-		local l_SpatialEntity = SpatialEntity(l_Entity)
-
-		local l_Aabb = l_SpatialEntity.aabb
-		local l_AabbTrans = l_SpatialEntity.aabbTransform
-
-		-- Try to get an intersection point between our ray and this entity's OBB.
-		local l_Intersection = self:Intersect(s_From, s_Target, l_Aabb, l_AabbTrans, 3.0)
-
-		-- No intersection found
-		if l_Intersection == false then
-			table.insert(s_RaycastObjects, { l_Aabb, l_AabbTrans, l_Mesh.name, nil, nil, false })
-			goto continue
-		end
-
-		-- We have an intersection! Add to a list of entities to process.
-		table.insert(s_Candidates, { l_Mesh, l_SpatialEntity, l_Intersection })
-
-		-- Add to debug render list.
-		local s_IntersectStart = s_From + (s_Direction * l_Intersection[1])
-		local s_IntersectEnd = s_From + (s_Direction * l_Intersection[2])
-
-		table.insert(s_RaycastObjects, { l_Aabb, l_AabbTrans, l_Mesh.name, s_IntersectStart, s_IntersectEnd, false })
-
-		::continue::
-	end
-
-	-- Process our candidates to find the best one.
-	local s_SelectedProp = nil
-
-	-- Find the prop whose intersection point is closest to the raycast hit.
-	for _, l_Candidate in pairs(s_Candidates) do
-		local s_IntersectStart = l_Candidate[3][1]
-
-		if s_IntersectStart <= s_HitDistance then
-			if s_SelectedProp == nil then
-				s_SelectedProp = l_Candidate
-			end
-
-			if s_IntersectStart > s_SelectedProp[3][1] then
-				s_SelectedProp = l_Candidate
-			end
-		end
-	end
-
-	-- If we have selected a prop then add it to the debug render list.
-	if s_SelectedProp ~= nil then
-		local s_IntersectStart = s_From + (s_Direction * s_SelectedProp[3][1])
-		local s_IntersectEnd = s_From + (s_Direction * s_SelectedProp[3][2])
-
-		table.insert(s_RaycastObjects, { 
-			s_SelectedProp[2].aabb, 
-			s_SelectedProp[2].aabbTransform, 
-			s_SelectedProp[1].name, 
-			s_IntersectStart, 
-			s_IntersectEnd, 
-			true 
-		})
-	end
-
-	if s_SelectedProp ~= nil then
-		return s_SelectedProp[2]
-	end
-
-	return nil
 end
 
 function BRLooting:UpdateCloseToPlayerItems()
@@ -255,10 +71,13 @@ function BRLooting:UpdateCloseToPlayerItems()
 	-- extend forward by 3.0m.
 	local s_CameraTransform = ClientUtils:GetCameraTransform()
 	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0, 0, 0) then
-		return
+		return nil
 	end
 
-	local s_LootPickups = m_BRLootPickupDatabase:GetCloseLootPickups(s_CameraTransform.trans, InventoryConfig.CloseItemSearchRadiusClient)
+	local s_LootPickups = m_BRLootPickupDatabase:GetCloseLootPickups(
+		s_CameraTransform.trans,
+		InventoryConfig.CloseItemSearchRadiusClient
+	)
 
 	-- PREV
 	-- local s_From = Vec3(s_CameraTransform.trans)
@@ -284,6 +103,31 @@ function BRLooting:UpdateCloseToPlayerItems()
 	-- /PREV
 
 	self:SendCloseLootPickupData(s_LootPickups)
+end
+
+function BRLooting:OnSpatialRaycast()
+	local s_Player = PlayerManager:GetLocalPlayer()
+	if s_Player == nil or s_Player.soldier == nil then
+		return nil
+	end
+
+	local s_CameraTransform = ClientUtils:GetCameraTransform()
+	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0, 0, 0) then
+		return nil
+	end
+		
+	local s_From = Vec3(s_CameraTransform.trans)
+	local s_Direction = s_CameraTransform.forward * -1
+	local s_Target = s_CameraTransform.trans + (s_Direction * InventoryConfig.CloseItemSearchRadiusClient)
+	local s_Entities = RaycastManager:SpatialRaycast(s_From, s_Target, SpatialQueryFlags.AllGrids)
+	for _, l_Entity in ipairs(s_Entities) do
+		local l_LootPickup = m_BRLootPickupDatabase:GetByInstanceId(l_Entity.instanceId)
+		if l_LootPickup ~= nil and l_LootPickup[l_LootPickup.m_Id] == nil then
+			return l_LootPickup
+		end
+	end
+
+	return nil
 end
 
 function BRLooting:GetMesh(p_Entity)
@@ -363,41 +207,35 @@ end
 -- UI related functions
 --==============================
 
-function BRLooting:OnSendOverlayLoot(p_Item, p_MultiItem)
-	if p_Item == nil then
+function BRLooting:OnSendOverlayLoot(p_ItemOrLootPickup, p_MultiItem)
+	if p_ItemOrLootPickup == nil then
 		WebUI:ExecuteJS(string.format("SyncOverlayLoot(%s);", nil))
 		return
 	end
 
 	if p_MultiItem then
-		WebUI:ExecuteJS(string.format("SyncOverlayLoot(%s);", json.encode(p_Item.Name)))
+		local s_Tier = Tier.Tier1
+		for _, l_Item in pairs(p_ItemOrLootPickup.m_Items) do
+			if l_Item.m_Definition.m_Tier ~= nil and l_Item.m_Definition.m_Tier > s_Tier then
+				s_Tier = l_Item.m_Definition.m_Tier
+				if s_Tier == Tier.Tier3 then
+					break
+				end
+			end
+		end
+
+		WebUI:ExecuteJS(string.format("SyncOverlayLoot(%s);", json.encode({
+			["UIIcon"] = "UI/Art/Persistence/Award/Ribbons/Fancy/gunmaster3d", -- TODO: Replace this icon
+			["Name"] = p_ItemOrLootPickup.m_Type.Name,
+			["Tier"] = s_Tier,
+			["Multi"] = true,
+		})))
 		return
 	end
 
-	local s_ReturnVal = p_Item:AsTable(true)
-
-	print(s_ReturnVal)
+	local s_ReturnVal = p_ItemOrLootPickup:AsTable(true)
 
 	WebUI:ExecuteJS(string.format("SyncOverlayLoot(%s);", json.encode(s_ReturnVal)))
-end
-
-function BRLooting:OnSendOverlayLootBox(p_LootPickupId, p_Items)
-	if p_Items == nil then
-		-- TODO: remove all old loot box related code
-		-- WebUI:ExecuteJS(string.format("SyncOverlayLootBox(%s, %s);", nil, nil))
-		return
-	end
-
-	local s_ReturnVal = {}
-
-	for l_Index, l_Item in pairs(p_Items) do
-		local l_ReturnVal = l_Item:AsTable(true)
-
-		table.insert(s_ReturnVal, l_ReturnVal)
-	end
-
- 	 -- TODO: remove all old loot box related code
-	-- WebUI:ExecuteJS(string.format("SyncOverlayLootBox('%s', %s);", p_LootPickupId, json.encode(s_ReturnVal)))
 end
 
 function BRLooting:SendCloseLootPickupData(p_LootPickups)
@@ -417,5 +255,20 @@ function BRLooting:SendCloseLootPickupData(p_LootPickups)
 	end
 
 	WebUI:ExecuteJS(string.format("SyncCloseLootPickupData(%s);", json.encode(s_LootPickupData)))
-	-- m_Logger:Write(json.encode(s_LootPickupData))
+end
+
+function BRLooting:OnUnregisterLootPickup(p_LootPickupId)
+	if not m_BRLootPickupDatabase:RemoveById(p_LootPickupId) then
+		return
+	end
+
+	-- update LootPickup in WebUI if needed
+	if self.m_LastSelectedLootPickup ~= nil and self.m_LastSelectedLootPickup.m_Id == p_LootPickupId then
+		self.m_LastSelectedLootPickup = nil
+	end
+end
+
+function BRLooting:OnUpdateLootPickup(p_LootPickupData)
+	-- update LootPickup in database
+	local s_LootPickup = m_BRLootPickupDatabase:Update(p_LootPickupData)
 end

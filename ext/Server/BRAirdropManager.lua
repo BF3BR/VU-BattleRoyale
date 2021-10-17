@@ -12,7 +12,6 @@ local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_LootRandomizer = require "BRLootRandomizer"
 local m_Gunship = require "Gunship"
-local m_PhaseManagerServer = require "PhaseManagerServer"
 
 function BRAirdropManager:__init()
 	self:RegisterVars()
@@ -21,12 +20,6 @@ end
 function BRAirdropManager:RegisterVars()
 	self.m_AirdropTimers = {}
 	self.m_AirdropHandles = {}
-
-    --[[self.m_Plane = {
-        Enabled = false,
-        Timer = 0,
-        NextDrop = 0,
-    }]]
 
     self.m_AirdropCenterPos = nil
     self.m_AirdropDropped = true
@@ -40,56 +33,6 @@ function BRAirdropManager:OnEngineUpdate(p_DeltaTime)
             self.m_AirdropDropped = true
         end
     end
-    
-    --[[if self.m_Plane.Enabled then
-		self.m_Plane.Timer = self.m_Plane.Timer + p_DeltaTime
-
-		-- Remove the plane after 120 sec
-		if self.m_Plane.Timer >= 30 then
-			-- m_Logger:Write("Plane unspawned")
-            self.m_Plane.Enabled = false
-			self.m_Plane.Timer = 0.0
-
-            m_Logger:Write("CreateAirdrop")
-            self:CreateAirdrop(m_Gunship:GetDropPosition())
-
-            -- TODO: Remove plane after a bit of a delay
-            --self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
-		end
-	end
-
-	if self.m_Plane.NextDrop == nil then
-		self.m_Plane.NextDrop = math.random(30, 180)
-	end
-
-	self.m_Plane.Timer = self.m_Plane.Timer + p_DeltaTime
-
-	if self.m_Plane.Timer >= self.m_Plane.NextDrop then
-		self.m_Plane.NextDrop = nil
-		self.m_Plane.Timer = 0.0
-
-		if not self.m_Plane.Enabled then
-			local s_Path = m_Gunship:GetRandomGunshipPath()
-
-			local s_Angle = math.random() * 2 * math.pi
-			local s_Random = m_PhaseManagerServer.m_InnerCircle.m_Radius * sqrt(math.random())
-
-			if s_Path ~= nil then
-				m_Gunship:Enable(
-					s_Path.StartPos,
-					Vec3(
-						s_Random * math.cos(s_Angle),
-						MapsConfig[s_LevelName]["PlaneFlyHeight"],
-						s_Random * math.sin(s_Angle)
-					),
-					30,
-					"Airdrop"
-				)
-                self.m_Plane.Enabled = true
-			end
-			m_Logger:Write("INFO: Airdrop spawned")
-		end
-	end]]
 end
 
 function BRAirdropManager:GetPlaneDistance()
@@ -111,20 +54,15 @@ function BRAirdropManager:GetPlaneDistance()
 end
 
 function BRAirdropManager:CreatePlane(p_Trans)
+	if p_Trans == nil then
+		return
+	end
+
     local s_LevelName = LevelNameHelper:GetLevelName()
 
 	if s_LevelName == nil then
 		return
 	end
-
-    local s_Center = p_Trans
-
-    if s_Center == nil then
-        s_Center = m_PhaseManagerServer.m_InnerCircle:RandomInnerPoint(
-			nil,
-			MapsConfig[s_LevelName]["AirdropPlaneFlyHeight"]
-		)
-    end
 
     local s_Angle = math.random(0, 359)
     local s_OppositeAngle = 0
@@ -135,14 +73,14 @@ function BRAirdropManager:CreatePlane(p_Trans)
     end
 
     m_Gunship:Enable(
-        self:RandomPointWithAngle(s_Center, math.rad(s_Angle), MapsConfig[s_LevelName]["MapWidthHeight"]),
-        self:RandomPointWithAngle(s_Center, math.rad(s_OppositeAngle), MapsConfig[s_LevelName]["MapWidthHeight"]),
+        self:RandomPointWithAngle(p_Trans, math.rad(s_Angle), MapsConfig[s_LevelName]["MapWidthHeight"]),
+        self:RandomPointWithAngle(p_Trans, math.rad(s_OppositeAngle), MapsConfig[s_LevelName]["MapWidthHeight"]),
         60,
         "Airdrop",
         true
     )
 
-    self.m_AirdropCenterPos = s_Center
+    self.m_AirdropCenterPos = p_Trans
     self.m_AirdropDropped = false
 end
 

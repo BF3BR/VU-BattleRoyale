@@ -26,7 +26,7 @@ return {
 		"M320 Smoke",
 		{
 			Description = "The M320 Smoke is a variant of the M320 grenade launcher that fires smoke grenades.",
-			MaxStack = 3,
+			MaxStack = 1,
 			RandomWeight = 35,
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/m320",
 			EbxName = "Weapons/Gadgets/M320/M320",
@@ -45,7 +45,7 @@ return {
 		"RPG-7",
 		{
 			Description = "A widely-produced, anti-tank rocket propelled grenade weapon, the RPG-7 has been used in almost all conflicts across all continents since the mid-1960s. Modernized into the RPG-7v2, which is lighter, and more accurate than the original RPG-7 and firing GP-7VL rocket propelled grenades the RPG-7v2 is effective against both fortifications and armor.",
-			MaxStack = 3,
+			MaxStack = 1,
 			RandomWeight = 15,
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/rpg7",
 			EbxName = "Weapons/RPG7/RPG7",

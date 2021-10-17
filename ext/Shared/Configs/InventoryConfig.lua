@@ -6,7 +6,7 @@ InventoryConfig = {
 	CloseItemCacheRadius = 50,
 
 	-- the radius around the player to search for close items (client)
-	CloseItemSearchRadiusClient = 2.5,
+	CloseItemSearchRadiusClient = 2.8,
 
 	-- the radius around the player that he is allowed to pickup items
 	-- better give it some extra compared to `CloseItemSearchRadiusClient`

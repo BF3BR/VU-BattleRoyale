@@ -755,6 +755,27 @@ function VuBattleRoyaleHud:PushManDownMapMarkers()
 	end
 end
 
+function VuBattleRoyaleHud:OpenInventory()
+	-- make sure the player is in no other menu
+	if not m_HudUtils:GetIsInOptionsMenu()
+	and not m_HudUtils:GetIsInEscMenu()
+	and not m_HudUtils:GetIsInDeployScreen() then
+		m_Logger:Write("Open Inventory")
+
+		-- if the minimap is opened we close it
+		if m_HudUtils:GetIsMapOpened() then
+			m_HudUtils:SetIsMapOpened(false)
+			WebUI:ExecuteJS("OnOpenCloseMap(false);")
+		end
+
+		if not self.m_IsPlayerOnPlane then
+			m_HudUtils:SetIsInventoryOpened(true)
+			WebUI:ExecuteJS("OnInventoryOpen(true);")
+			m_HudUtils:OnEnableMouse()
+		end
+	end
+end
+
 -- =============================================
 	-- Create / Remove Marker
 -- =============================================

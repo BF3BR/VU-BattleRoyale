@@ -64,12 +64,14 @@
     .card {
         max-width: 25vw;
         
+        &.AssociatesBox,
         &.CommunityBox,
         &.CreditsBox {
             position: absolute;
             bottom: 5vw;
             right: 6vw;
-            width: 20vw;
+            max-width: 30vw;
+            width: 30vw;
 
             ul {
                 margin: 0;
@@ -97,14 +99,21 @@
         }
 
         &.CommunityBox {
-            bottom: 16vw;
+            bottom: 24.25vw;
         }
 
+        &.AssociatesBox,
         &.CreditsBox {
+            bottom: 15vw;
+
             .card-content ul {
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
+        }
+
+        &.AssociatesBox {
+            bottom: 5vw;
         }
     }
 }

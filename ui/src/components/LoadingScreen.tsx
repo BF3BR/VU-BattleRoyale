@@ -1,7 +1,7 @@
 import React from "react";
 import { Oval } from 'svg-loaders-react';
 
-import loop from "../assets/vid/loop.webm";
+import XP5_003 from "../assets/img/loading/XP5_003.jpg";
 
 import "./LoadingScreen.scss";
 
@@ -39,20 +39,10 @@ const LoadingScreen: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <div className="bgVideoOverlay" />
-            <video
-                className="bgVideo"
-                height="100%"
-                width="100%"
-                loop
-                muted
-                autoPlay
-            >
-                <source
-                    src={loop}
-                    type="video/mp4"
-                />
-            </video>
+            <div className="bgOverlay" />
+            <div className="bgWrapper">
+                <img src={XP5_003} />
+            </div>
             <div className="loader">
                 <Oval />
             </div>

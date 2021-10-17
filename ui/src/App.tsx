@@ -89,7 +89,6 @@ import Rose from "./components/rose/Rose";
 import PingSoundManager from "./components/PingSoundManager";
 import LoadingSoundManager from "./components/LoadingSoundManager";
 import ArmorSoundManager from "./components/ArmorSoundManager";
-import AlertManager from "./components/AlertManager";
 import Overlay from "./components/Overlay";
 
 /* Style */
@@ -757,7 +756,6 @@ const App: React.FC<Props> = ({
             <LoadingSoundManager uiState={uiState} />
             <PingSoundManager />
             <ArmorSoundManager />
-            <AlertManager />
             <Chat />
         </>
     );

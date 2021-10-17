@@ -21,7 +21,7 @@ CircleConfig = {
 	OuterCircleMaxOpacity = 0.12,
 
 	-- The time between each update of the outer circle position (seconds)
-	ClientUpdateMs = 0.08,
+	ClientUpdateMs = 0.16,
 
 	-- Use fog to give the player a better sense of the playable area
 	EanbleFog = true,

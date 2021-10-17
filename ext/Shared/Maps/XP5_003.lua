@@ -48,54 +48,63 @@ return {
 	PhasesCount = 9,
 	Phases = {
 		{
-			StartsAt = 60.0,
-			MoveDuration = 60.0,
+			StartsAt = 90.0,
+			MoveDuration = 90.0,
 			Damage = 0.4,
-			Ratio = 0.550
+			Ratio = 0.3,
+			HasAirdrop = false,
+		},{
+			StartsAt = 90.0,
+			MoveDuration = 90.0,
+			Damage = 0.6,
+			Ratio = 0.45,
+			HasAirdrop = true,
 		},{
 			StartsAt = 60.0,
-			MoveDuration = 45.0,
-			Damage = 0.6,
-			Ratio = 0.700
+			MoveDuration = 60.0,
+			Damage = 0.8,
+			Ratio = 0.6,
+			HasAirdrop = false,
+		},{
+			StartsAt = 60.0,
+			MoveDuration = 60.0,
+			Damage = 1.0,
+			Ratio = 0.6,
+			HasAirdrop = true,
 		},{
 			StartsAt = 45.0,
 			MoveDuration = 45.0,
-			Damage = 0.8,
-			Ratio = 0.600
-		},{
-			StartsAt = 30.0,
-			MoveDuration = 30.0,
-			Damage = 1.0,
-			Ratio = 0.600
-		},{
-			StartsAt = 30.0,
-			MoveDuration = 30.0,
 			Damage = 3.0,
-			Ratio = 0.600
+			Ratio = 0.55,
+			HasAirdrop = false,
 		},{
 			StartsAt = 30.0,
 			MoveDuration = 30.0,
 			Damage = 5.0,
-			Ratio = 0.500
+			Ratio = 0.5,
+			HasAirdrop = true,
 		},{
-			StartsAt = 15.0,
-			MoveDuration = 15.0,
+			StartsAt = 30.0,
+			MoveDuration = 30.0,
 			Damage = 7.0,
-			Ratio = 0.500
+			Ratio = 0.4,
+			HasAirdrop = true,
 		},{
-			StartsAt = 15.0,
-			MoveDuration = 15.0,
+			StartsAt = 25.0,
+			MoveDuration = 25.0,
 			Damage = 9.0,
-			Ratio = 0.500
+			Ratio = 0.4,
+			HasAirdrop = false,
 		},{
 			StartsAt = 15.0,
 			MoveDuration = 15.0,
 			Damage = 11.0,
-			Ratio = 0.001
+			Ratio = 0.001,
+			HasAirdrop = false,
 		}
 	},
 	InitialCircle = {
-		Radius = 450,
+		Radius = 500,
 		Triangles = {
 			{ Vec2(-179.95001220703, -968.591796875), Vec2(-316.51806640625, -815.22882080078), Vec2(-316.11657714844, -1357.7646484375) },
 			{ Vec2(-316.11657714844, -1357.7646484375), Vec2(584.68591308594, -1235.2385253906), Vec2(455.9482421875, -696.60577392578) },

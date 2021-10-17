@@ -77,7 +77,7 @@ return {
 		"ammo-12-gauge",
 		"12 Gauge", 
 		{
-			Description = "The 7.62mm ammo is used for Snipers.",
+			Description = "The 12 gauge shotgun shell is ammunition.",
 			RandomWeight = 25,
 			Mesh = MeshModel(
 				DC(Guid("9670A55C-9EAC-2CEB-85B0-74A6CE759BC8"), Guid("1A70719C-0364-11DE-B228-D0C98D09F591"))
