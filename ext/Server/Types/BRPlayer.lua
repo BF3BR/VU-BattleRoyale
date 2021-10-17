@@ -227,11 +227,11 @@ function BRPlayer:Spawn(p_Trans)
 	-- save the teamId, we need this when the soldier is available
 	local s_TeamId = self.m_Player.teamId
 
-	--[[self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+	self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
 	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
 		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
-	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})]]
+	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
 
 	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
 	s_Inventory:DeferUpdateSoldierCustomization()
