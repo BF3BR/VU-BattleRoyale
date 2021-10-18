@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { RootState } from "../store/RootReducer";
 
 import {
@@ -19,6 +19,7 @@ import InventoryTimer from "./InventoryTimer";
 import { sendToLua } from "../Helpers";
 
 import "./Inventory.scss";
+import { updateProgress } from "../store/inventory/Actions";
 
 interface StateFromReducer {
     slots: any;
@@ -36,6 +37,7 @@ const Inventory: React.FC<Props> = ({
     isOpen,
     isCtrlDown,
 }) => {
+    const dispatch = useDispatch();
     const sensors = [useSensor(PointerSensor)];
 
     const [splitModal, setSplitModal] = useState({
@@ -45,21 +47,6 @@ const Inventory: React.FC<Props> = ({
         value: 30,
     });
     const [isDragging, setIsDragging] = useState<any>(null);
-    const [progress, setProgress] = useState<{
-        slot: any,
-        time: number|null,
-    }>({
-        slot: null,
-        time: null
-    });
-
-    
-    window.ItemCancelAction = () => {
-        setProgress({
-            slot: null,
-            time: null
-        });
-    }
 
     function handleDragStart(event: any) {
         const { active } = event;
@@ -117,10 +104,7 @@ const Inventory: React.FC<Props> = ({
     const handleRightClick = (slot: any) => {
         if (slot.TimeToApply !== undefined) {
             handleUseItem(slot.Id);
-            setProgress({
-                slot: slot,
-                time: slot.TimeToApply,
-            });
+            dispatch(updateProgress(slot, slot.TimeToApply));
         }
     }
 
@@ -486,23 +470,6 @@ const Inventory: React.FC<Props> = ({
                         </div>
                     }
                 </DragOverlay>
-                {(progress.slot !== null) &&
-                    <>
-                        <InventoryTimer
-                            slot={progress.slot}
-                            onComplete={(slot: any) => {
-                                setProgress({
-                                    slot: null,
-                                    time: null
-                                });
-                            }}
-                            time={progress.time}
-                        />
-                        <h4 id="InventoryTimerName">
-                            Using {progress.slot.Name}
-                        </h4>
-                    </>
-                }
             </DndContext>
         </>
     );
@@ -521,9 +488,3 @@ const mapDispatchToProps = (dispatch: any) => {
     return {};
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Inventory);
-
-declare global {
-    interface Window {
-        ItemCancelAction: () => void;
-    }
-}

@@ -3,4 +3,5 @@ export enum Sounds {
     Alert,
     Notification,
     CountDown,
+    Error,
 }

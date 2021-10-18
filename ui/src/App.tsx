@@ -62,7 +62,8 @@ import { addInteractivemsg } from "./store/interactivemsg/Actions";
 import {
     updateCloseLootPickup, 
     updateInventory, 
-    updateOverlayLoot
+    updateOverlayLoot,
+    updateProgress
 } from "./store/inventory/Actions";
 
 /* Helpers */
@@ -90,6 +91,7 @@ import PingSoundManager from "./components/PingSoundManager";
 import LoadingSoundManager from "./components/LoadingSoundManager";
 import ArmorSoundManager from "./components/ArmorSoundManager";
 import Overlay from "./components/Overlay";
+import InventoryTimer from "./components/InventoryTimer";
 
 /* Style */
 import './App.scss';
@@ -626,6 +628,19 @@ const App: React.FC<Props> = ({
         dispatch(updateCtrlDown(p_Down));
     }
 
+    window.TestInventoryTimer = () => {
+        dispatch(updateProgress({ Name: "Test" }, 5));
+    }
+
+    window.ItemCancelAction = () => {
+        dispatch(updateProgress(null, null));
+        dispatch(addAlert(
+            "Item canceled",
+            1.5,
+            Sounds.Error
+        ))
+    }
+
     return (
         <>
             {debugMode &&
@@ -756,6 +771,7 @@ const App: React.FC<Props> = ({
             <LoadingSoundManager uiState={uiState} />
             <PingSoundManager />
             <ArmorSoundManager />
+            <InventoryTimer />
             <Chat />
         </>
     );
@@ -840,5 +856,8 @@ declare global {
         SyncOverlayLoot: (p_DataJson: any) => void;
         SyncCloseLootPickupData: (p_DataJson: any) => void;
         OnLeftCtrl: (p_Down: boolean) => void;
+
+        TestInventoryTimer: (slot: any, time: number) => void;
+        ItemCancelAction: () => void;
     }
 }

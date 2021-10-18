@@ -1,6 +1,7 @@
 export const UPDATE_INVENTORY = "UPDATE_INVENTORY";
 export const UPDATE_OVERLAY_LOOT = "UPDATE_OVERLAY_LOOT";
 export const UPDATE_CLOSE_LOOT_PICKUP = "UPDATE_CLOSE_LOOT_PICKUP";
+export const UPDATE_PROGRESS = "UPDATE_PROGRESS";
 
 interface UpdateInventory {
     type: typeof UPDATE_INVENTORY;
@@ -17,8 +18,17 @@ interface UpdateCloseLootPickup {
     payload: { items: any[] };
 }
 
+interface UpdateProgress {
+    type: typeof UPDATE_PROGRESS;
+    payload: { 
+        slot: any,
+        time: number|null,
+    };
+}
+
 export type InventoryActionTypes = 
     | UpdateInventory
     | UpdateOverlayLoot
     | UpdateCloseLootPickup
+    | UpdateProgress
 ;
