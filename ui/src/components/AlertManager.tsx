@@ -10,6 +10,7 @@ import exclamation from "../assets/img/warning.svg";
 import alarm from "../assets/sounds/alarm.mp3";
 import objective from "../assets/sounds/objective.mp3";
 import countdown from "../assets/sounds/countdown.mp3";
+import error from "../assets/sounds/error.mp3";
 
 import "./AlertManager.scss";
 
@@ -27,6 +28,11 @@ const countdownAudio = new Audio(countdown);
 countdownAudio.volume = VolumeConst;
 countdownAudio.autoplay = false;
 countdownAudio.loop = false;
+
+const errorAudio = new Audio(error);
+errorAudio.volume = VolumeConst;
+errorAudio.autoplay = false;
+errorAudio.loop = false;
 
 interface StateFromReducer {
     message: string,
@@ -66,6 +72,10 @@ const AlertManager: React.FC<Props> = ({ message, duration, sound, date }) => {
                     countdownAudio.currentTime = 0.0;
                     countdownAudio.play();
                     break;
+                case Sounds.Error:
+                    errorAudio.currentTime = 0.0;
+                    errorAudio.play();
+                    break;
                 case Sounds.None:
                 default:
                     break;
@@ -75,6 +85,7 @@ const AlertManager: React.FC<Props> = ({ message, duration, sound, date }) => {
                 alertAudio.pause();
                 objectiveAudio.pause();
                 countdownAudio.pause();
+                errorAudio.pause();
 
                 setLocalAlert(null);
             }, duration * 1000);

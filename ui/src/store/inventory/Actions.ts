@@ -2,7 +2,8 @@ import {
     InventoryActionTypes,
     UPDATE_INVENTORY,
     UPDATE_OVERLAY_LOOT,
-    UPDATE_CLOSE_LOOT_PICKUP
+    UPDATE_CLOSE_LOOT_PICKUP,
+    UPDATE_PROGRESS
 } from "./ActionTypes";
 
 export function updateInventory(slots: any[]): InventoryActionTypes {
@@ -23,5 +24,12 @@ export function updateCloseLootPickup(items: any[]): InventoryActionTypes {
     return {
         type: UPDATE_CLOSE_LOOT_PICKUP,
         payload: { items },
+    };
+}
+
+export function updateProgress(slot: any, time: number|null): InventoryActionTypes {
+    return {
+        type: UPDATE_PROGRESS,
+        payload: { slot, time },
     };
 }

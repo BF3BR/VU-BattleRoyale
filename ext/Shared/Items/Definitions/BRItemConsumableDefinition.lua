@@ -29,7 +29,7 @@ return {
 			UIIcon = "UI/Art/Persistence/KitItem/Fancy/medkit",
 			RandomWeight = 15,
 			Stackable = true,
-			MaxStack = 5,
+			MaxStack = 3,
 			HealthToRegen = 25,
 			TimeToApply = 3,
 			Mesh = MeshModel(
@@ -51,7 +51,7 @@ return {
 			UIIcon = "UI/Art/Persistence/KitItem/Fancy/medkit",
 			RandomWeight = 25,
 			Stackable = true,
-			MaxStack = 3,
+			MaxStack = 1,
 			HealthToRegen = 50,
 			TimeToApply = 5,
 			Mesh = MeshModel(
