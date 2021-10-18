@@ -8,6 +8,8 @@ local m_Logger = Logger("BRLootManager", true)
 local m_LootRandomizer = require "BRLootRandomizer"
 
 function BRLootManager:SpawnMapSpecificLootPickups()
+	m_Logger:Write("Spawning map specific pickups.")
+
 	local s_LevelName = LevelNameHelper:GetLevelName()
 
 	if s_LevelName == nil then

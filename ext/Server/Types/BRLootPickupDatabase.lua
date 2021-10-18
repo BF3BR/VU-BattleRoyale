@@ -112,6 +112,14 @@ function BRLootPickupDatabase:GetRandomId()
 	return tostring(MathUtils:RandomGuid())
 end
 
--- TODO: OnPlayerJoin send the whole self.m_LootPickups to that player
+function BRLootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
+	if p_Player == nil then
+		return
+	end
+
+	for _, l_LootPickup in pairs(self.m_LootPickups) do
+		NetEvents:SendToLocal(InventoryNetEvent.CreateLootPickup, p_Player, l_LootPickup:AsTable())
+	end
+end
 
 return BRLootPickupDatabase()

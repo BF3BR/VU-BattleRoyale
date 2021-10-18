@@ -290,6 +290,8 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
 	NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, m_GameStateManager:GetGameState())
 
+	m_LootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
+
 	-- Fade in the default (showroom) camera
 	p_Player:Fade(1.0, false)
 end
