@@ -1,6 +1,7 @@
 class "BRTeamManager"
 
 local m_Logger = Logger("BRTeamManager", true)
+local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 function BRTeamManager:__init()
 	self:RegisterVars()
@@ -59,6 +60,11 @@ end
 
 function BRTeamManager:OnPlayerKilled(p_Player)
 	self:OnSendPlayerState(p_Player)
+
+	local s_BRPlayer = self:GetPlayer(p_Player)
+	if s_BRPlayer ~= nil then
+		m_LootPickupDatabase:CreateFromInventory(s_BRPlayer:GetPosition(), s_BRPlayer.m_Inventory)
+	end
 end
 
 function BRTeamManager:OnPlayerLeft(p_Player)

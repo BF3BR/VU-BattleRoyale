@@ -18,6 +18,15 @@ function BRLootPickupDatabase:CreateAirdropLootPickup(p_Transform, p_Items)
 	self:CreateLootPickup(LootPickupType.Airdrop.Name, p_Transform, p_Items)
 end
 
+function BRLootPickupDatabase:CreateFromInventory(p_Position, p_Inventory)
+	local s_Items = {}
+	for _, l_Slot in pairs(p_Inventory.m_Slots) do
+		ArrayHelper:InsertMany(s_Items, l_Slot:Drop())
+	end
+
+	self:CreateLootPickup(LootPickupType.Basic.Name, p_Position, s_Items)
+end
+
 function BRLootPickupDatabase:CreateLootPickup(p_Type, p_Transform, p_Items)
 	if p_Type == nil or p_Transform == nil or p_Items == nil then
 		m_Logger:Error("Invalid CreateLootPickup parameters")
