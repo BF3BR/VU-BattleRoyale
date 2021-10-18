@@ -4,6 +4,8 @@ import { connect, useDispatch } from 'react-redux';
 import { updateProgress } from '../store/inventory/Actions';
 import { RootState } from '../store/RootReducer';
 
+import "./InventoryTimer.scss";
+
 interface StateFromReducer {
     progress: {
         slot: any,
@@ -22,7 +24,7 @@ const InventoryTimer: React.FC<Props> = ({ progress }) => {
 
     useEffect(() => {
         const resizeListener = () => {
-            setSize(getWidth() * 0.1);
+            setSize(getWidth() * 0.04);
         };
         window.addEventListener('resize', resizeListener);
     
@@ -42,7 +44,7 @@ const InventoryTimer: React.FC<Props> = ({ progress }) => {
     return (
         <>
             {(progress.slot !== null && progress.time !== null) &&
-                <>
+                <div className="inventoryTimerWrapper">
                     <div className="inventoryTimer">
                         <CountdownCircleTimer
                             isPlaying
@@ -64,7 +66,7 @@ const InventoryTimer: React.FC<Props> = ({ progress }) => {
                     <h4 id="InventoryTimerName">
                         Using {progress.slot?.Name ?? ""}
                     </h4>
-                </>
+                </div>
             }
         </>
     )
