@@ -39,12 +39,12 @@ return {
 	MapTopLeftPos = Vec3(1334.88, 0, 286.57),
 	MapWidthHeight = 2500.0,
 	PlaneFlyHeight = 785.0,
-	AirdropPlaneFlyHeight = 525.0,
+	AirdropPlaneFlyHeight = 685.0,
 	BeforeFirstCircleDelay = 30.0,
 	SkyComponentDataGuid = Guid("9159BC49-8F6C-4422-BD1E-EA76D956DFA3"),
 	ConquestGameplayGuid = Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
 	CircleWallY = 200,
-	CircleWallHeightModifier = 400,
+	CircleWallHeightModifier = 300,
 	PhasesCount = 9,
 	Phases = {
 		{
