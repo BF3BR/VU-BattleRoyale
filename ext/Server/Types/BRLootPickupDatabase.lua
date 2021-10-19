@@ -11,11 +11,11 @@ local m_MapHelper = require "__shared/Utils/MapHelper"
 ---@param p_Transform Vec3|LinearTransform
 ---@param p_Items BRItem[]
 function BRLootPickupDatabase:CreateBasicLootPickup(p_Transform, p_Items)
-	self:CreateLootPickup(LootPickupType.Basic.Name, p_Transform, p_Items)
+	return self:CreateLootPickup(LootPickupType.Basic.Name, p_Transform, p_Items)
 end
 
 function BRLootPickupDatabase:CreateAirdropLootPickup(p_Transform, p_Items)
-	self:CreateLootPickup(LootPickupType.Airdrop.Name, p_Transform, p_Items)
+	return self:CreateLootPickup(LootPickupType.Airdrop.Name, p_Transform, p_Items)
 end
 
 function BRLootPickupDatabase:CreateFromInventory(p_Position, p_Inventory)
@@ -24,13 +24,13 @@ function BRLootPickupDatabase:CreateFromInventory(p_Position, p_Inventory)
 		ArrayHelper:InsertMany(s_Items, l_Slot:Drop())
 	end
 
-	self:CreateLootPickup(LootPickupType.Basic.Name, p_Position, s_Items)
+	return self:CreateLootPickup(LootPickupType.Basic.Name, p_Position, s_Items)
 end
 
 function BRLootPickupDatabase:CreateLootPickup(p_Type, p_Transform, p_Items)
-	if p_Type == nil or p_Transform == nil or p_Items == nil then
+	if p_Type == nil or p_Transform == nil or p_Items == nil or #p_Items == 0 then
 		m_Logger:Error("Invalid CreateLootPickup parameters")
-		return
+		return nil
 	end
 
 	-- if p_Transform is Vec3, use it as the .trans of a LinearTransform
@@ -60,6 +60,8 @@ function BRLootPickupDatabase:CreateLootPickup(p_Type, p_Transform, p_Items)
 	-- m_Logger:Write(string.format("LootPickup #%s was added", s_LootPickupId))
 
 	NetEvents:BroadcastLocal(InventoryNetEvent.CreateLootPickup, s_LootPickup:AsTable())
+
+	return s_LootPickup
 end
 
 function BRLootPickupDatabase:Remove(p_LootPickup)
