@@ -73,6 +73,8 @@ function VoipManager:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
 		else
 			self.m_BrPartyChannelName = p_Channel.name
 		end
+	else
+		p_Emitter.volume = 5.0
 	end
 end
 
