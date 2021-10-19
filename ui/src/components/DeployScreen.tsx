@@ -16,10 +16,21 @@ import "./DeployScreen.scss";
 let isFirstLoad = true;
 
 const AppearanceArray = [
-    "RU Woodland",
-    "US Woodland",
-    "RU Urban",
-    "US Urban",
+    "RU Assault Woodland",
+    "US Assault Woodland",
+    "RU Recon Woodland",
+    "US Recon Woodland",
+    "RU Assault Specact",
+    "US Assault Specact",
+];
+
+const AppearanceKeyArray = [
+    "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01",
+    "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01",
+    "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Recon_Appearance_Wood01",
+    "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Recon_Appearance_Wood01",
+    "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Specact",
+    "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Specact",
 ];
 
 const TeamType = [
@@ -88,7 +99,7 @@ const DeployScreen: React.FC<Props> = ({
     }
 
     const OnDeploy = () => {
-        sendToLua('WebUI:Deploy'); // synced
+        sendToLua('WebUI:Deploy', AppearanceKeyArray[selectedAppearance]);
         setDeployScreen(false);
     }
 

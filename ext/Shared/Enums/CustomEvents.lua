@@ -62,6 +62,7 @@ PlayerEvents = {
 	PlayerConnected = "VuBattleRoyale:PlayerConnected",
 	PlayerDeploy = "VuBattleRoyale:PlayerDeploy",
 	EnableSpectate = "VuBattleRoyale:EnableSpectate",
+	Despawn = "VuBattleRoyale:Despawn",
 }
 
 SpectatorEvents = {

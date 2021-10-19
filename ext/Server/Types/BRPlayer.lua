@@ -424,11 +424,10 @@ end
 
 function BRPlayer:SetAppearance(p_AppearanceName)
 	if p_AppearanceName == nil then
-		return false
+		return
 	end
 
 	self.m_Appearance = p_AppearanceName
-	return true
 end
 
 -- =============================================

@@ -132,6 +132,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 	and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle then
 		if self.m_GameState ~= GameStates.Match or s_LocalPlayer.soldier == nil then
 			m_DeployScreen:OpenDeployScreen()
+			NetEvents:Send(PlayerEvents.Despawn)
 		end
 	end
 	

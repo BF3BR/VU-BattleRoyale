@@ -87,6 +87,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 
 		NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected),
 		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
+		NetEvents:Subscribe(PlayerEvents.Despawn, self, self.OnPlayerDespawn),
 		NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw),
 		NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing),
 		NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing),
@@ -308,10 +309,10 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 		if s_BrPlayer == nil then
 			return
 		end
-		
+
 		s_BrPlayer:SetAppearance(p_AppearanceName)
 
-		local s_SpawnTrans = self.m_Match:GetRandomWarmupSpawnpoint()
+		local s_SpawnTrans = m_Match:GetRandomWarmupSpawnpoint()
 
 		if s_SpawnTrans == nil then
 			return
@@ -326,6 +327,20 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 	else
 		NetEvents:SendTo(PlayerEvents.EnableSpectate, p_Player)
 	end
+end
+
+function VuBattleRoyaleServer:OnPlayerDespawn(p_Player)
+	if p_Player == nil then
+		return
+	end
+
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
+	if s_BrPlayer == nil then
+		return
+	end
+
+	s_BrPlayer:Kill(true)
 end
 
 -- =============================================
