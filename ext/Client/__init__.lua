@@ -571,8 +571,8 @@ end
 -- WebUI Events
 -- =============================================
 
-function VuBattleRoyaleClient:OnWebUIDeploy()
-	m_Hud:OnWebUIDeploy()
+function VuBattleRoyaleClient:OnWebUIDeploy(p_AppearanceName)
+	m_Hud:OnWebUIDeploy(p_AppearanceName)
 end
 
 function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)

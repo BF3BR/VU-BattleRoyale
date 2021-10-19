@@ -491,7 +491,7 @@ end
 -- WebUI Events
 -- =============================================
 
-function VuBattleRoyaleHud:OnWebUIDeploy()
+function VuBattleRoyaleHud:OnWebUIDeploy(p_AppearanceName)
 	m_DeployScreen:CloseDeployScreen()
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
@@ -500,7 +500,7 @@ function VuBattleRoyaleHud:OnWebUIDeploy()
 		m_HudUtils:ShowCrosshair(true)
 	end
 
-	NetEvents:Send(PlayerEvents.PlayerDeploy)
+	NetEvents:Send(PlayerEvents.PlayerDeploy, p_AppearanceName)
 end
 
 function VuBattleRoyaleHud:OnWebUITriggerMenuFunction(p_Function)

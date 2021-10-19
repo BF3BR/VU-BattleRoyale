@@ -296,7 +296,7 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	p_Player:Fade(1.0, false)
 end
 
-function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
+function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 	if p_Player == nil then
 		return
 	end
@@ -308,8 +308,10 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 		if s_BrPlayer == nil then
 			return
 		end
+		
+		s_BrPlayer:SetAppearance(p_AppearanceName)
 
-		local s_SpawnTrans = m_Match:GetRandomWarmupSpawnpoint()
+		local s_SpawnTrans = self.m_Match:GetRandomWarmupSpawnpoint()
 
 		if s_SpawnTrans == nil then
 			return
