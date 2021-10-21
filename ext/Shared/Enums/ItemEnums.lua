@@ -9,6 +9,16 @@ ItemType = {
 	Gadget = 8,
 }
 
+SlotType = {
+	Default = 1,
+	Weapon = 2,
+	Attachment = 3,
+	Armor = 4,
+	Helmet = 5,
+	Gadget = 6,
+	Backpack = 7,
+}
+
 Tier = {
 	Tier1 = 1,
 	Tier2 = 2,

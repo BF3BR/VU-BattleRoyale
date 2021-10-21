@@ -4,6 +4,7 @@ local m_Logger = Logger("BRInventorySlot", true)
 local m_ItemDatabase = require "Types/BRItemDatabase"
 
 function BRInventorySlot:__init(p_Inventory, p_AcceptedTypes)
+	self.m_Type = SlotType.Default
 	self.m_Item = nil
 	self.m_Inventory = p_Inventory
 	self.m_AcceptedTypes = p_AcceptedTypes or {}

@@ -8,6 +8,7 @@ class("BRInventoryGadgetSlot", BRInventorySlot)
 function BRInventoryGadgetSlot:__init(p_Inventory)
 	BRInventorySlot.__init(self, p_Inventory, { ItemType.Gadget })
 
+	self.m_Type = SlotType.Gadget
 	self.m_UnlockWeaponSlot = WeaponSlot.WeaponSlot_2
 end
 

@@ -130,11 +130,9 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 		return false
 	end
 
-	-- check if there's a free slot
-	local s_Slot = self.m_Slots[p_SlotIndex]
-	if s_Slot == nil or not s_Slot:IsAccepted(s_Item) then
-		s_Slot = self:GetFirstAvailableSlot(s_Item)
-	end
+	-- check if the selected slot can accept this item
+	local s_DropSlot = self:GetSlot(p_SlotIndex)
+	local s_Slot = (s_DropSlot ~= nil and s_DropSlot:ResolveSlot(s_Item)) or nil
 
 	local s_Soldier = self:GetOwnerSoldier()
 	local s_CurrentWeaponSlot = self:GetCurrentWeaponSlot()
@@ -142,23 +140,15 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 	-- get current weapon slot if item is weapon and no other slot
 	-- is available
 	if s_Slot == nil and s_Item:IsOfType(ItemType.Weapon) then
-		s_Slot = s_CurrentWeaponSlot
-
 		-- check if slot is available for this item
-		if s_Slot ~= nil and not s_Slot:IsAccepted(s_Item) then
-			s_Slot = nil
+		if s_CurrentWeaponSlot ~= nil and s_CurrentWeaponSlot:IsAccepted(s_Item) then
+			s_Slot = s_CurrentWeaponSlot
 		end
 	end
 
-	-- get current attachment slot if the item is attachment
-	if p_SlotIndex == nil and s_Item:IsOfType(ItemType.Attachment) then
-		if s_CurrentWeaponSlot ~= nil then
-			local s_TempSlot = s_CurrentWeaponSlot:ResolveSlot(s_Item)
-
-			if s_TempSlot.m_Item == nil then
-				s_Slot = s_TempSlot
-			end
-		end
+	-- if none of the above cases worked, pick first free slot that can accept the item
+	if s_Slot == nil then
+		s_Slot = self:GetFirstAvailableSlot(s_Item)
 	end
 
 	-- check if no slot is found
@@ -219,7 +209,7 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 		m_LootPickupDatabase:CreateBasicLootPickup(s_Soldier.worldTransform, s_DroppedItems)
 	end
 
-	m_Logger:Write("Item added to inventory. (" .. s_Item.m_Definition.m_Name .. ")")
+	m_Logger:WriteF("Item added to inventory. (%s)", s_Item.m_Definition.m_Name)
 	self:SendState()
 	return true
 end
@@ -426,7 +416,7 @@ end
 -- Player / Soldier related functions
 --==============================
 function BRInventory:GetAmmoTypeCount(p_WeaponName)
-	local s_GadgetSlot = self.m_Slots[InventorySlot.Gadget]
+	local s_GadgetSlot = self:GetSlot(InventorySlot.Gadget)
 
 	if s_GadgetSlot.m_Item ~= nil and s_GadgetSlot:HasWeapon(p_WeaponName) then
 		return s_GadgetSlot.m_Item.m_Quantity - s_GadgetSlot.m_Item.m_CurrentPrimaryAmmo

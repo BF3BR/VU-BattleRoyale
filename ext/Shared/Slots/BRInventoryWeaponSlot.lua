@@ -12,6 +12,7 @@ local m_NoSecondaryAccessory = DC(Guid("619781B1-3528-11E0-B502-B15F9292C9B8"), 
 function BRInventoryWeaponSlot:__init(p_Inventory, p_UnlockWeaponSlot)
 	BRInventorySlot.__init(self, p_Inventory, { ItemType.Weapon })
 
+	self.m_Type = SlotType.Weapon
 	self.m_UnlockWeaponSlot = p_UnlockWeaponSlot
 	self.m_AttachmentSlots = {
 		OpticsSlot = nil,
@@ -40,22 +41,21 @@ function BRInventoryWeaponSlot:OnBeforeDrop()
 end
 
 function BRInventoryWeaponSlot:ResolveSlot(p_Item)
-	if not BRInventorySlot.IsAccepted(self, p_Item) then
-
-		if p_Item.m_Definition.m_Type == ItemType.Attachment then
-			for _, l_Slot in pairs(self.m_AttachmentSlots) do
-				local l_ResolvedAttachmentSlot = l_Slot:ResolveSlot(p_Item)
-
-				if l_ResolvedAttachmentSlot ~= nil then
-					return l_ResolvedAttachmentSlot
-				end
-			end
-		end
-
-		return nil
+	-- if item is a weapon, return this slot
+	if self:IsAccepted(p_Item) then
+		return self
 	end
 
-	return self
+	-- if item is an attachment, return the corresponding attachment slot
+	if p_Item:IsOfType(ItemType.Attachment) then
+		for _, l_Slot in pairs(self.m_AttachmentSlots) do
+			if p_Item.m_Definition.m_AttachmentType == l_Slot.m_AttachmentType then
+				return l_Slot
+			end
+		end
+	end
+
+	return nil
 end
 
 function BRInventoryWeaponSlot:PutWithRelated(p_Items)

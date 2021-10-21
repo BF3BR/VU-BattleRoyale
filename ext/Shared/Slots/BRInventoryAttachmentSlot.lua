@@ -6,6 +6,7 @@ class("BRInventoryAttachmentSlot", BRInventorySlot)
 function BRInventoryAttachmentSlot:__init(p_Inventory, p_AttachmentType)
 	BRInventorySlot.__init(self, p_Inventory, { ItemType.Attachment })
 
+	self.m_Type = SlotType.Attachment
 	self.m_WeaponSlot = nil
 	self.m_AttachmentType = p_AttachmentType
 end

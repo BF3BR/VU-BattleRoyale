@@ -11,6 +11,8 @@ function BRInventoryBackpackSlot:__init(p_Inventory)
 		ItemType.Ammo,
 		ItemType.Consumable,
 	})
+
+	self.m_Type = SlotType.Backpack
 end
 
 function BRInventoryBackpackSlot:OnUpdate()
