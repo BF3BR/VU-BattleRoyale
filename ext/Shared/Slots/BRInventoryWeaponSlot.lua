@@ -49,7 +49,7 @@ function BRInventoryWeaponSlot:ResolveSlot(p_Item)
 	-- if item is an attachment, return the corresponding attachment slot
 	if p_Item:IsOfType(ItemType.Attachment) then
 		for _, l_Slot in pairs(self.m_AttachmentSlots) do
-			if p_Item.m_Definition.m_AttachmentType == l_Slot.m_AttachmentType then
+			if p_Item.m_Definition.m_AttachmentType == l_Slot.m_AttachmentType and l_Slot:IsAccepted(p_Item) then
 				return l_Slot
 			end
 		end
