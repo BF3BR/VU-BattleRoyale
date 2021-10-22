@@ -47,4 +47,9 @@ function ArrayHelper:InsertMany(p_Array, p_Items)
 	table.move(p_Items, 1, #p_Items, #p_Array + 1, p_Array)
 end
 
+-- creates a shallow copy of the array
+function ArrayHelper:Clone(p_Array)
+	return {table.unpack(p_Array)}
+end
+
 return ArrayHelper()

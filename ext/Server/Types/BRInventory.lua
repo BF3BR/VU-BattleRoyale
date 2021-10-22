@@ -204,8 +204,24 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 
 	local _, s_DroppedItems = s_Slot:Put(s_Item)
 
-	if #s_DroppedItems > 0 and s_Soldier ~= nil then
-		m_LootPickupDatabase:CreateBasicLootPickup(s_Soldier.worldTransform, s_DroppedItems)
+	if #s_DroppedItems > 0 then
+		-- if new item was a weapon, put back the compatible attachments
+		if s_Slot.m_Type == SlotType.Weapon and #s_DroppedItems > 1 then
+			-- needs to be cloned cause some of its contents may be deleted during iteration
+			local s_DroppedItemsCloned = ArrayHelper:Clone(s_DroppedItems)
+
+			for _, l_Item in ipairs(s_DroppedItemsCloned) do
+				local s_AttachmentSlot = s_Slot:ResolveSlot(l_Item)
+				if s_AttachmentSlot ~= nil and s_AttachmentSlot.m_Type == ItemType.Attachment then
+					s_AttachmentSlot:Put(l_Item)
+					ArrayHelper:RemoveByValue(s_DroppedItems, l_Item)
+				end
+			end
+		end
+
+		if s_Soldier ~= nil then
+			m_LootPickupDatabase:CreateBasicLootPickup(s_Soldier.worldTransform, s_DroppedItems)
+		end
 	end
 
 	m_Logger:WriteF("Item added to inventory. (%s)", s_Item.m_Definition.m_Name)
