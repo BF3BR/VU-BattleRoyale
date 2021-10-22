@@ -12,6 +12,7 @@ function BRLooting:__init()
 	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
 
 	self.m_TimeToUpdateLootUi = 0.2
+	self.m_SentPickupEvent = false
 end
 
 -- =============================================
@@ -28,9 +29,15 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 		return
 	end
 
-	if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and self.m_LastSelectedLootPickup ~= nil then
+	-- reset `m_SentPickupEvent` when E goes up
+	if InputManager:WentKeyUp(InputDeviceKeys.IDK_E) then
+		self.m_SentPickupEvent = false
+	end
+
+	if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and self.m_LastSelectedLootPickup ~= nil and not self.m_SentPickupEvent then
 		local s_LootPickup = self.m_LastSelectedLootPickup
 		if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
+			self.m_SentPickupEvent = true
 			NetEvents:Send(
 				InventoryNetEvent.PickupItem,
 				s_LootPickup.m_Id,
