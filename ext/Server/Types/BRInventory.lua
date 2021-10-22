@@ -130,18 +130,17 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 		return false
 	end
 
-	-- check if the selected slot can accept this item
+	-- check if the resolved slot from the drop slot, can accept this item
 	local s_DropSlot = self:GetSlot(p_SlotIndex)
 	local s_Slot = (s_DropSlot ~= nil and s_DropSlot:ResolveSlot(s_Item)) or nil
 
 	local s_Soldier = self:GetOwnerSoldier()
 	local s_CurrentWeaponSlot = self:GetCurrentWeaponSlot()
 
-	-- get current weapon slot if item is weapon and no other slot
-	-- is available
+	-- get current weapon slot if item is weapon and both weapon slots are occupied
 	if s_Slot == nil and s_Item:IsOfType(ItemType.Weapon) then
 		-- check if slot is available for this item
-		if s_CurrentWeaponSlot ~= nil and s_CurrentWeaponSlot:IsAccepted(s_Item) then
+		if s_CurrentWeaponSlot ~= nil and self:GetEquippedWeaponsNumber() == 2 then
 			s_Slot = s_CurrentWeaponSlot
 		end
 	end
@@ -314,6 +313,13 @@ function BRInventory:GetItemsByDefinition(p_Definition)
 	end
 
 	return s_Items
+end
+
+function BRInventory:GetEquippedWeaponsNumber()
+	local s_WeaponSlot1 = self:GetSlot(InventorySlot.PrimaryWeapon)
+	local s_WeaponSlot2 = self:GetSlot(InventorySlot.SecondaryWeapon)
+
+	return (s_WeaponSlot1.m_Item ~= nil and 1 or 0) + (s_WeaponSlot2.m_Item ~= nil and 1 or 0)
 end
 
 -- Returns the first weapon slot item with the specified weapon name
