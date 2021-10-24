@@ -221,9 +221,6 @@ function BRPlayer:Spawn(p_Trans)
 		return
 	end
 
-	-- save the teamId, we need this when the soldier is available
-	local s_TeamId = self.m_Player.teamId
-
 	self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
 	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
@@ -239,12 +236,6 @@ function BRPlayer:Spawn(p_Trans)
 			s_CharacterSpawnReferenceObjectData:MakeWritable()
 			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Trans
 
-			-- trick the engine
-			-- we can't spawn a soldier with a higher teamId then the #TeamEntities which is limited to 16 atm
-			-- and it would cause issues if you add more of them
-			-- so we just put the player in Team2 spawn him and then move him back
-			self.m_Player.teamId = TeamId.Team2
-
 			-- spawn the player
 			s_Entity:FireEvent(s_Event)
 
@@ -255,16 +246,13 @@ function BRPlayer:Spawn(p_Trans)
 		s_Entity = s_EntityIterator:Next()
 	end
 
-	g_Timers:Interval(0.01, {self.m_Player, s_TeamId}, function(p_Table, p_Timer)
-		-- repeat until the soldier is available
-		-- p_Table[1] is the Player
-		-- p_Table[2] is the teamId
-		if p_Table[1].soldier ~= nil then
-			p_Table[1].soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
-			p_Table[1].soldier.weaponsComponent.currentWeapon.primaryAmmo = 8
-			p_Table[1].soldier.weaponsComponent.currentWeapon.secondaryAmmo = 4
-			p_Table[1].soldier:SetTransform(p_Trans)
-			p_Table[1].teamId = p_Table[2]
+	g_Timers:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
+		if p_Player.soldier ~= nil then
+			p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+			p_Player.soldier.weaponsComponent.currentWeapon.primaryAmmo = 8
+			p_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 4
+			p_Player.soldier:SetTransform(p_Trans)
+
 			-- we are done, so we can destroy this timer
 			p_Timer:Destroy()
 		end
