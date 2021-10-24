@@ -366,7 +366,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnGunshipEnable(p_Type)
-	if p_Type == "Paradrop" then
+	if p_Type == "Paradrop" and not SpectatorManager:GetSpectating() then
 		m_Gunship:OnGunshipEnable(p_Type)
 		m_Hud:OnGunshipEnable()
 	end
@@ -511,7 +511,9 @@ function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
 end
 
 function VuBattleRoyaleClient:OnEnableSpectate()
+	m_Logger:Write("NetEvent: Enable spectator")
 	m_SpectatorClient:Enable()
+	m_Gunship:OnGunshipDisable()
 	m_Hud:OnJumpOutOfGunship()
 end
 
