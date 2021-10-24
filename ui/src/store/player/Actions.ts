@@ -11,7 +11,8 @@ import {
     UPDATE_PLAYER_CURRENT_WEAPON,
     UPDATE_PLAYER_IS_ON_PLANE,
     UPDATE_PLAYER_DATA,
-    UPDATE_CTRL_DOWN
+    UPDATE_CTRL_DOWN,
+    RESET_PLAYER
 } from "./ActionTypes";
 
 export function updatePlayerPosition(position: Vec3|null): PlayerActionTypes {
@@ -88,5 +89,12 @@ export function updateCtrlDown(isDown: boolean): PlayerActionTypes {
     return {
         type: UPDATE_CTRL_DOWN,
         payload: { isDown },
+    };
+}
+
+export function resetPlayer(): PlayerActionTypes {
+    return {
+        type: RESET_PLAYER,
+        payload: {},
     };
 }

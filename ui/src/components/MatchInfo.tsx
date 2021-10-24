@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { RootState } from "../store/RootReducer";
 
 import Timer from "./helpers/Timer";
-import Player from "../helpers/PlayerHelper";
 
 import "./MatchInfo.scss";
 

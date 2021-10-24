@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { RootState } from "./store/RootReducer";
 import {
+    resetPlayer,
     updateCtrlDown,
     updatePlayerArmor,
     updatePlayerCurrentWeapon,
@@ -20,31 +21,38 @@ import {
     addPing,
     lastPing,
     removePing,
+    resetPing,
     updatePing
 } from "./store/ping/Actions";
 import {
     showMap,
     openMap,
-    switchRotation
+    switchRotation,
+    resetMap
 } from "./store/map/Actions";
 import {
+    resetPlane,
     updatePlanePosition,
     updatePlaneYaw
 } from "./store/plane/Actions";
 import {
+    resetCircle,
     updateInnerCircle,
     updateOuterCircle,
     updateSubphaseIndex
 } from "./store/circle/Actions";
 import {
+    resetTeam,
     updateTeam
 } from "./store/team/Actions";
 import {
+    resetSpectator,
     updateSpectatorCount,
     updateSpectatorEnabled,
     updateSpectatorTarget
 } from "./store/spectator/Actions";
 import {
+    resetGame,
     switchDeployScreen,
     updateCommoRose,
     updateDeployScreen,
@@ -56,10 +64,11 @@ import {
     updateTime,
     updateUiState
 } from "./store/game/Actions";
-import { addAlert } from "./store/alert/Actions";
-import { addKillmsg } from "./store/killmsg/Actions";
-import { addInteractivemsg } from "./store/interactivemsg/Actions";
+import { addAlert, resetAlert } from "./store/alert/Actions";
+import { addKillmsg, resetKillmsg } from "./store/killmsg/Actions";
+import { addInteractivemsg, resetInteractivemsg } from "./store/interactivemsg/Actions";
 import {
+    resetInventory,
     updateCloseLootPickup, 
     updateInventory, 
     updateOverlayLoot,
@@ -81,7 +90,7 @@ import Gameover from "./components/Gameover";
 import DeployScreen from "./components/DeployScreen";
 import TeamInfo from "./components/TeamInfo";
 import LoadingScreen from "./components/LoadingScreen";
-import MapMarkers from "./components/MapMarkers";
+// import MapMarkers from "./components/MapMarkers";
 import Inventory from "./components/Inventory";
 import MenuScreen from "./components/MenuScreen";
 import Chat from "./components/chat/Chat";
@@ -90,8 +99,8 @@ import Rose from "./components/rose/Rose";
 import PingSoundManager from "./components/PingSoundManager";
 import LoadingSoundManager from "./components/LoadingSoundManager";
 import ArmorSoundManager from "./components/ArmorSoundManager";
-import Overlay from "./components/Overlay";
 import InventoryTimer from "./components/InventoryTimer";
+import LootOverlay from "./components/LootOverlay";
 
 /* Style */
 import './App.scss';
@@ -144,9 +153,7 @@ const App: React.FC<Props> = ({
     window.OnGameState = (state: string) => {
         dispatch(updateGameState(state));
 
-        if (state === "None") {
-            dispatch(updateGameover(false));
-        } else if (state === "Warmup") {
+        if (state === "Warmup") {
             dispatch(updateGameover(false));
             dispatch(addAlert(
                 "The round is starting soon...",
@@ -173,7 +180,6 @@ const App: React.FC<Props> = ({
             ));
         }
     }
-
 
     window.OnGameOverScreen = (data: any) => {
         dispatch(updateGameover(true, data.isWin));
@@ -602,6 +608,10 @@ const App: React.FC<Props> = ({
     }
 
     window.SyncOverlayLoot = (p_DataJson: any) => {
+        if (p_DataJson !== null) {
+            console.log("window.SyncOverlayLoot");
+            console.log(p_DataJson);
+        }
         dispatch(updateOverlayLoot(p_DataJson));
     }
 
@@ -638,7 +648,25 @@ const App: React.FC<Props> = ({
             "Item canceled",
             1.5,
             Sounds.Error
-        ))
+        ));
+    }
+
+    window.ResetAllValues = () => {
+        console.info("RESETTING ALL VALUES!!");
+        dispatch(resetAlert());
+        dispatch(resetCircle());
+        dispatch(resetGame());
+        dispatch(resetInteractivemsg());
+        dispatch(resetInventory());
+        dispatch(resetInventory());
+        dispatch(resetKillmsg());
+        dispatch(resetMap());
+        dispatch(resetPing());
+        dispatch(resetPlane());
+        dispatch(resetPlayer());
+        dispatch(resetPlayer());
+        dispatch(resetSpectator());
+        dispatch(resetTeam());
     }
 
     return (
@@ -759,7 +787,7 @@ const App: React.FC<Props> = ({
                                         <Rose />
                                         <Inventory isOpen={isInventoryOpen} />
                                         {isInventoryOpen === false &&
-                                            <Overlay />
+                                            <LootOverlay />
                                         }
                                     </>
                                 }
@@ -859,5 +887,6 @@ declare global {
 
         TestInventoryTimer: (slot: any, time: number) => void;
         ItemCancelAction: () => void;
+        ResetAllValues: () => void;
     }
 }

@@ -43,6 +43,8 @@ let topLeftPos = {
 var landscapeTexture: any = null;
 
 window.OnLevelFinalized = (levelName?: string) => {
+    console.log("window.OnLevelFinalized");
+    console.log(levelName);
     switch (levelName) {
         case "Levels/XP5_003/XP5_003":
         default:

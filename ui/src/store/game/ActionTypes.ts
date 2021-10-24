@@ -10,6 +10,7 @@ export const UPDATE_DEPLOY_TEAM = "UPDATE_DEPLOY_TEAM";
 export const UPDATE_DEPLOY_APPEARANCE = "UPDATE_DEPLOY_APPEARANCE";
 export const UPDATE_DEPLOY_TEAM_TYPE = "UPDATE_DEPLOY_TEAM_TYPE";
 export const UPDATE_COMMO_ROSE = "UPDATE_COMMO_ROSE";
+export const RESET_GAME = "RESET_GAME";
 
 interface UpdateGameState {
     type: typeof UPDATE_GAME_STATE;
@@ -90,6 +91,10 @@ interface UpdateCommoRose {
     };
 }
 
+interface ResetGame {
+    type: typeof RESET_GAME;
+    payload: {};
+}
 
 export type GameActionTypes = 
     | UpdateGameState
@@ -104,4 +109,5 @@ export type GameActionTypes =
     | UpdateDeployAppearance
     | UpdateDeployTeamType
     | UpdateCommoRose
+    | ResetGame
 ;

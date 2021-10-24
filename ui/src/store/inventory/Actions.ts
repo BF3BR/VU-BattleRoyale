@@ -3,7 +3,8 @@ import {
     UPDATE_INVENTORY,
     UPDATE_OVERLAY_LOOT,
     UPDATE_CLOSE_LOOT_PICKUP,
-    UPDATE_PROGRESS
+    UPDATE_PROGRESS,
+    RESET_INVENTORY
 } from "./ActionTypes";
 
 export function updateInventory(slots: any[]): InventoryActionTypes {
@@ -31,5 +32,12 @@ export function updateProgress(slot: any, time: number|null): InventoryActionTyp
     return {
         type: UPDATE_PROGRESS,
         payload: { slot, time },
+    };
+}
+
+export function resetInventory(): InventoryActionTypes {
+    return {
+        type: RESET_INVENTORY,
+        payload: {},
     };
 }

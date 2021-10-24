@@ -11,6 +11,7 @@ export const UPDATE_PLAYER_CURRENT_WEAPON = "UPDATE_PLAYER_CURRENT_WEAPON";
 export const UPDATE_PLAYER_IS_ON_PLANE = "UPDATE_PLAYER_IS_ON_PLANE";
 export const UPDATE_PLAYER_DATA = "UPDATE_PLAYER_DATA";
 export const UPDATE_CTRL_DOWN = "UPDATE_CTRL_DOWN";
+export const RESET_PLAYER = "RESET_PLAYER";
 
 interface UpdatePlayerPosition {
     type: typeof UPDATE_PLAYER_POSITION;
@@ -67,6 +68,11 @@ interface UpdateCtrlDown {
     payload: { isDown: boolean };
 }
 
+interface ResetPlayer {
+    type: typeof RESET_PLAYER;
+    payload: {};
+}
+
 export type PlayerActionTypes = 
     | UpdatePlayerPosition
     | UpdatePlayerYaw
@@ -79,4 +85,5 @@ export type PlayerActionTypes =
     | UpdatePlayerIsOnPlane
     | UpdatePlayerData
     | UpdateCtrlDown
+    | ResetPlayer
 ;

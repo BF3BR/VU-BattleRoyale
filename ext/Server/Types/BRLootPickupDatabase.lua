@@ -119,6 +119,10 @@ function BRLootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
 		return
 	end
 
+	if self.m_LootPickups == nil then
+		return
+	end
+
 	for _, l_LootPickup in pairs(self.m_LootPickups) do
 		NetEvents:SendToLocal(InventoryNetEvent.CreateLootPickup, p_Player, l_LootPickup:AsTable())
 	end

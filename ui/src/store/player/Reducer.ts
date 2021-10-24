@@ -1,6 +1,7 @@
 import { PlayerState } from "./Types";
 import { 
     PlayerActionTypes,
+    RESET_PLAYER,
     UPDATE_CTRL_DOWN,
     UPDATE_PLAYER_ARMOR,
     UPDATE_PLAYER_CURRENT_WEAPON,
@@ -127,6 +128,8 @@ const PlayerReducer = (
                 ...state,
                 isCtrlDown: action.payload.isDown,
             };
+        case RESET_PLAYER:
+            return initialState;
         default:
             return state;
     }

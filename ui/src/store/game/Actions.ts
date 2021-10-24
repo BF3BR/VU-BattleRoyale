@@ -1,5 +1,6 @@
 import { 
     GameActionTypes,
+    RESET_GAME,
     SWITCH_DEPLOY_SCREEN,
     UPDATE_COMMO_ROSE,
     UPDATE_DEPLOY_SCREEN,
@@ -97,5 +98,12 @@ export function updateCommoRose(show: boolean): GameActionTypes {
     return {
         type: UPDATE_COMMO_ROSE,
         payload: { show },
+    };
+}
+
+export function resetGame(): GameActionTypes {
+    return {
+        type: RESET_GAME,
+        payload: {},
     };
 }

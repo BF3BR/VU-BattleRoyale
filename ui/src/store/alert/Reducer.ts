@@ -2,6 +2,7 @@ import { AlertState } from "./Types";
 import { 
     AlertActionTypes,
     ADD_ALERT,
+    RESET_ALERT,
 } from "./ActionTypes";
 import { Sounds } from "../../helpers/SoundsHelper";
 
@@ -24,6 +25,8 @@ const AlertReducer = (
                 sound: action.payload.sound ?? Sounds.None,
                 date: action.payload.date,
             };
+        case RESET_ALERT:
+            return initialState;
         default:
             return state;
     }

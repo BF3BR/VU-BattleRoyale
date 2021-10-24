@@ -14,7 +14,6 @@ import { Draggable } from './dnd/Draggable';
 import { Droppable } from './dnd/Droppable';
 
 import InventoryTooltip from "./tooltip/InventoryTooltip";
-import InventoryTimer from "./InventoryTimer";
 
 import { sendToLua } from "../Helpers";
 
@@ -142,6 +141,7 @@ const Inventory: React.FC<Props> = ({
                         ]
                     }
                     right={right}
+                    key={slot.Id}
                 >
                     {slot.UIIcon !== null &&
                         <>

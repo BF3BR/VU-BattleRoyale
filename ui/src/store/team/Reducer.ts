@@ -1,5 +1,6 @@
 import { TeamState } from "./Types";
 import { 
+    RESET_TEAM,
     TeamActionTypes,
     UPDATE_TEAM
 } from "./ActionTypes";
@@ -18,6 +19,8 @@ const TeamReducer = (
                 ...state,
                 players: action.payload.players,
             };
+        case RESET_TEAM:
+            return initialState;
         default:
             return state;
     }

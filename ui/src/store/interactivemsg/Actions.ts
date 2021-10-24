@@ -1,6 +1,7 @@
 import { 
     InteractivemsgActionTypes,
-    ADD_INTERACTIVEMSG
+    ADD_INTERACTIVEMSG,
+    RESET_INTERACTIVEMSG
 } from "./ActionTypes";
 
 export function addInteractivemsg(message: string|null, key: string|null): InteractivemsgActionTypes {
@@ -12,3 +13,11 @@ export function addInteractivemsg(message: string|null, key: string|null): Inter
         },
     };
 }
+
+export function resetInteractivemsg(): InteractivemsgActionTypes {
+    return {
+        type: RESET_INTERACTIVEMSG,
+        payload: {},
+    };
+}
+

@@ -1,6 +1,7 @@
 import { Sounds } from "../../helpers/SoundsHelper";
 
 export const ADD_ALERT = "ADD_ALERT";
+export const RESET_ALERT = "RESET_ALERT";
 
 interface AddAlert {
     type: typeof ADD_ALERT;
@@ -12,6 +13,12 @@ interface AddAlert {
     };
 }
 
+interface ResetAlert {
+    type: typeof RESET_ALERT;
+    payload: {};
+}
+
 export type AlertActionTypes = 
     | AddAlert
+    | ResetAlert
 ;

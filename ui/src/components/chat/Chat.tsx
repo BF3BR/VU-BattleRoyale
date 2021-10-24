@@ -7,10 +7,11 @@ import { MessageTarget, MessageTargetString } from "../../helpers/chat/MessageTa
 import Message from "../../helpers/chat/Message";
 import ChatState from "../../helpers/chat/ChatState";
 
-import './Chat.scss';
 import { sendToLua } from "../../Helpers";
 import { RootState } from "../../store/RootReducer";
 import { connect } from "react-redux";
+
+import './Chat.scss';
 
 interface StateFromReducer {
     uiState: "hidden" | "loading" | "game" | "menu";
@@ -20,16 +21,6 @@ interface StateFromReducer {
 type Props = StateFromReducer;
 
 const Chat: React.FC<Props> = ({ uiState, deployScreen }) => {
-    /*
-    * Debug
-    */
-    let debugMode: boolean = false;
-    if (!navigator.userAgent.includes('VeniceUnleashed')) {
-        if (window.location.ancestorOrigins === undefined || window.location.ancestorOrigins[0] !== 'webui://main') {
-            debugMode = true;
-        }
-    }
-
     const [hasMouse, setHasMouse] = useState<boolean>(false);
 
     const [messages, setMessage] = useState<Message[]>([]);
@@ -38,7 +29,7 @@ const Chat: React.FC<Props> = ({ uiState, deployScreen }) => {
     const [isTypingActive, setIsTypingActive] = useState<boolean>(false);
     const [chatTarget, setChatTarget] = useState<MessageTarget>(MessageTarget.CctSayAll);
 
-    const setRandomMessages = () => {
+    /*const setRandomMessages = () => {
         addMessage({
             message: "asdasd dasdasd asd asadsdadsa sdsasaadas  dsa a aad",
             senderName: "asdasddsa",
@@ -46,7 +37,7 @@ const Chat: React.FC<Props> = ({ uiState, deployScreen }) => {
             playerRelation: "none",
             targetName: null,
         });
-    }
+    }*/
 
     const addMessage = (message: Message) => {
         if (messages.length >= 50) {
@@ -81,9 +72,9 @@ const Chat: React.FC<Props> = ({ uiState, deployScreen }) => {
         return classes;
     }
 
-    const getChatItemTarget = (message: Message) => {
+    /*const getChatItemTarget = (message: Message) => {
         return MessageTargetString[message.messageTarget];
-    }
+    }*/
 
     const messageEl = useRef(null);
     useEffect(() => {

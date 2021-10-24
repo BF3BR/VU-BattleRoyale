@@ -13,13 +13,40 @@ function BRLooting:__init()
 
 	self.m_TimeToUpdateLootUi = 0.2
 	self.m_SentPickupEvent = false
+
+	-- Read-only
+	self.m_GameState = GameStates.None
 end
 
 -- =============================================
 -- Events
 -- =============================================
 
+function BRLooting:OnGameStateChanged(p_GameState)
+	if p_GameState == nil then
+		return
+	end
+
+	if self.m_GameState == p_GameState then
+		return
+	end
+
+	self.m_GameState = p_GameState
+
+	if p_GameState == GameStates.EndGame then
+		-- Reset vars
+		self.m_LastDelta = 0
+		self.m_LastSelectedLootPickup = nil
+		self.m_TimeToUpdateLootUi = 0.2
+		self.m_SentPickupEvent = false
+	end
+end
+
 function BRLooting:OnClientUpdateInput(p_Delta)
+	if self.m_GameState == GameStates.EndGame then
+		return
+	end
+
 	self.m_LastDelta = self.m_LastDelta + p_Delta
 
 	-- Make sure we have a local player and an alive soldier.
@@ -232,7 +259,7 @@ function BRLooting:OnSendOverlayLoot(p_ItemOrLootPickup, p_MultiItem)
 		end
 
 		WebUI:ExecuteJS(string.format("SyncOverlayLoot(%s);", json.encode({
-			["UIIcon"] = "UI/Art/Persistence/Award/Ribbons/Fancy/gunmaster3d", -- TODO: Replace this icon
+			["UIIcon"] = p_ItemOrLootPickup.m_Type.Icon,
 			["Name"] = p_ItemOrLootPickup.m_Type.Name,
 			["Tier"] = s_Tier,
 			["Multi"] = true,

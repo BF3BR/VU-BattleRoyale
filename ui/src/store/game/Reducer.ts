@@ -1,6 +1,7 @@
 import { GameState } from "./Types";
 import { 
     GameActionTypes,
+    RESET_GAME,
     SWITCH_DEPLOY_SCREEN,
     UPDATE_COMMO_ROSE,
     UPDATE_DEPLOY_APPEARANCE,
@@ -138,6 +139,8 @@ const GameReducer = (
                 ...state,
                 showCommoRose: action.payload.show,
             };
+        case RESET_GAME:
+            return initialState;
         default:
             return state;
     }

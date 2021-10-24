@@ -261,19 +261,21 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 		return
 	end
 
+	if self.m_GameState == p_GameState then
+		return
+	end
+
 	self.m_GameState = p_GameState
+
+	if self.m_GameState == GameStates.None then
+		WebUI:ExecuteJS("ResetAllValues();")
+	end
 
 	if not self.m_IsLevelLoaded then
 		return
 	end
 
-	if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
-		self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
-			["msg"] = "Open team lobby",
-			["key"] = "F10",
-		}))
-		self.m_HudOnSetUIState:Update(UiStates.Game)
-	elseif self.m_GameState == GameStates.WarmupToPlane then
+	if self.m_GameState == GameStates.WarmupToPlane then
 		self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
 			["msg"] = nil,
 			["key"] = nil,
@@ -558,6 +560,12 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 	self:OnGameStateChanged(self.m_GameState)
 	m_EscMenu:RegisterEscMenuCallbacks()
 	m_HudUtils:OnEnableMouse()
+
+	self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+		["msg"] = "Open team lobby",
+		["key"] = "F10",
+	}))
+	self.m_HudOnSetUIState:Update(UiStates.Game)
 end
 
 -- =============================================

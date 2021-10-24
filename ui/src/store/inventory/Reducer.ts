@@ -4,7 +4,8 @@ import {
     UPDATE_INVENTORY,
     UPDATE_OVERLAY_LOOT,
     UPDATE_CLOSE_LOOT_PICKUP,
-    UPDATE_PROGRESS
+    UPDATE_PROGRESS,
+    RESET_INVENTORY
 } from "./ActionTypes";
 
 const initialState: InventoryState = {
@@ -45,6 +46,8 @@ const InventoryReducer = (
                     time: action.payload.time,
                 },
             }
+        case RESET_INVENTORY:
+            return initialState;
         default:
             return state;
     }

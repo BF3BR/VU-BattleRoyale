@@ -1,4 +1,5 @@
 import { 
+    RESET_SPECTATOR,
     SpectatorActionTypes,
     UPDATE_SPECTATOR_COUNT,
     UPDATE_SPECTATOR_ENABLED,
@@ -26,4 +27,9 @@ export function updateSpectatorCount(count: number | null): SpectatorActionTypes
     };
 }
 
-
+export function resetSpectator(): SpectatorActionTypes {
+    return {
+        type: RESET_SPECTATOR,
+        payload: {},
+    };
+}

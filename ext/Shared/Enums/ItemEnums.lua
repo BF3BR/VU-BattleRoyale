@@ -39,6 +39,7 @@ LootPickupType = {
 			Vec3(0, 0, 0)
 		),
 		PhysicsEntityData = nil,
+		Icon = "__crate",
 	},
 	Chest = {
 		Name = "Chest",
@@ -55,6 +56,7 @@ LootPickupType = {
 		PhysicsEntityData = DC(
 			Guid("1A707199-0364-11DE-B228-D0C98D09F591"), Guid("1A77EBDA-0364-11DE-B228-D0C98D09F591")
 		),
+		Icon = "__crate",
 	},
 	Airdrop = {
 		Name = "Airdrop",
@@ -69,6 +71,7 @@ LootPickupType = {
 			Vec3(0, 0, 0)
 		),
 		PhysicsEntityData = DC(Guid("A80588DC-4471-11DE-B7E8-80A76CACD9DC"), Guid("598A91F1-B01C-B253-741C-1CF5669BA476")),
+		Icon = "__airdrop",
 	},
 	Shop = {
 		Name = "Shop",
@@ -81,6 +84,7 @@ LootPickupType = {
 			Vec3(0, 0, 0)
 		),
 		PhysicsEntityData = nil,
+		Icon = "UI/Art/Persistence/Award/Ribbons/Fancy/gunmaster3d",
 	},
 }
 

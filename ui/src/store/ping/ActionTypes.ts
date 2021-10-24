@@ -4,6 +4,7 @@ export const ADD_PING = "ADD_PING";
 export const REMOVE_PING = "REMOVE_PING";
 export const UPDATE_PING = "UPDATE_PING";
 export const LAST_PING = "LAST_PING";
+export const RESET_PING = "RESET_PING";
 
 interface AddPing {
     type: typeof ADD_PING;
@@ -25,9 +26,15 @@ interface LastPing {
     payload: { id: string };
 }
 
+interface ResetPing {
+    type: typeof RESET_PING;
+    payload: {};
+}
+
 export type PingActionTypes = 
     | AddPing
     | RemovePing
     | UpdatePing
     | LastPing
+    | ResetPing
 ;
