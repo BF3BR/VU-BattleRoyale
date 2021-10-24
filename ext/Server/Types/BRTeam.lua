@@ -165,6 +165,11 @@ function BRTeam:RemovePlayerFromVoip(p_BrPlayer)
 end
 
 function BRTeam:CloseVoipChannel()
+	-- remove all players before closing
+	for _, l_Player in pairs(self.m_VoipChannel.players) do
+		self.m_VoipChannel:RemovePlayer(l_Player)
+	end
+
 	self.m_VoipChannel:Close()
 	self.m_VoipChannel = nil
 end
