@@ -443,6 +443,13 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 	end
 
 	m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
+
+	-- player joined too late -> SetSpectating(true)
+	if p_GameState >= GameStates.WarmupToPlane and self.m_GameState == GameStates.None then
+		m_Logger:Write("Joined too late - enabling spectator")
+		SpectatorManager:SetSpectating(true)
+	end
+
 	self.m_GameState = p_GameState
 
 	m_TeamManager:OnGameStateChanged(p_GameState)

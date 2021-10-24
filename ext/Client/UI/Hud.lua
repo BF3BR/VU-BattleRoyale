@@ -270,8 +270,10 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 			["key"] = nil,
 		}))
 
-		m_DeployScreen:CloseDeployScreen()
-		self.m_HudOnSetUIState:Update(UiStates.Loading)
+		if not SpectatorManager:GetSpectating() then
+			m_DeployScreen:CloseDeployScreen()
+			self.m_HudOnSetUIState:Update(UiStates.Loading)
+		end
 	else
 		self.m_HudOnSetUIState:Update(UiStates.Game)
 	end
@@ -451,6 +453,10 @@ function VuBattleRoyaleHud:OnWebUIDeploy()
 
 	if s_LocalPlayer ~= nil and s_LocalPlayer.soldier ~= nil then
 		m_HudUtils:ShowCrosshair(true)
+	end
+
+	if self.m_GameState == GameStates.WarmupToPlane and SpectatorManager:GetSpectating() then
+		self.m_HudOnSetUIState:Update(UiStates.Loading)
 	end
 
 	NetEvents:Send(PlayerEvents.PlayerDeploy)
