@@ -201,7 +201,7 @@ return {
 				Vec3(2, 0, 0),
 				Vec3(0, 2, 0),
 				Vec3(0, 0, 2),
-				Vec3(0, 0.125, -1.35)
+				Vec3(0, 0.125, -1.75)
 			),
 			AttachmentType = AttachmentType.Other,
 			AttachmentId = g_AttachmentIds.Foregrip

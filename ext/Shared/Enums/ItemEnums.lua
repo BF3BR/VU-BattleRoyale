@@ -90,36 +90,36 @@ LootPickupType = {
 
 RandomWeightsTable = {
 	["Nothing"] = {
-		RandomWeight = 25,
+		RandomWeight = 35,
 	},
 	[ItemType.Weapon] = {
-		RandomWeight = 100,
+		RandomWeight = 75,
 		Tiers = {
 			[Tier.Tier1] = {
-				RandomWeight = 65,
+				RandomWeight = 70,
 			},
 			[Tier.Tier2] = {
-				RandomWeight = 32,
+				RandomWeight = 28,
 			},
 			[Tier.Tier3] = {
-				RandomWeight = 3,
+				RandomWeight = 2,
 			},
 		},
 	},
 	[ItemType.Attachment] = {
-		RandomWeight = 25,
+		RandomWeight = 30,
 	},
 	[ItemType.Helmet] = {
 		RandomWeight = 25,
 		Tiers = {
 			[Tier.Tier1] = {
-				RandomWeight = 65,
+				RandomWeight = 75,
 			},
 			[Tier.Tier2] = {
-				RandomWeight = 32,
+				RandomWeight = 23,
 			},
 			[Tier.Tier3] = {
-				RandomWeight = 3,
+				RandomWeight = 2,
 			},
 		},
 	},
@@ -127,13 +127,13 @@ RandomWeightsTable = {
 		RandomWeight = 25,
 		Tiers = {
 			[Tier.Tier1] = {
-				RandomWeight = 65,
+				RandomWeight = 75,
 			},
 			[Tier.Tier2] = {
-				RandomWeight = 32,
+				RandomWeight = 23,
 			},
 			[Tier.Tier3] = {
-				RandomWeight = 3,
+				RandomWeight = 2,
 			},
 		},
 	},
@@ -141,10 +141,10 @@ RandomWeightsTable = {
 		RandomWeight = 35,
 	},
 	[ItemType.Gadget] = {
-		RandomWeight = 20,
+		RandomWeight = 15,
 	},
 	[ItemType.Consumable] = {
-		RandomWeight = 30,
+		RandomWeight = 15,
 	},
 }
 
@@ -159,7 +159,7 @@ RandomWeaponPatterns = {
 RandomAmmoPatterns = {
 	OneItem = 1,
 	TwoItems = 2,
-	ThreeItems = 3,
+	-- ThreeItems = 3,
 }
 
 AttachmentType = {

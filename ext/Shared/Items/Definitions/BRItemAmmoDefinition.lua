@@ -11,6 +11,8 @@ function BRItemAmmoDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options.Stackable = true
 	p_Options.Price = 0
 
+	self.m_SpawnStack = p_Options.SpawnStack
+
 	-- call super's constructor and set shared options
 	BRItemDefinition.__init(self, p_UId, p_Name, p_Options)
 end
@@ -33,6 +35,7 @@ return {
 				Vec3(0, 0, 0.4),
 				Vec3(0, 0, 0)
 			),
+			SpawnStack = 30,
 		}
 	),
 	["ammo-9mm"] = BRItemAmmoDefinition(
@@ -52,6 +55,7 @@ return {
 				Vec3(0, 0, 0.45),
 				Vec3(0, 0, 0)
 			),
+			SpawnStack = 30,
 		}
 	),
 	["ammo-762mm"] = BRItemAmmoDefinition(
@@ -71,6 +75,7 @@ return {
 				Vec3(0, 0, 0.4),
 				Vec3(0, 0, 0)
 			),
+			SpawnStack = 15,
 		}
 	),
 	["ammo-12-gauge"] = BRItemAmmoDefinition(
@@ -90,6 +95,7 @@ return {
 				Vec3(0, 0, 0.6),
 				Vec3(0, 0, 0)
 			),
+			SpawnStack = 10,
 		}
 	),
 }

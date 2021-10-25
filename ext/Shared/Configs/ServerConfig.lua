@@ -1,12 +1,12 @@
 ServerConfig = {
 	-- Minimum ammounts of players to start the warmup and then the match
-	MinPlayersToStart = 5,
+	MinPlayersToStart = 15,
 
 	-- Number of player per team
-	PlayersPerTeam = 4,
+	PlayersPerTeam = 2,
 
 	-- Time to update some of the HUD components
-	HudUpdateRate = 2.5,
+	HudUpdateRate = 1.5,
 
 	GunshipDespawn = 60.0,
 
@@ -41,9 +41,9 @@ ServerConfig = {
 
 		EnableDebugRenderer = true,
 
-		Logger_Enabled = true,
+		Logger_Enabled = false,
 
-		Logger_Print_All = true,
+		Logger_Print_All = false,
 
 		DisableWinningCheck = true,
 
@@ -75,6 +75,9 @@ ServerConfig = {
 			"milkman dan",
 			"P!NK_Lesley",
 			"P!NK_Illustris",
+			"paulhobbel",
+			"paul",
+			"GreatApo",
 		},
 	}
 }

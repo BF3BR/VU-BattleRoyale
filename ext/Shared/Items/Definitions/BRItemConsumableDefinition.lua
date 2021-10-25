@@ -27,7 +27,7 @@ return {
 		{
 			Description = "A small medkit, it's gonna refill 25% of your health.",
 			UIIcon = "UI/Art/Persistence/KitItem/Fancy/medkit",
-			RandomWeight = 15,
+			RandomWeight = 45,
 			Stackable = true,
 			MaxStack = 3,
 			HealthToRegen = 25,
@@ -39,7 +39,7 @@ return {
 				Vec3(0.5, 0, 0),
 				Vec3(0, 0.5, 0),
 				Vec3(0, 0, 0.5),
-				Vec3(0, 0, 0)
+				Vec3(-0.25, 0, -0.15)
 			),
 		}
 	),
@@ -49,7 +49,7 @@ return {
 		{
 			Description = "A large medkit, it's gonna refill 50% of your health.",
 			UIIcon = "UI/Art/Persistence/KitItem/Fancy/medkit",
-			RandomWeight = 25,
+			RandomWeight = 10,
 			Stackable = true,
 			MaxStack = 1,
 			HealthToRegen = 50,
@@ -61,7 +61,7 @@ return {
 				Vec3(1, 0, 0),
 				Vec3(0, 1, 0),
 				Vec3(0, 0, 1),
-				Vec3(0, 0, 0)
+				Vec3(-0.25, 0, -0.25)
 			),
 		}
 	),

@@ -90,7 +90,7 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
                                     <div className="current" dangerouslySetInnerHTML={padLeadingZeros(playerPrimaryAmmo, playerCurrentWeapon)}></div>
                                     <div className="left">
                                         <span className="mag" dangerouslySetInnerHTML={padLeadingZeros(playerSecondaryAmmo, playerCurrentWeapon)}></span>
-                                        <span className="type">{playerFireLogic??"AUTO"}</span>
+                                        <span className="type">{playerFireLogic??"SINGLE"}</span>
                                     </div>
                                 </div>
                             </>

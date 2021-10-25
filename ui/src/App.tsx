@@ -182,6 +182,10 @@ const App: React.FC<Props> = ({
     }
 
     window.OnGameOverScreen = (data: any) => {
+        if (data === null) {
+            return;
+        }
+
         dispatch(updateGameover(true, data.isWin));
     }
 
@@ -197,6 +201,10 @@ const App: React.FC<Props> = ({
     * Player
     */
     window.OnPlayersInfo = (data: any) => {
+        if (data === null) {
+            return;
+        }
+
         let values = Object.values(data);
         dispatch(updatePlayers(
             data !== null ? values.filter((player: any) => player.state === 1).length : 0,
@@ -210,6 +218,10 @@ const App: React.FC<Props> = ({
     }
 
     window.OnLocalPlayerInfo = (data: any) => {
+        if (data === null) {
+            return;
+        }
+        
         dispatch(updatePlayerData(data));
     }
 
@@ -230,15 +242,11 @@ const App: React.FC<Props> = ({
     }
 
     window.OnPlayerFireLogic = (data: number) => {
-        dispatch(updatePlayerFireLogic(FireLogicType[data] ?? "AUTO"));
+        dispatch(updatePlayerFireLogic(FireLogicType[data] ?? "SINGLE"));
     }
 
     window.OnPlayerCurrentWeapon = (weaponName: string) => {
         dispatch(updatePlayerCurrentWeapon(weaponName));
-    }
-
-    window.OnPlayerWeapons = (data: any) => {
-        // console.log(data);
     }
 
     const setInteractiveMessageAndKey = (msg: string | null, key: string | null) => {
@@ -290,11 +298,13 @@ const App: React.FC<Props> = ({
     * Map
     */
     window.OnPlayerPos = (p_DataJson: any) => {
-        dispatch(updatePlayerPosition({
-            x: p_DataJson.x,
-            y: p_DataJson.y,
-            z: p_DataJson.z,
-        }));
+        if (p_DataJson !== undefined && p_DataJson !== null) {
+            dispatch(updatePlayerPosition({
+                x: p_DataJson.x,
+                y: p_DataJson.y,
+                z: p_DataJson.z,
+            }));
+        }
     }
 
     window.OnPlayerYaw = (p_Yaw: number) => {
@@ -335,6 +345,10 @@ const App: React.FC<Props> = ({
 
 
     window.OnUpdateCircles = (data: any) => {
+        if (data === null) {
+            return;
+        }
+
         if (data.InnerCircle) {
             dispatch(updateInnerCircle({
                 center: {
@@ -420,6 +434,10 @@ const App: React.FC<Props> = ({
 
     const [downedTeammates, setDownedTeammates] = useState<string[]>([]);
     window.OnUpdateTeamPlayers = (p_Team: any) => {
+        if (p_Team === null) {
+            return;
+        }
+
         let tempTeam: Player[] = [];
         let tempDowned: string[] = [];
         if (p_Team !== undefined && p_Team.length > 0) {

@@ -31,7 +31,7 @@ function VuBattleRoyaleHud:RegisterVars()
 	self.m_HudOnPlanePos = CachedJsExecutor("OnPlanePos(%s)", nil)
 	self.m_HudOnPlaneYaw = CachedJsExecutor("OnPlaneYaw(%s)", 0)
 	self.m_HudOnUpdateCircles = CachedJsExecutor("OnUpdateCircles(%s)", nil)
-	self.m_HudOnGameState = CachedJsExecutor("OnGameState('%s')", GameStates.None)
+	self.m_HudOnGameState = CachedJsExecutor("OnGameState('%s')", GameStatesStrings[GameStates.None])
 	self.m_HudOnPlayersInfo = CachedJsExecutor("OnPlayersInfo(%s)", nil)
 	self.m_HudOnLocalPlayerInfo = CachedJsExecutor("OnLocalPlayerInfo(%s)", nil)
 	self.m_HudOnUpdateTimer = CachedJsExecutor("OnUpdateTimer(%s)", nil)
@@ -53,6 +53,37 @@ function VuBattleRoyaleHud:RegisterVars()
 	self.m_HudOnGameOverScreen = CachedJsExecutor("OnGameOverScreen(%s)", nil)
 	self.m_HudOnUpdatePlacement = CachedJsExecutor("OnUpdatePlacement(%s)", 99)
 	self.m_HudOnSetUIState = CachedJsExecutor("OnSetUIState('%s')", UiStates.Loading)
+end
+
+function VuBattleRoyaleHud:ResetVars()
+	self.m_HudOnPlayerPos:ForceUpdate(nil)
+	self.m_HudOnPlayerYaw:ForceUpdate(0)
+	self.m_HudOnPlayerIsOnPlane:ForceUpdate(false)
+	self.m_HudOnPlanePos:ForceUpdate(nil)
+	self.m_HudOnPlaneYaw:ForceUpdate(0)
+	self.m_HudOnUpdateCircles:ForceUpdate(nil)
+	self.m_HudOnGameState:ForceUpdate(GameStatesStrings[GameStates.None])
+	self.m_HudOnPlayersInfo:ForceUpdate(nil)
+	self.m_HudOnLocalPlayerInfo:ForceUpdate(nil)
+	self.m_HudOnUpdateTimer:ForceUpdate(nil)
+	self.m_HudOnMinPlayersToStart:ForceUpdate(self.m_MinPlayersToStart)
+	self.m_HudOnPlayerHealth:ForceUpdate(0)
+	self.m_HudOnPlayerArmor:ForceUpdate(0)
+	self.m_HudOnPlayerPrimaryAmmo:ForceUpdate(0)
+	self.m_HudOnPlayerSecondaryAmmo:ForceUpdate(0)
+	self.m_HudOnPlayerFireLogic:ForceUpdate(0)
+	self.m_HudOnPlayerCurrentWeapon:ForceUpdate("")
+	self.m_HudOnPlayerWeapons:ForceUpdate(nil)
+	self.m_HudOnUpdateTeamPlayers:ForceUpdate(nil)
+	-- self.m_HudOnUpdateTeamLocked:ForceUpdate(false)
+	-- self.m_HudOnUpdateTeamId:ForceUpdate("-")
+	-- self.m_HudOnUpdateTeamSize:ForceUpdate(0)
+	self.m_HudOnTeamJoinError:ForceUpdate(nil)
+	self.m_HudOnNotifyInflictorAboutKillOrKnock:ForceUpdate(nil)
+	self.m_HudOnInteractiveMessageAndKey:ForceUpdate(nil)
+	self.m_HudOnGameOverScreen:ForceUpdate(nil)
+	self.m_HudOnUpdatePlacement:ForceUpdate(99)
+	-- self.m_HudOnSetUIState:ForceUpdate(UiStates.Loading)
 end
 
 -- =============================================
@@ -91,11 +122,6 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 	if self.m_Ticks >= ServerConfig.HudUpdateRate then
 		self.m_HudOnMinPlayersToStart:Update(self.m_MinPlayersToStart)
 
-		if m_BrPlayer.m_Team ~= nil then
-			self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
-			self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
-		end
-
 		self:PushUpdatePlayersInfo()
 		self:PushLocalPlayerTeam()
 		self.m_Ticks = 0.0
@@ -115,6 +141,7 @@ function VuBattleRoyaleHud:OnUIDrawHud()
 	self:PushLocalPlayerYaw()
 	self:PushLocalPlayerAmmoArmorAndHealth()
 	self:OnUpdatePlacement()
+	self:OnUpdateTeamData()
 end
 
 function VuBattleRoyaleHud:OnClientUpdateInput()
@@ -269,6 +296,7 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 
 	if self.m_GameState == GameStates.None then
 		WebUI:ExecuteJS("ResetAllValues();")
+		self:ResetVars()
 	end
 
 	if not self.m_IsLevelLoaded then
@@ -302,6 +330,15 @@ function VuBattleRoyaleHud:OnUpdatePlacement()
 	end
 
 	self.m_HudOnUpdatePlacement:Update(m_BrPlayer.m_Team.m_Placement)
+end
+
+function VuBattleRoyaleHud:OnUpdateTeamData()
+	if m_BrPlayer.m_Team == nil then
+		return
+	end
+
+	self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
+	self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
 end
 
 -- =============================================
@@ -675,14 +712,6 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 		return
 	end
 
-	local s_Inventory = { }
-
-	for l_Index, l_Weapon in pairs(s_LocalSoldier.weaponsComponent.weapons) do
-		if l_Weapon ~= nil then
-			s_Inventory[l_Index] = l_Weapon.name
-		end
-	end
-
 	if s_LocalSoldier.isInteractiveManDown then
 		self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
 	else
@@ -697,10 +726,6 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 		self.m_HudOnPlayerFireLogic:Update(s_LocalSoldier.weaponsComponent.currentWeapon.fireLogic)
 		self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
 	end
-	
-	self.m_HudOnPlayerWeapons:Update(json.encode(s_Inventory))
-	--self.m_HudOnPlayerCurrentSlot:Update(s_LocalSoldier.weaponsComponent.currentWeaponSlot)
-	return
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerTeam()

@@ -145,6 +145,17 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 		end
 	end
 
+	-- replace helmet or armor if the item you try to pickup has higher tier
+	if s_Slot == nil and (s_Item:IsOfType(ItemType.Armor) or s_Item:IsOfType(ItemType.Helmet)) then
+        local s_ItemSlotIndex = (s_Item:IsOfType(ItemType.Armor) and InventorySlot.Armor) or InventorySlot.Helmet
+        local s_ItemSlot = self:GetSlot(s_ItemSlotIndex)
+
+        -- compare tier levels
+        if s_ItemSlot.m_Item ~= nil and s_ItemSlot.m_Item.m_Definition.m_Tier < s_Item.m_Definition.m_Tier then
+            s_Slot = s_ItemSlot
+        end
+    end
+
 	-- if none of the above cases worked, pick first free slot that can accept the item
 	if s_Slot == nil then
 		s_Slot = self:GetFirstAvailableSlot(s_Item)
