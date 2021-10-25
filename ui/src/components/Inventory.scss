@@ -16,29 +16,29 @@
         .InventoryWrapper {
             position: absolute;
             right: 0;
-            width: 26vw;
+            width: 50vh;
             height: 100vh;
-            padding: 4vw 2vw 4vw 0;
+            padding: 3vh 2vw 3vh 0;
             background: linear-gradient(90deg, rgba(0,0,0,0) 2%, rgba(0, 0, 0, 0.75) 100%);
         }
 
         .ProximityWrapper {
             position: absolute;
-            right: 30vw;
-            width: 13vw;
+            right: 57vh;
+            width: 30vh;
             height: 100vh;
-            padding: 4vw 0;
+            padding: 3vh 0;
             // background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 98%);
 
             .proximity-card {
                 .card-content {
-                    height: calc(100vh - 8vw);
+                    height: calc(100vh - 8vh);
                     overflow-y: auto;
                     overflow-x: hidden;
 
                     .item-slot {
-                        height: 5.25vw;
-                        margin-bottom: .1vw;
+                        height: 9vh;
+                        margin-bottom: .15vh;
                     }
                 }
             }
@@ -96,7 +96,7 @@
     }
 
     .card {
-        margin-bottom: 0.5vw;
+        margin-bottom: 0.75vh;
 
         .card-header {
             h1 {
@@ -119,8 +119,6 @@
         }
 
         &.BackpackBox {
-            margin: 1vw 0 0;
-
             .backpack-grid {
                 padding: 0;
                 display: grid;
@@ -152,7 +150,7 @@
         justify-content: center;
         background-color: rgba(7, 7, 7, 0.65);
         padding: 0;
-        height: 4vw;
+        height: 8vh;
         font-size: 1vw;
 
         &.isOver {
@@ -164,7 +162,7 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            width: 5vw;
+            width: 11vh;
             pointer-events: none;
         }
 
@@ -182,14 +180,16 @@
             &.name {
                 left: 0.5vw;
                 font-weight: 600;
-                line-height: 1vw;
+                font-size: 1.25vh;
+                line-height: 1.25vh;
             }
 
             &.count {
                 right: 0.5vw;
                 font-style: normal;
                 font-weight: 600;
-                line-height: 1vw;
+                font-size: 1.25vh;
+                line-height: 1.25vh;
             }
 
             &.ammoType {
@@ -350,10 +350,10 @@
             align-items: center;
             justify-content: center;
             grid-column: span 3 / auto;
-            height: 6.5vw;
+            height: 14vh;
 
             img {
-                width: 12vw;
+                width: 25vh;
                 left: 50%;
             }
 
@@ -362,16 +362,16 @@
                 margin: 0;
                 font-style: normal;
                 font-weight: 600;
-                font-size: 1vw;
-                line-height: 1vw;
+                font-size: 1.5vh;
+                line-height: 1.5vh;
 
                 &.name {
                     display: block;
                     position: absolute;
                     bottom: 0.55vw;
                     left: 0.85vw;
-                    font-size: 1.25vw;
-                    height: 1.25vw;
+                    font-size: 2.2vh;
+                    height: 2.2vh;
                     text-shadow: 0 0 .75vw rgba(255, 255, 255, 0.45);
                 }
 
@@ -384,7 +384,7 @@
                     position: absolute;
                     bottom: 0.55vw;
                     right: 0.55vw;
-                    font-size: 0.85vw;
+                    font-size: 2vh;
                     text-shadow: 0 0 .75vw rgba(255, 255, 255, 0.45);
                 }
 
@@ -393,7 +393,7 @@
                     top: .55vw;
                     right: -.45vw;
                     left: auto;
-                    width: 4vw;
+                    width: 10vh;
 
                     img {
                         transform: translate(0, 0);
@@ -408,7 +408,7 @@
 }
 
 .empty-slot {
-    font-size: .7vw;
+    font-size: 1.3vh;
     opacity: .4;
     text-transform: uppercase;
 }

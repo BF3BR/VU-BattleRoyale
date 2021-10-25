@@ -795,9 +795,9 @@ const App: React.FC<Props> = ({
                                 <SpectatorInfo />
                                 <AmmoAndHealthCounter />
                                 <Gameover />
+                                <MiniMap />
                                 {!spectating &&
                                     <>
-                                        <MiniMap />
                                         <InteractProgress 
                                             time={interactTimeout}
                                             onComplete={() => setInteractTimeout(null)}

@@ -73,8 +73,8 @@ function BRAirdropManager:CreatePlane(p_Trans)
     end
 
     m_Gunship:Enable(
-        self:RandomPointWithAngle(p_Trans, math.rad(s_Angle), MapsConfig[s_LevelName]["MapWidthHeight"]),
-        self:RandomPointWithAngle(p_Trans, math.rad(s_OppositeAngle), MapsConfig[s_LevelName]["MapWidthHeight"]),
+        self:RandomPointWithAngle(p_Trans, math.rad(s_Angle), MapsConfig[s_LevelName]["InitialCircle"]["Radius"]),
+        self:RandomPointWithAngle(p_Trans, math.rad(s_OppositeAngle), MapsConfig[s_LevelName]["InitialCircle"]["Radius"]),
         60,
         "Airdrop",
         true
