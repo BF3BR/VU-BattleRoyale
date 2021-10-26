@@ -55,6 +55,23 @@ function BRInventoryAttachmentSlot:GetUnlockAsset()
 	)
 end
 
+function BRInventoryAttachmentSlot:ResolveSlot(p_Item)
+	if self:IsAccepted(p_Item) then
+		return self
+	end
+
+	-- return the corresponding attachment slot
+	if p_Item:IsOfType(ItemType.Attachment) then
+		for _, l_Slot in pairs(self.m_WeaponSlot.m_AttachmentSlots) do
+			if p_Item.m_Definition.m_AttachmentType == l_Slot.m_AttachmentType and l_Slot:IsAccepted(p_Item) then
+				return l_Slot
+			end
+		end
+	end
+
+	return nil
+end
+
 function BRInventoryAttachmentSlot:OnUpdate()
 	self.m_WeaponSlot:OnUpdate()
 end
