@@ -139,7 +139,7 @@ end
 
 -- TODO: Include in map modification system
 function TempMapPatches:OnTeamEntityData(p_Instance)
-	for i = 3, 16 do
+	for i = 3, 126 do
 		local s_NewTeamId = TeamEntityData(MathUtils:RandomGuid())
 		s_NewTeamId.isEventConnectionTarget = 3
 		s_NewTeamId.isPropertyConnectionTarget = 3

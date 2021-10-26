@@ -309,8 +309,10 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 			["key"] = nil,
 		}))
 
-		m_DeployScreen:CloseDeployScreen()
-		self.m_HudOnSetUIState:Update(UiStates.Loading)
+		if not SpectatorManager:GetSpectating() then
+			m_DeployScreen:CloseDeployScreen()
+			self.m_HudOnSetUIState:Update(UiStates.Loading)
+		end
 	else
 		self.m_HudOnSetUIState:Update(UiStates.Game)
 	end
@@ -540,6 +542,10 @@ function VuBattleRoyaleHud:OnWebUIDeploy(p_AppearanceName)
 		m_HudUtils:ShowCrosshair(true)
 	end
 
+	if self.m_GameState == GameStates.WarmupToPlane and SpectatorManager:GetSpectating() then
+		self.m_HudOnSetUIState:Update(UiStates.Loading)
+	end
+
 	NetEvents:Send(PlayerEvents.PlayerDeploy, p_AppearanceName)
 end
 
@@ -610,24 +616,29 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	local s_Player = nil
 
-	if s_LocalPlayer == nil then
+	if SpectatorManager:GetSpectating() then
+		s_Player = SpectatorManager:GetSpectatedPlayer()
+	else
+		s_Player = PlayerManager:GetLocalPlayer()
+	end
+
+	if s_Player == nil then
 		return
 	end
 
-	if s_LocalPlayer.alive == false then
+	if s_Player.alive == false then
 		return
 	end
 
-	local s_LocalSoldier = s_LocalPlayer.soldier
+	local s_Soldier = s_Player.soldier
 
-	if s_LocalSoldier == nil then
+	if s_Soldier == nil then
 		return
 	end
 
-	local s_SoldierLinearTransform = s_LocalSoldier.worldTransform
-	local s_Position = s_SoldierLinearTransform.trans
+	local s_Position = s_Soldier.worldTransform.trans
 	local s_Table = {
 		x = s_Position.x,
 		y = s_Position.y,
@@ -639,18 +650,28 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerYaw()
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if SpectatorManager:GetSpectating() then
+		local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
 
-	if s_LocalPlayer == nil or (s_LocalPlayer.soldier == nil and s_LocalPlayer.corpse == nil) then
-		return
+		if s_SpectatedPlayer == nil or s_SpectatedPlayer.soldier == nil then
+			return
+		end
+
+		local s_YawRad = (math.atan(s_SpectatedPlayer.soldier.worldTransform.forward.z, s_SpectatedPlayer.soldier.worldTransform.forward.x) - (math.pi / 2)) % (2 * math.pi)
+		self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
+	else
+		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+		if s_LocalPlayer == nil or (s_LocalPlayer.soldier == nil and s_LocalPlayer.corpse == nil) then
+			return
+		end
+
+		local s_Camera = ClientUtils:GetCameraTransform()
+
+		-- TODO: Put this in utils
+		local s_YawRad = (math.atan(s_Camera.forward.z, s_Camera.forward.x) + (math.pi / 2)) % (2 * math.pi)
+		self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
 	end
-
-	local s_Camera = ClientUtils:GetCameraTransform()
-
-	-- TODO: Put this in utils
-	local s_YawRad = (math.atan(s_Camera.forward.z, s_Camera.forward.x) + (math.pi / 2)) % (2 * math.pi)
-	self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
-	return
 end
 
 function VuBattleRoyaleHud:PushUpdatePlayersInfo()
@@ -691,40 +712,40 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	local s_Player = PlayerManager:GetLocalPlayer()
 
 	if SpectatorManager:GetSpectating() then
-		s_LocalPlayer = SpectatorManager:GetSpectatedPlayer()
+		s_Player = SpectatorManager:GetSpectatedPlayer()
 	end
 
-	if s_LocalPlayer == nil then
+	if s_Player == nil then
 		return
 	end
 
-	if s_LocalPlayer.alive == false then
+	if s_Player.alive == false then
 		self.m_HudOnPlayerHealth:Update(0)
 		return
 	end
 
-	local s_LocalSoldier = s_LocalPlayer.soldier
+	local s_Soldier = s_Player.soldier
 
-	if s_LocalSoldier == nil then
+	if s_Soldier == nil then
 		return
 	end
 
-	if s_LocalSoldier.isInteractiveManDown then
-		self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
+	if s_Soldier.isInteractiveManDown then
+		self.m_HudOnPlayerHealth:Update(s_Soldier.health)
 	else
-		self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health - 100)
+		self.m_HudOnPlayerHealth:Update(s_Soldier.health - 100)
 	end
 
 	self.m_HudOnPlayerArmor:Update(m_BrPlayer.m_Armor:GetPercentage())
 
-	if s_LocalSoldier.weaponsComponent.currentWeapon then
-		self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
-		self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
-		self.m_HudOnPlayerFireLogic:Update(s_LocalSoldier.weaponsComponent.currentWeapon.fireLogic)
-		self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
+	if s_Soldier.weaponsComponent.currentWeapon then
+		self.m_HudOnPlayerPrimaryAmmo:Update(s_Soldier.weaponsComponent.currentWeapon.primaryAmmo)
+		self.m_HudOnPlayerSecondaryAmmo:Update(s_Soldier.weaponsComponent.currentWeapon.secondaryAmmo)
+		self.m_HudOnPlayerFireLogic:Update(s_Soldier.weaponsComponent.currentWeapon.fireLogic)
+		self.m_HudOnPlayerCurrentWeapon:Update(s_Soldier.weaponsComponent.currentWeapon.name)
 	end
 end
 

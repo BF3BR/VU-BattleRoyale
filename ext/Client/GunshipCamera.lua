@@ -131,7 +131,7 @@ function GunshipCamera:CreateCameraData()
 	self.m_Data = CameraEntityData()
 	self.m_Data.fov = 90
 	self.m_Data.enabled = true
-	self.m_Data.priority = 99999
+	self.m_Data.priority = 1
 	self.m_Data.nameId = "gunship-cam"
 	self.m_Data.transform = LinearTransform()
 end
@@ -171,8 +171,10 @@ end
 -- =============================================
 
 function GunshipCamera:TakeControl()
-	self.m_Active = true
-	self.m_Entity:FireEvent("TakeControl")
+	if self.m_Entity ~= nil then
+		self.m_Active = true
+		self.m_Entity:FireEvent("TakeControl")
+	end
 end
 
 function GunshipCamera:ReleaseControl()

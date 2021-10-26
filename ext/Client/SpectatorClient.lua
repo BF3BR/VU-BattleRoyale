@@ -218,7 +218,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 	if s_Player.id == p_PlayerId then
 		m_Logger:Write("you died. enabling spec in 5 secs")
 		g_Timers:Timeout(5, p_InflictorId, function()
-			if self.m_GameState ~= GameStates.EndGame and self.m_GameState ~= GameStates.None and self.m_GameState ~= GameStates.Warmup then
+			if self.m_GameState ~= GameStates.None and self.m_GameState ~= GameStates.Warmup then
 				self:Enable(p_InflictorId)
 			end
 		end)

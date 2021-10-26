@@ -418,7 +418,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnGunshipEnable(p_Type)
-	if p_Type == "Paradrop" then
+	if p_Type == "Paradrop" and not SpectatorManager:GetSpectating() then
 		m_Gunship:OnGunshipEnable(p_Type)
 		m_Hud:OnGunshipEnable()
 	end
@@ -495,6 +495,13 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 	end
 
 	m_Logger:Write("INFO: Transitioning from " .. GameStatesStrings[self.m_GameState] .. " to " .. GameStatesStrings[p_GameState])
+
+	-- player joined too late -> SetSpectating(true)
+	if p_GameState >= GameStates.WarmupToPlane and self.m_GameState == GameStates.None then
+		m_Logger:Write("Joined too late - enabling spectator")
+		SpectatorManager:SetSpectating(true)
+	end
+
 	self.m_GameState = p_GameState
 
 	m_TeamManager:OnGameStateChanged(p_GameState)
@@ -564,7 +571,9 @@ function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
 end
 
 function VuBattleRoyaleClient:OnEnableSpectate()
+	m_Logger:Write("NetEvent: Enable spectator")
 	m_SpectatorClient:Enable()
+	m_Gunship:OnGunshipDisable()
 	m_Hud:OnJumpOutOfGunship()
 end
 
