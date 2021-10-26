@@ -24,7 +24,7 @@ return [[
 		"Enable": "false",
 		"Brightness": "(1.000000, 1.000000, 1.000000)",
 		"Contrast": "1.3:1.3:1.3:",
-		"Saturation": "0.81:0.76:0.77:",
+		"Saturation": "0.79:0.76:0.77:",
 		"Hue": "0.0",
 		"ColorGradingEnable": "false"
 	},
@@ -200,7 +200,7 @@ return [[
 		"MinExposure": "0.8",
 		"MaxExposure": "2",
 		"ExposureAdjustTime": "0.5",
-		"BloomScale": "0.21:0.19:0.17:",
+		"BloomScale": "0.20:0.19:0.17:",
 		"ChromostereopsisEnable": "false",
 		"ChromostereopsisScale": "0.5",
 		"ChromostereopsisOffset": "1.0"
