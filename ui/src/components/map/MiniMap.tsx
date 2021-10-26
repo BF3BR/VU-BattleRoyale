@@ -11,6 +11,7 @@ interface StateFromReducer {
     showMinimap: boolean;
     minimapRotation: boolean;
     playerYaw: number|null;
+    spectating: boolean;
 }
 
 type Props = StateFromReducer;
@@ -20,6 +21,7 @@ const MiniMap: React.FC<Props> = ({
     showMinimap,
     playerYaw,
     minimapRotation,
+    spectating,
 }) => {
     return (
         <>
@@ -31,7 +33,7 @@ const MiniMap: React.FC<Props> = ({
                     <MapPixi />
                 </div>
             </div>
-            {open &&
+            {(open && !spectating) &&
                 <div className="details">
                     <div className="detail">
                         <span className="keyboard">LMB</span>
@@ -59,6 +61,8 @@ const mapStateToProps = (state: RootState) => {
         minimapRotation: state.MapReducer.minimapRotation,
         // PlayerReducer
         playerYaw: state.PlayerReducer.player.yaw,
+        // SpectatorReducer
+        spectating: state.SpectatorReducer.enabled,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

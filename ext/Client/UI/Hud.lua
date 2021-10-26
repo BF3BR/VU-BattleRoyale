@@ -443,7 +443,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
-	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed or SpectatorManager:GetSpectating() then
+	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed then
 		return
 	end
 
@@ -478,6 +478,10 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_Action == UIInputAction.UIInputAction_ToggleMinimapType then
 		WebUI:ExecuteJS("OnMapSwitchRotation();")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
+		return
+	end
+
+	if SpectatorManager:GetSpectating() then
 		return
 	end
 
