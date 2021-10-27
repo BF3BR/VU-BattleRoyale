@@ -117,9 +117,13 @@ function BRInventory:OnWebUIPickupItem(p_JsonData)
 	-- Load params from the decoded JSON.
 	local s_LootPickupId = s_DecodedData.lootPickup
 	local s_ItemId = s_DecodedData.item
-	local s_SlotId = tonumber(s_DecodedData.slot) + 1
+	local s_SlotId = nil
 
-	if s_LootPickupId == nil or s_ItemId == nil or s_SlotId == nil then
+	if s_DecodedData.slot ~= "" then
+		s_SlotId = tonumber(s_DecodedData.slot) + 1
+	end
+
+	if s_LootPickupId == nil or s_ItemId == nil then
 		return
 	end
 

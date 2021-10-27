@@ -14,6 +14,8 @@ const medicTexture = PIXI.Texture.from(medic);
 interface StateFromReducer {
     team: Player[];
     name: string|null;
+    spectating: boolean;
+    spectatorTarget: string;
 }
 
 type Props = {
@@ -30,14 +32,32 @@ const TeamElement: React.FC<Props> = ({
     // Reducer
     team,
     name,
+    spectating,
+    spectatorTarget,
 }) => {
     return (
         <>
             {(team !== null && team.length > 0 && name !== null) &&
                 team
-                .filter((player: Player) => player.name !== name)
-                .filter((player: Player) => player.state !== 3)
-                .filter((player: Player) => (player.position.x !== null && player.position.z !== null))
+                .filter((player: Player) => {
+                    if (player.name !== name) {
+                        return true;
+                    }
+
+                    if (spectating && player.name !== spectatorTarget) {
+                        return true;
+                    }
+
+                    if (player.state !== 3) {
+                        return true;
+                    }
+
+                    if (player.position.x !== null && player.position.z !== null) {
+                        return true;
+                    }
+
+                    return false;
+                })
                 .map((player: Player, key: number) => (
                     (player.state === 1 ?
                         <React.Fragment key={key}>
@@ -82,6 +102,9 @@ const mapStateToProps = (state: RootState) => {
         team: state.TeamReducer.players,
         // PlayerReducer
         name: state.PlayerReducer.player.name,
+        // SpectatorReducer
+        spectating: state.SpectatorReducer.enabled,
+        spectatorTarget: state.SpectatorReducer.target,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

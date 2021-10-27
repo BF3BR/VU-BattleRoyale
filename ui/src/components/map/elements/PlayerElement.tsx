@@ -90,7 +90,7 @@ const PlayerElement: React.FC<Props> = ({
             }
 
             <Graphics 
-                draw={(g: any) => drawPlayerVision(g, spectating)}
+                draw={(g: any) => drawPlayerVision(g)}
                 x={getMapPos(playerPos?.x??0, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
                 y={getMapPos(playerPos?.z??0, topLeftPos.z,  textureWidthHeight, worldWidthHeight)}
                 angle={playerYaw}

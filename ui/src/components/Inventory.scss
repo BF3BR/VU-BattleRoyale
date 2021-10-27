@@ -25,7 +25,7 @@
         .ProximityWrapper {
             position: absolute;
             right: 57vh;
-            width: 30vh;
+            width: 25vh;
             height: 100vh;
             padding: 3vh 0;
             // background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 98%);
@@ -49,14 +49,10 @@
             position: absolute;
             top: 0;
             left: 0;
-            right: 45vw;
+            right: calc(50vh + 2vw);
             background: transparent;
             height: 100vh;
             display: flex;
-
-            &.noCloseItem {
-                right: 30vw;
-            }
 
             .item-slot {
                 position: relative;
@@ -163,7 +159,7 @@
             top: 50%;
             transform: translate(-50%, -50%);
             width: 11vh;
-            pointer-events: none;
+            pointer-events: none !important;
         }
 
         span {

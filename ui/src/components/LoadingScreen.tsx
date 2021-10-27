@@ -33,7 +33,6 @@ const LoadingScreen: React.FC = () => {
                         <ul>
                             <li>Press <b>TAB</b> to open/close your inventory</li>
                             <li>Press <b>M</b> to open/close and <b>N</b> to zoom the map</li>
-                            <li>Press <b>TAB</b> to enable mouse on the map</li>
                             <li>Press or Hold <b>Q</b> to ping for your teammates</li>
                             <li>You can find more loot near buildings</li>
                             <li>Watch out for airdrops</li>

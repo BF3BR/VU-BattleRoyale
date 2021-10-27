@@ -50,7 +50,7 @@ function Gunship:OnUpdatePassPreSim(p_DeltaTime)
 	self.m_CalculatedTime = self.m_CalculatedTime + p_DeltaTime / self.m_TimeToFly
 
 	if self.m_RemoveOnEnd and self.m_CalculatedTime >= 1.0 then
-		self:Destroy()
+		self:Disable()
 	end
 end
 

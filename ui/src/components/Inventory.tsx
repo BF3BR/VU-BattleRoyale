@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { connect, useDispatch } from "react-redux";
 import { RootState } from "../store/RootReducer";
@@ -16,9 +16,9 @@ import { Droppable } from './dnd/Droppable';
 import InventoryTooltip from "./tooltip/InventoryTooltip";
 
 import { sendToLua } from "../Helpers";
+import { updateProgress } from "../store/inventory/Actions";
 
 import "./Inventory.scss";
-import { updateProgress } from "../store/inventory/Actions";
 
 interface StateFromReducer {
     slots: any;
@@ -37,7 +37,30 @@ const Inventory: React.FC<Props> = ({
     isCtrlDown,
 }) => {
     const dispatch = useDispatch();
-    const sensors = [useSensor(PointerSensor)];
+    const sensors = [
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 2,
+            },
+        })
+    ];
+
+    const [clickedSlot, setClickedSlot] = useState<any>(null);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setClickedSlot(null);
+        }, 300);
+
+        if (clickedSlot !== null) {
+            if (clickedSlot.TimeToApply !== undefined) {
+                handleUseItem(clickedSlot.Id);
+                dispatch(updateProgress(clickedSlot, clickedSlot.TimeToApply));
+                setClickedSlot(null);
+            }
+        }
+
+        return () => clearTimeout(timer);
+    }, [clickedSlot]);
 
     const [splitModal, setSplitModal] = useState({
         id: null,
@@ -100,11 +123,17 @@ const Inventory: React.FC<Props> = ({
         }));
     }
 
-    const handleRightClick = (slot: any) => {
-        if (slot.TimeToApply !== undefined) {
-            handleUseItem(slot.Id);
-            dispatch(updateProgress(slot, slot.TimeToApply));
+    const handleRightClick = (slot: any, pickup?: boolean) => {
+        if (pickup) {
+            sendToLua('WebUI:PickupItem', JSON.stringify({ 
+                item: slot.Id, 
+                slot: "",
+                lootPickup: slot.lootId,
+            }));
+            return;
         }
+
+        sendToLua('WebUI:DropItem', JSON.stringify({ item: slot.Id, quantity: slot.Quantity }));
     }
 
     const handleUseItem = (id: string) => {
@@ -127,11 +156,16 @@ const Inventory: React.FC<Props> = ({
         )
     }
 
-    const getSlotDrag = (slot: any, right?: boolean) => {
+    const getSlotDrag = (slot: any, right?: boolean, pickup?: boolean) => {
         return (
             <div 
                 className={(slot.Tier !== undefined ? "tier-" + slot.Tier : "")}
-                onContextMenu={() => handleRightClick(slot)}
+                onContextMenu={() => handleRightClick(slot, pickup)}
+                onClick={() => {
+                    if (!pickup) {
+                        setClickedSlot(slot);
+                    }
+                }}
             >
                 <InventoryTooltip
                     content={
@@ -146,9 +180,9 @@ const Inventory: React.FC<Props> = ({
                     {slot.UIIcon !== null &&
                         <>
                             {slot.UIIcon.startsWith("__") ?
-                                <img src={"/img/" + slot.UIIcon + ".png"} alt="" />
+                                <img draggable="false" src={"/img/" + slot.UIIcon + ".png"} alt="" />
                             :
-                                <img src={"fb://" + slot.UIIcon} alt="" />
+                                <img draggable="false" src={"fb://" + slot.UIIcon} alt="" />
                             }
                         </>
                     }
@@ -169,13 +203,13 @@ const Inventory: React.FC<Props> = ({
                     {slot.Tier !== undefined &&
                         <span className="tier">
                             {slot.Tier === 1 &&
-                                <img src="fb://UI/Art/Persistence/Ranks/Rank001" alt="" />
+                                <img draggable="false" src="fb://UI/Art/Persistence/Ranks/Rank001" alt="" />
                             }
                             {slot.Tier === 2 &&
-                                <img src="fb://UI/Art/Persistence/Ranks/Rank002" alt="" />
+                                <img draggable="false" src="fb://UI/Art/Persistence/Ranks/Rank002" alt="" />
                             }
                             {slot.Tier === 3 &&
-                                <img src="fb://UI/Art/Persistence/Ranks/Rank003" alt="" />
+                                <img draggable="false" src="fb://UI/Art/Persistence/Ranks/Rank003" alt="" />
                             }
                         </span>
                     }
@@ -448,7 +482,7 @@ const Inventory: React.FC<Props> = ({
                                     {closeItems.map((item: any, key: number) => (
                                         <div className="item-slot" key={key}>
                                             <Draggable id={"loot-" + item.Id} item={item} lootId={item.lootId}>
-                                                {getSlotDrag(item, true)}
+                                                {getSlotDrag(item, true, true)}
                                             </Draggable>
                                         </div>
                                     ))}

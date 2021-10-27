@@ -5,52 +5,35 @@ import viewAngles from "../../../assets/img/viewangles_texture.png";
 const viewAnglesTexture = PIXI.Texture.from(viewAngles);
 
 export const drawPlayer = (g: any, color: number, spectating?: boolean) => {
-    g.clear();
-    
+    const sideLength = 12;
+    let _color = color;
+
     if (spectating) {
-        g.beginFill(0xffffff, 0.4);    
-        g.lineStyle({
-            width: 3,
-            color: 0xffffff,
-            alpha: 1,
-            join: PIXI.LINE_JOIN.ROUND,
-            miterLimit: 10,
-        });
-        g.drawCircle(
-            0,
-            0,
-            25
-        );
-        g.closePath();
-        g.endFill();
-    } else {
-        var sideLength = 12;
-        g.beginFill(color, 0.4);    
-        g.lineStyle({
-            width: 4,
-            color: color,
-            alpha: 1,
-            join: PIXI.LINE_JOIN.ROUND,
-            miterLimit: 10,
-        });
-        g.moveTo(0, 0 + sideLength / 2);
-        g.lineTo(0 - sideLength, 0 + sideLength);
-        g.lineTo(0, 0 - sideLength);
-        g.lineTo(0 + sideLength, 0 + sideLength);
-        g.lineTo(0, 0 + sideLength / 2);
-        g.closePath();
-        g.endFill();
+        _color = 0xffffff;
     }
+
+    g.clear();
+    g.beginFill(_color, 0.4);    
+    g.lineStyle({
+        width: 4,
+        color: _color,
+        alpha: 1,
+        join: PIXI.LINE_JOIN.ROUND,
+        miterLimit: 10,
+    });
+    g.moveTo(0, 0 + sideLength / 2);
+    g.lineTo(0 - sideLength, 0 + sideLength);
+    g.lineTo(0, 0 - sideLength);
+    g.lineTo(0 + sideLength, 0 + sideLength);
+    g.lineTo(0, 0 + sideLength / 2);
+    g.closePath();
+    g.endFill();
 };
 
-export const drawPlayerVision = (g: any, spectating?: boolean) => {
-    var sideLength = 50;
+export const drawPlayerVision = (g: any) => {
+    const sideLength = 50;
     g.filters = [];
     g.clear();
-
-    if (spectating) {
-        return;
-    }
     
     const textureMatrix = new PIXI.Matrix();
     textureMatrix.rotate(-Math.PI / 2);

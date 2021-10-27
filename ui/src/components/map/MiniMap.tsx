@@ -33,6 +33,22 @@ const MiniMap: React.FC<Props> = ({
                     <MapPixi />
                 </div>
             </div>
+            {!open &&
+                <div className="nextmap-details">
+                    <div className="detail">
+                        <span className="keyboard">N</span>
+                        ZOOM
+                    </div>
+                    <div className="detail">
+                        <span className="keyboard">M</span>
+                        MAP
+                    </div>
+                    <div className="detail">
+                        <span className="keyboard">TAB</span>
+                        INVENTORY
+                    </div>
+                </div>
+            }
             {(open && !spectating) &&
                 <div className="details">
                     <div className="detail">
