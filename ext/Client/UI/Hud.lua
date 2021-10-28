@@ -192,7 +192,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 		return
 	end
 
-	self:RegisterOnBeingInteractedCallbacks(p_Player.soldier)
+	self:RegisterSoldierInteractionCallbacks(p_Player.soldier)
 end
 
 function VuBattleRoyaleHud:OnSoldierHealthAction(p_Soldier, p_Action)
@@ -565,25 +565,25 @@ end
 	-- Being Interacted Callbacks
 -- =============================================
 
-function VuBattleRoyaleHud:RegisterOnBeingInteractedCallbacks(p_Soldier)
+function VuBattleRoyaleHud:RegisterSoldierInteractionCallbacks(p_Soldier)
 	for i, l_Entity in pairs(p_Soldier.bus.entities) do
 		if l_Entity.data ~= nil then
 			if l_Entity.data.instanceGuid == Guid("34130787-22C3-0F9D-6AA7-4BC214FA1734") then
-				l_Entity:RegisterEventCallback(self, self.OnBeingInteractedStarted)
+				l_Entity:RegisterEventCallback(self, self.OnSoldierInteractionStarted)
 			elseif l_Entity.data.instanceGuid == Guid("D0F06E9A-AE8B-E614-F8C3-54A47CF22565") then
-				l_Entity:RegisterEventCallback(self, self.OnBeingInteractedFinished)
+				l_Entity:RegisterEventCallback(self, self.OnSoldierInteractionFinished)
 			end
 		end
 	end
 end
 
-function VuBattleRoyaleHud:OnBeingInteractedStarted(p_Entity, p_Event)
-	m_Logger:Write("The interaction with the local player started")
+function VuBattleRoyaleHud:OnSoldierInteractionStarted(p_Entity, p_Event)
+	m_Logger:Write("The soldier interaction started")
 	WebUI:ExecuteJS("OnInteractStart(5);")
 end
 
-function VuBattleRoyaleHud:OnBeingInteractedFinished(p_Entity, p_Event)
-	m_Logger:Write("The interaction with the local player ended")
+function VuBattleRoyaleHud:OnSoldierInteractionFinished(p_Entity, p_Event)
+	m_Logger:Write("The soldier interaction started")
 	WebUI:ExecuteJS("OnInteractEnd();")
 end
 

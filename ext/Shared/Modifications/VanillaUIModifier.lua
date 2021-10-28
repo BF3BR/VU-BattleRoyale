@@ -52,7 +52,7 @@ function VanillaUIModifier:RegisterCallbacks()
 	m_3dLaserTagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_MapmarkertagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_TeamSupportTagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
-	--m_InteractionCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
+	m_InteractionCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_ColorCorrectionCompData:RegisterLoadHandler(self, self.OnBlurredBlueScreen)
 	m_DofComponentData:RegisterLoadHandler(self, self.OnBlurredBlueScreen)
 

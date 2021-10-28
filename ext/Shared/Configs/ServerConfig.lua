@@ -41,7 +41,7 @@ ServerConfig = {
 
 		EnableDebugRenderer = true,
 
-		Logger_Enabled = false,
+		Logger_Enabled = true,
 
 		Logger_Print_All = false,
 

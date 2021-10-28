@@ -197,6 +197,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	local s_InteractionComponentData = EntityInteractionComponentData(s_Partition:FindInstance(Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE")))
 	s_InteractionComponentData:MakeWritable()
 	s_InteractionComponentData.allowInteractionWithSoldiers = true
+	s_InteractionComponentData.isEventConnectionTarget = Realm.Realm_ClientAndServer
 
 	local s_InterfaceDescriptorData = InterfaceDescriptorData(s_Partition:FindInstance(Guid("9C158C06-AFDA-4CE5-8323-F41D356B2971")))
 	s_InterfaceDescriptorData:MakeWritable()
@@ -233,6 +234,9 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_StartEventSplitterEntityData, "OnBeingInteractedStarted", "Impulse", 2)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, "OnBeingInteractedCancelled", "Impulse", 2)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, "OnBeingInteractedFinished", "Impulse", 2)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_StartEventSplitterEntityData, "OnSoldierInteractionStarted", "Impulse", 5)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_FinishEventSplitterEntityData, "OnSoldierInteractionCancelled", "Impulse", 5)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_FinishEventSplitterEntityData, "OnSoldierInteractionFinished", "Impulse", 5)
 
 	-- BeingInteracted inputrestriction
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_InputRestrictionEntityData, "OnBeingInteractedStarted", "Activate", 3)
