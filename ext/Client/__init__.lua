@@ -19,7 +19,6 @@ require "__shared/Items/BRItemConsumable"
 require "__shared/Items/BRItemGadget"
 
 require "Types/BRInventory"
-require "Types/BRLooting"
 
 local m_PhaseManagerClient = require "PhaseManagerClient"
 local m_BrPlayer = require "BRPlayer"
@@ -39,6 +38,8 @@ local m_OOCVision = require "Visuals/OOCVision"
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 local m_MapVEManager = require "Visuals/MapVEManager"
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
+local m_CommonSpatialRaycast = require "CommonSpatialRaycast"
+local m_BRLooting = require "Types/BRLooting"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -56,14 +57,13 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
 	self:RegisterCommands()
 
 	m_Hud:OnExtensionLoaded()
+	m_BRLooting:OnExtensionLoaded()
 	self:OnHotReload()
 end
 
 function VuBattleRoyaleClient:RegisterVars()
 	-- The current gamestate, it's read-only and can only be changed by the SERVER
 	self.m_GameState = GameStates.None
-
-	self.m_Looting = BRLooting()
 end
 
 function VuBattleRoyaleClient:RegisterEvents()
@@ -269,6 +269,7 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 		m_Ping:OnUpdatePassPreSim(p_DeltaTime)
 		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+		m_CommonSpatialRaycast:OnUpdatePassPreSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
 		m_PhaseManagerClient:OnUIDrawHud(p_DeltaTime)
 		m_Hud:OnUIDrawHud()
@@ -284,7 +285,7 @@ function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
 	m_SpectatorClient:OnClientUpdateInput()
 	m_Hud:OnClientUpdateInput()
 	m_Ping:OnClientUpdateInput(p_DeltaTime)
-	self.m_Looting:OnClientUpdateInput(p_DeltaTime)
+	m_BRLooting:OnClientUpdateInput(p_DeltaTime)
 end
 
 -- =============================================
@@ -507,7 +508,7 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 	m_TeamManager:OnGameStateChanged(p_GameState)
 	m_Hud:OnGameStateChanged(p_GameState)
 	m_SpectatorClient:OnGameStateChanged(p_GameState)
-	self.m_Looting:OnGameStateChanged(p_GameState)
+	m_BRLooting:OnGameStateChanged(p_GameState)
 end
 
 function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
@@ -798,11 +799,11 @@ function VuBattleRoyaleClient:OnCreateLootPickup(p_DataArray)
 end
 
 function VuBattleRoyaleClient:OnUnregisterLootPickup(p_LootPickupId)
-	self.m_Looting:OnUnregisterLootPickup(p_LootPickupId)
+	m_BRLooting:OnUnregisterLootPickup(p_LootPickupId)
 end
 
 function VuBattleRoyaleClient:OnUpdateLootPickup(p_DataArray)
-	self.m_Looting:OnUpdateLootPickup(p_DataArray)
+	m_BRLooting:OnUpdateLootPickup(p_DataArray)
 end
 
 function VuBattleRoyaleClient:OnItemActionCanceled()

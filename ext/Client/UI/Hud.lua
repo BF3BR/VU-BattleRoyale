@@ -162,7 +162,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 			NetEvents:Send(PlayerEvents.Despawn)
 		end
 	end
-	
+
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_LeftCtrl) then
 		WebUI:ExecuteJS("OnLeftCtrl(true);")
 	end
@@ -613,6 +613,41 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 		["key"] = "F10",
 	}))
 	self.m_HudOnSetUIState:Update(UiStates.Game)
+end
+
+
+-- =============================================
+	-- Custom OnSpatialRaycast "event" (called from CommonSpatialRaycast)
+-- =============================================
+
+function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
+	-- loop all entities
+	for _, l_Entity in pairs(p_Entities) do
+		-- filter out the SoldierEntities
+		if l_Entity:Is("ClientSoldierEntity") then
+			l_Entity = SoldierEntity(l_Entity)
+
+			-- we found a teammate that we can revive
+			if l_Entity.isInteractiveManDown and l_Entity.teamId == TeamId.Team1 then
+				-- make sure this is not the local player
+				if l_Entity.player ~= PlayerManager:GetLocalPlayer() then
+					self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+						["msg"] = "Revive teammate",
+						["key"] = "E",
+					}))
+
+					-- stop here
+					return
+				end
+			end
+		end
+	end
+
+	-- we found no teammate to revive
+	self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+		["msg"] = nil,
+		["key"] = nil,
+	}))
 end
 
 -- =============================================

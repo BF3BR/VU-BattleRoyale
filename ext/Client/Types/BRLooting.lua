@@ -5,22 +5,20 @@ local m_MapHelper = require "__shared/Utils/MapHelper"
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_Hud = require "UI/Hud"
 
-function BRLooting:__init()
-	self.m_LastDelta = 0
+-- =============================================
+-- Events
+-- =============================================
+
+function BRLooting:OnExtensionLoaded()
 	self.m_LastSelectedLootPickup = nil
 
 	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
 
-	self.m_TimeToUpdateLootUi = 0.2
 	self.m_SentPickupEvent = false
 
 	-- Read-only
 	self.m_GameState = GameStates.None
 end
-
--- =============================================
--- Events
--- =============================================
 
 function BRLooting:OnGameStateChanged(p_GameState)
 	if p_GameState == nil then
@@ -35,9 +33,7 @@ function BRLooting:OnGameStateChanged(p_GameState)
 
 	if p_GameState == GameStates.EndGame then
 		-- Reset vars
-		self.m_LastDelta = 0
 		self.m_LastSelectedLootPickup = nil
-		self.m_TimeToUpdateLootUi = 0.2
 		self.m_SentPickupEvent = false
 	end
 end
@@ -46,8 +42,6 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 	if self.m_GameState == GameStates.EndGame then
 		return
 	end
-
-	self.m_LastDelta = self.m_LastDelta + p_Delta
 
 	-- Make sure we have a local player and an alive soldier.
 	local s_Player = PlayerManager:GetLocalPlayer()
@@ -63,6 +57,7 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 
 	if InputManager:IsKeyDown(InputDeviceKeys.IDK_E) and self.m_LastSelectedLootPickup ~= nil and not self.m_SentPickupEvent then
 		local s_LootPickup = self.m_LastSelectedLootPickup
+
 		if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
 			self.m_SentPickupEvent = true
 			NetEvents:Send(
@@ -72,24 +67,6 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 			)
 		else
 			m_Hud:OpenInventory()
-		end
-	end
-
-	if self.m_LastDelta >= self.m_TimeToUpdateLootUi then
-		self.m_LastDelta = 0.0
-
-		local s_LootPickup = self:OnSpatialRaycast()
-		if s_LootPickup ~= nil then
-			self.m_LastSelectedLootPickup = s_LootPickup
-			if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
-				local s_SingleItem = m_MapHelper:NextItem(s_LootPickup.m_Items)
-				self:OnSendOverlayLoot(s_SingleItem, false)
-			else
-				self:OnSendOverlayLoot(s_LootPickup, true)
-			end
-		else
-			self:OnSendOverlayLoot(nil, false)
-			self.m_LastSelectedLootPickup = nil
 		end
 	end
 end
@@ -139,23 +116,28 @@ function BRLooting:UpdateCloseToPlayerItems()
 	self:SendCloseLootPickupData(s_LootPickups)
 end
 
-function BRLooting:OnSpatialRaycast()
-	local s_Player = PlayerManager:GetLocalPlayer()
-	if s_Player == nil or s_Player.soldier == nil then
-		return nil
-	end
+-- Custom Event called from CommonSpatialRaycast
+function BRLooting:OnSpatialRaycast(p_Entities)
+	local s_LootPickup = self:GetLootPickup(p_Entities)
 
-	local s_CameraTransform = ClientUtils:GetCameraTransform()
-	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0, 0, 0) then
-		return nil
+	if s_LootPickup ~= nil then
+		self.m_LastSelectedLootPickup = s_LootPickup
+		if m_MapHelper:SizeEquals(s_LootPickup.m_Items, 1) then
+			local s_SingleItem = m_MapHelper:NextItem(s_LootPickup.m_Items)
+			self:OnSendOverlayLoot(s_SingleItem, false)
+		else
+			self:OnSendOverlayLoot(s_LootPickup, true)
+		end
+	else
+		self:OnSendOverlayLoot(nil, false)
+		self.m_LastSelectedLootPickup = nil
 	end
-		
-	local s_From = Vec3(s_CameraTransform.trans)
-	local s_Direction = s_CameraTransform.forward * -1
-	local s_Target = s_CameraTransform.trans + (s_Direction * InventoryConfig.CloseItemSearchRadiusClient)
-	local s_Entities = RaycastManager:SpatialRaycast(s_From, s_Target, SpatialQueryFlags.AllGrids)
-	for _, l_Entity in ipairs(s_Entities) do
+end
+
+function BRLooting:GetLootPickup(p_Entities)
+	for _, l_Entity in ipairs(p_Entities) do
 		local l_LootPickup = m_BRLootPickupDatabase:GetByInstanceId(l_Entity.instanceId)
+
 		if l_LootPickup ~= nil and l_LootPickup[l_LootPickup.m_Id] == nil then
 			return l_LootPickup
 		end
@@ -306,3 +288,5 @@ function BRLooting:OnUpdateLootPickup(p_LootPickupData)
 	-- update LootPickup in database
 	local s_LootPickup = m_BRLootPickupDatabase:Update(p_LootPickupData)
 end
+
+return BRLooting()
