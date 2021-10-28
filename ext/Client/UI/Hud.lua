@@ -21,6 +21,8 @@ function VuBattleRoyaleHud:__init()
 
 	self.m_ManDownMapMarkers = {}
 
+	self.m_ShowInteractiveReviveMessage = false
+
 	self:RegisterVars()
 end
 
@@ -308,6 +310,7 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 			["msg"] = nil,
 			["key"] = nil,
 		}))
+		self.m_ShowInteractiveReviveMessage = false
 
 		if not SpectatorManager:GetSpectating() then
 			m_DeployScreen:CloseDeployScreen()
@@ -635,6 +638,7 @@ function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
 						["msg"] = "Revive teammate",
 						["key"] = "E",
 					}))
+					self.m_ShowInteractiveReviveMessage = true
 
 					-- stop here
 					return
@@ -644,10 +648,13 @@ function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
 	end
 
 	-- we found no teammate to revive
-	self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
-		["msg"] = nil,
-		["key"] = nil,
-	}))
+	if self.m_ShowInteractiveReviveMessage then
+		self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+			["msg"] = nil,
+			["key"] = nil,
+		}))
+		self.m_ShowInteractiveReviveMessage = false
+	end
 end
 
 -- =============================================
