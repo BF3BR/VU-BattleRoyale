@@ -642,6 +642,12 @@ function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
 
 					-- stop here
 					return
+				else
+					-- fyi: p_Entities[1] is the soldier of the local player most of the time
+					-- this is the local player and he is interactive mandown
+					-- so he can't revive anyone else (even when he is close to a mate)
+					-- thats why we break the for loop here
+					break
 				end
 			end
 		end
