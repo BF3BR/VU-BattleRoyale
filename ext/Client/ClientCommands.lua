@@ -128,8 +128,4 @@ ClientCommands =
 
 		return s_Result		
 	end,
-
-	SpawnKiasarLoot = function (p_Args)
-		NetEvents:Send("SpawnKiasarLoot")
-	end
 }

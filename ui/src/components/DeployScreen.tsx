@@ -22,6 +22,8 @@ const AppearanceArray = [
     "US Recon Woodland",
     "RU Assault Specact",
     "US Assault Specact",
+    "RU Assault Spec Ops",
+    "US Assault Spec Ops",
 ];
 
 const AppearanceKeyArray = [
@@ -31,6 +33,8 @@ const AppearanceKeyArray = [
     "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Recon_Appearance_Wood01",
     "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Specact",
     "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Specact",
+    "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ninja",
+    "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Ninja",
 ];
 
 const TeamType = [
@@ -64,6 +68,7 @@ interface StateFromReducer {
     teamJoinError: number|null;
     selectedAppearance: number;
     selectedTeamType: number;
+    deployScreen: boolean;
 }
 
 type Props = DispatchFromReducer & StateFromReducer;
@@ -80,8 +85,19 @@ const DeployScreen: React.FC<Props> = ({
     selectedAppearance,
     setSelectedAppearance,
     selectedTeamType,
-    setSelectedTeamType
+    setSelectedTeamType,
+    deployScreen
 }) => {
+    useEffect(() => {
+        sendToLua('WebUI:SetSkin', AppearanceKeyArray[selectedAppearance]);
+    }, [selectedAppearance]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            sendToLua('WebUI:SetSkin', AppearanceKeyArray[selectedAppearance]);
+        }, 1250);
+    }, [deployScreen]);
+
     const OnAppearanceRight = () => {
         if (selectedAppearance === AppearanceArray.length - 1) {
             setSelectedAppearance(0);
@@ -306,6 +322,8 @@ const mapStateToProps = (state: RootState) => {
         selectedTeamType: state.GameReducer.deployScreen.selectedTeamType,
         // PlayerReducer
         isTeamLeader: state.PlayerReducer.player.isTeamLeader ?? false,
+        // GameReducer
+        deployScreen: state.GameReducer.deployScreen.enabled,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

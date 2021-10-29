@@ -405,12 +405,21 @@ function BRPlayer:SetTeamJoinStrategy(p_Strategy)
 	self:SendState()
 end
 
-function BRPlayer:SetAppearance(p_AppearanceName)
-	if p_AppearanceName == nil then
-		return
+function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
+	if p_AppearanceName ~= nil then
+		self.m_Appearance = p_AppearanceName
 	end
 
-	self.m_Appearance = p_AppearanceName
+	if p_RefreshPlayer then
+		local s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
+		local s_Appearance = ResourceManager:SearchForDataContainer(self.m_Appearance)
+	
+		if s_SoldierAsset == nil or s_Appearance == nil then
+			return
+		end
+	
+		self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+	end
 end
 
 -- =============================================

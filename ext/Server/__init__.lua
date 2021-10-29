@@ -87,6 +87,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 
 		NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected),
 		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
+		NetEvents:Subscribe(PlayerEvents.PlayerSetSkin, self, self.OnPlayerSetSkin),
 		NetEvents:Subscribe(PlayerEvents.Despawn, self, self.OnPlayerDespawn),
 		NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw),
 		NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing),
@@ -328,6 +329,21 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 		NetEvents:SendTo(PlayerEvents.EnableSpectate, p_Player)
 	end
 end
+
+function VuBattleRoyaleServer:OnPlayerSetSkin(p_Player, p_AppearanceName)
+	if p_Player == nil then
+		return
+	end
+
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
+	if s_BrPlayer == nil then
+		return
+	end
+
+	s_BrPlayer:SetAppearance(p_AppearanceName, true)
+end
+
 
 function VuBattleRoyaleServer:OnPlayerDespawn(p_Player)
 	if p_Player == nil then

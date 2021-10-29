@@ -18,6 +18,7 @@ local m_TimeOutFix = require "__shared/Modifications/TimeOutFix"
 local m_DisableDebugRenderer = require "__shared/Modifications/DisableDebugRenderer"
 local m_AirdropSmokeModifier = require "__shared/Modifications/FX/AirdropSmokeModifier"
 local m_Airdrop = require "__shared/Modifications/Airdrop"
+local m_ShowroomModifier = require "__shared/Modifications/ShowroomModifier"
 
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 
@@ -38,6 +39,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_RemoveAutotriggerVO:RegisterCallbacks()
 	m_TimeOutFix:RegisterCallbacks()
 	m_Airdrop:RegisterCallbacks()
+	m_ShowroomModifier:RegisterCallbacks()
 end
 
 function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
@@ -85,6 +87,7 @@ function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_Dedica
 		m_ManDownModifier:DeregisterCallbacks()
 		m_RemoveAutotriggerVO:DeregisterCallbacks()
 		m_Airdrop:DeregisterCallbacks()
+		m_ShowroomModifier:DeregisterCallbacks()
 		return
 	end
 

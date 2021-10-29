@@ -135,6 +135,7 @@ end
 function VuBattleRoyaleClient:RegisterWebUIEvents()
 	self.m_WebUIEvents = {
 		Events:Subscribe("WebUI:Deploy", self, self.OnWebUIDeploy),
+		Events:Subscribe("WebUI:SetSkin", self, self.OnWebUISetSkin),
 		Events:Subscribe("WebUI:SetTeamJoinStrategy", self, self.OnWebUISetTeamJoinStrategy),
 		Events:Subscribe("WebUI:ToggleLock", self, self.OnWebUIToggleLock),
 		Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam),
@@ -172,7 +173,6 @@ function VuBattleRoyaleClient:RegisterCommands()
 		Console:Register("give", "Gives player items", ClientCommands.Give),
 		Console:Register("spawn", "Spawns items under the player", ClientCommands.Spawn),
 		Console:Register("list", "List all the items", ClientCommands.List),
-		Console:Register("spawn-kiasar-loot", "spawn-kiasar-loot", ClientCommands.SpawnKiasarLoot),
 		Console:Register("spawn-airdrop", "spawn-airdrop", ClientCommands.SpawnAirdrop),
 	}
 end
@@ -583,7 +583,19 @@ end
 -- =============================================
 
 function VuBattleRoyaleClient:OnWebUIDeploy(p_AppearanceName)
+	if p_AppearanceName == nil then
+		return
+	end
+	
 	m_Hud:OnWebUIDeploy(p_AppearanceName)
+end
+
+function VuBattleRoyaleClient:OnWebUISetSkin(p_AppearanceName)
+	if p_AppearanceName == nil then
+		return
+	end
+
+	NetEvents:Send(PlayerEvents.PlayerSetSkin, p_AppearanceName)
 end
 
 function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)

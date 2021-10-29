@@ -63,6 +63,7 @@ PlayerEvents = {
 	PlayerDeploy = "VuBattleRoyale:PlayerDeploy",
 	EnableSpectate = "VuBattleRoyale:EnableSpectate",
 	Despawn = "VuBattleRoyale:Despawn",
+	PlayerSetSkin = "VuBattleRoyale:PlayerSetSkin",
 }
 
 SpectatorEvents = {

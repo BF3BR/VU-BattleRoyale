@@ -159,7 +159,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10)
 	and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle then
-		if self.m_GameState ~= GameStates.Match or s_LocalPlayer.soldier == nil then
+		if self.m_GameState ~= GameStates.Match and s_LocalPlayer.soldier ~= nil then
 			m_DeployScreen:OpenDeployScreen()
 			NetEvents:Send(PlayerEvents.Despawn)
 		end
