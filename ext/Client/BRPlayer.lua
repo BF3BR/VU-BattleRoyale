@@ -7,14 +7,18 @@ local m_Logger = Logger("BRPlayer", true)
 function BRPlayer:__init()
 	self.m_Team = BRTeam()
 	self.m_Inventory = BRInventory()
-	self.m_Armor = Armor:NoArmor()
 	self.m_IsTeamLeader = false
 	self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
-	self.m_Kills = 0
-	self.m_Score = 0
 	self.m_PosInSquad = 1
 
+	self:ResetVars()
 	self:RegisterEvents()
+end
+
+function BRPlayer:ResetVars()
+	self.m_Armor = Armor:NoArmor()
+	self.m_Kills = 0
+	self.m_Score = 0
 end
 
 function BRPlayer:RegisterEvents()
@@ -89,6 +93,11 @@ function BRPlayer:GetColor(p_AsRgba)
 
 	-- return color as an rgba string
 	return string.format("rgba(%s, %s, %s, %s)", s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)
+end
+
+function BRPlayer:OnLevelDestroy()
+	self:ResetVars()
+	self.m_Inventory:Reset()
 end
 
 return BRPlayer()

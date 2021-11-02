@@ -3,6 +3,10 @@ class "BRInventory"
 require "__shared/Items/BRItem"
 
 function BRInventory:__init()
+	self:ResetVars()
+end
+
+function BRInventory:ResetVars()
 	self.m_Slots = {}
 end
 
@@ -16,47 +20,19 @@ function BRInventory:OnReceiveInventoryState(p_State)
 	end
 
 	for l_Index, l_Item in pairs(p_State) do
-		local l_ReturnVal = { }
-
-		if l_Item.Item ~= nil then
-			local l_GeneratedItem = BRItem:CreateFromTable(l_Item.Item)
-
-			if l_GeneratedItem ~= nil and l_GeneratedItem.m_Definition ~= nil then
-				l_ReturnVal = {
-					Id = l_GeneratedItem.m_Id,
-					UId = l_GeneratedItem.m_Definition.m_UId,
-					Name = l_GeneratedItem.m_Definition.m_Name,
-					Type = l_GeneratedItem.m_Definition.m_Type,
-					Description = l_GeneratedItem.m_Definition.m_Description,
-					UIIcon = l_GeneratedItem.m_Definition.m_UIIcon,
-					Price = l_GeneratedItem.m_Definition.m_Price,
-					Quantity = l_GeneratedItem.m_Quantity
-				}
-
-				if l_GeneratedItem.m_Definition.m_Type == ItemType.Weapon then
-					l_ReturnVal.Tier = l_GeneratedItem.m_Definition.m_Tier
-					l_ReturnVal.AmmoName = l_GeneratedItem.m_Definition.m_AmmoDefinition.m_Name
-				elseif l_GeneratedItem.m_Definition.m_Type == ItemType.Helmet or 
-					l_GeneratedItem.m_Definition.m_Type == ItemType.Armor then
-					l_ReturnVal.Tier = l_GeneratedItem.m_Definition.m_Tier
-					l_ReturnVal.Durability = l_GeneratedItem.m_Definition.m_Durability
-					l_ReturnVal.CurrentDurability = l_GeneratedItem.m_CurrentDurability
-				elseif l_GeneratedItem.m_Definition.m_Type == ItemType.Consumable then
-					l_ReturnVal.TimeToApply = l_GeneratedItem.m_Definition.m_TimeToApply
-				end
-			end
-		end
-		
-		self.m_Slots[l_Index] = l_ReturnVal
+		self.m_Slots[l_Index] = (l_Item.Item ~= nil and BRItem:CreateFromTable(l_Item.Item)) or nil
 	end
+
 	self:SyncInventoryWithUI()
 end
 
 function BRInventory:AsTable()
 	local s_Data = {}
 
-	for l_Index, l_Item in ipairs(self.m_Slots) do
-		s_Data[l_Index] = l_Item
+	-- I return an array just to not break things in the UI
+	for l_Index = 1, 20 do
+		local s_Item = self.m_Slots[l_Index]
+		s_Data[l_Index] = s_Item ~= nil and s_Item:AsTable(true) or {}
 	end
 
 	return s_Data
@@ -132,4 +108,12 @@ end
 
 function BRInventory:OnItemActionCanceled()
 	WebUI:ExecuteJS("ItemCancelAction();")
+end
+
+function BRInventory:Reset()
+	for _, l_Item in pairs(self.m_Slots) do
+		l_Item:Destroy()
+	end
+
+	self:ResetVars()
 end

@@ -216,6 +216,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_PhaseManagerClient:OnLevelDestroy()
 	m_CircleEffects:OnLevelDestroy()
 	m_MapVEManager:OnLevelDestroy()
+	m_BrPlayer:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
