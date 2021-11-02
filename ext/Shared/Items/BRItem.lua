@@ -135,5 +135,6 @@ function BRItem:Equals(p_Item)
 end
 
 function BRItem:Destroy()
-	
+	self.m_Definition = nil
+	self.m_Owner = nil
 end

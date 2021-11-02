@@ -294,21 +294,20 @@ end
 function BRInventory:DestroyItem(p_ItemId)
 	-- Check if item exists
 	local s_Item = m_ItemDatabase:GetItem(p_ItemId)
-
 	if s_Item == nil then
 		m_Logger:Write("Invalid item Id.")
 		return false
 	end
 
 	local s_Slot = self:GetItemSlot(p_ItemId)
-
 	if s_Slot ~= nil then
 		s_Slot:Clear()
+
+		m_Logger:WriteF("Item removed from inventory. (%s)", s_Item.m_Definition.m_Name)
 
 		m_ItemDatabase:UnregisterItem(p_ItemId)
 		self:SendState()
 
-		m_Logger:Write("Item removed from inventory. (" .. s_Item.m_Definition.m_Name .. ")")
 		return true
 	end
 

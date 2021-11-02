@@ -5,20 +5,33 @@ local m_MapHelper = require "__shared/Utils/MapHelper"
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_Hud = require "UI/Hud"
 
+function BRLooting:__init()
+	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
+
+	-- Read-only
+	self.m_GameState = GameStates.None
+
+	self:ResetVars()
+end
+
+function BRLooting:ResetVars()
+	self.m_LastSelectedLootPickup = nil
+	self.m_SentPickupEvent = false
+end
+
 -- =============================================
 -- Events
 -- =============================================
 
-function BRLooting:OnExtensionLoaded()
-	self.m_LastSelectedLootPickup = nil
+-- function BRLooting:OnExtensionLoaded()
+-- 	self.m_LastSelectedLootPickup = nil
+-- 	self.m_SentPickupEvent = false
 
-	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
+-- 	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
 
-	self.m_SentPickupEvent = false
-
-	-- Read-only
-	self.m_GameState = GameStates.None
-end
+-- 	-- Read-only
+-- 	self.m_GameState = GameStates.None
+-- end
 
 function BRLooting:OnGameStateChanged(p_GameState)
 	if p_GameState == nil then
@@ -32,9 +45,7 @@ function BRLooting:OnGameStateChanged(p_GameState)
 	self.m_GameState = p_GameState
 
 	if p_GameState == GameStates.EndGame then
-		-- Reset vars
-		self.m_LastSelectedLootPickup = nil
-		self.m_SentPickupEvent = false
+		self:ResetVars()
 	end
 end
 
@@ -260,7 +271,6 @@ function BRLooting:SendCloseLootPickupData(p_LootPickups)
 	end
 
 	local s_LootPickupData = {}
-
 	for _, l_LootPickup in pairs(p_LootPickups) do
 		local s_Data = l_LootPickup:AsTable(true)
 
@@ -274,19 +284,10 @@ function BRLooting:SendCloseLootPickupData(p_LootPickups)
 end
 
 function BRLooting:OnUnregisterLootPickup(p_LootPickupId)
-	if not m_BRLootPickupDatabase:RemoveById(p_LootPickupId) then
-		return
-	end
-
 	-- update LootPickup in WebUI if needed
 	if self.m_LastSelectedLootPickup ~= nil and self.m_LastSelectedLootPickup.m_Id == p_LootPickupId then
 		self.m_LastSelectedLootPickup = nil
 	end
-end
-
-function BRLooting:OnUpdateLootPickup(p_LootPickupData)
-	-- update LootPickup in database
-	local s_LootPickup = m_BRLootPickupDatabase:Update(p_LootPickupData)
 end
 
 return BRLooting()
