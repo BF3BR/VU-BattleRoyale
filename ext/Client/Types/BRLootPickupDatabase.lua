@@ -7,6 +7,7 @@ function BRLootPickupDatabase:ResetVars()
 
 	self.m_InstanceIdToLootPickup = {}
 
+	-- close items cache
 	self.m_CachedCloseEntitiesUpdatedAt = 0
 	self.m_CachedCloseEntities = {}
 end
@@ -32,19 +33,20 @@ end
 
 function BRLootPickupDatabase:Update(p_LootPickupData)
 	local s_LootPickup = self:GetById(p_LootPickupData ~= nil and p_LootPickupData.Id)
-
 	if s_LootPickup == nil then
 		return nil
 	end
 
-	-- clear references to this LootPickup
-	self:DestroyLootPickupEntities(s_LootPickup)
+	local s_CurrentMesh = s_LootPickup:GetMesh()
 
 	-- update LootPickup data
 	s_LootPickup:UpdateFromTable(p_LootPickupData)
 
-	-- spawn LootPickup entities
-	self:CreateLootPickupEntities(s_LootPickup)
+	-- clean old meshes and related references, then spawn new ones
+	if s_CurrentMesh ~= s_LootPickup:GetMesh() then
+		self:DestroyLootPickupEntities(s_LootPickup)
+		self:CreateLootPickupEntities(s_LootPickup)
+	end
 
 	return s_LootPickup
 end
@@ -107,7 +109,7 @@ end
 
 function BRLootPickupDatabase:CreateLootPickupEntities(p_LootPickup)
 	-- try to spawn entities for the LootPickup
-	if not p_LootPickup:Spawn(p_LootPickup.m_Id) then
+	if p_LootPickup == nil or not p_LootPickup:Spawn(p_LootPickup.m_Id) then
 		return nil
 	end
 
@@ -132,19 +134,34 @@ function BRLootPickupDatabase:UpdateGridSubscriptions()
 	-- TODO
 end
 
--- EVENT LISTENERS
+-- =============================================
+-- Events
+-- =============================================
 
 function BRLootPickupDatabase:OnCreateLootPickup(p_LootPickupData)
-	if p_LootPickupData == nil then
-		return
+	if p_LootPickupData ~= nil then
+		self:Add(BRLootPickup:CreateFromTable(p_LootPickupData))
 	end
+end
 
-	local s_LootPickup = BRLootPickup:CreateFromTable(p_LootPickupData)
-	self:Add(s_LootPickup)
+function BRLootPickupDatabase:OnUpdateLootPickup(p_LootPickupData)
+	self:Update(p_LootPickupData)
+end
+
+function BRLootPickupDatabase:OnUnregisterLootPickup(p_LootPickupId)
+	self:RemoveById(p_LootPickupId)
+end
+
+function BRLootPickupDatabase:OnLevelDestroy()
+	self:Destroy()
+end
+
+function BRLootPickupDatabase:OnExtensionUnloading()
+	self:Destroy()
 end
 
 function BRLootPickupDatabase:Destroy()
-	for _, l_LootPickup in ipairs(self.m_LootPickups) do
+	for _, l_LootPickup in pairs(self.m_LootPickups) do
 		-- destroy entities and references to them
 		self:DestroyLootPickupEntities(l_LootPickup)
 

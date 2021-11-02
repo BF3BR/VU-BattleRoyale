@@ -121,7 +121,7 @@ function BRLootPickup:Spawn()
 					self.m_Entities[l_EntityInstanceId] = l_Entity
 				end
 			end
-			
+
 			local s_BusAirdropSmoke = m_AirdropSmoke:Draw(self.m_Transform)
 
 			if s_BusAirdropSmoke ~= nil then
@@ -212,6 +212,10 @@ function BRLootPickup:DestroyEntities()
 end
 
 function BRLootPickup:Destroy()
-	self.m_ParentCell = nil
 	self:DestroyEntities()
+
+	self.m_Type = nil
+	self.m_Transform = nil
+	self.m_Items = nil
+	self.m_ParentCell = nil
 end

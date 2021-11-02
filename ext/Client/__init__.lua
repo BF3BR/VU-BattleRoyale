@@ -190,6 +190,7 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_OOCFires:OnExtensionUnloading()
 	m_WindowsCircleSpawner:OnExtensionUnloading()
 	m_CircleEffects:OnExtensionUnloading()
+	m_BRLootPickupDatabase:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -217,6 +218,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_CircleEffects:OnLevelDestroy()
 	m_MapVEManager:OnLevelDestroy()
 	m_BrPlayer:OnLevelDestroy()
+	m_BRLootPickupDatabase:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
@@ -812,11 +814,12 @@ function VuBattleRoyaleClient:OnCreateLootPickup(p_DataArray)
 end
 
 function VuBattleRoyaleClient:OnUnregisterLootPickup(p_LootPickupId)
+	m_BRLootPickupDatabase:OnUnregisterLootPickup(p_LootPickupId)
 	m_BRLooting:OnUnregisterLootPickup(p_LootPickupId)
 end
 
 function VuBattleRoyaleClient:OnUpdateLootPickup(p_DataArray)
-	m_BRLooting:OnUpdateLootPickup(p_DataArray)
+	m_BRLootPickupDatabase:OnUpdateLootPickup(p_DataArray)
 end
 
 function VuBattleRoyaleClient:OnItemActionCanceled()
