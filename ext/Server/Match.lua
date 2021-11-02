@@ -155,7 +155,7 @@ function Match:OnMatchFirstTick()
 			m_Logger:Write("INFO: We have a winner team: " .. self.m_WinnerTeam.m_Id)
 
 			-- Broadcast the winnin teams ID to clients
-			NetEvents:Broadcast(PlayerEvents.WinnerTeamUpdate, self.m_WinnerTeam.m_Id)
+			NetEvents:Broadcast(PlayerEvents.WinnerTeamUpdate, self.m_WinnerTeam:AsTable())
 		else
 			m_Logger:Write("INFO: Round ended without a winner.")
 		end

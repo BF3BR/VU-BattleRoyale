@@ -311,7 +311,7 @@ function ManDownModifier:CreateManDownCustomizeSoldierData()
 	s_CoopManDownSoldierData.clearVisualState = false
 	s_CoopManDownSoldierData.overrideMaxHealth = -1.0
 	s_CoopManDownSoldierData.overrideCriticalHealthThreshold = -1.0
-	s_CoopManDownSoldierData.activeSlot = WeaponSlot.WeaponSlot_9
+	s_CoopManDownSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
 	s_CoopManDownSoldierData.removeAllExistingWeapons = false
 	s_CoopManDownSoldierData.disableDeathPickup = false
 

@@ -30,6 +30,7 @@ const initialState: GameState = {
         enabled: false,
         place: 99,
         win: false,
+        team: [],
     },
     deployScreen: {
         enabled: false,
@@ -66,6 +67,7 @@ const GameReducer = (
                     enabled: action.payload.enabled ?? state.gameOver.enabled,
                     place: action.payload.place ?? state.gameOver.place,
                     win: action.payload.win ?? state.gameOver.win,
+                    team: action.payload.team ?? state.gameOver.team,
                 },
             };
         case UPDATE_TIME:

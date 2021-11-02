@@ -12,6 +12,7 @@ export interface GameState {
         enabled: boolean;
         place: number;
         win: boolean;
+        team: any;
     };
     deployScreen: {
         enabled: boolean;

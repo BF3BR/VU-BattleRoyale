@@ -186,14 +186,14 @@ const App: React.FC<Props> = ({
             return;
         }
 
-        dispatch(updateGameover(true, data.isWin));
+        dispatch(updateGameover(true, data.isWin, 1, data.team));
     }
 
     window.OnUpdatePlacement = (placement: number | null) => {
         if (placement !== null) {
-            dispatch(updateGameover(undefined, undefined, placement));
+            dispatch(updateGameover(undefined, undefined, placement, undefined));
         } else {
-            dispatch(updateGameover(undefined, undefined, 99));
+            dispatch(updateGameover(undefined, undefined, 99, undefined));
         }
     }
 
@@ -742,7 +742,20 @@ const App: React.FC<Props> = ({
                         }}>
                             Set Spectator
                         </button>
-                        <button onClick={() => dispatch(updateGameover(true))}>Set Gameover Screen</button>
+                        <button onClick={() => dispatch(updateGameover(true, true, 44, [
+                            {
+                                Name: "KVN",
+                            },
+                            {
+                                Name: "Bree",
+                            },
+                            {
+                                Name: "Breaknix",
+                            },
+                            {
+                                Name: "Kiwidog",
+                            }
+                        ]))}>Set Gameover Screen</button>
                         <button onClick={() => window.OnLocalPlayerInfo({
                             name: 'KVN',
                             kill: 15,
@@ -865,7 +878,6 @@ declare global {
         OnPlayerSecondaryAmmo: (data: number) => void;
         OnPlayerFireLogic: (data: number) => void;
         OnPlayerCurrentWeapon: (weaponName: string) => void;
-        OnPlayerWeapons: (data: any) => void;
         OnPlayerIsOnPlane: (isOnPlane: boolean) => void;
         OnGameOverScreen: (data: any) => void;
         OnUpdatePlacement: (placemen: number | null) => void;

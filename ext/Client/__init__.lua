@@ -555,20 +555,17 @@ function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
 	m_Hud.m_MinPlayersToStart = p_MinPlayersToStart
 end
 
-function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
-	if p_WinnerTeamId == nil then
+function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeam)
+	if p_WinnerTeam == nil then
 		return
 	end
 
-	if m_BrPlayer.m_Team == nil then
-		return
+	local s_Winner = false
+	if m_BrPlayer.m_Team ~= nil and p_WinnerTeam.Id == m_BrPlayer.m_Team.m_Id then
+		s_Winner = true
 	end
 
-	if p_WinnerTeamId ~= m_BrPlayer.m_Team.m_Id then
-		return
-	end
-
-	m_Hud:OnGameOverScreen(true)
+	m_Hud:OnGameOverScreen(s_Winner, p_WinnerTeam)
 end
 
 function VuBattleRoyaleClient:OnEnableSpectate()

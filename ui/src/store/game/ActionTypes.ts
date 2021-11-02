@@ -28,6 +28,7 @@ interface UpdateGameover {
         enabled?: boolean;
         win?: boolean;
         place?: number;
+        team?: any;
     };
 }
 

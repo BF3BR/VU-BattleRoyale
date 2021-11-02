@@ -265,16 +265,16 @@ function BRPlayer:CreateCustomizeSoldierData()
 	s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
 
 	local s_UnlockWeaponAndSlot7 = UnlockWeaponAndSlot()
-	s_UnlockWeaponAndSlot7.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
-																Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),
-																Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73")))
+	s_UnlockWeaponAndSlot7.weapon = SoldierWeaponUnlockAsset(
+		ResourceManager:FindInstanceByGuid(Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73"))
+	)
 	s_UnlockWeaponAndSlot7.slot = WeaponSlot.WeaponSlot_7
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot7)
 
 	local s_UnlockWeaponAndSlot9 = UnlockWeaponAndSlot()
-	s_UnlockWeaponAndSlot9.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
-																Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
-																Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+	s_UnlockWeaponAndSlot9.weapon = SoldierWeaponUnlockAsset(
+		ResourceManager:FindInstanceByGuid(Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B"))
+	)
 	s_UnlockWeaponAndSlot9.slot = WeaponSlot.WeaponSlot_9
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot9)
 

@@ -48,13 +48,13 @@ return {
 	PhasesCount = 9,
 	Phases = {
 		{
-			StartsAt = 90.0,
-			MoveDuration = 90.0,
+			StartsAt = 20.0,
+			MoveDuration = 60.0,
 			Damage = 0.4,
 			Ratio = 0.3,
 			HasAirdrop = false,
 		},{
-			StartsAt = 90.0,
+			StartsAt = 20.0,
 			MoveDuration = 90.0,
 			Damage = 0.6,
 			Ratio = 0.45,
@@ -129,7 +129,9 @@ return {
 	MapPreset = require "__shared/Maps/XP5_003/XP5_003_MapPreset",
 	Injected_sublevels = require "__shared/Maps/XP5_003/XP5_003_Injected_Sublevels",
 	VEPresets = {
-		"XP5_003_Default",
-		"XP5_003_Foggy",
+		--"XP5_003_Default",
+		--"XP5_003_Foggy",
+		"XP5_003_Sunset",
+		"XP5_003_Night",
 	},
 }

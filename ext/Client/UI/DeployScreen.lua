@@ -8,10 +8,10 @@ function DeployScreen:OnLevelLoaded()
 	m_HudUtils:ShowroomCamera(true)
 	m_HudUtils:ShowCrosshair(false)
 	m_HudUtils:SetIsInDeployScreen(true)
-	g_Timers:Timeout(5, function()
+	g_Timers:Timeout(7.0, function()
 		if m_HudUtils:GetIsInDeployScreen() then
 			m_HudUtils:EnableShowroomSoldier(true)
-			g_Timers:Timeout(1.25, function()
+			g_Timers:Timeout(1.15, function()
 				NetEvents:Send(PlayerEvents.PlayerSetSkin)
 			end)
 		end

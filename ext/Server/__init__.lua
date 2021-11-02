@@ -34,7 +34,6 @@ local m_Match = require "Match"
 local m_Gunship = require "Gunship"
 local m_MapVEManager = require "MapVEManager"
 local m_InventoryManager = require "BRInventoryManager"
-local m_LootRandomizer = require "BRLootRandomizer"
 local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
@@ -649,7 +648,7 @@ function VuBattleRoyaleServer:SetupRconVariables()
 		["vars.hud"] = "true",
 		["vu.SquadSize"] = "4",
 		["vu.ColorCorrectionEnabled"] = "false",
-		["vu.SunFlareEnabled"] = "false",
+		["vu.SunFlareEnabled"] = "true",
 		["vu.SuppressionMultiplier"] = "0",
 		["vu.DestructionEnabled"] = "true",
 		["vu.DesertingAllowed"] = "true",

@@ -27,13 +27,14 @@ export function updateUiState(uiState: "hidden" | "loading" | "game" | "menu"): 
     };
 }
 
-export function updateGameover(enabled?: boolean, win?: boolean, place?: number): GameActionTypes {
+export function updateGameover(enabled?: boolean, win?: boolean, place?: number, team?: any): GameActionTypes {
     return {
         type: UPDATE_GAMEOVER,
         payload: { 
             enabled,
             win,
-            place
+            place,
+            team,
         },
     };
 }

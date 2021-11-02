@@ -44,7 +44,6 @@ function VuBattleRoyaleHud:RegisterVars()
 	self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
 	self.m_HudOnPlayerFireLogic = CachedJsExecutor("OnPlayerFireLogic(%s)", 0)
 	self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", "")
-	self.m_HudOnPlayerWeapons = CachedJsExecutor("OnPlayerWeapons(%s)", nil)
 	self.m_HudOnUpdateTeamPlayers = CachedJsExecutor("OnUpdateTeamPlayers(%s)", nil)
 	self.m_HudOnUpdateTeamLocked = CachedJsExecutor("OnUpdateTeamLocked(%s)", false)
 	self.m_HudOnUpdateTeamId = CachedJsExecutor("OnUpdateTeamId('%s')", "-")
@@ -75,7 +74,6 @@ function VuBattleRoyaleHud:ResetVars()
 	self.m_HudOnPlayerSecondaryAmmo:ForceUpdate(0)
 	self.m_HudOnPlayerFireLogic:ForceUpdate(0)
 	self.m_HudOnPlayerCurrentWeapon:ForceUpdate("")
-	self.m_HudOnPlayerWeapons:ForceUpdate(nil)
 	self.m_HudOnUpdateTeamPlayers:ForceUpdate(nil)
 	-- self.m_HudOnUpdateTeamLocked:ForceUpdate(false)
 	-- self.m_HudOnUpdateTeamId:ForceUpdate("-")
@@ -323,9 +321,10 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 	self.m_HudOnGameState:Update(GameStatesStrings[p_GameState])
 end
 
-function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin)
+function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin, p_Team)
 	self.m_HudOnGameOverScreen:ForceUpdate(json.encode({
 		["isWin"] = p_IsWin,
+		["team"] = p_Team,
 	}))
 end
 
