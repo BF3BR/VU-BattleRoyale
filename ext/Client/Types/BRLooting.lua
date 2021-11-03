@@ -23,22 +23,8 @@ end
 -- Events
 -- =============================================
 
--- function BRLooting:OnExtensionLoaded()
--- 	self.m_LastSelectedLootPickup = nil
--- 	self.m_SentPickupEvent = false
-
--- 	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
-
--- 	-- Read-only
--- 	self.m_GameState = GameStates.None
--- end
-
 function BRLooting:OnGameStateChanged(p_GameState)
-	if p_GameState == nil then
-		return
-	end
-
-	if self.m_GameState == p_GameState then
+	if p_GameState == nil or self.m_GameState == p_GameState then
 		return
 	end
 
@@ -56,7 +42,6 @@ function BRLooting:OnClientUpdateInput(p_Delta)
 
 	-- Make sure we have a local player and an alive soldier.
 	local s_Player = PlayerManager:GetLocalPlayer()
-
 	if s_Player == nil or s_Player.soldier == nil then
 		return
 	end
@@ -101,29 +86,6 @@ function BRLooting:UpdateCloseToPlayerItems()
 		InventoryConfig.CloseItemSearchRadiusClient
 	)
 
-	-- PREV
-	-- local s_From = Vec3(s_CameraTransform.trans)
-
-	-- -- We get the raycast end transform with the calculated direction and the max distance.
-	-- local s_Direction = s_CameraTransform.forward * -1
-	-- local s_Target = s_CameraTransform.trans + (s_Direction * 3)
-
-	-- local s_Entities = RaycastManager:SpatialRaycast(s_From, s_Target, SpatialQueryFlags.AllGrids)
-
-	-- -- convert entities instance Ids to LootPickups
-	-- local s_LootPickups = {}
-	-- for _, l_Entity in ipairs(s_Entities) do
-	-- 	local s_LootPickup = m_BRLootPickupDatabase:GetByInstanceId(l_Entity.instanceId)
-
-	-- 	-- add LootPickup if it's not already in and it's close to player
-	-- 	if s_LootPickup ~= nil and 
-	-- 		s_LootPickups[s_LootPickup.m_Id] == nil and
-	-- 		s_LootPickup.m_Transform.trans:Distance(s_Player.soldier.transform.trans) <= 3 then
-	-- 		s_LootPickups[s_LootPickup.m_Id] = s_LootPickup
-	-- 	end
-	-- end
-	-- /PREV
-
 	self:SendCloseLootPickupData(s_LootPickups)
 end
 
@@ -159,7 +121,6 @@ end
 
 function BRLooting:GetMesh(p_Entity)
 	local s_Data = p_Entity.data
-
 	if s_Data == nil then
 		return nil
 	end
@@ -170,64 +131,6 @@ function BRLooting:GetMesh(p_Entity)
 	end
 
 	return nil
-end
-
-function BRLooting:Intersect(from, to, aabb, transform, maxDist)
-	local tmin = 0.0
-	local tmax = maxDist
-
-	local heading = to - from
-	local direction = heading:Normalize()
-
-	local delta = transform.trans - from
-
-	local function checkAxis(axis, min, max)
-		local e = axis:Dot(delta)
-		local f = direction:Dot(axis)
-
-		if math.abs(f) > math.epsilon then
-			local t1 = (e + min) / f
-			local t2 = (e + max) / f
-
-			if t1 > t2 then
-				local temp = t1
-				t1 = t2
-				t2 = temp
-			end
-
-			if t2 < tmax then
-				tmax = t2
-			end
-
-			if t1 > tmin then
-				tmin = t1
-			end
-
-			if tmax < tmin then
-				return false
-			end
-		else
-			if min - e > 0.0 or max - e < 0.0 then
-				return false
-			end
-		end
-
-		return true
-	end
-
-	if not checkAxis(transform.left, aabb.min.x, aabb.max.x) then
-		return false
-	end
-
-	if not checkAxis(transform.up, aabb.min.y, aabb.max.y) then
-		return false
-	end
-
-	if not checkAxis(transform.forward, aabb.min.z, aabb.max.z) then
-		return false
-	end
-
-	return { tmin, tmax }
 end
 
 --==============================
