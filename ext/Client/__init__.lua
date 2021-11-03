@@ -57,7 +57,6 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
 	self:RegisterCommands()
 
 	m_Hud:OnExtensionLoaded()
-	m_BRLooting:OnExtensionLoaded()
 	self:OnHotReload()
 end
 

@@ -16,7 +16,10 @@ function BRPlayer:__init()
 end
 
 function BRPlayer:ResetVars()
+	-- i keep it for spectators for now
+	-- will be changed to sync partial inventory to spectators
 	self.m_Armor = Armor:NoArmor()
+
 	self.m_Kills = 0
 	self.m_Score = 0
 end
@@ -37,7 +40,6 @@ function BRPlayer:OnReceivePlayerState(p_State)
 	end
 
 	if p_State.Armor ~= nil then
-		m_Logger:Write("Update Armor")
 		self.m_Armor:UpdateFromTable(p_State.Armor)
 	end
 
@@ -81,6 +83,22 @@ function BRPlayer:GetState()
 	else
 		return BRPlayerState.Alive
 	end
+end
+
+function BRPlayer:GetArmorPercentage()
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	local s_Armor = self.m_Inventory:GetSlot(InventorySlot.Armor)
+
+	if s_LocalPlayer == nil or not s_LocalPlayer.alive then
+		s_Armor = self.m_Armor
+	end
+
+	return s_Armor ~= nil and s_Armor:GetPercentage() or 0
+end
+
+function BRPlayer:GetHelmetPercentage()
+	local s_Helmet = self.m_Inventory:GetSlot(InventorySlot.Helmet)
+	return s_Helmet ~= nil and s_Helmet:GetPercentage() or 0
 end
 
 function BRPlayer:GetColor(p_AsRgba)

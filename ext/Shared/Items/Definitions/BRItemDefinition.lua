@@ -25,5 +25,5 @@ function BRItemDefinition:__init(p_UId, p_Name, p_Options)
 end
 
 function BRItemDefinition:Equals(p_Other)
-	return self.m_UId == p_Other.m_UId
+	return p_Other ~= nil and self.m_UId == p_Other.m_UId
 end

@@ -29,9 +29,7 @@ function BRPlayer:__init(p_Player)
 	-- the user selected strategy that is used when the teams are formed
 	self.m_TeamJoinStrategy = TeamJoinStrategy.NoJoin
 
-	-- The armor of the player (to be replaced by inventory)
-	self.m_Armor = Armor:BasicArmor()
-
+	-- the player's inventory
 	self.m_Inventory = nil
 
 	-- The kill count of the player
@@ -59,13 +57,11 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 	end
 
 	local s_Soldier = self:GetSoldier()
-
 	if s_Soldier == nil then
 		return p_Damage
 	end
 
 	local s_Health = s_Soldier.health
-
 	if s_Soldier.isInteractiveManDown and p_Damage >= s_Health then
 		self:Kill(true)
 		Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
@@ -75,16 +71,17 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 		s_Health = s_Health - 100
 
 		-- apply damage to the armor
-		if p_Giver ~= nil and not self:Equals(p_Giver) then
-			local s_Damage = self:GetArmor():ApplyDamage(p_Damage)
+		local s_Armor = self:GetArmor()
+		if s_Armor ~= nil and p_Giver ~= nil and not self:Equals(p_Giver) then
+			local s_Damage = s_Armor:ApplyDamage(p_Damage)
 
 			-- check if we really did damage to the armor
 			if s_Damage ~= p_Damage then
 				p_Damage = s_Damage
-				self:SetArmor(self:GetArmor())
+				self:UpdateArmor(s_Armor)
 
 				-- check if the player still has a shield or if the giver broke it
-				if self:GetArmor():GetPercentage() == 0 then
+				if s_Armor:GetPercentage() == 0 then
 					NetEvents:SendToLocal("Player:BrokeShield", p_Giver.m_Player, self:GetName())
 				end
 			end
@@ -324,6 +321,20 @@ function BRPlayer:ApplyTeamSquadIds()
 	end
 end
 
+function BRPlayer:SendEventToSpectators(p_EventName, ...)
+	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
+		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
+
+		if s_Spectator ~= nil then
+			m_Logger:WriteF("Send '%s' to spectator '%s'", p_EventName, s_Spectator.name)
+			NetEvents:SendToLocal(p_EventName, s_Spectator, table.unpack({...}))
+		else
+			table.remove(self.m_SpectatorNames, i)
+			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
+		end
+	end
+end
+
 function BRPlayer:SendState(p_Simple, p_TeamData)
 	local s_Data = self:AsTable(p_Simple, p_TeamData)
 	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerState, self.m_Player, s_Data)
@@ -331,7 +342,6 @@ end
 
 -- Resets the state of a player
 function BRPlayer:Reset()
-	self.m_Armor = Armor:BasicArmor()
 	self.m_Kills = 0
 	self.m_Score = 0
 	self.m_KillerName = nil
@@ -347,7 +357,6 @@ function BRPlayer:Destroy()
 	self.m_KillerName = nil
 	self.m_Player = nil
 	self.m_Team = nil
-	self.m_Armor = nil
 	self.m_SpectatedPlayerName = nil
 	self.m_SpectatorNames = {}
 end
@@ -362,27 +371,22 @@ function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
 end
 
 -- =============================================
-	-- Set Functions
+-- Set Functions
 -- =============================================
 
-function BRPlayer:SetArmor(p_Armor)
-	self.m_Armor = p_Armor
-	local s_State = {
-		Armor = self:GetArmor():AsTable()
-	}
-	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, self.m_Player, s_State)
-
-	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
-		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
-
-		if s_Spectator ~= nil then
-			m_Logger:Write("Send PlayerArmorState to spectator " .. s_Spectator.name)
-			NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, s_Spectator, s_State)
-		else
-			table.remove(self.m_SpectatorNames, i)
-			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
-		end
+function BRPlayer:UpdateArmor(p_Armor)
+	if p_Armor == nil then
+		return
 	end
+
+	-- send updated armor to player
+	p_Armor:SetUpdated()
+	self.m_Inventory:SendState()
+
+	-- send updated armor to player's spectators
+	self:SendEventToSpectators(TeamManagerNetEvent.PlayerArmorState, {
+		Armor = p_Armor:AsTable()
+	})
 end
 
 function BRPlayer:SetTeamJoinStrategy(p_Strategy)
@@ -413,11 +417,11 @@ function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
 	if p_RefreshPlayer then
 		local s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
 		local s_Appearance = ResourceManager:SearchForDataContainer(self.m_Appearance)
-	
+
 		if s_SoldierAsset == nil or s_Appearance == nil then
 			return
 		end
-	
+
 		self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
 	end
 end
@@ -442,7 +446,7 @@ end
 -- Returns the soldier object, if exists, or nil
 function BRPlayer:GetSoldier()
 	local s_Player = self:GetPlayer()
-	return s_Player ~= nil and s_Player.soldier
+	return (s_Player ~= nil and s_Player.soldier) or nil
 end
 
 -- Returns the position of the player if alive
@@ -459,7 +463,7 @@ end
 
 -- Returns the current armor item equipped by the player
 function BRPlayer:GetArmor()
-	return self.m_Armor
+	return (self.m_Inventory ~= nil and self.m_Inventory:GetSlot(InventorySlot.Armor).m_Item) or nil
 end
 
 -- Checks if the player is alive
@@ -513,7 +517,6 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 
 	-- get team data
 	local s_Team = p_TeamData
-
 	if s_Team == nil and self.m_Team ~= nil then
 		s_Team = self.m_Team:AsTable()
 	end
@@ -521,7 +524,6 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 	-- state used for local player
 	return {
 		Team = s_Team,
-		Armor = self:GetArmor():AsTable(),
 		Data = {
 			TeamJoinStrategy = self.m_TeamJoinStrategy,
 			IsTeamLeader = self.m_IsTeamLeader,

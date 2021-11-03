@@ -10,6 +10,10 @@ function BRInventory:ResetVars()
 	self.m_Slots = {}
 end
 
+function BRInventory:GetSlot(p_SlotIndex)
+	return self.m_Slots[p_SlotIndex]
+end
+
 -- =============================================
 -- Events
 -- =============================================
