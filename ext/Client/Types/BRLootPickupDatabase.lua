@@ -122,6 +122,10 @@ function BRLootPickupDatabase:CreateLootPickupEntities(p_LootPickup)
 end
 
 function BRLootPickupDatabase:DestroyLootPickupEntities(p_LootPickup)
+	if p_LootPickup == nil or p_LootPickup.m_Entities == nil then
+		return
+	end
+
 	-- clear references to this LootPickup
 	for l_InstanceId, _ in pairs(p_LootPickup.m_Entities) do
 		self.m_InstanceIdToLootPickup[l_InstanceId] = nil
