@@ -390,21 +390,28 @@ function BRInventory:SavePrimaryAmmo(p_WeaponSlot, p_AmmoCount)
 	return s_Item ~= nil and s_Item:SetPrimaryAmmo(p_AmmoCount)
 end
 
-function BRInventory:AsTable()
+function BRInventory:AsTable(p_ForceFullUpdate)
 	local s_Data = {}
+	local s_SpectatorData = {}
 
-	-- Add only updated slots into the data that 
+	-- Add only updated slots into the data that
 	-- will be sent to the client
 	for l_SlotIndex = 1, 20 do
 		local s_Slot = self.m_Slots[l_SlotIndex]
 
-		if s_Slot.m_IsUpdated then
-			s_Data[l_SlotIndex] = s_Slot:AsTable()
+		if p_ForceFullUpdate or s_Slot.m_IsUpdated then
+			s_SlotData = s_Slot:AsTable()
+			s_Data[l_SlotIndex] = s_SlotData
+
+			if s_Slot.m_SendToSpectator then
+				s_SpectatorData[l_SlotIndex] = s_SlotData
+			end
+
 			s_Slot.m_IsUpdated = false
 		end
 	end
 
-	return s_Data
+	return s_Data, s_SpectatorData
 end
 
 -- Calls `SendState` with a delay.
@@ -423,7 +430,17 @@ function BRInventory:SendState()
 		return
 	end
 
-	NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self:GetOwnerPlayer(), self:AsTable())
+	s_Data, s_SpectatorData = self:AsTable()
+
+	-- send data to player if it's not empty
+	if next(s_Data) ~= nil then
+		NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self:GetOwnerPlayer(), s_Data)
+	end
+
+	-- send data to player's spectators if it's not empty
+	if next(s_SpectatorData) ~= nil then
+		self:m_Owner:SendEventToSpectators(InventoryNetEvent.InventoryState, s_SpectatorData)
+	end
 end
 
 function BRInventory:Clear()

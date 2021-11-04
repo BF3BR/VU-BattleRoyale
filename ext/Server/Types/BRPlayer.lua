@@ -286,8 +286,20 @@ end
 	-- Spectator Functions
 -- =============================================
 
-function BRPlayer:SpectatePlayer(p_PlayerName)
-	self.m_SpectatedPlayerName = p_PlayerName
+function BRPlayer:SpectatePlayer(p_BrPlayer)
+	if p_BrPlayer == nil then
+		self.m_SpectatedPlayerName = nil
+		return
+	end
+
+	self.m_SpectatedPlayerName = p_BrPlayer:GetName()
+	local s_Player = p_BrPlayer:GetPlayer()
+
+	-- send inventory data of the spectated player
+	if s_Player ~= nil and s_Player.m_Inventory ~= nil then
+		local _, s_SpectatorData = s_Player.m_Inventory:AsTable(true)
+		NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self:GetPlayer(), s_SpectatorData)
+	end
 end
 
 function BRPlayer:AddSpectator(p_PlayerName)
