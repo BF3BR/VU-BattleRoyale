@@ -418,7 +418,7 @@ end
 -- Avoids multiple uneeded firings that may happen during some operations
 function BRInventory:DeferSendState()
 	if not self:ResetTimer("SendState") then
-		self:SetTimer("SendState", g_Timers:Timeout(0.06, self, self.SendState))
+		self:SetTimer("SendState", g_Timers:Timeout(0.02, self, self.SendState))
 	end
 end
 
@@ -439,7 +439,7 @@ function BRInventory:SendState()
 
 	-- send data to player's spectators if it's not empty
 	if next(s_SpectatorData) ~= nil then
-		self:m_Owner:SendEventToSpectators(InventoryNetEvent.InventoryState, s_SpectatorData)
+		self.m_Owner:SendEventToSpectators(InventoryNetEvent.InventoryState, s_SpectatorData)
 	end
 end
 

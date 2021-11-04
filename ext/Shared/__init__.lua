@@ -32,8 +32,6 @@ require "__shared/Configs/FireEffectsConfig"
 
 require "__shared/Logic/PhaseManagerShared"
 
-require "__shared/Items/Armor"
-
 local m_BundleManager = require "__shared/Logic/BundleManager"
 local m_GunSwayManager = require "__shared/Logic/GunSwayManager"
 local m_MapLoader = require "__shared/Logic/MapLoader"

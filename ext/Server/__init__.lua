@@ -471,7 +471,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 		s_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
 	end
 
-	p_Info.damage = s_BrPlayer:OnDamaged(p_Info.damage, s_BrGiver)
+	p_Info.damage = s_BrPlayer:OnDamaged(p_Info.damage, s_BrGiver, p_Info.boneIndex == 1)
 	p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
 end
 

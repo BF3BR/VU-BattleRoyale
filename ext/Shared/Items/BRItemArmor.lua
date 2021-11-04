@@ -32,12 +32,17 @@ end
 -- Armor related functions
 --==============================
 
--- Applies damage to the armor. Returns the damage passed through.
+-- Applies damage to the armor.
+-- returns:
+--  * (int) the damage passed through.
+--  * (bool) if the armor was destoyed
+--
 -- @param p_Damage number
+--
 function BRItemArmor:ApplyDamage(p_Damage)
 	-- check if armor is fully damaged
 	if self.m_CurrentDurability <= 0 then
-		return p_Damage
+		return p_Damage, true
 	end
 
 	-- calculate damage
@@ -52,7 +57,9 @@ function BRItemArmor:ApplyDamage(p_Damage)
 		self.m_CurrentDurability = 0
 	end
 
-	return s_DamagePassed
+	self:SetUpdated()
+
+	return s_DamagePassed, self.m_CurrentDurability <= 0
 end
 
 -- Returns the current percentage of the armor

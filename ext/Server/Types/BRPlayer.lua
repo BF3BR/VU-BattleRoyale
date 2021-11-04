@@ -46,7 +46,7 @@ end
 -- Hooks
 -- =============================================
 
-function BRPlayer:OnDamaged(p_Damage, p_Giver)
+function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 	-- check if giver isnt a teammate or the player himself
 	if p_Giver ~= nil and self:IsTeammate(p_Giver) and not self:Equals(p_Giver) then
 		return 0
@@ -70,22 +70,13 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 	elseif not s_Soldier.isInteractiveManDown then
 		s_Health = s_Health - 100
 
-		-- apply damage to the armor
-		local s_Armor = self:GetArmor()
-		if s_Armor ~= nil and p_Giver ~= nil and not self:Equals(p_Giver) then
-			local s_Damage = s_Armor:ApplyDamage(p_Damage)
-
-			-- check if we really did damage to the armor
-			if s_Damage ~= p_Damage then
-				p_Damage = s_Damage
-				self:UpdateArmor(s_Armor)
-
-				-- check if the player still has a shield or if the giver broke it
-				if s_Armor:GetPercentage() == 0 then
-					NetEvents:SendToLocal("Player:BrokeShield", p_Giver.m_Player, self:GetName())
-				end
-			end
+		-- apply damage to helmet and armor
+		if p_Giver ~= nil and not self:Equals(p_Giver) then
+			p_Damage = self:ApplyDamageToProtectiveItem(p_IsHeadShot and self:GetHelmet(), p_Damage)
+			p_Damage = self:ApplyDamageToProtectiveItem(self:GetArmor(), p_Damage)
 		end
+
+		self.m_Inventory:DeferSendState()
 
 		if p_Damage >= s_Health then
 			-- kill instantly if no teammates left
@@ -114,6 +105,26 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 	end
 
 	return math.max(0.001, p_Damage)
+end
+
+function BRPlayer:ApplyDamageToProtectiveItem(s_Item, p_Damage)
+	if not s_Item then
+		return p_Damage
+	end
+
+	p_Damage, s_WasDestroyed = s_Armor:ApplyDamage(p_Damage)
+
+	-- if item was destroyed, remove it from inventory
+	if s_WasDestroyed then
+		-- if it's armor, send an event that it broke
+		if s_Item.m_Definition.m_Type == ItemType.Armor then
+			NetEvents:SendToLocal("Player:BrokeShield", p_Giver.m_Player, self:GetName())
+		end
+
+		self.m_Inventory:DestroyItem(s_Armor.m_Id)
+	end
+
+	return p_Damage
 end
 
 -- =============================================
@@ -386,21 +397,6 @@ end
 -- Set Functions
 -- =============================================
 
-function BRPlayer:UpdateArmor(p_Armor)
-	if p_Armor == nil then
-		return
-	end
-
-	-- send updated armor to player
-	p_Armor:SetUpdated()
-	self.m_Inventory:SendState()
-
-	-- send updated armor to player's spectators
-	self:SendEventToSpectators(TeamManagerNetEvent.PlayerArmorState, {
-		Armor = p_Armor:AsTable()
-	})
-end
-
 function BRPlayer:SetTeamJoinStrategy(p_Strategy)
 	if self.m_TeamJoinStrategy == p_Strategy then
 		return
@@ -476,6 +472,11 @@ end
 -- Returns the current armor item equipped by the player
 function BRPlayer:GetArmor()
 	return (self.m_Inventory ~= nil and self.m_Inventory:GetSlot(InventorySlot.Armor).m_Item) or nil
+end
+
+-- Returns the current helmet item equipped by the player
+function BRPlayer:GetHelmet()
+	return (self.m_Inventory ~= nil and self.m_Inventory:GetSlot(InventorySlot.Helmet).m_Item) or nil
 end
 
 -- Checks if the player is alive

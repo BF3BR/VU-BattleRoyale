@@ -32,12 +32,17 @@ end
 -- Helmet related functions
 --==============================
 
--- Applies damage to the helmet. Returns the damage passed through.
+-- Applies damage to the helmet.
+-- returns:
+--  * (int) the damage passed through.
+--  * (bool) if the helmet was destoyed
+--
 -- @param p_Damage number
+--
 function BRItemHelmet:ApplyDamage(p_Damage)
 	-- check if helmet is fully damaged
 	if self.m_CurrentDurability <= 0 then
-		return p_Damage, false
+		return p_Damage, true
 	end
 
 	-- calculate damage
@@ -52,7 +57,9 @@ function BRItemHelmet:ApplyDamage(p_Damage)
 		self.m_CurrentDurability = 0
 	end
 
-	return s_DamagePassed, true
+	self:SetUpdated()
+
+	return s_DamagePassed, self.m_CurrentDurability <= 0
 end
 
 -- Returns the current percentage of the helmet
