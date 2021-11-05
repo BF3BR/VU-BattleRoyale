@@ -27,6 +27,8 @@ function Gunship:OnUpdatePassPostFrame(p_DeltaTime)
 		m_Hud:OnGunshipPosition(s_Entity.transform)
 		m_Hud:OnGunshipYaw(s_Entity.transform)
 		m_GunshipCamera:OnUpdatePassPostFrame(p_DeltaTime, s_GunshipEntity)
+	else
+		m_Hud:OnGunshipDisable()
 	end
 end
 

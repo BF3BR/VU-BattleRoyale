@@ -494,14 +494,11 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		and not m_HudUtils:GetIsInEscMenu()
 		and not m_HudUtils:GetIsInDeployScreen() then
 			if m_HudUtils:GetIsInventoryOpened() then
-				m_Logger:Write("Close Inventory")
 				m_HudUtils:SetIsInventoryOpened(false)
 				WebUI:ExecuteJS("OnInventoryOpen(false);")
 				m_HudUtils:HUDEnterUIGraph()
 				m_HudUtils:ShowCrosshair(true)
 			else
-				m_Logger:Write("Open Inventory")
-
 				-- if the minimap is opened we close it
 				if m_HudUtils:GetIsMapOpened() then
 					m_HudUtils:SetIsMapOpened(false)

@@ -133,7 +133,16 @@ const Inventory: React.FC<Props> = ({
             return;
         }
 
-        sendToLua('WebUI:DropItem', JSON.stringify({ item: slot.Id, quantity: slot.Quantity }));
+        if (isCtrlDown) {
+            setSplitModal({
+                id: slot.Id,
+                show: true,
+                maxQuantity: slot.Quantity,
+                value: Math.floor(slot.Quantity / 2),
+            });
+        } else {
+            sendToLua('WebUI:DropItem', JSON.stringify({ item: slot.Id, quantity: slot.Quantity }));
+        }
     }
 
     const handleUseItem = (id: string) => {
@@ -362,6 +371,24 @@ const Inventory: React.FC<Props> = ({
                 sensors={sensors}
             >
                 <div id="Inventory" className={isOpen ? "open" : ""}>
+                    <div className="inventory-details">
+                        <div className="detail">
+                            <span className="keyboard">RIGHT CLICK</span>
+                            DROP ITEM
+                        </div>
+                        <div className="detail">
+                            <span className="keyboard">LEFT CLICK</span>
+                            USE ITEM
+                        </div>
+                        <div className="detail">
+                            <span className="keyboard">CTRL</span>
+                            SPLIT ITEMS
+                        </div>
+                        <div className="detail">
+                            <span className="keyboard">MOUSE</span>
+                            MOVE ITEM
+                        </div>
+                    </div>
                     <div className="InventoryWrapper">
                         <div className="card PrimaryWeaponBox">
                             <div className="card-header">

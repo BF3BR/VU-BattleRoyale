@@ -548,9 +548,9 @@ end
 
 -- Calls `UpdateSoldierCustomization` with a delay.
 -- Avoids multiple uneeded firings that may happen during some operations
-function BRInventory:DeferUpdateSoldierCustomization()
+function BRInventory:DeferUpdateSoldierCustomization(p_Timeout)
 	if not self:ResetTimer("UpdateCustomization") then
-		self:SetTimer("UpdateCustomization", g_Timers:Timeout(0.12, self, self.UpdateSoldierCustomization))
+		self:SetTimer("UpdateCustomization", g_Timers:Timeout(p_Timeout or 0.12, self, self.UpdateSoldierCustomization))
 	end
 end
 

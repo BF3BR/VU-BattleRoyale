@@ -27,7 +27,7 @@ function BRPlayer:__init(p_Player)
 	self.m_PosInSquad = 1
 
 	-- the user selected strategy that is used when the teams are formed
-	self.m_TeamJoinStrategy = TeamJoinStrategy.NoJoin
+	self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
 
 	-- the player's inventory
 	self.m_Inventory = nil
@@ -232,7 +232,7 @@ function BRPlayer:Spawn(p_Trans)
 	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
 
 	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
-	s_Inventory:DeferUpdateSoldierCustomization()
+	s_Inventory:DeferUpdateSoldierCustomization(0.85)
 	s_Inventory:SendState()
 
 	local s_Event = ServerPlayerEvent("Spawn", self.m_Player, true, false, false, false, false, false, self.m_Player.teamId)

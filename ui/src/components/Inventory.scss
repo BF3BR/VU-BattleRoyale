@@ -10,6 +10,42 @@
     z-index: 80;
     display: none;
 
+    .inventory-details {
+        position: absolute;
+        bottom: 2.25vh;
+        right: 4vh;
+        font-size: 0.52vw;
+        display: flex;
+        z-index: 10;
+        animation: scale-out-hor-left 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+        animation-delay: 3s;
+    
+        .detail {
+            margin-right: 1vw;
+    
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+    
+        span {
+            &.keyboard {
+                border: 0.15vw solid #fff;
+                border-radius: 0.25vw;
+                margin: 0 0.45vw 0 0;
+                background: rgba(255, 255, 255, 0.1);
+                height: 0.7vw;
+                line-height: 0.8vw;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                text-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.2);
+                box-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.2);
+                padding: 0 0.3vw 0.15vw 0.3vw;
+            }
+        }
+    }
+
     &.open {
         display: block;
 
