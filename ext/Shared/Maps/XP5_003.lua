@@ -48,13 +48,13 @@ return {
 	PhasesCount = 9,
 	Phases = {
 		{
-			StartsAt = 20.0,
-			MoveDuration = 60.0,
+			StartsAt = 90.0,
+			MoveDuration = 90.0,
 			Damage = 0.4,
 			Ratio = 0.3,
 			HasAirdrop = false,
 		},{
-			StartsAt = 20.0,
+			StartsAt = 90.0,
 			MoveDuration = 90.0,
 			Damage = 0.6,
 			Ratio = 0.45,
@@ -131,7 +131,8 @@ return {
 	VEPresets = {
 		--"XP5_003_Default",
 		--"XP5_003_Foggy",
-		"XP5_003_Sunset",
-		"XP5_003_Night",
+		--"XP5_003_Sunset",
+		--"XP5_003_Night",
+		"XP5_003_Night_Two",
 	},
 }

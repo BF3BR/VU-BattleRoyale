@@ -40,6 +40,7 @@ local m_MapVEManager = require "Visuals/MapVEManager"
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_CommonSpatialRaycast = require "CommonSpatialRaycast"
 local m_BRLooting = require "Types/BRLooting"
+local m_SoundModifier = require "SoundModifier"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -57,7 +58,6 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
 	self:RegisterCommands()
 
 	m_Hud:OnExtensionLoaded()
-	m_BRLooting:OnExtensionLoaded()
 	self:OnHotReload()
 end
 
@@ -129,6 +129,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe(InventoryNetEvent.UnregisterLootPickup, self, self.OnUnregisterLootPickup),
 		NetEvents:Subscribe(InventoryNetEvent.UpdateLootPickup, self, self.OnUpdateLootPickup),
 		NetEvents:Subscribe(InventoryNetEvent.ItemActionCanceled, self, self.OnItemActionCanceled),
+
+		Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded),
 	}
 end
 
@@ -821,6 +823,10 @@ end
 
 function VuBattleRoyaleClient:OnItemActionCanceled()
 	m_BrPlayer.m_Inventory:OnItemActionCanceled()
+end
+
+function VuBattleRoyaleClient:OnPartitionLoaded(p_Partition)
+	m_SoundModifier:OnPartitionLoaded(p_Partition)
 end
 
 return VuBattleRoyaleClient()

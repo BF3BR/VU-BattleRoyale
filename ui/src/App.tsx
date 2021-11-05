@@ -312,7 +312,7 @@ const App: React.FC<Props> = ({
     }
 
     window.OnPlanePos = (p_DataJson: any) => {
-        if (p_DataJson !== undefined && p_DataJson !== null && p_DataJson.x !== undefined && p_DataJson.y !== undefined && p_DataJson.z !== undefined) {
+        if (p_DataJson !== null && p_DataJson.x !== undefined && p_DataJson.y !== undefined && p_DataJson.z !== undefined) {
             dispatch(updatePlanePosition({
                 x: p_DataJson.x,
                 y: p_DataJson.y,
@@ -626,10 +626,6 @@ const App: React.FC<Props> = ({
     }
 
     window.SyncOverlayLoot = (p_DataJson: any) => {
-        if (p_DataJson !== null) {
-            console.log("window.SyncOverlayLoot");
-            console.log(p_DataJson);
-        }
         dispatch(updateOverlayLoot(p_DataJson));
     }
 
@@ -681,10 +677,9 @@ const App: React.FC<Props> = ({
         dispatch(resetMap());
         dispatch(resetPing());
         dispatch(resetPlane());
-        dispatch(resetPlayer());
-        dispatch(resetPlayer());
+        // dispatch(resetPlayer());
         dispatch(resetSpectator());
-        dispatch(resetTeam());
+        // dispatch(resetTeam());
     }
 
     return (

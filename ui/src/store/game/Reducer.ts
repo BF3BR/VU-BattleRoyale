@@ -35,7 +35,7 @@ const initialState: GameState = {
     deployScreen: {
         enabled: false,
         selectedAppearance: 0,
-        selectedTeamType: 1,
+        selectedTeamType: 2,
         teamId: "-",
         teamSize: 4,
         teamLocked: false,
