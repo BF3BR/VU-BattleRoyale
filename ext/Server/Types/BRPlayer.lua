@@ -107,21 +107,21 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 	return math.max(0.001, p_Damage)
 end
 
-function BRPlayer:ApplyDamageToProtectiveItem(s_Item, p_Damage)
-	if not s_Item then
+function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage)
+	if not p_Item then
 		return p_Damage
 	end
 
-	p_Damage, s_WasDestroyed = s_Armor:ApplyDamage(p_Damage)
+	p_Damage, s_WasDestroyed = p_Item:ApplyDamage(p_Damage)
 
 	-- if item was destroyed, remove it from inventory
 	if s_WasDestroyed then
 		-- if it's armor, send an event that it broke
-		if s_Item.m_Definition.m_Type == ItemType.Armor then
+		if p_Item.m_Definition.m_Type == ItemType.Armor then
 			NetEvents:SendToLocal("Player:BrokeShield", p_Giver.m_Player, self:GetName())
 		end
 
-		self.m_Inventory:DestroyItem(s_Armor.m_Id)
+		self.m_Inventory:DestroyItem(p_Item.m_Id)
 	end
 
 	return p_Damage
