@@ -160,6 +160,8 @@ const App: React.FC<Props> = ({
                 6,
                 Sounds.Notification
             ));
+        } else if(state === "Before Plane") {
+            garbageCollection();
         } else if (state === "EndGame" && gameOverScreen === false) {
             dispatch(addAlert(
                 "The round is ended, restarting soon...",
@@ -680,6 +682,13 @@ const App: React.FC<Props> = ({
         // dispatch(resetPlayer());
         dispatch(resetSpectator());
         // dispatch(resetTeam());
+        garbageCollection();
+    }
+
+    const garbageCollection = () => {
+        if (window.gc) {
+            window.gc();
+        }
     }
 
     return (
@@ -913,5 +922,7 @@ declare global {
         TestInventoryTimer: (slot: any, time: number) => void;
         ItemCancelAction: () => void;
         ResetAllValues: () => void;
+
+        gc: () => void;
     }
 }
