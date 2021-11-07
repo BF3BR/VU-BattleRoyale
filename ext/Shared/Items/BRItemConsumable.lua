@@ -62,14 +62,21 @@ function BRItemConsumable:OnComplete()
 
 	-- execute action and reduce item's quantity
 	self:ApplyAction()
-	self.m_Quantity = self.m_Quantity - 1
-
+	
 	-- inform player that the action was completed
-	self:SendNetEvent(InventoryNetEvent.ItemActionCompleted)
+	-- KVN: We dont use it yet, but keep it, we might use this later
+	-- self:SendNetEvent(InventoryNetEvent.ItemActionCompleted)
 
-	-- destroy item if needed
-	if self.m_Quantity < 1 then
-		Events:DispatchLocal("BRItem:DestroyItem", self.m_Id)
+	self:DecreaseQuantityBy(1)
+
+	local s_Inventory = self:GetParentInventory()
+	if s_Inventory ~= nil then
+		s_Inventory:SendState()
+	end
+
+	if self.m_Timer ~= nil then
+		self.m_Timer:Destroy()
+		self.m_Timer = nil
 	end
 end
 
