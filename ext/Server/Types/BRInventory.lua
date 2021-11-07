@@ -407,7 +407,9 @@ function BRInventory:AsTable(p_ForceFullUpdate)
 				s_SpectatorData[l_SlotIndex] = s_SlotData
 			end
 
-			s_Slot.m_IsUpdated = false
+			if not p_ForceFullUpdate then
+				s_Slot.m_IsUpdated = false
+			end
 		end
 	end
 

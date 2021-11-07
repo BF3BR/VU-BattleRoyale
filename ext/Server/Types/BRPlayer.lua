@@ -72,8 +72,8 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 
 		-- apply damage to helmet and armor
 		if p_Giver ~= nil and not self:Equals(p_Giver) then
-			p_Damage = self:ApplyDamageToProtectiveItem(p_IsHeadShot and self:GetHelmet(), p_Damage)
-			p_Damage = self:ApplyDamageToProtectiveItem(self:GetArmor(), p_Damage)
+			p_Damage = self:ApplyDamageToProtectiveItem(p_IsHeadShot and self:GetHelmet(), p_Damage, p_Giver)
+			p_Damage = self:ApplyDamageToProtectiveItem(self:GetArmor(), p_Damage, p_Giver)
 		end
 
 		self.m_Inventory:DeferSendState()
@@ -107,7 +107,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 	return math.max(0.001, p_Damage)
 end
 
-function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage)
+function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage, p_Giver)
 	if not p_Item then
 		return p_Damage
 	end
@@ -304,11 +304,11 @@ function BRPlayer:SpectatePlayer(p_BrPlayer)
 	end
 
 	self.m_SpectatedPlayerName = p_BrPlayer:GetName()
-	local s_Player = p_BrPlayer:GetPlayer()
-
+	
 	-- send inventory data of the spectated player
-	if s_Player ~= nil and s_Player.m_Inventory ~= nil then
-		local _, s_SpectatorData = s_Player.m_Inventory:AsTable(true)
+	if p_BrPlayer.m_Inventory ~= nil then
+		local _, s_SpectatorData = p_BrPlayer.m_Inventory:AsTable(true)
+		m_Logger:Write(json.encode(s_SpectatorData))
 		NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self:GetPlayer(), s_SpectatorData)
 	end
 end
