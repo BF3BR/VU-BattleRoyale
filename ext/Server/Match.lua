@@ -173,7 +173,7 @@ function Match:OnRestartRound()
 	m_GameStateManager:SetGameState(GameStates.None)
 
 	-- Spawn loot pickups for warmup
-	m_BRLootManager:SpawnMapSpecificLootPickups()
+	-- m_BRLootManager:SpawnMapSpecificLootPickups()
 end
 
 -- =============================================
