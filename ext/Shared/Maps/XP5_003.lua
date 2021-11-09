@@ -15,14 +15,14 @@ return {
 		"XP3Chunks",
 		"Levels/XP3_Shield/XP3_Shield",
 		"Levels/XP3_Alborz/XP3_Alborz",
-		"Levels/coop_003/coop_003",
+		"Levels/coop_009/coop_009",
 	},
 	Bundles = {
 		"Levels/XP1_004/XP1_004",
 		"Levels/XP3_Shield/XP3_Shield",
 		"Levels/XP3_Alborz/XP3_Alborz",
-		"Levels/coop_003/coop_003",
-		"Levels/coop_003/ab03_parent",
+		"Levels/coop_009/coop_009",
+		"Levels/coop_009/ab03_parent",
 		"Levels/XP5_003/XP5_003",
 	},
 	BundleRegistries = {
@@ -133,6 +133,7 @@ return {
 		--"XP5_003_Foggy",
 		--"XP5_003_Sunset",
 		--"XP5_003_Night",
-		"XP5_003_Night_Two",
+		--"XP5_003_Night_Two",
+		"XP5_003_Night_Three",
 	},
 }
