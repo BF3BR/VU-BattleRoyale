@@ -40,23 +40,23 @@ const TeamElement: React.FC<Props> = ({
             {(team !== null && team.length > 0 && name !== null) &&
                 team
                 .filter((player: Player) => {
-                    if (player.name !== name) {
-                        return true;
+                    if (player.name === name ) {
+                        return false;
                     }
 
-                    if (spectating && player.name !== spectatorTarget) {
-                        return true;
+                    if (spectating && player.name === spectatorTarget) {
+                        return false;
                     }
 
-                    if (player.state !== 3) {
-                        return true;
+                    if (player.state === 3) {
+                        return false;
                     }
 
-                    if (player.position.x !== null && player.position.z !== null) {
-                        return true;
+                    if (player.position.x === null || player.position.z === null) {
+                        return false;
                     }
 
-                    return false;
+                    return true;
                 })
                 .map((player: Player, key: number) => (
                     (player.state === 1 ?
