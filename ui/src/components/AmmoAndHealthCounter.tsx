@@ -10,6 +10,7 @@ import "./AmmoAndHealthCounter.scss";
 interface StateFromReducer {
     playerHealth: number;
     playerArmor: number;
+    playerHelmet: number;
     playerPrimaryAmmo: number;
     playerSecondaryAmmo: number;
     playerFireLogic: string;
@@ -22,12 +23,13 @@ interface StateFromReducer {
 type Props = StateFromReducer;
 
 const AmmoAndHealthCounter: React.FC<Props> = ({ 
-    playerHealth, 
-    playerArmor, 
-    playerPrimaryAmmo, 
-    playerSecondaryAmmo, 
-    playerFireLogic, 
-    playerCurrentWeapon, 
+    playerHealth,
+    playerArmor,
+    playerHelmet,
+    playerPrimaryAmmo,
+    playerSecondaryAmmo,
+    playerFireLogic,
+    playerCurrentWeapon,
     playerIsInPlane,
     spectating,
     spectatorTarget
@@ -97,7 +99,10 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
                         }
                         {((spectating && spectatorTarget !== "") || spectating === false) &&
                             <>
-                                <PercentageCounter type="Armor" value={playerArmor??0} />
+                                <div className="PercentageGrid">
+                                    <PercentageCounter type="Armor" value={playerArmor??0} />
+                                    <PercentageCounter type="Helmet" value={playerHelmet??0} />
+                                </div>
                                 <PercentageCounter type="Health" value={playerHealth??0} />
                             </>
                         }
@@ -114,6 +119,7 @@ const mapStateToProps = (state: RootState) => {
         // PlayerReducer
         playerHealth: state.PlayerReducer.hud.health, 
         playerArmor: state.PlayerReducer.hud.armor,
+        playerHelmet: state.PlayerReducer.hud.helmet,
         playerPrimaryAmmo: state.PlayerReducer.hud.primaryAmmo,
         playerSecondaryAmmo: state.PlayerReducer.hud.secondaryAmmo,
         playerFireLogic: state.PlayerReducer.hud.fireLogic,

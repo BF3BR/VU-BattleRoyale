@@ -11,6 +11,7 @@ import {
     updatePlayerData,
     updatePlayerFireLogic,
     updatePlayerHealth,
+    updatePlayerHelmet,
     updatePlayerIsOnPlane,
     updatePlayerPosition,
     updatePlayerPrimaryAmmo,
@@ -233,6 +234,10 @@ const App: React.FC<Props> = ({
 
     window.OnPlayerArmor = (data: number) => {
         dispatch(updatePlayerArmor(Math.ceil(data)));
+    }
+
+    window.OnPlayerHelmet = (data: number) => {
+        dispatch(updatePlayerHelmet(Math.ceil(data)));
     }
 
     window.OnPlayerPrimaryAmmo = (data: number) => {
@@ -878,6 +883,7 @@ declare global {
 
         OnPlayerHealth: (data: number) => void;
         OnPlayerArmor: (data: number) => void;
+        OnPlayerHelmet: (data: number) => void;
         OnPlayerPrimaryAmmo: (data: number) => void;
         OnPlayerSecondaryAmmo: (data: number) => void;
         OnPlayerFireLogic: (data: number) => void;

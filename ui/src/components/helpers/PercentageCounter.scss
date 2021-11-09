@@ -44,7 +44,7 @@
     }
 
     .PercentageText {
-        width: 1.95vw;
+        width: 1.2vw;
         display: flex;
         align-items: center;
         justify-content: flex-end;
@@ -68,6 +68,25 @@
 
         img {
             filter: drop-shadow(0 0 0.1vw rgba(40, 169, 235, 0.75));
+        }
+    }
+
+    &.PercentageTypeHelmet {
+        .PercentageBg {
+            background-color: rgba(196, 117, 50, 0.4);
+        }
+
+        .PercentageFg {
+            background-color: #ffcb7e;
+            box-shadow: 0 0 0.2vw 0.05vw #ff9900 inset, 0 0 0.15vw 0.05vw rgba(196, 117, 50, 0.5);
+        }
+
+        .PercentageText {
+            color: #ff9900;
+        }
+
+        img {
+            filter: drop-shadow(0 0 0.1vw rgba(196, 117, 50, 0.75));
         }
     }
 }

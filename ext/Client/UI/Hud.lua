@@ -40,6 +40,7 @@ function VuBattleRoyaleHud:RegisterVars()
 	self.m_HudOnMinPlayersToStart = CachedJsExecutor("OnMinPlayersToStart(%s)", nil)
 	self.m_HudOnPlayerHealth = CachedJsExecutor("OnPlayerHealth(%s)", 0)
 	self.m_HudOnPlayerArmor = CachedJsExecutor("OnPlayerArmor(%s)", 0)
+	self.m_HudOnPlayerHelmet = CachedJsExecutor("OnPlayerHelmet(%s)", 0)
 	self.m_HudOnPlayerPrimaryAmmo = CachedJsExecutor("OnPlayerPrimaryAmmo(%s)", 0)
 	self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
 	self.m_HudOnPlayerFireLogic = CachedJsExecutor("OnPlayerFireLogic(%s)", 0)
@@ -70,6 +71,7 @@ function VuBattleRoyaleHud:ResetVars()
 	self.m_HudOnMinPlayersToStart:ForceUpdate(self.m_MinPlayersToStart)
 	self.m_HudOnPlayerHealth:ForceUpdate(0)
 	self.m_HudOnPlayerArmor:ForceUpdate(0)
+	self.m_HudOnPlayerHelmet:ForceUpdate(0)
 	self.m_HudOnPlayerPrimaryAmmo:ForceUpdate(0)
 	self.m_HudOnPlayerSecondaryAmmo:ForceUpdate(0)
 	self.m_HudOnPlayerFireLogic:ForceUpdate(0)
@@ -788,6 +790,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 	end
 
 	self.m_HudOnPlayerArmor:Update(m_BrPlayer:GetArmorPercentage())
+	self.m_HudOnPlayerHelmet:Update(m_BrPlayer:GetHelmetPercentage())
 
 	if s_Soldier.weaponsComponent.currentWeapon then
 		self.m_HudOnPlayerPrimaryAmmo:Update(s_Soldier.weaponsComponent.currentWeapon.primaryAmmo)

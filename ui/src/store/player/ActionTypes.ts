@@ -4,6 +4,7 @@ export const UPDATE_PLAYER_POSITION = "UPDATE_PLAYER_POSITION";
 export const UPDATE_PLAYER_YAW = "UPDATE_PLAYER_YAW";
 export const UPDATE_PLAYER_HEALTH = "UPDATE_PLAYER_HEALTH";
 export const UPDATE_PLAYER_ARMOR = "UPDATE_PLAYER_ARMOR";
+export const UPDATE_PLAYER_HELMET = "UPDATE_PLAYER_HELMET";
 export const UPDATE_PLAYER_PRIMARY_AMMO = "UPDATE_PLAYER_PRIMARY_AMMO";
 export const UPDATE_PLAYER_SECONDARY_AMMO = "UPDATE_PLAYER_SECONDARY_AMMO";
 export const UPDATE_PLAYER_FIRELOGIC = "UPDATE_PLAYER_FIRELOGIC";
@@ -31,6 +32,11 @@ interface UpdatePlayerHealth {
 interface UpdatePlayerArmor {
     type: typeof UPDATE_PLAYER_ARMOR;
     payload: { armor: number };
+}
+
+interface UpdatePlayerHelmet {
+    type: typeof UPDATE_PLAYER_HELMET;
+    payload: { helmet: number };
 }
 
 interface UpdatePlayerPrimaryAmmo {
@@ -78,6 +84,7 @@ export type PlayerActionTypes =
     | UpdatePlayerYaw
     | UpdatePlayerHealth
     | UpdatePlayerArmor
+    | UpdatePlayerHelmet
     | UpdatePlayerPrimaryAmmo
     | UpdatePlayerSecondaryAmmo
     | UpdatePlayerFireLogic

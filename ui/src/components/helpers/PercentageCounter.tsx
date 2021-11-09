@@ -2,6 +2,7 @@ import React from "react";
 
 import armor from "../../assets/img/armor.svg";
 import health from "../../assets/img/medic.svg";
+import helmet from "../../assets/img/helmet.svg";
 
 import "./PercentageCounter.scss";
 
@@ -19,7 +20,14 @@ const PercentageCounter: React.FC<Props> = ({ type, value }) => {
                 ?
                     <img src={armor} alt="icon" />
                 :
-                    <img src={health} alt="icon" />
+                    <>
+                        {type === "Helmet"
+                        ?
+                            <img src={helmet} alt="icon" />
+                        :
+                            <img src={health} alt="icon" />
+                        }
+                    </>
                 }
                 <div className="PercentageBg">
                     <div className="PercentageFg" style={{width: value + "%"}}></div>

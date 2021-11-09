@@ -38,7 +38,6 @@ function ModificationsCommon:RegisterCallbacks()
 	m_ManDownModifier:RegisterCallbacks()
 	m_RemoveAutotriggerVO:RegisterCallbacks()
 	m_TimeOutFix:RegisterCallbacks()
-	m_Airdrop:RegisterCallbacks()
 	m_ShowroomModifier:RegisterCallbacks()
 end
 
@@ -63,6 +62,7 @@ end
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_FireEffectsModifier:OnRegisterEntityResources()
 	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
+	m_Airdrop:OnRegisterEntityResources(p_LevelData)
 end
 
 function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
@@ -86,7 +86,6 @@ function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_Dedica
 		m_AirdropSmokeModifier:DeregisterCallbacks()
 		m_ManDownModifier:DeregisterCallbacks()
 		m_RemoveAutotriggerVO:DeregisterCallbacks()
-		m_Airdrop:DeregisterCallbacks()
 		m_ShowroomModifier:DeregisterCallbacks()
 		return
 	end

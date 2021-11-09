@@ -12,7 +12,8 @@ import {
     UPDATE_PLAYER_IS_ON_PLANE,
     UPDATE_PLAYER_DATA,
     UPDATE_CTRL_DOWN,
-    RESET_PLAYER
+    RESET_PLAYER,
+    UPDATE_PLAYER_HELMET
 } from "./ActionTypes";
 
 export function updatePlayerPosition(position: Vec3|null): PlayerActionTypes {
@@ -40,6 +41,13 @@ export function updatePlayerArmor(armor: number): PlayerActionTypes {
     return {
         type: UPDATE_PLAYER_ARMOR,
         payload: { armor },
+    };
+}
+
+export function updatePlayerHelmet(helmet: number): PlayerActionTypes {
+    return {
+        type: UPDATE_PLAYER_HELMET,
+        payload: { helmet },
     };
 }
 
