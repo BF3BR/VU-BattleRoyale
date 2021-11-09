@@ -7,6 +7,8 @@ function BRLootPickupDatabase:ResetVars()
 
 	self.m_InstanceIdToLootPickup = {}
 
+	self.m_SpawnQueue = Queue()
+
 	-- close items cache
 	self.m_CachedCloseEntitiesUpdatedAt = 0
 	self.m_CachedCloseEntities = {}
@@ -27,7 +29,13 @@ function BRLootPickupDatabase:Add(p_LootPickup)
 	-- a bit if it's not close, anyways
 	self.m_CachedCloseEntities[p_LootPickup.m_Id] = p_LootPickup
 
-	self:CreateLootPickupEntities(p_LootPickup)
+	-- spawn items instantly if they are close to the player/camera
+	local s_CameraTransform = ClientUtils:GetCameraTransform()
+	if s_CameraTransform ~= nil and
+		s_CameraTransform.trans:Distance(p_LootPickup.m_Transform.trans) <= InventoryConfig.CloseItemSearchRadiusClient then
+		self:CreateLootPickupEntities(p_LootPickup)
+	end
+
 	return true
 end
 
@@ -45,7 +53,11 @@ function BRLootPickupDatabase:Update(p_LootPickupData)
 	-- clean old meshes and related references, then spawn new ones
 	if s_CurrentMesh ~= s_LootPickup:GetMesh() then
 		self:DestroyLootPickupEntities(s_LootPickup)
-		self:CreateLootPickupEntities(s_LootPickup)
+
+		if self.m_CachedCloseEntities[s_LootPickup.m_Id] ~= nil then
+			self.m_SpawnQueue:Enqueue(s_LootPickup.m_Id)
+			-- self:CreateLootPickupEntities(s_LootPickup)
+		end
 	end
 
 	return s_LootPickup
@@ -100,6 +112,8 @@ function BRLootPickupDatabase:UpdateCachedCloseLootPickups(p_Position, p_CachedR
 		local s_LootPickupPos2D = Vec2(l_LootPickup.m_Transform.trans.x, l_LootPickup.m_Transform.trans.z)
 
 		if s_LootPickupPos2D:Distance(s_Pos2D) <= p_CachedRadius then
+			-- self:CreateLootPickupEntities(l_LootPickup)
+			self.m_SpawnQueue:Enqueue(l_LootPickup.m_Id)
 			self.m_CachedCloseEntities[l_LootPickup.m_Id] = l_LootPickup
 		end
 	end
@@ -138,6 +152,22 @@ function BRLootPickupDatabase:UpdateGridSubscriptions()
 	-- TODO
 end
 
+function BRLootPickupDatabase:SpawnQueued()
+	if self.m_SpawnQueue:Size() < 1 then
+		return
+	end
+
+	local s_SpawnedThisUpdate = 0
+	while not self.m_SpawnQueue:IsEmpty() and s_SpawnedThisUpdate < 2 do
+		local s_LootPickupId = self.m_SpawnQueue:Dequeue()
+		local s_LootPickup = self:GetById(s_LootPickupId)
+
+		if s_LootPickup ~= nil and self:CreateLootPickupEntities(s_LootPickup) ~= nil then
+			s_SpawnedThisUpdate = s_SpawnedThisUpdate + 1
+		end
+	end
+end
+
 -- =============================================
 -- Events
 -- =============================================
@@ -154,6 +184,10 @@ end
 
 function BRLootPickupDatabase:OnUnregisterLootPickup(p_LootPickupId)
 	self:RemoveById(p_LootPickupId)
+end
+
+function BRLootPickupDatabase:OnEngineUpdate()
+	self:SpawnQueued()
 end
 
 function BRLootPickupDatabase:OnLevelDestroy()

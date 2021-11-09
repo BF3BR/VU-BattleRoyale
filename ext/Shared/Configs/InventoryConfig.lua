@@ -11,4 +11,6 @@ InventoryConfig = {
 	-- the radius around the player that he is allowed to pickup items
 	-- better give it some extra compared to `CloseItemSearchRadiusClient`
 	CloseItemAllowedRadiusServer = 3.5,
+
+	SpawnedLootPickupsPerUpdate = 2,
 }
