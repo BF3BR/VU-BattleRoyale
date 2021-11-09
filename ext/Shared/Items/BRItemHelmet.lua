@@ -63,7 +63,7 @@ function BRItemHelmet:ApplyDamage(p_Damage)
 end
 
 -- Returns the current percentage of the helmet
-function BRItemArmor:GetPercentage()
+function BRItemHelmet:GetPercentage()
 	if self.m_CurrentDurability <= 0 then
 		return 0
 	end
