@@ -19,6 +19,21 @@ function PhaseManagerShared:RegisterVars()
 	self.m_PhaseIndex = 1
 	self.m_SubphaseIndex = SubphaseType.InitialDelay
 	self.m_Completed = false
+
+	self:LoadPhases()
+end
+
+function PhaseManagerShared:LoadPhases()
+	-- get and check config for the current map
+	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
+
+	if s_MapConfig == nil then
+		m_Logger:Error("invalid level name")
+		return
+	end
+
+	self.m_Phases = s_MapConfig.Phases
+	self.m_InitialDelay = s_MapConfig.BeforeFirstCircleDelay
 end
 
 -- =============================================
@@ -30,16 +45,7 @@ function PhaseManagerShared:OnExtensionUnloading()
 end
 
 function PhaseManagerShared:OnLevelLoaded()
-	-- get and check config for the current map
-	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
-
-	if s_MapConfig == nil then
-		m_Logger:Error("invalid level name")
-		return
-	end
-
-	self.m_Phases = s_MapConfig.Phases
-	self.m_InitialDelay = s_MapConfig.BeforeFirstCircleDelay
+	self:LoadPhases()
 end
 
 function PhaseManagerShared:OnLevelDestroy()
