@@ -1,5 +1,7 @@
 class "BRAirdropManager"
 
+require "__shared/Enums/AirdropEnums"
+
 local m_Logger = Logger("BRAirdropManager", true)
 
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
@@ -90,7 +92,7 @@ function BRAirdropManager:CreateAirdrop(p_Trans)
 	end
 
 	local s_Bp = ObjectBlueprint(
-		ResourceManager:SearchForInstanceByGuid(Guid("261E43BF-259B-BF3B-41D2-0000BBBDBBBF"))
+		ResourceManager:SearchForInstanceByGuid(AirdropGuids.CustomAirdropGuid)
 	)
 
 	local s_CreationParams = EntityCreationParams()

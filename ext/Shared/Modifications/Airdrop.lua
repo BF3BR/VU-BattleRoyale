@@ -1,13 +1,13 @@
 class "Airdrop"
 
+require "__shared/Enums/AirdropEnums"
+
 local m_RigidMesh = DC(Guid("DA504C92-911F-87DD-0D84-944BD542E835"), Guid("B5CE760E-5220-29BA-3316-23EA12244E88"))
 local m_HavokAsset = DC(Guid("A80588DC-4471-11DE-B7E8-80A76CACD9DC"), Guid("CB8BB4E2-E1F4-EA1D-E815-3DFD8765447B"))
 
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
 
 local m_Logger = Logger("Airdrop", true)
-
-local m_CustomAirdropGuid = Guid("261E43BF-259B-BF3B-41D2-0000BBBDBBBF")
 
 function Airdrop:OnPartitionLoaded(p_Partition)
 	if p_Partition == nil then
@@ -18,12 +18,12 @@ function Airdrop:OnPartitionLoaded(p_Partition)
 	local s_Instances = p_Partition.instances
 	for _, l_Instance in pairs(s_Instances) do
 		-- If we already created the custom airdrop then no need to do anything.
-		if l_Instance.instanceGuid == m_CustomAirdropGuid then
+		if l_Instance.instanceGuid == AirdropGuids.CustomAirdropGuid then
 			return
 		end
 
 		-- Look for the original airdrop blueprint.
-		if l_Instance.instanceGuid == Guid("DE3ABA3C-D0D1-9863-50FB-D48577340978") then
+		if l_Instance.instanceGuid == AirdropGuids.OriginalAirdropGuid then
 			s_OriginalBlueprint = ObjectBlueprint(l_Instance)
 		end
 	end
@@ -32,7 +32,7 @@ function Airdrop:OnPartitionLoaded(p_Partition)
 		return
 	end
 
-	local s_CustomObjectBlueprint = ObjectBlueprint(s_OriginalBlueprint:Clone(m_CustomAirdropGuid))
+	local s_CustomObjectBlueprint = ObjectBlueprint(s_OriginalBlueprint:Clone(AirdropGuids.CustomAirdropGuid))
 	s_CustomObjectBlueprint.name = "Props/BattleRoyale/Airdrop_Banger"
 
 	-- We also need to clone the original SoldierEntityData and replace all references to it.
@@ -74,7 +74,7 @@ function Airdrop:OnRegisterEntityResources()
 
 	-- Locate the custom airdrop BP, get its data, and add to the registry container.
 	-- You can fetch the BP in the same way when you want to spawn it
-	local s_CustomObjectBlueprint = ObjectBlueprint(ResourceManager:SearchForInstanceByGuid(m_CustomAirdropGuid))
+	local s_CustomObjectBlueprint = ObjectBlueprint(ResourceManager:SearchForInstanceByGuid(AirdropGuids.CustomAirdropGuid))
 	local s_CustomBangerEntityData = BangerEntityData(s_CustomObjectBlueprint.object)
 	local s_CustomPhysicsEntityData = PhysicsEntityData(s_CustomBangerEntityData.physicsData)
 	local s_CustomRigidBodyData = RigidBodyData(s_CustomPhysicsEntityData.rigidBodies[1])
