@@ -62,7 +62,11 @@ end
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_FireEffectsModifier:OnRegisterEntityResources()
 	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
-	m_Airdrop:OnRegisterEntityResources(p_LevelData)
+	m_Airdrop:OnRegisterEntityResources()
+end
+
+function ModificationsCommon:OnPartitionLoaded(p_Partition)
+	m_Airdrop:OnPartitionLoaded(p_Partition)
 end
 
 function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
