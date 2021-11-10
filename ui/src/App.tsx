@@ -676,7 +676,7 @@ const App: React.FC<Props> = ({
         console.info("RESETTING ALL VALUES!!");
         dispatch(resetAlert());
         dispatch(resetCircle());
-        dispatch(resetGame());
+        // dispatch(resetGame());
         dispatch(resetInteractivemsg());
         dispatch(resetInventory());
         dispatch(resetInventory());
@@ -765,13 +765,18 @@ const App: React.FC<Props> = ({
                                 Name: "Kiwidog",
                             }
                         ]))}>Set Gameover Screen</button>
-                        <button onClick={() => window.OnLocalPlayerInfo({
-                            name: 'KVN',
-                            kill: 15,
-                            state: 1,
-                            isTeamLeader: true,
-                            color: "rgba(255, 0, 0, 0.3)",
-                        })}>SetDummyLocalPlayer</button>
+                        <button onClick={() =>{
+                            window.OnLocalPlayerInfo({
+                                name: 'KVN',
+                                kill: 15,
+                                state: 1,
+                                isTeamLeader: true,
+                                color: "rgba(255, 0, 0, 0.3)",
+                            });
+                            window.OnPlayerHealth(Math.random() * 100);
+                            window.OnPlayerArmor(Math.random() * 100);
+                            window.OnPlayerHelmet(Math.random() * 100);
+                        }}>SetDummyLocalPlayer</button>
                         <button onClick={() => {
                             dispatch(updateInnerCircle({
                                 center: {
@@ -815,7 +820,7 @@ const App: React.FC<Props> = ({
                             <>
                                 <KillAndAliveInfo />
                                 <SpectatorInfo />
-                                <AmmoAndHealthCounter />
+                                <AmmoAndHealthCounter isInventoryOpen={isInventoryOpen}  />
                                 <Gameover />
                                 <MiniMap />
                                 {!spectating &&

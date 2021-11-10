@@ -18,9 +18,12 @@ interface StateFromReducer {
     playerIsInPlane: boolean;
     spectating: boolean;
     spectatorTarget: string;
+    slots: any;
 }
 
-type Props = StateFromReducer;
+type Props = {
+    isInventoryOpen: boolean;
+} & StateFromReducer;
 
 const AmmoAndHealthCounter: React.FC<Props> = ({ 
     playerHealth,
@@ -32,7 +35,9 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
     playerCurrentWeapon,
     playerIsInPlane,
     spectating,
-    spectatorTarget
+    spectatorTarget,
+    slots,
+    isInventoryOpen
 }) => {
     const [visible, setVisible] = useState<boolean>(false);
 
@@ -77,7 +82,7 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
     return (
         <>
             <div id="AmmoAndHealthCounter">
-                {(playerIsInPlane === false) &&
+                {(playerIsInPlane === false && !isInventoryOpen) &&
                     <>
                         {spectating === false &&
                             <>
@@ -100,8 +105,8 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
                         {((spectating && spectatorTarget !== "") || spectating === false) &&
                             <>
                                 <div className="PercentageGrid">
-                                    <PercentageCounter type="Armor" value={playerArmor??0} />
-                                    <PercentageCounter type="Helmet" value={playerHelmet??0} />
+                                    <PercentageCounter type="Armor" slot={slots[8]} value={playerArmor??0} />
+                                    <PercentageCounter type="Helmet" slot={slots[9]} value={playerHelmet??0} />
                                 </div>
                                 <PercentageCounter type="Health" value={playerHealth??0} />
                             </>
@@ -128,6 +133,8 @@ const mapStateToProps = (state: RootState) => {
         // SpectatorReducer
         spectating: state.SpectatorReducer.enabled,
         spectatorTarget: state.SpectatorReducer.target,
+        // InventoryReducer
+        slots: state.InventoryReducer.slots,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

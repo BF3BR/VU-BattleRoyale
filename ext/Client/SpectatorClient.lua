@@ -35,15 +35,21 @@ end
 -- =============================================
 
 function SpectatorClient:OnExtensionUnloading()
-	WebUI:ExecuteJS("UpdateSpectatorCount(0);")
+	WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	self:Disable()
 end
 
 function SpectatorClient:OnLevelDestroy()
-	WebUI:ExecuteJS("UpdateSpectatorCount(0);")
+	WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	self:Disable()
 	self.m_SpectatingPlayerPitch = 0.0
 	self.m_SpectatingPlayerYaw = 0.0
+end
+
+function SpectatorClient:OnGameStateChanged(p_GameState)
+	if self.m_GameState == GameStates.None then
+		WebUI:ExecuteJS("UpdateSpectatorCount(null);")
+	end
 end
 
 function SpectatorClient:OnEngineUpdate(p_DeltaTime)

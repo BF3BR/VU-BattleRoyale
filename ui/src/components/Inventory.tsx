@@ -62,6 +62,10 @@ const Inventory: React.FC<Props> = ({
         return () => clearTimeout(timer);
     }, [clickedSlot]);
 
+    useEffect(() => {
+        setIsDragging(null);
+    }, [isOpen]);
+
     const [splitModal, setSplitModal] = useState({
         id: null,
         show: false,

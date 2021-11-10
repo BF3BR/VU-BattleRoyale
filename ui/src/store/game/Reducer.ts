@@ -142,7 +142,20 @@ const GameReducer = (
                 showCommoRose: action.payload.show,
             };
         case RESET_GAME:
-            return initialState;
+            return {
+                ...state,
+                players: {
+                    ...state.players,
+                    alive: 0,
+                    dead: 0,
+                    all: 0,
+                },
+                gameState: initialState.gameState,
+                uiState: initialState.uiState,
+                time: initialState.time,
+                gameOver: initialState.gameOver,
+                showCommoRose: initialState.showCommoRose,
+            };
         default:
             return state;
     }

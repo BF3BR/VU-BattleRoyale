@@ -12,16 +12,15 @@
 
     .inventory-details {
         position: absolute;
-        bottom: 2.25vh;
-        right: 4vh;
+        bottom: 2.5vw;
+        left: 15.5vw;
         font-size: 0.52vw;
-        display: flex;
         z-index: 10;
         animation: scale-out-hor-left 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
-        animation-delay: 3s;
+        animation-delay: 6s;
     
         .detail {
-            margin-right: 1vw;
+            margin-bottom: 0.75vw;
     
             &:last-of-type {
                 margin-bottom: 0;
@@ -186,7 +185,7 @@
         font-size: 1vw;
 
         &.isOver {
-            background-color: rgba(75, 75, 75, 0.65) !important;
+            background-color: rgba(150, 150, 150, 0.25) !important;
         }
 
         img {
@@ -303,6 +302,7 @@
                 display: flex;
                 width: 100%;
                 height: 100%;
+                background: radial-gradient(circle, rgba(133, 193, 223, 0.07) 0%, rgba(173, 200, 218, 0.3) 100%);
 
                 & > div {
                     &:hover {
@@ -322,19 +322,15 @@
                     font-size: .65vw;
                 }
 
-                &.tier-1 {
-                    background: radial-gradient(circle, rgba(133, 193, 223, 0.07) 0%, rgba(173, 200, 218, 0.3) 100%);
-
-                    &::after {
-                        content: "";
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        height: 100%;
-                        width: 0.1vw;
-                        background: #fff;
-                        box-shadow: 0 0 .5vw .075vw rgba(255, 255, 255, .45);
-                    }
+                &::after {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    width: 0.1vw;
+                    background: #fff;
+                    box-shadow: 0 0 .5vw .075vw rgba(255, 255, 255, .45);
                 }
 
                 &.tier-2 {
@@ -450,13 +446,28 @@
     width: 100%;
     height: 100%;
     background: #000;
-    border: .1vw dashed #fff;
     position: relative;
+    
 
     & > div {
         display: flex;
         width: 100%;
         height: 100%;
+        border: .1vw solid #fff;
+        box-shadow: inset 0 0 .85vw rgba(255, 255, 255, .45);
+        background: radial-gradient(circle, rgba(133, 193, 223, 0.07) 0%, rgba(173, 200, 218, 0.3) 100%);
+
+        &.tier-2 {
+            box-shadow: inset 0 0 .85vw rgba(82, 176, 223, .45);
+            border-color: rgb(82, 176, 223);
+            background: radial-gradient(circle, rgba(144, 200, 228, 0.07) 0%, rgba(82, 176, 223, 0.3) 100%);
+        }
+
+        &.tier-3 {
+            box-shadow: inset 0 0 .85vw rgba(255, 153, 0, .45);
+            border-color: rgb(255, 153, 0);
+            background: radial-gradient(circle, rgba(255, 153, 0, 0.07) 0%, rgba(255, 153, 0, 0.3) 100%);
+        }
 
         h5 {
             margin: 0 0 1vw;
