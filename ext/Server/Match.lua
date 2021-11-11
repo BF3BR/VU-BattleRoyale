@@ -198,7 +198,7 @@ function Match:SetClientTimer(p_Time)
 		return
 	end
 
-	NetEvents:Broadcast(PlayerEvents.UpdateTimer, p_Time)
+	NetEvents:BroadcastUnreliable(PlayerEvents.UpdateTimer, p_Time)
 end
 
 function Match:DoWeHaveAWinner()
