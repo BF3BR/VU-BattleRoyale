@@ -98,6 +98,10 @@ function BRInventoryWeaponSlot:GetUnlockWeaponAndSlot()
 		self.m_Item.m_Definition.m_SoldierWeaponBlueprint:GetInstance()
 	)
 
+	if #self.m_Item.m_Definition.m_EbxAttachments <= 0 then
+		return s_Weapon 
+	end
+
 	-- Add attachments
 	for l_Index, l_Slot in pairs(self.m_AttachmentSlots) do
 		local s_Unlock = l_Slot:GetUnlockAsset()

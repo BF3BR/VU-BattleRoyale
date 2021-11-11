@@ -30,9 +30,9 @@ return {
 			UIIcon = "__ammo_556mm",
 			MaxStack = 60,
 			Transform = LinearTransform(
-				Vec3(0.4, 0, 0),
-				Vec3(0, 0.4, 0),
-				Vec3(0, 0, 0.4),
+				Vec3(0.25, 0, 0),
+				Vec3(0, 0.25, 0),
+				Vec3(0, 0, 0.25),
 				Vec3(0, 0, 0)
 			),
 			SpawnStack = 30,
@@ -50,9 +50,9 @@ return {
 			UIIcon = "__ammo_9mm",
 			MaxStack = 90,
 			Transform = LinearTransform(
-				Vec3(0.35, 0, 0),
-				Vec3(0, 0.35, 0),
-				Vec3(0, 0, 0.45),
+				Vec3(0.15, 0, 0),
+				Vec3(0, 0.15, 0),
+				Vec3(0, 0, 0.225),
 				Vec3(0, 0, 0)
 			),
 			SpawnStack = 30,
@@ -70,9 +70,9 @@ return {
 			UIIcon = "__ammo_762mm",
 			MaxStack = 15,
 			Transform = LinearTransform(
-				Vec3(0.4, 0, 0),
-				Vec3(0, 0.4, 0),
-				Vec3(0, 0, 0.4),
+				Vec3(0.25, 0, 0),
+				Vec3(0, 0.25, 0),
+				Vec3(0, 0, 0.25),
 				Vec3(0, 0, 0)
 			),
 			SpawnStack = 15,
@@ -90,9 +90,9 @@ return {
 			UIIcon = "__ammo_12-gauge",
 			MaxStack = 30,
 			Transform = LinearTransform(
-				Vec3(0.35, 0, 0),
-				Vec3(0, 0.35, 0),
-				Vec3(0, 0, 0.6),
+				Vec3(0.15, 0, 0),
+				Vec3(0, 0.15, 0),
+				Vec3(0, 0, 0.225),
 				Vec3(0, 0, 0)
 			),
 			SpawnStack = 10,

@@ -86,19 +86,6 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 				s_Point.trans.y,
 				s_Point.trans.z
 			)
-		elseif s_WeaponSpawnPattern == RandomWeaponPatterns.WeaponWithAttachment then
-			local s_AddedItem = m_ItemDatabase:CreateItem(s_AttachmentDefinition)
-			m_LootPickupDatabase:CreateBasicLootPickup(Vec3(
-				s_Point.trans.x + 0.5,
-				s_Point.trans.y,
-				s_Point.trans.z
-			), {s_AddedItem})
-
-			s_Point.trans = Vec3(
-				s_Point.trans.x - 0.5,
-				s_Point.trans.y,
-				s_Point.trans.z
-			)
 		elseif s_WeaponSpawnPattern == RandomWeaponPatterns.WeaponWithAttachmentAndAmmo then
 			local s_AddedItem = m_ItemDatabase:CreateItem(s_AttachmentDefinition)
 			m_LootPickupDatabase:CreateBasicLootPickup(Vec3(

@@ -151,9 +151,8 @@ RandomWeightsTable = {
 RandomWeaponPatterns = {
 	OnlyWeapon = 1,
 	WeaponWithAmmo = 2,
-	WeaponWithAttachment = 3,
-	WeaponWithAttachmentAndAmmo = 4,
-	WeaponWithTwoAmmo = 5,
+	WeaponWithAttachmentAndAmmo = 3,
+	WeaponWithTwoAmmo = 4,
 }
 
 RandomAmmoPatterns = {

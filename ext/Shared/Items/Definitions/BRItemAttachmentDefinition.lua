@@ -131,6 +131,24 @@ return {
 			AttachmentId = g_AttachmentIds.RifleScope
 		}
 	),
+	["attachment-m145"] = BRItemAttachmentDefinition(
+		"attachment-m145",
+		"M145", 
+		{
+			Description = "Originally developed for the Canadian Army the M145 is commonly mounted on the M240 and M249 with a 3.4x zoom. A Ballistic reticle helps with longer range engagements.",
+			RandomWeight = 25,
+			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/m145",
+			Mesh = MeshModel(DC(Guid("3BF51470-8834-0750-5F3D-A2E6F3EEBF70"), Guid("9B58604F-12F4-4000-BC7C-7AE50AD47723"))),
+			Transform = LinearTransform(
+				Vec3(1.35, 0, 0),
+				Vec3(0, 1.35, 0),
+				Vec3(0, 0, 1.35),
+				Vec3(0, 0.05, 0)
+			),
+			AttachmentType = AttachmentType.Optics,
+			AttachmentId = g_AttachmentIds.M145
+		}
+	),
 
 	-- Barrels (Primary)
 	["attachment-suppressor"] = BRItemAttachmentDefinition(
