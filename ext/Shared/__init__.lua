@@ -37,11 +37,11 @@ local m_BundleManager = require "__shared/Logic/BundleManager"
 local m_GunSwayManager = require "__shared/Logic/GunSwayManager"
 local m_MapLoader = require "__shared/Logic/MapLoader"
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
-local m_ModificationsCommon = require "__shared/Modifications/ModificationsCommon"
+--local m_ModificationsCommon = require "__shared/Modifications/ModificationsCommon"
 local m_Logger = Logger("VuBattleRoyaleShared", true)
 
 function VuBattleRoyaleShared:__init()
-	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
+	--Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
 end
 
 function VuBattleRoyaleShared:OnExtensionLoaded()
@@ -50,7 +50,7 @@ function VuBattleRoyaleShared:OnExtensionLoaded()
 	self:RegisterEvents()
 	self:RegisterHooks()
 	self:RegisterCallbacks()
-	m_ModificationsCommon:OnExtensionLoaded()
+	--m_ModificationsCommon:OnExtensionLoaded()
 end
 
 function VuBattleRoyaleShared:RegisterEvents()
@@ -73,7 +73,7 @@ function VuBattleRoyaleShared:RegisterHooks()
 end
 
 function VuBattleRoyaleShared:RegisterCallbacks()
-	m_ModificationsCommon:RegisterCallbacks()
+	--m_ModificationsCommon:RegisterCallbacks()
 end
 
 -- =============================================
@@ -81,11 +81,11 @@ end
 -- =============================================
 
 function VuBattleRoyaleShared:OnExtensionUnloading()
-	m_ModificationsCommon:OnExtensionUnloading()
+	--m_ModificationsCommon:OnExtensionUnloading()
 end
 
 function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	--m_ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_BundleManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 
 	if MapsConfig[LevelNameHelper:GetLevelName()] == nil then
@@ -106,7 +106,7 @@ function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_
 		m_Logger:Write("Subscribe, install & register everything again.")
 		self:RegisterEvents()
 		self:RegisterHooks()
-		m_ModificationsCommon:RegisterCallbacks()
+		--m_ModificationsCommon:RegisterCallbacks()
 	end
 
 	m_RegistryManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
@@ -115,7 +115,7 @@ end
 
 function VuBattleRoyaleShared:OnRegisterEntityResources(p_LevelData)
 	m_BundleManager:OnRegisterEntityResources(p_LevelData)
-	m_ModificationsCommon:OnRegisterEntityResources(p_LevelData)
+	--m_ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_RegistryManager:OnRegisterEntityResources(p_LevelData)
 end
 
