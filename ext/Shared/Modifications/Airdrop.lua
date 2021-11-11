@@ -2,6 +2,7 @@ class "Airdrop"
 
 require "__shared/Enums/AirdropEnums"
 
+local m_AirdropObjectBlueprint = DC(Guid("344790FB-C800-11E0-BD5B-D85FACD7C899"), Guid("DE3ABA3C-D0D1-9863-50FB-D48577340978"))
 local m_RigidMesh = DC(Guid("DA504C92-911F-87DD-0D84-944BD542E835"), Guid("B5CE760E-5220-29BA-3316-23EA12244E88"))
 local m_HavokAsset = DC(Guid("A80588DC-4471-11DE-B7E8-80A76CACD9DC"), Guid("CB8BB4E2-E1F4-EA1D-E815-3DFD8765447B"))
 
@@ -9,30 +10,17 @@ local m_RegistryManager = require "__shared/Logic/RegistryManager"
 
 local m_Logger = Logger("Airdrop", true)
 
-function Airdrop:OnPartitionLoaded(p_Partition)
-	if p_Partition == nil then
-		return
-	end
+function Airdrop:RegisterCallbacks()
+	m_AirdropObjectBlueprint:RegisterLoadHandler(self, self.ModifyAirdropObject)
+end
 
-	local s_OriginalBlueprint = nil
-	local s_Instances = p_Partition.instances
-	for _, l_Instance in pairs(s_Instances) do
-		-- If we already created the custom airdrop then no need to do anything.
-		if l_Instance.instanceGuid == AirdropGuids.CustomAirdropGuid then
-			return
-		end
+function Airdrop:DeregisterCallbacks()
+	m_AirdropObjectBlueprint:Deregister()
+end
 
-		-- Look for the original airdrop blueprint.
-		if l_Instance.instanceGuid == AirdropGuids.OriginalAirdropGuid then
-			s_OriginalBlueprint = ObjectBlueprint(l_Instance)
-		end
-	end
-
-	if s_OriginalBlueprint == nil then
-		return
-	end
-
-	local s_CustomObjectBlueprint = ObjectBlueprint(s_OriginalBlueprint:Clone(AirdropGuids.CustomAirdropGuid))
+function Airdrop:ModifyAirdropObject(p_OriginalBlueprint)
+	local s_Partition = p_OriginalBlueprint.partition
+	local s_CustomObjectBlueprint = ObjectBlueprint(p_OriginalBlueprint:Clone(AirdropGuids.CustomAirdropGuid))
 	s_CustomObjectBlueprint.name = "Props/BattleRoyale/Airdrop_Banger"
 
 	-- We also need to clone the original SoldierEntityData and replace all references to it.
@@ -61,8 +49,7 @@ function Airdrop:OnPartitionLoaded(p_Partition)
 
 	-- Add our new airdrop blueprint to the partition.
 	-- This will make it so we can later look it up by its GUID.
-	p_Partition:AddInstance(s_CustomObjectBlueprint)
-
+	s_Partition:AddInstance(s_CustomObjectBlueprint)
 	m_Logger:Write("Airdrop blueprint created.")
 end
 
@@ -86,7 +73,6 @@ function Airdrop:OnRegisterEntityResources()
 
 	-- And then add the registry to the game compartment.
 	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
-
 	m_Logger:Write("Airdrop blueprint registered.")
 end
 

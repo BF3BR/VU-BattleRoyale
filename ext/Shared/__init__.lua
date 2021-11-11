@@ -125,7 +125,6 @@ end
 
 function VuBattleRoyaleShared:OnPartitionLoaded(p_Partition)
 	m_MapLoader:OnPartitionLoaded(p_Partition)
-	m_ModificationsCommon:OnPartitionLoaded(p_Partition)
 end
 
 function VuBattleRoyaleShared:OnLevelLoadingInfo(p_ScreenInfo)

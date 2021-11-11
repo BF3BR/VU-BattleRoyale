@@ -39,6 +39,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_RemoveAutotriggerVO:RegisterCallbacks()
 	m_TimeOutFix:RegisterCallbacks()
 	m_ShowroomModifier:RegisterCallbacks()
+	m_Airdrop:RegisterCallbacks()
 end
 
 function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
@@ -65,10 +66,6 @@ function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_Airdrop:OnRegisterEntityResources()
 end
 
-function ModificationsCommon:OnPartitionLoaded(p_Partition)
-	m_Airdrop:OnPartitionLoaded(p_Partition)
-end
-
 function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_Logger:Write("OnLoadResources")
 
@@ -91,6 +88,7 @@ function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_Dedica
 		m_ManDownModifier:DeregisterCallbacks()
 		m_RemoveAutotriggerVO:DeregisterCallbacks()
 		m_ShowroomModifier:DeregisterCallbacks()
+		m_Airdrop:DeregisterCallbacks()
 		return
 	end
 
