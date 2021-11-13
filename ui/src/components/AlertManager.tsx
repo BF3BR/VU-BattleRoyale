@@ -11,6 +11,7 @@ import alarm from "../assets/sounds/alarm.mp3";
 import objective from "../assets/sounds/objective.mp3";
 import countdown from "../assets/sounds/countdown.mp3";
 import error from "../assets/sounds/error.mp3";
+import airdrop from "../assets/sounds/airdrop.mp3";
 
 import "./AlertManager.scss";
 
@@ -33,6 +34,11 @@ const errorAudio = new Audio(error);
 errorAudio.volume = VolumeConst;
 errorAudio.autoplay = false;
 errorAudio.loop = false;
+
+const airdropAudio = new Audio(airdrop);
+airdropAudio.volume = VolumeConst;
+airdropAudio.autoplay = false;
+airdropAudio.loop = false;
 
 interface StateFromReducer {
     message: string,
@@ -76,6 +82,10 @@ const AlertManager: React.FC<Props> = ({ message, duration, sound, date }) => {
                     errorAudio.currentTime = 0.0;
                     errorAudio.play();
                     break;
+                case Sounds.Airdrop:
+                    airdropAudio.currentTime = 0.0;
+                    airdropAudio.play();
+                    break;
                 case Sounds.None:
                 default:
                     break;
@@ -86,6 +96,7 @@ const AlertManager: React.FC<Props> = ({ message, duration, sound, date }) => {
                 objectiveAudio.pause();
                 countdownAudio.pause();
                 errorAudio.pause();
+                airdropAudio.pause();
 
                 setLocalAlert(null);
             }, duration * 1000);

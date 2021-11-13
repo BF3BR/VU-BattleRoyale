@@ -935,4 +935,8 @@ function VuBattleRoyaleHud:HideCommoRose()
 	WebUI:ExecuteJS("OnHideCommoRose()")
 end
 
+function VuBattleRoyaleHud:OnAirdropDropped()
+	WebUI:ExecuteJS("OnAirdropDropped()")
+end
+
 return VuBattleRoyaleHud()

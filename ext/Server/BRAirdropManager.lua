@@ -33,6 +33,7 @@ function BRAirdropManager:OnEngineUpdate(p_DeltaTime)
         if s_PlaneDistance ~= nil and s_PlaneDistance <= 2.5 then
             self:CreateAirdrop(m_Gunship:GetDropPosition())
             self.m_AirdropDropped = true
+			NetEvents:BroadcastLocal("Airdrop:Dropped")
         end
     end
 end

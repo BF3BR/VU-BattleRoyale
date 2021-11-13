@@ -131,6 +131,8 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe(InventoryNetEvent.ItemActionCanceled, self, self.OnItemActionCanceled),
 
 		Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded),
+
+		NetEvents:Subscribe("Airdrop:Dropped", self, self.OnAirdropDropped),
 	}
 end
 
@@ -828,6 +830,10 @@ end
 
 function VuBattleRoyaleClient:OnPartitionLoaded(p_Partition)
 	m_SoundModifier:OnPartitionLoaded(p_Partition)
+end
+
+function VuBattleRoyaleClient:OnAirdropDropped()
+	m_Hud:OnAirdropDropped()
 end
 
 return VuBattleRoyaleClient()

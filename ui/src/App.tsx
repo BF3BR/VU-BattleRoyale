@@ -690,6 +690,14 @@ const App: React.FC<Props> = ({
         garbageCollection();
     }
 
+    window.OnAirdropDropped = () => {
+        dispatch(addAlert(
+            "Heads up, care package dropped from the plane!",
+            5,
+            Sounds.Airdrop
+        ));
+    }
+
     const garbageCollection = () => {
         if (window.gc) {
             window.gc();
@@ -874,18 +882,15 @@ declare global {
         OnPlayerYaw: (p_YawRad: number) => void;
         OnPlanePos: (p_DataJson: any) => void;
         OnPlaneYaw: (p_Yaw: number | null) => void;
-
         OnOpenCloseMap: (open: boolean) => void;
         OnMapShow: (show: boolean) => void;
         OnMapSwitchRotation: () => void;
         OnUpdateCircles: (data: any) => void;
         OnGameState: (state: string) => void;
         OnUpdateTimer: (time: number) => void;
-
         OnPlayersInfo: (data: any) => void;
         OnLocalPlayerInfo: (data: any) => void;
         OnMinPlayersToStart: (minPlayersToStart: number) => void;
-
         OnPlayerHealth: (data: number) => void;
         OnPlayerArmor: (data: number) => void;
         OnPlayerHelmet: (data: number) => void;
@@ -896,44 +901,34 @@ declare global {
         OnPlayerIsOnPlane: (isOnPlane: boolean) => void;
         OnGameOverScreen: (data: any) => void;
         OnUpdatePlacement: (placemen: number | null) => void;
-
         SpectatorTarget: (p_TargetName: string) => void;
         SpectatorEnabled: (p_Enabled: boolean) => void;
         UpdateSpectatorCount: (p_Count: string | null) => void;
-
         OnUpdateTeamId: (p_Id: string) => void;
         OnUpdateTeamSize: (p_Size: number) => void;
         OnUpdateTeamLocked: (p_Locked: boolean) => void;
         OnUpdateTeamPlayers: (p_Team: any) => void;
         OnTeamJoinError: (p_Error: number) => void;
-
         ToggleDeployMenu: (p_Toggle?: boolean) => void;
-
         OnNotifyInflictorAboutKillOrKnock: (data: any) => void;
         OnInteractiveMessageAndKey: (data: any) => void;
-
         OnSetUIState: (p_Toggle: "hidden" | "loading" | "game" | "menu") => void;
-
         OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
         OnRemoveMarker: (p_Key: string) => void;
         OnUpdateMarker: (p_Key: string, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
-
         OnInteractStart: (p_Time: number) => void;
         OnInteractEnd: () => void;
-
         OnShowCommoRose: () => void;
         OnHideCommoRose: () => void;
-
         OnInventoryOpen: (p_Open: boolean) => void;
         SyncInventory: (p_DataJson: any) => void;
         SyncOverlayLoot: (p_DataJson: any) => void;
         SyncCloseLootPickupData: (p_DataJson: any) => void;
         OnLeftCtrl: (p_Down: boolean) => void;
-
         TestInventoryTimer: (slot: any, time: number) => void;
         ItemCancelAction: () => void;
         ResetAllValues: () => void;
-
+        OnAirdropDropped: () => void;
         gc: () => void;
     }
 }
