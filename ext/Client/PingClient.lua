@@ -224,6 +224,12 @@ function PingClient:OnPingRemoveNotify(p_PlayerName)
 
 	Events:Dispatch("Compass:RemoveMarker", tostring(p_PlayerName))
 	m_Hud:RemoveMarker(tostring(p_PlayerName))
+
+	if self.m_SquadPings[p_PlayerName] == nil then
+		m_Logger:Write("Failed to remove ping for player: " .. tostring(p_PlayerName))
+		return
+	end
+
 	self:RemovePing(self.m_SquadPings[p_PlayerName][1])
 	self.m_SquadPings[p_PlayerName] = nil
 end
