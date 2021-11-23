@@ -11,12 +11,13 @@ local m_DropShipModifier = require "__shared/Modifications/DropShipModifier"
 local m_VanillaUIModifier = require "__shared/Modifications/VanillaUIModifier"
 local m_LootCreation = require "__shared/Modifications/LootCreation"
 local m_2dTreeRemoving = require "__shared/Modifications/2dTreeRemoving"
-local m_TempMapPatches = require "__shared/Modifications/TempMapPatches"
+local m_MapSpecificModifier = require "__shared/Modifications/MapSpecificModifier"
 local m_FireEffectsModifier = require "__shared/Modifications/FX/FireEffectsModifier"
 local m_RemoveVanillaLoadingScreen = require "__shared/Modifications/LoadingScreen/RemoveVanillaLoadingScreen"
 local m_RemoveAutotriggerVO = require "__shared/Modifications/Sound/RemoveAutoTriggerVO"
 local m_TimeOutFix = require "__shared/Modifications/TimeOutFix"
 local m_DisableDebugRenderer = require "__shared/Modifications/DisableDebugRenderer"
+local m_ConquestLargeModifier = require "__shared/Modifications/ConquestLargeModifier"
 
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 
@@ -27,7 +28,6 @@ function ModificationsCommon:RegisterCallbacks()
 	m_WeaponsModifier:RegisterCallbacks()
 	m_DropShipModifier:RegisterCallbacks()
 	m_VanillaUIModifier:RegisterCallbacks()
-	m_TempMapPatches:RegisterCallbacks()
 	m_PhysicsModifier:RegisterCallbacks()
 	m_WeaponDropModifier:RegisterCallbacks()
 	m_2dTreeRemoving:RegisterCallbacks()
@@ -35,6 +35,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_ManDownModifier:RegisterCallbacks()
 	m_RemoveAutotriggerVO:RegisterCallbacks()
 	m_TimeOutFix:RegisterCallbacks()
+	m_ConquestLargeModifier:RegisterCallbacks()
 end
 
 function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
@@ -42,7 +43,6 @@ function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 
 	m_WeaponDropModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
-	m_TempMapPatches:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 end
 
 function ModificationsCommon:OnExtensionLoaded()
@@ -60,34 +60,33 @@ function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
 end
 
-function ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	m_Logger:Write("OnLoadResources")
 
 	local s_MapId = LevelNameHelper:GetLevelName()
-	local s_Config = MapsConfig[s_MapId]
+	local s_MapConfig = MapsConfig[s_MapId]
 
-	if s_Config == nil or s_Config.MapPreset == nil then
+	if s_MapConfig == nil or s_MapConfig.MapPreset == nil then
 		m_Logger:Write("This map is not supported.")
 		m_SoldierBlueprint:Deregister()
 		m_WeaponSwitchingModifier:DeregisterCallbacks()
 		m_WeaponsModifier:DeregisterCallbacks()
 		m_DropShipModifier:DeregisterCallbacks()
 		m_VanillaUIModifier:DeregisterCallbacks()
-		m_TempMapPatches:DeregisterCallbacks()
+		m_MapSpecificModifier:DeregisterCallbacks()
 		m_PhysicsModifier:DeregisterCallbacks()
 		m_WeaponDropModifier:DeregisterCallbacks()
 		m_2dTreeRemoving:DeregisterCallbacks()
 		m_FireEffectsModifier:DeregisterCallbacks()
 		m_ManDownModifier:DeregisterCallbacks()
 		m_RemoveAutotriggerVO:DeregisterCallbacks()
+		m_ConquestLargeModifier:DeregisterCallbacks()
 		return
 	end
 
 	-- Register a load handler for the cql subworld of this level
-	--s_Config.SubWorldInstance:RegisterLoadHandlerOnce(self, self.OnSubWorldLoaded)
-
-	MapsConfig[s_MapId].OOB:RegisterLoadHandler(self, self.OnOOBLoaded)
-	MapsConfig[s_MapId].OOB2:RegisterLoadHandler(self, self.OnOOBLoaded)
+	--s_MapConfig.SubWorldInstance:RegisterLoadHandlerOnce(self, self.OnSubWorldLoaded)
+	m_MapSpecificModifier:RegisterCallbacks(s_MapConfig)
 end
 
 -- TODO: Implement generic map and gamemode modification system (that works)
@@ -109,19 +108,5 @@ function ModificationsCommon:OnSubWorldLoaded(p_SubWorldData)
 end
 --]]
 
-function ModificationsCommon:OnOOBLoaded(p_VolumeVectorShape)
-	m_Logger:Write("VolumeVectorShape Loaded")
-
-	p_VolumeVectorShape.points:clear()
-	p_VolumeVectorShape.normals:clear()
-	p_VolumeVectorShape.points:add(Vec3(9999.0, 150.0, 9999.0))
-	p_VolumeVectorShape.normals:add(Vec3())
-	p_VolumeVectorShape.points:add(Vec3(9999.0, 150.0, -9999.0))
-	p_VolumeVectorShape.normals:add(Vec3())
-	p_VolumeVectorShape.points:add(Vec3(-9999.0, 150.0, -9999.0))
-	p_VolumeVectorShape.normals:add(Vec3())
-	p_VolumeVectorShape.points:add(Vec3(-9999.0, 150.0, 9999.0))
-	p_VolumeVectorShape.normals:add(Vec3())
-end
 
 return ModificationsCommon()
