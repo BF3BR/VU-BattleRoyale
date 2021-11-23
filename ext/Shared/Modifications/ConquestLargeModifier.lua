@@ -10,6 +10,8 @@ local m_GameModeSettings = DC(Guid("C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4"), Guid
 local m_RU_Large_TeamEntityData = DC(Guid("19631E31-2E3A-432B-8929-FB57BAA7D28E"), Guid("B4BB6CFA-0E53-45F9-B190-1287DCC093A9"))
 local m_ConquestTeamsLarge_LogicPrefabBlueprint = DC(Guid("466C8E5C-BD29-11E0-923F-C41005FFB7BD"), Guid("D0DB1029-9313-7D6D-BBA9-9C8F92C0040B"))
 
+local m_Logger = Logger("ConquestModifier", true)
+
 function ConquestModifier:RegisterCallbacks()
 	m_Conquest_PreRoundEntityData:RegisterLoadHandler(self, self.OnPreRoundEntityData)
 	m_Conquest_SpatialPrefabBlueprint:RegisterLoadHandler(self, self.OnSpatialPrefabBlueprint)
@@ -43,14 +45,16 @@ function ConquestModifier:OnSpatialPrefabBlueprint(p_Instance)
 
 	-- Disables the default HQ / spawn cameras
 	for i = #p_Instance.eventConnections, 1, -1 do
-		if p_Instance.eventConnections[i].source:Is("HumanPlayerEntityData") then
-			if EventSpec(p_Instance.eventConnections[i].sourceEvent).id == MathUtils:FNVHash("OnPlayerDeathTimeout") and
-				p_Instance.eventConnections[i].target:Is("LogicReferenceObjectData") then
-				p_Instance.eventConnections:erase(i)
-			end
+		if p_Instance.eventConnections[i] ~= nil and p_Instance.eventConnections[i].source ~= nil then
+			if p_Instance.eventConnections[i].source:Is("HumanPlayerEntityData") then
+				if EventSpec(p_Instance.eventConnections[i].sourceEvent).id == MathUtils:FNVHash("OnPlayerDeathTimeout") and
+					p_Instance.eventConnections[i].target:Is("LogicReferenceObjectData") then
+					p_Instance.eventConnections:erase(i)
+				end
 
-			if p_Instance.eventConnections[i].target.instanceGuid == Guid("38B766CB-020E-4254-B220-7F69F33A7FEA") then
-				p_Instance.eventConnections:erase(i)
+				if p_Instance.eventConnections[i].target.instanceGuid == Guid("38B766CB-020E-4254-B220-7F69F33A7FEA") then
+					p_Instance.eventConnections:erase(i)
+				end
 			end
 		end
 	end
@@ -60,7 +64,11 @@ function ConquestModifier:OnCameraEntityData(p_CameraEntityData)
 	p_CameraEntityData.enabled = false
 end
 
+-- TODO: Move this somewhere else
+-- this is loaded only once, so if we run a not supported map we could undo it
 function ConquestModifier:OnGameModeSettings(p_Instance)
+	m_Logger:Write("Adding Teams to GameModeSettings")
+
 	local s_Settings = GameModeSettings(p_Instance)
 	s_Settings:MakeWritable()
 	local s_GameModeTeamSize = GameModeTeamSize()
@@ -73,6 +81,15 @@ function ConquestModifier:OnGameModeSettings(p_Instance)
 end
 
 function ConquestModifier:OnTeamEntityDataModification(p_TeamData, p_LogicPrefabBlueprint)
+	m_Logger:Write("Adding TeamEntityDatas to ConquestTeamsLarge LogicPrefabBlueprint")
+
+	p_LogicPrefabBlueprint = LogicPrefabBlueprint(p_LogicPrefabBlueprint)
+
+	if #p_LogicPrefabBlueprint.objects > 3 then
+		m_Logger:Warning("We added the TeamEntities already.")
+		return
+	end
+
 	for i = 3, 126 do
 		local s_NewTeamId = TeamEntityData(MathUtils:RandomGuid())
 		s_NewTeamId.isEventConnectionTarget = 3
@@ -81,7 +98,6 @@ function ConquestModifier:OnTeamEntityDataModification(p_TeamData, p_LogicPrefab
 		s_NewTeamId.team = TeamData(p_TeamData)
 		s_NewTeamId.id = i
 
-		p_LogicPrefabBlueprint = LogicPrefabBlueprint(p_LogicPrefabBlueprint)
 		p_LogicPrefabBlueprint:MakeWritable()
 		p_LogicPrefabBlueprint.objects:add(s_NewTeamId)
 		p_LogicPrefabBlueprint.partition:AddInstance(s_NewTeamId)

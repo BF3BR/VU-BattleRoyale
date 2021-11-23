@@ -281,7 +281,8 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 		local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
 
 		if s_BrPlayer == nil then
-			return
+			m_Logger:Warning("BrPlayer for " .. p_Player.name .. " not found. Create it now.")
+			s_BrPlayer = m_TeamManager:CreatePlayer(p_Player)
 		end
 
 		local s_SpawnTrans = m_Match:GetRandomWarmupSpawnpoint()
@@ -291,8 +292,8 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 		end
 
 		s_BrPlayer:Spawn(LinearTransform(
-			Vec3(1.0, 0.0, 0.0), 
-			Vec3(0.0, 1.0, 0.0), 
+			Vec3(1.0, 0.0, 0.0),
+			Vec3(0.0, 1.0, 0.0),
 			Vec3(0.0, 0.0, 1.0),
 			s_SpawnTrans
 		))
