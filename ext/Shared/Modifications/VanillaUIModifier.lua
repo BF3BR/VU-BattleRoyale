@@ -60,7 +60,7 @@ function VanillaUIModifier:RegisterCallbacks()
 
 	m_IconTextureAtlas:RegisterLoadHandler(self, self.OnIconTexture)
 
-	DC:WaitForInstances({ m_MPMenuScreenAsset, m_UISquadCompData }, self, self.ModifyMenu)
+	--DC:WaitForInstances({ m_MPMenuScreenAsset, m_UISquadCompData }, self, self.ModifyMenu)
 end
 
 function VanillaUIModifier:DeregisterCallbacks()
