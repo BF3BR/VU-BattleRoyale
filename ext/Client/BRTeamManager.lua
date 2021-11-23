@@ -20,11 +20,11 @@ function BRTeamManager:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
 	-- otherwise we would switch them back to team2
 	for _, l_PlayerName in pairs(self.m_SpectatedPlayerNames) do
 		if p_Player.name == l_PlayerName then
-			if p_TeamId == TeamId.Team3 then
-				return
-			else
+			if p_TeamId ~= TeamId.Team3 then
 				self:SetTeamId(p_Player, TeamId.Team3)
 			end
+
+			return
 		end
 	end
 
@@ -52,6 +52,9 @@ end
 
 function BRTeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
 	self.m_SpectatedPlayerNames = p_PlayerNames
+
+	m_Logger:Write("Set SpectatedPlayer TeamMembers:")
+	m_Logger:WriteTable(p_PlayerNames)
 
 	-- First we want to move all old spectated players from Team3 to Team2
 	local s_Team3Players = PlayerManager:GetPlayersByTeam(TeamId.Team3)
