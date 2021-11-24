@@ -108,7 +108,7 @@ function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_
 		m_Logger:Write("Subscribe, install & register everything again.")
 		self:RegisterEvents()
 		self:RegisterHooks()
-		m_ModificationsCommon:RegisterCallbacks()
+		self:RegisterCallbacks()
 	end
 
 	m_RegistryManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)

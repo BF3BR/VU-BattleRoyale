@@ -5,7 +5,6 @@ local m_Conquest_SpatialPrefabBlueprint = DC(Guid("0C342A8C-BCDE-11E0-8467-9159D
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 local m_CapturePointPrefab_HQ_US_XP_CameraEntityData = DC(Guid("694A231C-4439-461D-A7FF-764915FC3E7C"), Guid("6B728CD3-EBD2-4D48-BF49-50A7CFAB0A30"))
 local m_CapturePointPrefab_HQ_RU_XP_CameraEntityData = DC(Guid("5D4B1096-3089-45A7-9E3A-422E15E0D8F6"), Guid("A4281E60-7557-4BFF-ADD4-18D7E8780873"))
-local m_GameModeSettings = DC(Guid("C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4"), Guid("AD413546-DEAF-8115-B89C-D666E801C67A"))
 -- CqLarge
 local m_RU_Large_TeamEntityData = DC(Guid("19631E31-2E3A-432B-8929-FB57BAA7D28E"), Guid("B4BB6CFA-0E53-45F9-B190-1287DCC093A9"))
 local m_ConquestTeamsLarge_LogicPrefabBlueprint = DC(Guid("466C8E5C-BD29-11E0-923F-C41005FFB7BD"), Guid("D0DB1029-9313-7D6D-BBA9-9C8F92C0040B"))
@@ -17,7 +16,6 @@ function ConquestModifier:RegisterCallbacks()
 	m_Conquest_SpatialPrefabBlueprint:RegisterLoadHandler(self, self.OnSpatialPrefabBlueprint)
 	m_CapturePointPrefab_HQ_US_XP_CameraEntityData:RegisterLoadHandler(self, self.OnCameraEntityData)
 	m_CapturePointPrefab_HQ_RU_XP_CameraEntityData:RegisterLoadHandler(self, self.OnCameraEntityData)
-	m_GameModeSettings:RegisterLoadHandler(self, self.OnGameModeSettings)
 	DC:WaitForInstances({ m_RU_Large_TeamEntityData, m_ConquestTeamsLarge_LogicPrefabBlueprint }, self, self.OnTeamEntityDataModification)
 	DC:WaitForInstances({ m_Conquest_SpatialPrefabBlueprint, m_SoldierBlueprint }, self, self.OnAddCharacterSpawnReference)
 end
@@ -25,9 +23,9 @@ end
 function ConquestModifier:DeregisterCallbacks()
 	m_Conquest_PreRoundEntityData:Deregister()
 	m_Conquest_SpatialPrefabBlueprint:Deregister()
+	m_SoldierBlueprint:Deregister()
 	m_CapturePointPrefab_HQ_US_XP_CameraEntityData:Deregister()
 	m_CapturePointPrefab_HQ_RU_XP_CameraEntityData:Deregister()
-	m_GameModeSettings:Deregister()
 	m_RU_Large_TeamEntityData:Deregister()
 	m_ConquestTeamsLarge_LogicPrefabBlueprint:Deregister()
 end
@@ -62,22 +60,6 @@ end
 
 function ConquestModifier:OnCameraEntityData(p_CameraEntityData)
 	p_CameraEntityData.enabled = false
-end
-
--- TODO: Move this somewhere else
--- this is loaded only once, so if we run a not supported map we could undo it
-function ConquestModifier:OnGameModeSettings(p_Instance)
-	m_Logger:Write("Adding Teams to GameModeSettings")
-
-	local s_Settings = GameModeSettings(p_Instance)
-	s_Settings:MakeWritable()
-	local s_GameModeTeamSize = GameModeTeamSize()
-	s_GameModeTeamSize.playerCount = 127
-	s_GameModeTeamSize.squadSize = 4
-
-	for i = 3, 126 do
-		s_Settings.information[1].sizes[3].teams:add(s_GameModeTeamSize)
-	end
 end
 
 function ConquestModifier:OnTeamEntityDataModification(p_TeamData, p_LogicPrefabBlueprint)

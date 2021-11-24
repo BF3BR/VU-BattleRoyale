@@ -18,6 +18,7 @@ local m_RemoveAutotriggerVO = require "__shared/Modifications/Sound/RemoveAutoTr
 local m_TimeOutFix = require "__shared/Modifications/TimeOutFix"
 local m_DisableDebugRenderer = require "__shared/Modifications/DisableDebugRenderer"
 local m_ConquestLargeModifier = require "__shared/Modifications/ConquestLargeModifier"
+local m_GameModeSettingsModifier = require "__shared/Modifications/GameModeSettingsModifier"
 
 local m_SoldierBlueprint = DC(Guid("F256E142-C9D8-4BFE-985B-3960B9E9D189"), Guid("261E43BF-259B-41D2-BF3B-9AE4DDA96AD2"))
 
@@ -36,6 +37,7 @@ function ModificationsCommon:RegisterCallbacks()
 	m_RemoveAutotriggerVO:RegisterCallbacks()
 	m_TimeOutFix:RegisterCallbacks()
 	m_ConquestLargeModifier:RegisterCallbacks()
+	m_GameModeSettingsModifier:RegisterCallbacks()
 end
 
 function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
@@ -81,6 +83,7 @@ function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedica
 		m_ManDownModifier:DeregisterCallbacks()
 		m_RemoveAutotriggerVO:DeregisterCallbacks()
 		m_ConquestLargeModifier:DeregisterCallbacks()
+		m_GameModeSettingsModifier:DeregisterCallbacks()
 		return
 	end
 
