@@ -20,7 +20,7 @@ function PhaseManagerShared:RegisterVars()
 	self.m_SubphaseIndex = SubphaseType.InitialDelay
 	self.m_Completed = false
 
-	self:LoadPhases()
+	-- self:LoadPhases()
 end
 
 function PhaseManagerShared:LoadPhases()
@@ -47,6 +47,11 @@ end
 function PhaseManagerShared:OnLevelLoaded()
 	self:LoadPhases()
 end
+
+function PhaseManagerShared:OnLoadResources()
+	self:LoadPhases()
+end
+
 
 function PhaseManagerShared:OnLevelDestroy()
 	self:Destroy()

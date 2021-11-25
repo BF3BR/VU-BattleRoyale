@@ -73,6 +73,11 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 		s_Patterns = m_MapHelper:Keys(RandomWeaponPatterns)
 		s_WeaponSpawnPattern = math.random(#s_Patterns)
 
+		-- Pistols doesn't have any attachments so they should just spawn with ammo
+		if #s_RandomItemDefinition.m_EbxAttachments <= 0 then
+			s_WeaponSpawnPattern = RandomWeaponPatterns.WeaponWithAmmo
+		end
+
 		if s_WeaponSpawnPattern == RandomWeaponPatterns.WeaponWithAmmo then
 			local s_AddedItem = m_ItemDatabase:CreateItem(s_AmmoDefinition, s_AmmoDefinition.m_SpawnStack)
 			m_LootPickupDatabase:CreateBasicLootPickup(Vec3(

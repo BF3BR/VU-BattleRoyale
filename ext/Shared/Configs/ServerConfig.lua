@@ -1,26 +1,26 @@
 ServerConfig = {
 	-- Minimum ammounts of players to start the warmup and then the match
-	MinPlayersToStart = 15,
+	MinPlayersToStart = 99,
 
 	-- Number of player per team
-	PlayersPerTeam = 2,
+	PlayersPerTeam = 1,
 
 	-- Time to update some of the HUD components
 	HudUpdateRate = 1.5,
 
-	GunshipDespawn = 60.0,
+	GunshipDespawn = 50.0,
 
 	ParachuteRaycastUpdateRate = 0.2,
 
-	ForceParachuteHeight = 125.0,
+	ForceParachuteHeight = 135.0,
 
 	UseOfficialImage = false,
 
 	MatchStateTimes = {
 		[GameStates.None] = nil,
-		[GameStates.Warmup] = 20.0,
+		[GameStates.Warmup] = 10.0,
 		[GameStates.WarmupToPlane] = 5.0,
-		[GameStates.Plane] = 45.0,
+		[GameStates.Plane] = 80.0,
 		[GameStates.PlaneToFirstCircle] = 10.0,
 		[GameStates.Match] = nil,
 		[GameStates.EndGame] = 15.0,

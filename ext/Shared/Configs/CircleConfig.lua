@@ -15,7 +15,7 @@ CircleConfig = {
 	ArcLen = { Min = 4, Max = 30},
 
 	-- The number of points used to draw the circles
-	RenderPoints = { Min = 7, Max = 96 },
+	RenderPoints = { Min = 7, Max = 80 },
 
 	-- The maximum opacity of the outer circle
 	OuterCircleMaxOpacity = 0.12,
@@ -24,7 +24,7 @@ CircleConfig = {
 	ClientUpdateMs = 0.16,
 
 	-- Use fog to give the player a better sense of the playable area
-	EanbleFog = true,
+	EanbleFog = false,
 
 	-- Sound when player is close to the circle edge
 	EnableCircleSound = true,

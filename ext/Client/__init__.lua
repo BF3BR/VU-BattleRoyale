@@ -258,6 +258,7 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 
 	m_OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_PhaseManagerClient:OnLoadResources()
 end
 
 -- =============================================

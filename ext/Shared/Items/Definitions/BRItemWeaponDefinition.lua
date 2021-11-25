@@ -790,7 +790,7 @@ return {
 		"SV98",
 		{
 			Description = "Similar to its Western counter parts, the SV-98 began life as a proven Bolt-Action sporting rifle. The SV-98 is equipped with a 10 round detachable box magazine, a muzzle brake that can be swapped for a suppressor, and backup iron sights. The SV-98 is standardly equipped with a PKS-07 (7x) for very long range shooting.",
-			UIIcon = "UI/Art/Persistence/Weapons/SV98",
+			UIIcon = "UI/Art/Persistence/Weapons/Fancy/sv98",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("D46DB381-4D7D-3E39-8AE1-EC9A7DE86F73"), Guid("BB9F180C-0854-AED5-926B-6D9A643EAF22"))),
 			Transform = LinearTransform(
 				Vec3(0, -1, 0),
