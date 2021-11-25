@@ -49,10 +49,10 @@ function MapSpecificModifier:OnVehiclesWorldPartData(p_Instance)
 
 			-- Gameplay/GameModes/Conquest/ADDF2F84-F2E8-2AD8-5FE6-56620207AC95
 			-- XP5/Dynamic_VehicleSpawners/Outpostspawn_XP_US_C130Airdrop_RU_C130Airdrop/B57E136A-0E4D-4952-8823-98A20DFE8F44
-			-- Gameplay/Level_Setups/Dynamic_VehicleSpawners/Outpostspawn_XP_US_Gunship_RU_Gunship/2B23D93E-5A61-4700-B447-3AE38342E4FD
+			-- Gameplay/Level_Setups/Dynamic_VehicleSpawners/Outpostspawn_XP_US_Gunship_RU_Gunship/5DE7DC5F-3740-407A-AEF8-6EEAD43B66C3
 			if l_Object.blueprint.instanceGuid ~= Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95") and
-				l_Object.blueprint.instanceGuid ~= Guid("B57E136A-0E4D-4952-8823-98A20DFE8F44") and
-				l_Object.blueprint.instanceGuid ~= Guid("2B23D93E-5A61-4700-B447-3AE38342E4FD") then
+			l_Object.blueprint.instanceGuid ~= Guid("B57E136A-0E4D-4952-8823-98A20DFE8F44") and
+			l_Object.blueprint.instanceGuid ~= Guid("5DE7DC5F-3740-407A-AEF8-6EEAD43B66C3") then
 				l_Object:MakeWritable()
 				l_Object.excluded = true
 			end
