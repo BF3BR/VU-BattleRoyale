@@ -40,9 +40,19 @@ function BundleManager:OnLoadBundles(p_Hook, p_Bundles, p_Compartment)
 end
 
 function BundleManager:OnTerrainLoad(p_Hook, p_TerrainAssetName)
-	local s_LevelId = LevelNameHelper:GetLevelName()
+	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
 
-	if not p_TerrainAssetName:match(s_LevelId:lower()) then
+	if s_MapConfig == nil then
+		return
+	end
+
+	local s_TerrainName = s_MapConfig.TerrainName
+
+	if s_TerrainName == nil then
+		return
+	end
+
+	if not p_TerrainAssetName:match(s_TerrainName:lower()) then
 		m_Logger:Write("Preventing terrain load: " .. p_TerrainAssetName)
 		p_Hook:Return()
 	end
