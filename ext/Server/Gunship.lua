@@ -153,7 +153,8 @@ function Gunship:Spawn()
 	local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
 
 	while s_VehicleSpawnEntity do
-		if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0") then
+		if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0")
+		or s_VehicleSpawnEntity.data.instanceGuid == Guid("20C0BEFF-37C5-4AA9-A733-8821F8020034") then
 			s_VehicleSpawnEntity = Entity(s_VehicleSpawnEntity)
 			s_VehicleSpawnEntity:FireEvent("Spawn")
 			return
@@ -168,7 +169,8 @@ function Gunship:Destroy()
 	local s_VehicleSpawnEntity = s_VehicleSpawnEntityIterator:Next()
 
 	while s_VehicleSpawnEntity do
-		if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0") then
+		if s_VehicleSpawnEntity.data.instanceGuid == Guid("5449C054-7A18-4696-8AA9-416A8B9A9CD0")
+		or s_VehicleSpawnEntity.data.instanceGuid == Guid("20C0BEFF-37C5-4AA9-A733-8821F8020034") then
 			s_VehicleSpawnEntity = Entity(s_VehicleSpawnEntity)
 			s_VehicleSpawnEntity:FireEvent("Unspawn")
 			return
@@ -187,7 +189,8 @@ function Gunship:SetVehicleEntityTransform(p_Transform)
 	local s_VehicleEntity = s_VehicleEntityIterator:Next()
 
 	while s_VehicleEntity do
-		if s_VehicleEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") then
+		if s_VehicleEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") or
+		s_VehicleEntity.data.instanceGuid == Guid("8AED7430-5807-A8C9-5ACC-47481D54F54E") then
 			s_VehicleEntity = SpatialEntity(s_VehicleEntity)
 			s_VehicleEntity.transform = p_Transform
 			break
@@ -202,7 +205,8 @@ function Gunship:SetLocatorEntityTransform(p_Transform)
 	local s_LocatorEntity = s_LocatorEntityIterator:Next()
 
 	while s_LocatorEntity do
-		if s_LocatorEntity.data.instanceGuid == Guid("B7C9767E-4154-49F9-B934-F80923BB82C0") then
+		if s_LocatorEntity.data.instanceGuid == Guid("B7C9767E-4154-49F9-B934-F80923BB82C0") or
+		s_LocatorEntity.data.instanceGuid == Guid("324696CB-3791-43A5-B821-AA749835F05A") then
 			s_LocatorEntity = SpatialEntity(s_LocatorEntity)
 			s_LocatorEntity.transform = p_Transform
 			return
@@ -221,7 +225,8 @@ function Gunship:GetVehicleEntityTransform()
 	local s_VehicleEntity = s_VehicleEntityIterator:Next()
 
 	while s_VehicleEntity do
-		if s_VehicleEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") then
+		if s_VehicleEntity.data.instanceGuid == Guid("81ED68CF-5FDE-4C24-A6B4-C38FB8D4A778") or
+		s_VehicleEntity.data.instanceGuid == Guid("8AED7430-5807-A8C9-5ACC-47481D54F54E") then
 			s_VehicleEntity = SpatialEntity(s_VehicleEntity)
 			return s_VehicleEntity.transform
 		end

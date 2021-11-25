@@ -138,7 +138,8 @@ function Gunship:GetGunshipEntity()
 	local s_VehicleEntity = s_VehicleEntityIterator:Next()
 
 	while s_VehicleEntity ~= nil do
-		if s_VehicleEntity.data.partition.name == "vehicles/xp5/c130/c130" then
+		if s_VehicleEntity.data.partition.name == "vehicles/xp5/c130/c130" or
+		s_VehicleEntity.data.partition.name == "Vehicles/XP3/ac130/AC130" then
 			return s_VehicleEntity
 		end
 
