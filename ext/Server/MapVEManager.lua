@@ -36,6 +36,11 @@ end
 
 function MapVEManager:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
     local m_Map = MapsConfig[LevelNameHelper:GetLevelName()]
+
+	if m_Map == nil or m_Map.VEPresets == nil or #m_Map.VEPresets == 0 then
+		return
+	end
+
     self:SetMapVEPreset(math.random(1, #m_Map.VEPresets))
 end
 
