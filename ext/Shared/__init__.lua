@@ -116,7 +116,6 @@ function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_
 end
 
 function VuBattleRoyaleShared:OnRegisterEntityResources(p_LevelData)
-	m_BundleManager:OnRegisterEntityResources(p_LevelData)
 	m_ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 end
 
