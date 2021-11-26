@@ -247,6 +247,8 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 		self.m_WebUIEvents = {}
 		self.m_Hooks = {}
 		self.m_Commands = {}
+
+		m_Hud:OnExtensionUnloading()
 		WebUI:Hide()
 		return
 	elseif #self.m_Events == 0 then

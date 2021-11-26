@@ -91,7 +91,8 @@ function Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
 	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
 
 	if s_BrPlayer == nil then
-		return
+		m_Logger:Warning("BrPlayer for " .. p_Player.name .. " not found. Create it now.")
+		s_BrPlayer = m_TeamManager:CreatePlayer(p_Player)
 	end
 
 	s_BrPlayer:Spawn(s_Transform)

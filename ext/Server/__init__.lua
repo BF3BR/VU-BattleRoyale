@@ -151,11 +151,11 @@ function VuBattleRoyaleServer:OnLevelLoadResources()
 	end
 
 	m_MapVEManager:OnLevelLoadResources()
+	self:SetupRconVariables()
 end
 
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 	self:DisablePreRound()
-	self:SetupRconVariables()
 	m_Match:OnRestartRound()
 	self.m_WaitForStart = false
 	self.m_ForcedWarmup = false
@@ -307,7 +307,8 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 		local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
 
 		if s_BrPlayer == nil then
-			return
+			m_Logger:Warning("BrPlayer for " .. p_Player.name .. " not found. Create it now.")
+			s_BrPlayer = m_TeamManager:CreatePlayer(p_Player)
 		end
 
 		s_BrPlayer:SetAppearance(p_AppearanceName)
@@ -319,8 +320,8 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 		end
 
 		s_BrPlayer:Spawn(LinearTransform(
-			Vec3(1.0, 0.0, 0.0), 
-			Vec3(0.0, 1.0, 0.0), 
+			Vec3(1.0, 0.0, 0.0),
+			Vec3(0.0, 1.0, 0.0),
 			Vec3(0.0, 0.0, 1.0),
 			s_SpawnTrans
 		))
