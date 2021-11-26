@@ -504,7 +504,6 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 	m_Hud:OnGameStateChanged(p_GameState)
 	m_SpectatorClient:OnGameStateChanged(p_GameState)
 	m_BRLooting:OnGameStateChanged(p_GameState)
-	m_SpectatorClient:OnGameStateChanged(p_GameState)
 end
 
 function VuBattleRoyaleClient:OnUpdateTimer(p_Time)

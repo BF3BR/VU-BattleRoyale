@@ -46,12 +46,6 @@ function SpectatorClient:OnLevelDestroy()
 	self.m_SpectatingPlayerYaw = 0.0
 end
 
-function SpectatorClient:OnGameStateChanged(p_GameState)
-	if self.m_GameState == GameStates.None then
-		WebUI:ExecuteJS("UpdateSpectatorCount(null);")
-	end
-end
-
 function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	if not SpectatorManager:GetSpectating() then
 		return
@@ -283,6 +277,10 @@ end
 function SpectatorClient:OnGameStateChanged(p_GameState)
 	if p_GameState == nil then
 		return
+	end
+
+	if p_GameState == GameStates.None then
+		WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	end
 
 	self.m_GameState = p_GameState
