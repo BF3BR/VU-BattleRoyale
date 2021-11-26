@@ -257,6 +257,8 @@ function BRPlayer:Spawn(p_Trans)
 
 	g_Timers:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
 		if p_Player.soldier ~= nil then
+			-- the ApplyCustomization is needed otherwise the transform will reset to Vec3(1,0,0) Vec3(0,1,0) Vec3(0,0,1)
+			p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
 			p_Player.soldier:SetTransform(p_Trans)
 			-- we are done, so we can destroy this timer
 			p_Timer:Destroy()
@@ -286,7 +288,7 @@ function BRPlayer:CreateCustomizeSoldierData()
 	s_UnlockWeaponAndSlot9.slot = WeaponSlot.WeaponSlot_9
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot9)
 
-	s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_9
+	s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
 	s_CustomizeSoldierData.removeAllExistingWeapons = true
 	s_CustomizeSoldierData.disableDeathPickup = false
 

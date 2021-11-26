@@ -15,7 +15,7 @@ function Gunship:RegisterVars()
 	self.m_VehicleEntity = nil
 	self.m_Enabled = false
 	self.m_CalculatedTime = 0.0
-	
+
 	self.m_OpenParachuteList = {}
 
 	self.m_RemoveOnEnd = false
@@ -84,7 +84,6 @@ function Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
 
 	if p_Transform ~= nil then
 		s_Transform.left = p_Transform.left * - 1
-		s_Transform.up = p_Transform.up * - 1
 		s_Transform.forward = p_Transform.forward * - 1
 	end
 
