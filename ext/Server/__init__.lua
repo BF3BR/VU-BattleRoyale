@@ -141,12 +141,17 @@ function VuBattleRoyaleServer:OnLevelLoadResources()
 		self.m_Hooks = {}
 
 		ServerUtils:ClearCustomGameModeName()
+		m_TeamManager:DestroyAll()
 
 		return
 	elseif #self.m_Events == 0 then
 		self:RegisterEvents()
 		self:RegisterHooks()
 		ServerUtils:SetCustomGameModeName("Battle Royale - " .. self:CurrentTeamSize())
+
+		for _, l_Player in pairs(PlayerManager:GetPlayers()) do
+			m_TeamManager:CreatePlayer(l_Player)
+		end
 	end
 
 	m_MapVEManager:OnLevelLoadResources()

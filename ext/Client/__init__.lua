@@ -252,6 +252,7 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 		self:RegisterWebUIEvents()
 		self:RegisterHooks()
 		WebUI:Show()
+		m_Hud:OnLevelDestroy()
 	end
 
 	m_OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)

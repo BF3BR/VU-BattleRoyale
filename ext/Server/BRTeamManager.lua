@@ -54,7 +54,6 @@ function BRTeamManager:OnLevelDestroy()
 end
 
 function BRTeamManager:OnPlayerAuthenticated(p_Player)
-	m_Logger:Write(string.format("Creating BRPlayer for '%s'", p_Player.name))
 	self:CreatePlayer(p_Player)
 end
 
@@ -247,6 +246,8 @@ function BRTeamManager:CreatePlayer(p_Player)
 	if self.m_Players[s_Name] ~= nil then
 		return self.m_Players[s_Name]
 	end
+
+	m_Logger:Write(string.format("Creating BRPlayer for '%s'", s_Name))
 
 	-- create player
 	local s_BrPlayer = BRPlayer(p_Player)
@@ -485,6 +486,19 @@ function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayer
 			end
 		end
 	end
+end
+
+function BRTeamManager:DestroyAll()
+	for l_Id, l_BrPlayer in pairs(self.m_Players) do
+		l_BrPlayer:Destroy()
+	end
+
+	for l_Id, l_BrTeam in pairs(self.m_Teams) do
+		l_BrTeam:Destroy()
+	end
+
+	self.m_Players = {}
+	self.m_Teams = {}
 end
 
 return BRTeamManager()
