@@ -314,10 +314,9 @@ function SpectatorClient:Enable(p_InflictorId)
 		return
 	end
 
-	m_Logger:Write("Spectating should work at this point")
-
 	if not SpectatorManager:GetSpectating() then
 		SpectatorManager:SetSpectating(true)
+		m_Logger:Write("Spectating should work at this point")
 	end
 
 	local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)

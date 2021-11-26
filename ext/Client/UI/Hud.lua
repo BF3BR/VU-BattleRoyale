@@ -667,6 +667,7 @@ end
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
 	local s_Player = nil
+	local s_Position = nil
 
 	if SpectatorManager:GetSpectating() then
 		s_Player = SpectatorManager:GetSpectatedPlayer()
@@ -678,17 +679,16 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
 		return
 	end
 
-	if s_Player.alive == false then
-		return
+	if s_Player.alive then
+		local s_Soldier = s_Player.soldier
+
+		if s_Soldier ~= nil then
+			s_Position = s_Soldier.worldTransform.trans
+		end
+	else
+		s_Position = ClientUtils:GetCameraTransform().trans
 	end
 
-	local s_Soldier = s_Player.soldier
-
-	if s_Soldier == nil then
-		return
-	end
-
-	local s_Position = s_Soldier.worldTransform.trans
 	local s_Table = {
 		x = s_Position.x,
 		y = s_Position.y,
@@ -702,12 +702,15 @@ end
 function VuBattleRoyaleHud:PushLocalPlayerYaw()
 	if SpectatorManager:GetSpectating() then
 		local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
+		local s_Forward = nil
 
 		if s_SpectatedPlayer == nil or s_SpectatedPlayer.soldier == nil then
-			return
+			s_Forward = ClientUtils:GetCameraTransform().forward * -1
+		else
+			s_Forward = s_SpectatedPlayer.soldier.worldTransform.forward
 		end
 
-		local s_YawRad = (math.atan(s_SpectatedPlayer.soldier.worldTransform.forward.z, s_SpectatedPlayer.soldier.worldTransform.forward.x) - (math.pi / 2)) % (2 * math.pi)
+		local s_YawRad = (math.atan(s_Forward.z, s_Forward.x) - (math.pi / 2)) % (2 * math.pi)
 		self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
 	else
 		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
