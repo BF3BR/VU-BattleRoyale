@@ -129,11 +129,11 @@ function VuBattleRoyaleServer:OnLevelLoadResources()
 
 	m_LootManager:OnLevelLoadResources()
 	m_MapVEManager:OnLevelLoadResources()
+	self:SetupRconVariables()
 end
 
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 	self:DisablePreRound()
-	self:SetupRconVariables()
 	m_Match:OnRestartRound()
 	self.m_WaitForStart = false
 	self.m_ForcedWarmup = false
