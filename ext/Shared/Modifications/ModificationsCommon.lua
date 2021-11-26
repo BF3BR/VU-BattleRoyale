@@ -32,7 +32,6 @@ function ModificationsCommon:RegisterCallbacks()
 	m_DropShipModifier:RegisterCallbacks()
 	m_VanillaUIModifier:RegisterCallbacks()
 	m_PhysicsModifier:RegisterCallbacks()
-	m_WeaponDropModifier:RegisterCallbacks()
 	m_2dTreeRemoving:RegisterCallbacks()
 	m_FireEffectsModifier:RegisterCallbacks()
 	m_AirdropSmokeModifier:RegisterCallbacks()
@@ -64,7 +63,6 @@ end
 
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_FireEffectsModifier:OnRegisterEntityResources()
-	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
 	m_Airdrop:OnRegisterEntityResources()
 end
 
@@ -83,7 +81,6 @@ function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedica
 		m_VanillaUIModifier:DeregisterCallbacks()
 		m_MapSpecificModifier:DeregisterCallbacks()
 		m_PhysicsModifier:DeregisterCallbacks()
-		m_WeaponDropModifier:DeregisterCallbacks()
 		m_2dTreeRemoving:DeregisterCallbacks()
 		m_FireEffectsModifier:DeregisterCallbacks()
 		m_AirdropSmokeModifier:DeregisterCallbacks()

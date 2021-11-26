@@ -21,7 +21,6 @@ require "__shared/Items/BRItemGadget"
 require "DebugCommands"
 
 local m_Whitelist = require "Whitelist"
-local m_ServerManDownLoot = require "ServerManDownLoot"
 local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_PingServer = require "PingServer"
 local m_TeamManager = require "BRTeamManager"
@@ -161,7 +160,6 @@ function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_
 	self.m_ForcedWarmup = false
 	m_PhaseManagerServer:OnLevelLoaded()
 	m_PingServer:OnLevelLoaded()
-	m_ServerManDownLoot:OnLevelLoaded()
 	m_AntiCheat:OnLevelLoaded()
 	m_MapVEManager:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 end

@@ -28,7 +28,6 @@ local m_Hud = require "UI/Hud"
 local m_Chat = require "UI/Chat"
 local m_SpectatorClient = require "SpectatorClient"
 local m_Ping = require "PingClient"
-local m_ClientManDownLoot = require "ClientManDownLoot"
 local m_AntiCheat = require "AntiCheat"
 local m_Settings = require "Settings"
 local m_TeamManager = require "BRTeamManager"
@@ -106,9 +105,6 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe(PhaseManagerNetEvent.UpdateState, self, self.OnPhaseManagerUpdateState),
 
 		Events:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers),
-
-		NetEvents:Subscribe(ManDownLootEvents.UpdateLootPosition, self, self.OnUpdateLootPosition),
-		NetEvents:Subscribe(ManDownLootEvents.OnInteractionFinished, self, self.OnLootInteractionFinished),
 
 		NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied),
 		NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
@@ -473,18 +469,6 @@ end
 
 function VuBattleRoyaleClient:OnSpectatedPlayerTeamMembers(p_PlayerNames)
 	m_TeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
-end
-
--- =============================================
-	-- ManDownLoot Events
--- =============================================
-
-function VuBattleRoyaleClient:OnUpdateLootPosition(p_IndexInBlueprint, p_Transform)
-	m_ClientManDownLoot:OnUpdateLootPosition(p_IndexInBlueprint, p_Transform)
-end
-
-function VuBattleRoyaleClient:OnLootInteractionFinished(p_ManDownLootTable)
-	m_ClientManDownLoot:OnLootInteractionFinished(p_ManDownLootTable)
 end
 
 -- =============================================
