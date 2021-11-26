@@ -13,7 +13,10 @@ function GameStateManager:SetGameState(p_GameState)
 	end
 
 	if p_GameState == self.m_GameState then
-		m_Logger:Warning("Attempted to switch to the same gamestate.")
+		if p_GameState ~= GameStates.None then
+			m_Logger:Warning("Attempted to switch to the same gamestate.")
+		end
+
 		return
 	end
 
