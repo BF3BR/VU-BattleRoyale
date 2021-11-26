@@ -12,13 +12,21 @@ return {
 		"XP1Chunks",
 		"Levels/XP1_004/XP1_004",
 		"Levels/XP3_Shield/XP3_Shield",
-		"Levels/COOP_010/COOP_010"
+		"Levels/COOP_010/COOP_010",
+		"XP5Chunks",
+		"Levels/XP5_003/XP5_003"
 	},
 	Bundles = {
 		"Levels/XP1_004/XP1_004",
 		"Levels/XP3_Shield/XP3_Shield",
 		"Levels/COOP_010/COOP_010",
+		"Levels/XP5_003/XP5_003",
+		"Levels/XP5_003/Conquest",
+		"Levels/XP5_003/CQL",
 		"Levels/XP3_Alborz/XP3_Alborz"
+	},
+	BundleRegistries = {
+		DC(Guid("4D59552D-787F-402E-8FED-7B360186BD8A"), Guid("D52CD0C7-7BFF-EDC8-1198-1CC70F9E68F8"))
 	},
 	TerrainName = "levels/mp_whitepeak/terrain/terrain",
 	SubWorldInstance = DC(Guid("707F4A91-B837-47AC-8BEE-5EB614399714"), Guid("A83D8333-F6D5-43AA-BA65-96122FAE8F7C")),

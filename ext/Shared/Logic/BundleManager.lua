@@ -58,4 +58,17 @@ function BundleManager:OnTerrainLoad(p_Hook, p_TerrainAssetName)
 	end
 end
 
+function BundleManager:OnRegisterEntityResources(p_LevelData)
+	m_Logger:Write("Adding registries")
+	local s_BundleRegistries = MapsConfig[LevelNameHelper:GetLevelName()].BundleRegistries
+
+	if s_BundleRegistries == nil then
+		return
+	end
+
+	for _, l_Registry in ipairs(s_BundleRegistries) do
+		ResourceManager:AddRegistry(l_Registry:GetInstance(), ResourceCompartment.ResourceCompartment_Game)
+	end
+end
+
 return BundleManager()

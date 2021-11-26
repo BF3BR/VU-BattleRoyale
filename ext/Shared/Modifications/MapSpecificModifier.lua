@@ -41,20 +41,38 @@ function MapSpecificModifier:OnWorldPartLoaded(p_WorldPartReferenceObjectData)
 end
 
 function MapSpecificModifier:OnVehiclesWorldPartData(p_Instance)
+	local s_FoundC130 = false
+
 	-- Remove / exclude all the vehicles from the map
-	-- TODO: Probably need to fix this for other maps! Need to recheck.
 	for i, l_Object in pairs(p_Instance.objects) do
 		if l_Object:Is("ReferenceObjectData") then
 			l_Object = ReferenceObjectData(l_Object)
 
 			-- Gameplay/GameModes/Conquest/ADDF2F84-F2E8-2AD8-5FE6-56620207AC95
 			-- XP5/Dynamic_VehicleSpawners/Outpostspawn_XP_US_C130Airdrop_RU_C130Airdrop/B57E136A-0E4D-4952-8823-98A20DFE8F44
-			if l_Object.blueprint.instanceGuid ~= Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95") and
-				l_Object.blueprint.instanceGuid ~= Guid("B57E136A-0E4D-4952-8823-98A20DFE8F44") then
-				l_Object:MakeWritable()
-				l_Object.excluded = true
+			if l_Object.blueprint.instanceGuid ~= Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95") then
+				if l_Object.blueprint.instanceGuid ~= Guid("B57E136A-0E4D-4952-8823-98A20DFE8F44") then
+					l_Object:MakeWritable()
+					l_Object.excluded = true
+				else
+					m_Logger:Write("Found C130 Reference")
+					s_FoundC130 = true
+				end
 			end
 		end
+	end
+
+	if s_FoundC130 then
+		return
+	end
+
+	local s_C130Reference = ResourceManager:FindInstanceByGuid(Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"), Guid("86BFA7DC-4233-4FE3-91C9-BA4C746A1873"))
+
+	if s_C130Reference ~= nil then
+		m_Logger:Write("Adding C130 Reference")
+		p_Instance.objects:add(ReferenceObjectData(s_C130Reference))
+	else
+		m_Logger:Error("Didn\'t find C130 Reference")
 	end
 end
 
