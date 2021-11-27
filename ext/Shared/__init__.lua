@@ -20,6 +20,7 @@ require "__shared/Types/DataContainer"
 require "__shared/Types/MeshModel/MeshModel"
 require "__shared/Types/MeshModel/SkeletonMeshModel"
 require "__shared/Types/MeshModel/WeaponSkeletonMeshModel"
+require "__shared/Types/BRLootPickup"
 
 require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
@@ -30,6 +31,7 @@ require "__shared/Utils/DCExt"
 require "__shared/Configs/ServerConfig"
 require "__shared/Configs/MapsConfig"
 require "__shared/Configs/FireEffectsConfig"
+require "__shared/Configs/InventoryConfig"
 
 require "__shared/Logic/PhaseManagerShared"
 

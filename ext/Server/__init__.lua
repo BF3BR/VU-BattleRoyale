@@ -4,11 +4,7 @@ require "Types/BRTeam"
 require "Types/BRPlayer"
 require "Types/BRInventory"
 
-require "__shared/Configs/InventoryConfig"
-
 require "__shared/Enums/ItemEnums"
-require "__shared/Enums/CustomEvents"
-require "__shared/Types/BRLootPickup"
 
 require "__shared/Items/BRItemWeapon"
 require "__shared/Items/BRItemAmmo"
