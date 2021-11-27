@@ -76,7 +76,7 @@ function VanillaUIModifier:DeregisterCallbacks()
 	m_3dLaserTagCompData:Deregister()
 	m_MapmarkertagCompData:Deregister()
 	m_TeamSupportTagCompData:Deregister()
-	--m_InteractionCompData:Deregister()
+	m_InteractionCompData:Deregister()
 	m_ColorCorrectionCompData:Deregister()
 	m_DofComponentData:Deregister()
 
