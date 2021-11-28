@@ -43,7 +43,7 @@ function BRAirdropManager:GetPlaneDistance()
         return
     end
 
-    if not m_Gunship.m_Enabled and m_Gunship.m_Type ~= "Airdrop" then
+    if not m_Gunship:IsEnabled() or m_Gunship:GetType() ~= "Airdrop" then
         return nil
     end
 

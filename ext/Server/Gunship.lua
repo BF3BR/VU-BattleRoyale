@@ -300,4 +300,12 @@ function Gunship:GetRandomGunshipPath()
 	return s_Return
 end
 
+function Gunship:GetType()
+	return self.m_Type
+end
+
+function Gunship:IsEnabled()
+	return self.m_Enabled
+end
+
 return Gunship()
