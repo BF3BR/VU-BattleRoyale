@@ -40,6 +40,9 @@ function BRPlayer:__init(p_Player)
 
 	-- The appearance name
 	self.m_Appearance = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01"
+
+	-- Apply the Appearance so the client has the correct soldiermodel in the deploy screen when joining
+	self:SetAppearance(nil, true)
 end
 
 -- =============================================
@@ -213,19 +216,19 @@ function BRPlayer:Spawn(p_Trans)
 		return
 	end
 
-	local s_SoldierAsset = nil
-	local s_Appearance = nil
-	local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
+	if self.m_Player.selectedKit == nil then
+		local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
 
-	s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
-	s_Appearance = ResourceManager:SearchForDataContainer(self.m_Appearance)
+		if s_SoldierBlueprint == nil then
+			m_Logger:Error("Couldn\'t find the SoldierBlueprint")
+			return
+		end
 
-	if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
-		return
+		self.m_Player.selectedKit = s_SoldierBlueprint
 	end
 
-	self.m_Player.selectedKit = s_SoldierBlueprint
-	self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+	self:SetAppearance(nil, true)
+
 	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
 		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
