@@ -594,8 +594,14 @@ function VuBattleRoyaleClient:OnWebUIHoverCommoRose(p_TypeIndex)
 	m_Ping:OnWebUIHoverCommoRose(p_TypeIndex)
 end
 
-function VuBattleRoyaleClient:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
-	m_VoipManager:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
+function VuBattleRoyaleClient:OnWebUIVoipMutePlayer(p_Params)
+	local s_DecodedParams = json.decode(p_Params)
+
+	if s_DecodedParams.playerName == nil or s_DecodedParams.mute == nil then
+		return
+	end
+
+	m_VoipManager:OnWebUIVoipMutePlayer(s_DecodedParams.playerName, s_DecodedParams.mute)
 end
 
 -- =============================================

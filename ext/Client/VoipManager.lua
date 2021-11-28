@@ -109,9 +109,9 @@ function VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 	end
 
 	if p_Emitter.channel.name:match("BRTeam") then
-		--WebUI:ExecuteJs("VoipEmitterEmitting(" .. p_Emitter.player.name .. "," .. tostring(p_IsEmitting) ..", false);")
+		WebUI:ExecuteJS("VoipEmitterEmitting('" .. p_Emitter.player.name .. "'," .. tostring(p_IsEmitting) ..", false);")
 	else
-		--WebUI:ExecuteJs("VoipEmitterEmitting(" .. p_Emitter.player.name .. "," .. tostring(p_IsEmitting) ..", true);")
+		WebUI:ExecuteJS("VoipEmitterEmitting('" .. p_Emitter.player.name .. "'," .. tostring(p_IsEmitting) ..", true);")
 	end
 end
 
@@ -144,8 +144,8 @@ function VoipManager:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
 
 	s_Emitter.muted = p_Mute
 
-	-- send confirmation back to webui?
-	-- WebUI:ExecuteJs("VoipPlayerMuted(" .. p_PlayerName .. "," .. tostring(p_Mute) ..");")
+	-- send confirmation back to webui
+	WebUI:ExecuteJS("VoipPlayerMuted('" .. p_PlayerName .. "'," .. tostring(p_Mute) ..");")
 end
 
 return VoipManager()

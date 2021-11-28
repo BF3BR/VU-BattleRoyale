@@ -2,7 +2,8 @@ import { TeamState } from "./Types";
 import { 
     TeamActionTypes,
     UPDATE_SPEAKING,
-    UPDATE_TEAM
+    UPDATE_TEAM,
+    UPDATE_MUTING,
 } from "./ActionTypes";
 
 const initialState: TeamState = {
@@ -32,6 +33,22 @@ const TeamReducer = (
                     return {
                         ...player,
                         isSpeaking: action.payload.speaking ? (action.payload.isParty ? 2 : 1) : 0,
+                    }
+                })
+            }
+        case UPDATE_MUTING:
+            return {
+                ...state,
+                players: state.players.map((player) => {
+                    if (player.name !== action.payload.playersName) {
+                        // This isn't the player we care about - keep it as-is
+                        return player;
+                    }
+                
+                    // Otherwise, this is the one we want - return an updated value
+                    return {
+                        ...player,
+                        isMuted: action.payload.isMuted,
                     }
                 })
             }

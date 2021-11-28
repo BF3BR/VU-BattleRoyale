@@ -36,6 +36,8 @@ import {
     updateSubphaseIndex
 } from "./store/circle/Actions";
 import {
+    updateMuting,
+    updateSpeaking,
     updateTeam
 } from "./store/team/Actions";
 import {
@@ -592,6 +594,14 @@ const App: React.FC<Props> = ({
         dispatch(updateCommoRose(false));
     }
 
+    window.VoipEmitterEmitting = (playerName: string, isSpeaking: boolean, isParty: boolean) => {
+        dispatch(updateSpeaking(playerName, isSpeaking, isParty));
+    }
+
+    window.VoipPlayerMuted = (playerName: string, isMuted: boolean) => {
+        dispatch(updateMuting(playerName, isMuted));
+    }
+
     return (
         <>
             {debugMode &&
@@ -800,5 +810,8 @@ declare global {
 
         OnShowCommoRose: () => void;
         OnHideCommoRose: () => void;
+
+        VoipEmitterEmitting: (playerName: string, isSpeaking: boolean, isParty: boolean) => void;
+        VoipPlayerMuted: (playerName: string, isMuted: boolean) => void;
     }
 }

@@ -49,6 +49,7 @@ interface StateFromReducer {
     teamSize: number;
     teamOpen: boolean;
     isTeamLeader: boolean;
+    localPlayerName: string;
     teamCode: string|null;
     teamJoinError: number|null;
     selectedAppearance: number;
@@ -62,7 +63,8 @@ const DeployScreen: React.FC<Props> = ({
     team, 
     teamSize, 
     teamOpen, 
-    isTeamLeader, 
+    isTeamLeader,
+    localPlayerName,
     teamCode, 
     teamJoinError, 
     setTeamJoinError,
@@ -132,7 +134,10 @@ const DeployScreen: React.FC<Props> = ({
     }
 
     const OnMute = (player: Player) => {
-        alert("mute");
+        sendToLua('WebUI:VoipMutePlayer', JSON.stringify({
+            playerName: player.name,
+            mute: typeof player.isMuted === "boolean" ? !player.isMuted : true,
+        }));
     }
 
     const items = []
@@ -220,13 +225,15 @@ const DeployScreen: React.FC<Props> = ({
                                                     }
                                                 </span>
                                             </div>
-                                            <button className="btn btn-small" onClick={() => OnMute(player)}>
-                                                {player.isMuted ?
-                                                    "Unmute"
-                                                :
-                                                    "Mute"
-                                                }
-                                            </button>
+                                            {player.name !== localPlayerName &&                                            
+                                                <button className="btn btn-small" onClick={() => OnMute(player)}>
+                                                    {player.isMuted ?
+                                                        "Unmute"
+                                                    :
+                                                        "Mute"
+                                                    }
+                                                </button>
+                                            }
                                         </div>
                                     ))}
                                     {items??''}
@@ -308,6 +315,7 @@ const mapStateToProps = (state: RootState) => {
         selectedTeamType: state.GameReducer.deployScreen.selectedTeamType,
         // PlayerReducer
         isTeamLeader: state.PlayerReducer.player.isTeamLeader ?? false,
+        localPlayerName: state.PlayerReducer.player.name ?? "",
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

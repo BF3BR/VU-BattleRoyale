@@ -3,6 +3,7 @@ import {
     TeamActionTypes,
     UPDATE_TEAM,
     UPDATE_SPEAKING,
+    UPDATE_MUTING,
 } from "./ActionTypes";
 
 export function updateTeam(players: Player[]): TeamActionTypes {
@@ -19,6 +20,16 @@ export function updateSpeaking(playersName: string, speaking: boolean, isParty: 
             playersName,
             speaking,
             isParty,
+        },
+    };
+}
+
+export function updateMuting(playersName: string, isMuted: boolean): TeamActionTypes {
+    return {
+        type: UPDATE_MUTING,
+        payload: { 
+            playersName,
+            isMuted,
         },
     };
 }
