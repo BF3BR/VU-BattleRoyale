@@ -69,6 +69,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 
 		Events:Subscribe('VoipChannel:PlayerJoined', self, self.OnVoipChannelPlayerJoined),
 		Events:Subscribe('VoipChannel:PlayerLeft', self, self.OnVoipChannelPlayerLeft),
+		Events:Subscribe('VoipEmitter:Emitting', self, self.OnVoipEmitterEmitting),
 
 		NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled),
 		NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown),
@@ -121,6 +122,7 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 		Events:Subscribe("WebUI:OutgoingChatMessage", self, self.OnWebUIOutgoingChatMessage),
 		Events:Subscribe("WebUI:SetCursor", self, self.OnWebUISetCursor),
 		Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose),
+		Events:Subscribe("WebUI:VoipMutePlayer", self, self.OnWebUIVoipMutePlayer),
 	}
 end
 
@@ -314,6 +316,10 @@ end
 
 function VuBattleRoyaleClient:OnVoipChannelPlayerLeft(p_Channel, p_Player)
 	m_VoipManager:OnVoipChannelPlayerLeft(p_Channel, p_Player)
+end
+
+function VuBattleRoyaleClient:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
+	m_VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 end
 
 -- =============================================
@@ -586,6 +592,10 @@ end
 
 function VuBattleRoyaleClient:OnWebUIHoverCommoRose(p_TypeIndex)
 	m_Ping:OnWebUIHoverCommoRose(p_TypeIndex)
+end
+
+function VuBattleRoyaleClient:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
+	m_VoipManager:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
 end
 
 -- =============================================
