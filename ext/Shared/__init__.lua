@@ -25,7 +25,6 @@ require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/Timers"
 require "__shared/Utils/PostReloadEvent"
-require "__shared/Utils/DCExt"
 
 require "__shared/Configs/ServerConfig"
 require "__shared/Configs/MapsConfig"

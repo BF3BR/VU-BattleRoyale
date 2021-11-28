@@ -63,9 +63,9 @@ function SoundModifier:OnPartitionLoaded(p_Partition)
 
 	if p_Partition.primaryInstance:Is("SoundPatchAsset") then
 		--NOTE: Comment this out to remove gun sound mods
-		self:ModifyWeaponSounds(p_Partition, p_Partition.primaryInstance)
-		self:ModifyBulletImpactSounds(p_Partition, p_Partition.primaryInstance)
-		self:ModifyAirVehicleSounds(p_Partition, p_Partition.primaryInstance)
+		self:ModifyWeaponSounds(SoundPatchAsset(p_Partition.primaryInstance))
+		self:ModifyBulletImpactSounds(SoundPatchAsset(p_Partition.primaryInstance))
+		self:ModifyAirVehicleSounds(SoundPatchAsset(p_Partition.primaryInstance))
 	end
 end
 
@@ -99,44 +99,41 @@ function SoundModifier:IsSoundPatchAssetForBulletImpact(p_SoundPatchAsset)
 	return string.find(s_Name, "bullet_impact")
 end
 
-function SoundModifier:ModifyAirVehicleSounds(p_Partition, p_SoundPatchAsset)
-	local s_SoundPatchAsset = DCExt:MakeWritable(p_SoundPatchAsset)
-
-	if self:IsSoundPatchAssetForAirVehicles(s_SoundPatchAsset) then
+function SoundModifier:ModifyAirVehicleSounds(p_SoundPatchAsset)
+	if self:IsSoundPatchAssetForAirVehicles(p_SoundPatchAsset) then
 		m_Logger:Write("Found sound for air vehicles")
-		self:ModifySoundPatchAsset(s_SoundPatchAsset, self.m_AirVehiclesAttenuationMultipliers, self.m_AirVehicleMinDistanceMultiplier, self.m_AirVehicleMaxDistanceMultiplier, self.m_AirVehicleSoundNodesToIgnore)
+		self:ModifySoundPatchAsset(p_SoundPatchAsset, self.m_AirVehiclesAttenuationMultipliers, self.m_AirVehicleMinDistanceMultiplier, self.m_AirVehicleMaxDistanceMultiplier, self.m_AirVehicleSoundNodesToIgnore)
 	end
 end
 
-function SoundModifier:ModifyWeaponSounds(p_Partition, p_SoundPatchAsset)
-	local s_SoundPatchAsset = DCExt:MakeWritable(p_SoundPatchAsset)
-
-	if self:IsSoundPatchAssetForGun(s_SoundPatchAsset) then
+function SoundModifier:ModifyWeaponSounds(p_SoundPatchAsset)
+	if self:IsSoundPatchAssetForGun(p_SoundPatchAsset) then
 		m_Logger:Write("Found sound for gun")
-		self:ModifySoundPatchAsset(s_SoundPatchAsset, self.m_WeaponAttenuationMultipliers, self.m_WeaponMinDistanceMultiplier, self.m_WeaponMaxDistanceMultiplier, self.m_GunSoundNodesToIgnore)
+		self:ModifySoundPatchAsset(p_SoundPatchAsset, self.m_WeaponAttenuationMultipliers, self.m_WeaponMinDistanceMultiplier, self.m_WeaponMaxDistanceMultiplier, self.m_GunSoundNodesToIgnore)
 	end
 end
 
-function SoundModifier:ModifyBulletImpactSounds(p_Partition, p_SoundPatchAsset)
-	local s_SoundPatchAsset = DCExt:MakeWritable(p_SoundPatchAsset)
-
-	if self:IsSoundPatchAssetForBulletImpact(s_SoundPatchAsset) then
+function SoundModifier:ModifyBulletImpactSounds(p_SoundPatchAsset)
+	if self:IsSoundPatchAssetForBulletImpact(p_SoundPatchAsset) then
 		m_Logger:Write("Found sound for bullet impact")
-		self:ModifySoundPatchAsset(s_SoundPatchAsset, nil, self.m_BulletImpactMinDistanceMultiplier, self.m_BulletImpactMaxDistanceMultiplier, nil)
+		self:ModifySoundPatchAsset(p_SoundPatchAsset, nil, self.m_BulletImpactMinDistanceMultiplier, self.m_BulletImpactMaxDistanceMultiplier, nil)
 	end
 end
 
 function SoundModifier:ModifySoundPatchAsset(p_SoundPatchAsset, p_AttenuationMultipliers, p_MinDistanceMultiplier, p_MaxDistanceMultiplier, p_NodesToIgnore)
+	-- Seems like the instance itself doesn't get modified at all, so no need to make it writable
+	--p_SoundPatchAsset:MakeWritable()
 
-	for l_NodeKey, l_Node in pairs(p_SoundPatchAsset.outputNodes) do
-		local s_Node = DCExt:MakeWritable(l_Node)
+	for _, l_Node in pairs(p_SoundPatchAsset.outputNodes) do
+		l_Node = _G[l_Node.typeInfo.name](l_Node)
+		l_Node:MakeWritable()
 
-		if p_NodesToIgnore == nil or not self:ShouldNodeBeIgnored(s_Node.outputName, p_NodesToIgnore) then
-			s_Node.minDistance = s_Node.minDistance * p_MinDistanceMultiplier
+		if p_NodesToIgnore == nil or not self:ShouldNodeBeIgnored(l_Node.outputName, p_NodesToIgnore) then
+			l_Node.minDistance = l_Node.minDistance * p_MinDistanceMultiplier
 
 			--Unsure if all audio output nodes contain an attenuationCurve, so better safe than sorry
-			if s_Node['attenuationCurve'] and p_AttenuationMultipliers ~= nil then
-				for l_CurveKey, l_Curve in pairs(s_Node.attenuationCurve.points) do
+			if l_Node['attenuationCurve'] and p_AttenuationMultipliers ~= nil then
+				for l_CurveKey, l_Curve in pairs(l_Node.attenuationCurve.points) do
 					local s_Multiplier = p_AttenuationMultipliers[l_CurveKey]
 
 					if s_Multiplier == nil then
@@ -155,17 +152,20 @@ function SoundModifier:ModifySoundPatchAsset(p_SoundPatchAsset, p_AttenuationMul
 		end
 	end
 
-	local s_AudioGraph = DCExt:MakeWritable(p_SoundPatchAsset.graph)
+	local s_AudioGraph = SoundGraphData(p_SoundPatchAsset.graph)
+	s_AudioGraph:MakeWritable()
 
 	--Increase maximum audibility distance
-	for l_NodeKey, l_Node in pairs(s_AudioGraph.nodes) do
+	for _, l_Node in pairs(s_AudioGraph.nodes) do
 		if l_Node:Is("MultiCrossfaderNodeData") then
-			local s_Node = DCExt:MakeWritable(l_Node)
+			l_Node = MultiCrossfaderNodeData(l_Node)
+			l_Node:MakeWritable()
 
-			for l_GroupKey, l_Group in pairs(s_Node.crossfaderGroups) do
-				local s_Group = DCExt:MakeWritable(l_Group)
-				s_Group.fadeEnd = s_Group.fadeEnd * p_MaxDistanceMultiplier
-				m_Logger:Write('\nFadeStart: ' .. s_Group.fadeBegin .. '\nFadeEnd: ' .. s_Group.fadeEnd)
+			for _, l_Group in pairs(l_Node.crossfaderGroups) do
+				l_Group = MultiCrossfaderGroup(l_Group)
+				l_Group:MakeWritable()
+				l_Group.fadeEnd = l_Group.fadeEnd * p_MaxDistanceMultiplier
+				m_Logger:Write('\nFadeStart: ' .. l_Group.fadeBegin .. '\nFadeEnd: ' .. l_Group.fadeEnd)
 			end
 		end
 	end
@@ -181,9 +181,4 @@ function SoundModifier:ShouldNodeBeIgnored(p_NodeName, p_IgnoreList)
 	return false
 end
 
--- Singleton.
-if g_SoundModifier == nil then
-	g_SoundModifier = SoundModifier()
-end
-
-return g_SoundModifier
+return SoundModifier()
