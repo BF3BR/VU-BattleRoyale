@@ -122,6 +122,7 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 		Events:Subscribe("WebUI:OutgoingChatMessage", self, self.OnWebUIOutgoingChatMessage),
 		Events:Subscribe("WebUI:SetCursor", self, self.OnWebUISetCursor),
 		Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose),
+		Events:Subscribe("WebUI:VoipMutePlayer", self, self.OnWebUIVoipMutePlayer),
 	}
 end
 
@@ -591,6 +592,10 @@ end
 
 function VuBattleRoyaleClient:OnWebUIHoverCommoRose(p_TypeIndex)
 	m_Ping:OnWebUIHoverCommoRose(p_TypeIndex)
+end
+
+function VuBattleRoyaleClient:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
+	m_VoipManager:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
 end
 
 -- =============================================

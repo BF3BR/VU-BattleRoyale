@@ -92,7 +92,6 @@ function VoipManager:OnVoipChannelPlayerLeft(p_Channel, p_Player)
 	end
 end
 
-
 function VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 	-- player can be nil if the client is in the loading screen
 	if p_Emitter.player == nil then
@@ -114,6 +113,39 @@ function VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 	else
 		--WebUI:ExecuteJs("VoipEmitterEmitting(" .. p_Emitter.player.name .. "," .. tostring(p_IsEmitting) ..", true);")
 	end
+end
+
+function VoipManager:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
+	if self.m_BrTeamChannelName == nil then
+		m_Logger:Warning("Tried (un-)muting a player from team voip channel while not being in one.")
+		return
+	end
+
+	local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
+
+	if s_Player == nil then
+		m_Logger:Write("Couldn\'t find the player: " .. p_PlayerName)
+		return
+	end
+
+	local s_Channel = Voip:GetChannel(self.m_BrTeamChannelName)
+
+	if s_Channel == nil then
+		m_Logger:Warning("Couldn\'t find VoipChannel: " .. self.m_BrTeamChannelName)
+		return
+	end
+
+	local s_Emitter = s_Channel:GetEmitter(s_Player)
+
+	if s_Emitter == nil then
+		m_Logger:Warning("Couldn\'t find emitter for player: " .. p_PlayerName)
+		return
+	end
+
+	s_Emitter.muted = p_Mute
+
+	-- send confirmation back to webui?
+	-- WebUI:ExecuteJs("VoipPlayerMuted(" .. p_PlayerName .. "," .. tostring(p_Mute) ..");")
 end
 
 return VoipManager()
