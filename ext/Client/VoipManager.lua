@@ -92,4 +92,28 @@ function VoipManager:OnVoipChannelPlayerLeft(p_Channel, p_Player)
 	end
 end
 
+
+function VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
+	-- player can be nil if the client is in the loading screen
+	if p_Emitter.player == nil then
+		return
+	end
+
+	if p_Emitter.muted then
+		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+		-- we want to update our localPlayer speaking icon
+		-- so we can see that we are talking
+		if s_LocalPlayer == nil or s_LocalPlayer ~= p_Emitter.player then
+			return
+		end
+	end
+
+	if p_Emitter.channel.name:match("BRTeam") then
+		--WebUI:ExecuteJs("VoipEmitterEmitting(" .. p_Emitter.player.name .. "," .. tostring(p_IsEmitting) ..", false);")
+	else
+		--WebUI:ExecuteJs("VoipEmitterEmitting(" .. p_Emitter.player.name .. "," .. tostring(p_IsEmitting) ..", true);")
+	end
+end
+
 return VoipManager()

@@ -69,6 +69,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 
 		Events:Subscribe('VoipChannel:PlayerJoined', self, self.OnVoipChannelPlayerJoined),
 		Events:Subscribe('VoipChannel:PlayerLeft', self, self.OnVoipChannelPlayerLeft),
+		Events:Subscribe('VoipEmitter:Emitting', self, self.OnVoipEmitterEmitting),
 
 		NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled),
 		NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown),
@@ -314,6 +315,10 @@ end
 
 function VuBattleRoyaleClient:OnVoipChannelPlayerLeft(p_Channel, p_Player)
 	m_VoipManager:OnVoipChannelPlayerLeft(p_Channel, p_Player)
+end
+
+function VuBattleRoyaleClient:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
+	m_VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 end
 
 -- =============================================
