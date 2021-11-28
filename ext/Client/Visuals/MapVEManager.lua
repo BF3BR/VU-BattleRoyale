@@ -138,8 +138,4 @@ function MapVEManager:SwitchPreset(p_NewPresetIndex, p_OldFadeTime, p_NewFadeTim
 	end
 end
 
-if g_MapVEManager == nil then
-    g_MapVEManager = MapVEManager()
-end
-
-return g_MapVEManager
+return MapVEManager()
