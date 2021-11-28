@@ -131,6 +131,10 @@ const DeployScreen: React.FC<Props> = ({
         OnChangeTeamType(1);
     }
 
+    const OnMute = (player: Player) => {
+        alert("mute");
+    }
+
     const items = []
     for (let index = 0; index < (teamSize - team.length); index++) {
         items.push(
@@ -209,11 +213,20 @@ const DeployScreen: React.FC<Props> = ({
                                         <div className={"TeamPlayer"} key={index}>
                                             <div className="TeamPlayerName">
                                                 <div className="circle" style={{ background: rgbaToRgb(player.color), boxShadow: "0 0 0.5vw " + rgbaToRgb(player.color) }}></div>
-                                                <span>{player.name??''}</span>
+                                                <span>
+                                                    {player.name??''}
+                                                    {player.isTeamLeader &&
+                                                        <span className="teamLeader">[LEADER]</span>
+                                                    }
+                                                </span>
                                             </div>
-                                            {player.isTeamLeader &&
-                                                <span className="teamLeader">[LEADER]</span>
-                                            }
+                                            <button className="btn btn-small" onClick={() => OnMute(player)}>
+                                                {player.isMuted ?
+                                                    "Unmute"
+                                                :
+                                                    "Mute"
+                                                }
+                                            </button>
                                         </div>
                                     ))}
                                     {items??''}

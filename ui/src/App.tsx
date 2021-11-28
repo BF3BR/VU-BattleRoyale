@@ -449,7 +449,7 @@ const App: React.FC<Props> = ({
             name: "Test 1",
             state: 1,
             kill: 0,
-            isTeamLeader: false,
+            isTeamLeader: Math.random() < 0.5,
             color: "rgba(255, 187, 86, 0.3)",
             position: {
                 x: 522.175720,
@@ -459,12 +459,14 @@ const App: React.FC<Props> = ({
             yaw: 60,
             health: Math.random() * 100,
             posInSquad: 4,
+            isSpeaking: Math.floor(Math.random() * 3),
+            isMuted: Math.random() < 0.5,
         });
         tempTeam.push({
             name: "Test 2",
             state: 1,
             kill: 0,
-            isTeamLeader: false,
+            isTeamLeader: Math.random() < 0.5,
             color: "rgba(158, 197, 85, 0.3)",
             position: {
                 x: 521.175720,
@@ -474,12 +476,14 @@ const App: React.FC<Props> = ({
             yaw: 110,
             health: Math.random() * 100,
             posInSquad: 3,
+            isSpeaking: Math.floor(Math.random() * 3),
+            isMuted: Math.random() < 0.5,
         });
         tempTeam.push({
             name: "Test",
             state: 2,
             kill: 0,
-            isTeamLeader: false,
+            isTeamLeader: Math.random() < 0.5,
             color: "rgba(0, 205, 243, 0.3)",
             position: {
                 x: 585.175720,
@@ -489,12 +493,14 @@ const App: React.FC<Props> = ({
             yaw: 30,
             health: Math.random() * 100,
             posInSquad: 1,
+            isSpeaking: Math.floor(Math.random() * 3),
+            isMuted: Math.random() < 0.5,
         });
         tempTeam.push({
             name: "Test 3",
             state: 2,
             kill: 0,
-            isTeamLeader: false,
+            isTeamLeader: Math.random() < 0.5,
             color: "rgba(255, 159, 128, 0.3)",
             position: {
                 x: 422.175720,
@@ -504,6 +510,8 @@ const App: React.FC<Props> = ({
             yaw: 10,
             health: Math.random() * 100,
             posInSquad: 2,
+            isSpeaking: Math.floor(Math.random() * 3),
+            isMuted: Math.random() < 0.5,
         });
         dispatch(updateTeam(tempTeam));
     }
