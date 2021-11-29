@@ -476,8 +476,8 @@ function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayer
 				if s_BRPlayerToSpectate.m_Team ~= nil and not s_BRPlayerToSpectate:IsTeammate(s_BRPlayer) then
 					local s_PlayerNames = {}
 
-					for _, l_Player in pairs(s_BRPlayerToSpectate.m_Team.m_Players) do
-						table.insert(s_PlayerNames, l_Player.name)
+					for l_PlayerName, _ in pairs(s_BRPlayerToSpectate.m_Team.m_Players) do
+						table.insert(s_PlayerNames, l_PlayerName)
 					end
 
 					NetEvents:SendToLocal("SpectatedPlayerTeamMembers", p_Player, s_PlayerNames)
