@@ -304,7 +304,7 @@ const DeployScreen: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => {
     return {
-        // PlayerReducer
+        // TeamReducer
         team: state.TeamReducer.players,
         // GameReducer
         teamSize: state.GameReducer.deployScreen.teamSize,

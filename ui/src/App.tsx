@@ -415,7 +415,7 @@ const App: React.FC<Props> = ({
                 tempTeam.push({
                     name: teamPlayer.Name,
                     state: teamPlayer.State,
-                    kill: 0,
+                    kill: teamPlayer.Kill ?? 0,
                     isTeamLeader: teamPlayer.IsTeamLeader,
                     color: teamPlayer.Color,
                     position: {

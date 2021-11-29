@@ -141,8 +141,8 @@ function VoipManager:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
 		m_Logger:Warning("Couldn\'t find emitter for player: " .. p_PlayerName)
 		return
 	end
-
-	s_Emitter.muted = p_Mute
+	
+	s_Emitter.volume = p_Mute and 0.0 or 5.0
 
 	-- send confirmation back to webui
 	WebUI:ExecuteJS("VoipPlayerMuted('" .. p_PlayerName .. "'," .. tostring(p_Mute) ..");")

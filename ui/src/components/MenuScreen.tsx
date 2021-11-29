@@ -1,11 +1,21 @@
 import React, { useState } from "react";
-import { sendToLua } from "../Helpers";
+import { connect } from "react-redux";
 
+import { RootState } from "../store/RootReducer";
+import { sendToLua } from "../Helpers";
+import { Player, rgbaToRgb } from "../helpers/PlayerHelper";
 import Modal from "./Modal";
 
 import "./MenuScreen.scss";
 
-const MenuScreen: React.FC = () => {
+interface StateFromReducer {
+    team: Player[];
+    localPlayerName: string;
+}
+
+type Props = StateFromReducer;
+
+const MenuScreen: React.FC<Props> = ({ team, localPlayerName }) => {
     const [currentFocus, setCurrentFocus] = useState(0);
     const [currentModalFocus, setCurrentModalFocus] = useState(0);
     const [showQuitModal, setShowQuitModal] = useState(false);
@@ -44,6 +54,13 @@ const MenuScreen: React.FC = () => {
         },
     ];
     
+    const OnMute = (player: Player) => {
+        sendToLua('WebUI:VoipMutePlayer', JSON.stringify({
+            playerName: player.name,
+            mute: typeof player.isMuted === "boolean" ? !player.isMuted : true,
+        }));
+    }
+
     window.OnMenuArrowDown = () => {
         if (!showQuitModal) {
             setCurrentFocus(currentFocus === buttons.length - 1 ? 0 : currentFocus + 1);
@@ -103,6 +120,43 @@ const MenuScreen: React.FC = () => {
                 </div>
             </div>
 
+            {team.length > 0 &&
+                <div className="card TeamBox">
+                    <div className="card-header">
+                        <h1>Squad</h1>
+                    </div>
+                    <div className="card-content">
+                        <div className="TeamPlayers">
+                            {team.map((player: Player, index: number) => (
+                                <div className={"TeamPlayer"} key={index}>
+                                    <div className="TeamPlayerName">
+                                        <div className="circle" style={{ 
+                                            background: rgbaToRgb(player.color), 
+                                            boxShadow: "0 0 0.5vw " + rgbaToRgb(player.color) 
+                                        }}></div>
+                                        <span>
+                                            {player.name??''}
+                                            {player.isTeamLeader &&
+                                                <span className="teamLeader">[LEADER]</span>
+                                            }
+                                        </span>
+                                    </div>
+                                    {player.name !== localPlayerName &&                                            
+                                        <button className="btn btn-small" onClick={() => OnMute(player)}>
+                                            {player.isMuted ?
+                                                "Unmute"
+                                            :
+                                                "Mute"
+                                            }
+                                        </button>
+                                    }
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            }
+
             <Modal 
                 show={showQuitModal}
                 buttons={modalButtons}
@@ -143,7 +197,18 @@ const MenuScreen: React.FC = () => {
     );
 };
 
-export default MenuScreen;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // TeamReducer
+        team: state.TeamReducer.players,
+        // PlayerReducer
+        localPlayerName: state.PlayerReducer.player.name ?? "",
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(MenuScreen);
 
 declare global {
     interface Window {

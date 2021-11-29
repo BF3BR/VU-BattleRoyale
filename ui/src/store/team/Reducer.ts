@@ -5,6 +5,7 @@ import {
     UPDATE_TEAM,
     UPDATE_MUTING,
 } from "./ActionTypes";
+import Player from "../../helpers/PlayerHelper";
 
 const initialState: TeamState = {
     players: [],
@@ -18,7 +19,17 @@ const TeamReducer = (
         case UPDATE_TEAM:
             return {
                 ...state,
-                players: action.payload.players,
+                players: action.payload.players.map((newPlayer) => {
+                    const player = state.players.find((pl: Player) => pl.name === newPlayer.name);
+                    if (player) {
+                        return {
+                            ...player,
+                            ...newPlayer,
+                        };
+                    } else {
+                        return newPlayer;
+                    }
+                }),
             };
         case UPDATE_SPEAKING:
             return {
