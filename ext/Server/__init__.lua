@@ -78,6 +78,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
 		Events:Subscribe("Player:Killed", self, self.OnPlayerKilled),
 		Events:Subscribe("Player:Left", self, self.OnPlayerLeft),
+		Events:Subscribe('Player:Destroyed', self, self.OnPlayerDestroyed),
 
 		NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected),
 		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
@@ -270,6 +271,15 @@ function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
 	m_Logger:Write(p_Player.name .. " left")
 	m_TeamManager:OnPlayerLeft(p_Player)
 	m_InventoryManager:OnPlayerLeft(p_Player)
+end
+
+function VuBattleRoyaleServer:OnPlayerDestroyed(p_Player)
+	if p_Player.onlineId ~= 0 then
+		return
+	end
+
+	-- bot left
+	self:OnPlayerLeft(p_Player)
 end
 
 -- =============================================

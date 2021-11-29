@@ -100,7 +100,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 		Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove),
 		NetEvents:Subscribe(PhaseManagerNetEvent.UpdateState, self, self.OnPhaseManagerUpdateState),
 
-		Events:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers),
+		NetEvents:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers),
 
 		NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied),
 		NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
