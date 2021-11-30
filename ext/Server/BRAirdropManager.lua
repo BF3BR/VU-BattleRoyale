@@ -1,7 +1,5 @@
 class "BRAirdropManager"
 
-require "__shared/Enums/AirdropEnums"
-
 local m_Logger = Logger("BRAirdropManager", true)
 
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
@@ -172,9 +170,4 @@ function BRAirdropManager:RandomPointWithAngle(p_Center, p_Angle, p_Radius)
 	return Vec3(s_X, p_Center.y, s_Z)
 end
 
--- define global
-if g_BRAirdropManager== nil then
-    g_BRAirdropManager = BRAirdropManager()
-end
-
-return g_BRAirdropManager
+return BRAirdropManager()

@@ -1,5 +1,3 @@
-require "__shared/Enums/ItemEnums"
-
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"

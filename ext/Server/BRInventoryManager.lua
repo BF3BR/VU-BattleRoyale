@@ -1,7 +1,5 @@
 class "BRInventoryManager"
 
-require "__shared/Enums/CustomEvents"
-
 local m_Logger = Logger("BRInventoryManager", true)
 
 local m_ItemDatabase = require "Types/BRItemDatabase"
@@ -14,8 +12,6 @@ local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttach
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
-
-require "__shared/Utils/BRItemFactory"
 
 function BRInventoryManager:__init()
 	self:RegisterVars()

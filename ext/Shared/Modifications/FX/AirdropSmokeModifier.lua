@@ -13,9 +13,9 @@ function AirdropSmokeModifier:DeregisterCallbacks()
 end
 
 function AirdropSmokeModifier:ModifySmokeColorData(p_PolynomialColorInterpData)
-	p_PolynomialColorInterpData.color0 = Vec3(0.9,0.1,0.1)
-	p_PolynomialColorInterpData.color1 = Vec3(0.8,0.1,0.1)
-	p_PolynomialColorInterpData.coefficients = Vec4(0,0,-1.3197676,1.0089285)
+	p_PolynomialColorInterpData.color0 = Vec3(0.9, 0.1, 0.1)
+	p_PolynomialColorInterpData.color1 = Vec3(0.8, 0.1, 0.1)
+	p_PolynomialColorInterpData.coefficients = Vec4(0.0, 0.0, -1.3197676, 1.0089285)
 	m_Logger:Write("Airdrop smoke modified.")
 end
 

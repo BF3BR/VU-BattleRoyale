@@ -1,6 +1,3 @@
-require "__shared/Enums/ItemEnums"
-require "__shared/Utils/BRItemFactory"
-
 local m_Logger = Logger("BRItem", true)
 
 class "BRItem"

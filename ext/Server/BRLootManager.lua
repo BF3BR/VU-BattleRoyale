@@ -1,8 +1,5 @@
 class "BRLootManager"
 
-require "__shared/Enums/ItemEnums"
-require "__shared/Utils/LevelNameHelper"
-
 local m_Logger = Logger("BRLootManager", true)
 
 local m_LootRandomizer = require "BRLootRandomizer"

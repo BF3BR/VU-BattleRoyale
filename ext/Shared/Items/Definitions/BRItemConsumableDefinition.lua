@@ -1,6 +1,3 @@
-require "__shared/Items/Definitions/BRItemDefinition"
-require "__shared/Enums/ItemEnums"
-
 class("BRItemConsumableDefinition", BRItemDefinition)
 
 function BRItemConsumableDefinition:__init(p_UId, p_Name, p_Options)

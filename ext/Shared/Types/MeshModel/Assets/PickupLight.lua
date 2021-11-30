@@ -1,7 +1,5 @@
 class("PickupLight")
 
-require "__shared/Enums/ItemEnums"
-
 local m_Colors = {
 	[Tier.Tier1] = Vec3(1.0, 0.9, 0.9),
 	[Tier.Tier2] = Vec3(0.039, 0.702, 1),

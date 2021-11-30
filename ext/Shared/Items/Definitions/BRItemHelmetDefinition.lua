@@ -1,6 +1,3 @@
-require "__shared/Items/Definitions/BRItemProtectionDefinition"
-require "__shared/Enums/ItemEnums"
-
 class("BRItemHelmetDefinition", BRItemProtectionDefinition)
 
 function BRItemHelmetDefinition:__init(p_UId, p_Name, p_Options)

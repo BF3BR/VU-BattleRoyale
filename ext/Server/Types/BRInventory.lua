@@ -1,6 +1,3 @@
-require "__shared/Enums/ItemEnums"
-require "__shared/Enums/CustomEvents"
-
 require "__shared/Slots/BRInventoryWeaponSlot"
 require "__shared/Slots/BRInventoryAttachmentSlot"
 require "__shared/Slots/BRInventoryArmorSlot"

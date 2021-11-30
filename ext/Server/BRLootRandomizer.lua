@@ -1,7 +1,5 @@
 class "BRLootRandomizer"
 
-require "__shared/Enums/ItemEnums"
-
 local m_Logger = Logger("BRLootRandomizer", true)
 
 local m_ItemDatabase = require "Types/BRItemDatabase"
@@ -16,8 +14,6 @@ local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefi
 local m_GadgetDefinitions = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
 local m_MapHelper = require "__shared/Utils/MapHelper"
-
-require "__shared/Utils/BRItemFactory"
 
 function BRLootRandomizer:__init()
 	self.m_WeightTable = {}

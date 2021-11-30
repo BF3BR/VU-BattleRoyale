@@ -4,16 +4,6 @@ require "Types/BRTeam"
 require "Types/BRPlayer"
 require "Types/BRInventory"
 
-require "__shared/Enums/ItemEnums"
-
-require "__shared/Items/BRItemWeapon"
-require "__shared/Items/BRItemAmmo"
-require "__shared/Items/BRItemArmor"
-require "__shared/Items/BRItemHelmet"
-require "__shared/Items/BRItemAttachment"
-require "__shared/Items/BRItemConsumable"
-require "__shared/Items/BRItemGadget"
-
 require "DebugCommands"
 
 local m_Whitelist = require "Whitelist"

@@ -1,7 +1,3 @@
-require "__shared/Enums/CustomEvents"
-require "__shared/Types/BRLootPickup"
-require "__shared/Types/BRLootPickupDatabaseShared"
-
 class("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
 local m_Logger = Logger("BRLootPickupDatabase", true)

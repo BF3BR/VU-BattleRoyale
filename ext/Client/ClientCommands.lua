@@ -6,7 +6,7 @@ local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefi
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 local m_GadgetDefinition = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
-ClientCommands = 
+ClientCommands =
 {
 	errInvalidCommand = "Invalid command",
 

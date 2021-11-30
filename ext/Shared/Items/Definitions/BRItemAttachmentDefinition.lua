@@ -1,6 +1,3 @@
-require "__shared/Items/Definitions/BRItemDefinition"
-require "__shared/Enums/ItemEnums"
-
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
 class("BRItemAttachmentDefinition", BRItemDefinition)

@@ -6,14 +6,6 @@ require "__shared/Configs/SettingsConfig"
 require "__shared/Configs/CircleConfig"
 require "__shared/Utils/LootPointHelper"
 
-require "__shared/Items/BRItemWeapon"
-require "__shared/Items/BRItemAmmo"
-require "__shared/Items/BRItemArmor"
-require "__shared/Items/BRItemHelmet"
-require "__shared/Items/BRItemAttachment"
-require "__shared/Items/BRItemConsumable"
-require "__shared/Items/BRItemGadget"
-
 require "Types/BRInventory"
 
 local m_PhaseManagerClient = require "PhaseManagerClient"

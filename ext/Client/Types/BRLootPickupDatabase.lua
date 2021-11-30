@@ -1,5 +1,3 @@
-require "__shared/Types/BRLootPickupDatabaseShared"
-
 class ("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
 function BRLootPickupDatabase:ResetVars()

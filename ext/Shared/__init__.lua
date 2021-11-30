@@ -1,6 +1,8 @@
 class "VuBattleRoyaleShared"
 
+require "__shared/Enums/AirdropEnums"
 require "__shared/Enums/ArmorTypes"
+require "__shared/Enums/Attachments"
 require "__shared/Enums/BRPlayerState"
 require "__shared/Enums/CustomEvents"
 require "__shared/Enums/GameStates"
@@ -9,7 +11,6 @@ require "__shared/Enums/SubphaseTypes"
 require "__shared/Enums/TeamJoinStrategy"
 require "__shared/Enums/TeamManagerErrors"
 require "__shared/Enums/UiStates"
-require "__shared/Enums/Attachments"
 
 require "__shared/Libs/Queue"
 
@@ -20,11 +21,16 @@ require "__shared/Types/DataContainer"
 require "__shared/Types/MeshModel/MeshModel"
 require "__shared/Types/MeshModel/SkeletonMeshModel"
 require "__shared/Types/MeshModel/WeaponSkeletonMeshModel"
+require "__shared/Enums/ItemEnums"
+
+require "__shared/Items/Definitions/BRItemDefinition"
+require "__shared/Items/Definitions/BRItemProtectionDefinition"
 
 require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/Timers"
 require "__shared/Utils/PostReloadEvent"
+require "__shared/Utils/BRItemFactory"
 
 require "__shared/Configs/ServerConfig"
 require "__shared/Configs/MapsConfig"
@@ -33,7 +39,16 @@ require "__shared/Configs/InventoryConfig"
 
 require "__shared/Items/BRItem"
 
+require "__shared/Types/BRLootPickupDatabaseShared"
 require "__shared/Types/BRLootPickup"
+
+require "__shared/Items/BRItemWeapon"
+require "__shared/Items/BRItemAmmo"
+require "__shared/Items/BRItemArmor"
+require "__shared/Items/BRItemHelmet"
+require "__shared/Items/BRItemAttachment"
+require "__shared/Items/BRItemConsumable"
+require "__shared/Items/BRItemGadget"
 
 require "__shared/Logic/PhaseManagerShared"
 
