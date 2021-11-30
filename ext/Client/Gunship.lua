@@ -20,6 +20,10 @@ function Gunship:OnLevelDestroy()
 end
 
 function Gunship:OnUpdatePassPostFrame(p_DeltaTime)
+	if self.m_Type == nil then
+		return
+	end
+
 	local s_GunshipEntity = self:GetGunshipEntity()
 
 	if s_GunshipEntity ~= nil then
@@ -97,6 +101,10 @@ function Gunship:OnGunshipDisable()
 	m_GunshipCamera:Disable()
 end
 
+function Gunship:OnJumpOutOfGunship()
+	m_GunshipCamera:Disable()
+end
+
 function Gunship:OnForceJumpOufOfGunship()
 	if SpectatorManager:GetSpectating() then
 		return
@@ -105,7 +113,6 @@ function Gunship:OnForceJumpOufOfGunship()
 	if self.m_Type == "Paradrop" then
 		NetEvents:SendLocal(GunshipEvents.JumpOut, m_GunshipCamera:GetTransform())
 		self.m_IsInFreeFall = true
-		-- self:OnGunshipDisable()
 	end
 end
 

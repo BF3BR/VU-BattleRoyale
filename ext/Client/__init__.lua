@@ -426,7 +426,7 @@ function VuBattleRoyaleClient:OnGunshipDisable()
 end
 
 function VuBattleRoyaleClient:OnJumpOutOfGunship()
-	m_Gunship:OnGunshipDisable()
+	m_Gunship:OnJumpOutOfGunship()
 	m_Hud:OnJumpOutOfGunship()
 end
 
