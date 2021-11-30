@@ -10,7 +10,7 @@ ServerConfig = {
 
 	GunshipDespawn = 50.0,
 
-	ParachuteRaycastUpdateRate = 0.2,
+	RaycastUpdateRate = 0.2,
 
 	ForceParachuteHeight = 135.0,
 

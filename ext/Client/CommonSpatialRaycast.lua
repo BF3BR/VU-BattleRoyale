@@ -19,7 +19,7 @@ end
 function CommonSpatialRaycast:OnUpdatePassPreSim(p_DeltaTime)
 	self.m_Timer = self.m_Timer + p_DeltaTime
 
-	if self.m_Timer <= ServerConfig.ParachuteRaycastUpdateRate then
+	if self.m_Timer <= ServerConfig.RaycastUpdateRate then
 		return
 	end
 

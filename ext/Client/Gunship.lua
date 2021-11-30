@@ -39,7 +39,7 @@ function Gunship:OnUpdatePassPreSim(p_DeltaTime)
 
 	self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
 
-	if self.m_CumulatedTime < 0.2 then
+	if self.m_CumulatedTime < ServerConfig.RaycastUpdateRate then
 		return
 	end
 
