@@ -1,6 +1,3 @@
-require "__shared/Types/BRLootGridCell"
-require "__shared/Types/BRLootGridCell"
-
 class "BRLootGrid"
 
 function BRLootGrid:__init(p_CellSize)

@@ -115,6 +115,7 @@ function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage, p_Giver)
 		return p_Damage
 	end
 
+	local s_WasDestroyed
 	p_Damage, s_WasDestroyed = p_Item:ApplyDamage(p_Damage)
 
 	-- if item was destroyed, remove it from inventory
@@ -309,7 +310,7 @@ function BRPlayer:SpectatePlayer(p_BrPlayer)
 	end
 
 	self.m_SpectatedPlayerName = p_BrPlayer:GetName()
-	
+
 	-- send inventory data of the spectated player
 	if p_BrPlayer.m_Inventory ~= nil then
 		local _, s_SpectatorData = p_BrPlayer.m_Inventory:AsTable(true)

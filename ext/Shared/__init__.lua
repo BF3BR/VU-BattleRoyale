@@ -39,6 +39,8 @@ require "__shared/Configs/InventoryConfig"
 
 require "__shared/Items/BRItem"
 
+require "__shared/Types/BRLootGridCell"
+require "__shared/Types/BRLootGrid"
 require "__shared/Types/BRLootPickupDatabaseShared"
 require "__shared/Types/BRLootPickup"
 

@@ -92,12 +92,7 @@ function BRLootPickup:Spawn()
 	local s_LinearTransform = self:GetLinearTransform()
 
 	if s_LinearTransform == nil then
-		s_LinearTransform = LinearTransform(
-			Vec3(1, 0, 0),
-			Vec3(0, 1, 0),
-			Vec3(0, 0, 1),
-			Vec3(0, 0, 0)
-		)
+		s_LinearTransform = LinearTransform()
 	end
 
 	local s_MeshBus = s_Mesh:Draw(self, s_LinearTransform)

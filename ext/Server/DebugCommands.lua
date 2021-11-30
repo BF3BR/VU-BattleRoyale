@@ -10,7 +10,7 @@ local m_Logger = Logger("DebugCommands", true)
 -- Custom debug commands
 --============================================================
 
-function OnPlayerGiveCommand(p_Player, p_Args)
+local function OnPlayerGiveCommand(p_Player, p_Args)
 	if p_Player == nil then
 		m_Logger:Error("Invalid player.")
 		return
@@ -27,7 +27,7 @@ function OnPlayerGiveCommand(p_Player, p_Args)
 		m_Logger:Error("Invalid item definition UId: " .. p_Args[1])
 		return
 	end
-	
+
     local s_Inventory = m_InventoryManager:GetOrCreateInventory(p_Player)
     local s_CreatedItem = m_ItemDatabase:CreateItem(s_Definition, p_Args[2] ~= nil and tonumber(p_Args[2]) or 1)
 
@@ -35,7 +35,7 @@ function OnPlayerGiveCommand(p_Player, p_Args)
 	m_Logger:Write(s_Definition.m_Name .. " - Item given to player: " .. p_Player.name)
 end
 
-function OnPlayerSpawnCommand(p_Player, p_Args)
+local function OnPlayerSpawnCommand(p_Player, p_Args)
 	if p_Player == nil then
 		m_Logger:Error("Invalid player.")
 		return
@@ -59,7 +59,7 @@ function OnPlayerSpawnCommand(p_Player, p_Args)
 	m_Logger:Write(s_Definition.m_Name .. " - Item spawned for player: " .. p_Player.name)
 end
 
-function OnSpawnAirdropCommand(p_Player)
+local function OnSpawnAirdropCommand(p_Player)
     local s_LevelName = LevelNameHelper:GetLevelName()
 
     if s_LevelName == nil then
@@ -69,7 +69,7 @@ function OnSpawnAirdropCommand(p_Player)
     if p_Player == nil then
         return
     end
-    
+
     m_BRAirdropManager:CreatePlane(Vec3(
         p_Player.soldier.worldTransform.trans.x,
         MapsConfig[s_LevelName]["AirdropPlaneFlyHeight"],

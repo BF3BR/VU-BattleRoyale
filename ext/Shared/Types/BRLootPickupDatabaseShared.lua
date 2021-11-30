@@ -1,5 +1,3 @@
-require "__shared/Types/BRLootGrid"
-
 class "BRLootPickupDatabaseShared"
 
 function BRLootPickupDatabaseShared:__init()
