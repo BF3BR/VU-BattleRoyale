@@ -1,5 +1,3 @@
-require "__shared/Items/BRItem"
-
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
 
 class("BRItemAttachment", BRItem)

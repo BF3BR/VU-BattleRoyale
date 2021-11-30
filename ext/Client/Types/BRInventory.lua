@@ -1,7 +1,5 @@
 class "BRInventory"
 
-require "__shared/Items/BRItem"
-
 function BRInventory:__init()
 	self:ResetVars()
 end

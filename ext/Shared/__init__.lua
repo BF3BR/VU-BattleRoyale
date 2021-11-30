@@ -31,6 +31,8 @@ require "__shared/Configs/MapsConfig"
 require "__shared/Configs/FireEffectsConfig"
 require "__shared/Configs/InventoryConfig"
 
+require "__shared/Items/BRItem"
+
 require "__shared/Types/BRLootPickup"
 
 require "__shared/Logic/PhaseManagerShared"

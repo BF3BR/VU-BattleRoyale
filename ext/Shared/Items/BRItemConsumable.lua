@@ -1,6 +1,3 @@
-require "__shared/Items/BRItem"
-require "__shared/Utils/Timers"
-
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
 local m_Logger = Logger("BRItemConsumable", true)
 

@@ -1,5 +1,3 @@
-require "__shared/Items/BRItem"
-
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
 
 class("BRItemHelmet", BRItem)
