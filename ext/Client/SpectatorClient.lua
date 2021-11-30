@@ -244,6 +244,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			-- if we find a squadmate we want to spectate him
 			if s_NextPlayer ~= nil then
 				self:SpectatePlayer(s_NextPlayer)
+				return
 			-- otherwise spectate the inflictor if there is one
 			elseif p_InflictorId ~= nil then
 				local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
@@ -255,7 +256,17 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 				end
 			end
 
-			self:SpectateNextPlayer()
+			-- no squad mate alive and also didn't find an inflictor
+			-- so now we just search a random player
+			s_NextPlayer = self:GetNextPlayer(false)
+
+			if s_NextPlayer ~= nil then
+				self:SpectatePlayer(s_NextPlayer)
+				return
+			end
+
+			-- we didn't find anyone
+			self:EnableFreecam()
 		end
 	end
 end
@@ -324,7 +335,6 @@ function SpectatorClient:Enable(p_InflictorId)
 	end
 
 	if s_PlayerToSpectate ~= nil then
-		-- self:RemoveTimer("NoPlayerFoundTimer")
 		if self.m_IsSpectatingGunship then
 			self:SpectateGunship(false)
 		end
@@ -344,14 +354,12 @@ function SpectatorClient:Enable(p_InflictorId)
 
 		WebUI:ExecuteJS("SpectatorTarget('');")
 		WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
-		SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
+		self:EnableFreecam()
+	end
 
-		if not self.m_IsDefaultFreeCamSet then
-			m_Logger:Write("Set freecam transform")
-			local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
-			SpectatorManager:SetFreecameraTransform(s_Transform)
-			g_Timers:Interval(0.1, self, self.OnSetFreecameraTransform)
-		end
+	-- if the match is already running nobody will spawn
+	if self.m_GameState == nil or self.m_GameState >= GameStates.Match then
+		return
 	end
 
 	self:SetTimer("NoPlayerFoundTimer", g_Timers:Timeout(4, self, self.ReEnable))
@@ -403,6 +411,8 @@ function SpectatorClient:OnSetFreecameraTransform(p_Timer)
 		m_Logger:Write("Setting freecam transform failed.")
 		m_Logger:Write(s_Transform.trans:Distance(s_CameraTransform.trans))
 		m_Logger:Write(s_CameraTransform)
+
+		SpectatorManager:SetFreecameraTransform(s_Transform)
 	end
 end
 
@@ -780,6 +790,21 @@ function SpectatorClient:ExitSoundState()
 		end
 
 		s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+	end
+end
+
+-- =============================================
+	-- Freecam
+-- =============================================
+
+function SpectatorClient:EnableFreecam()
+	SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
+
+	if not self.m_IsDefaultFreeCamSet then
+		m_Logger:Write("Set freecam transform")
+		local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
+		SpectatorManager:SetFreecameraTransform(s_Transform)
+		g_Timers:Interval(0.1, self, self.OnSetFreecameraTransform)
 	end
 end
 
