@@ -242,7 +242,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			end
 
 			-- if we find a squadmate we want to spectate him
-			if s_NextPlayer ~= nil then
+			if s_NextPlayer ~= nil and s_NextPlayer.id ~= p_PlayerId then
 				self:SpectatePlayer(s_NextPlayer)
 				return
 			-- otherwise spectate the inflictor if there is one
@@ -260,12 +260,13 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			-- so now we just search a random player
 			s_NextPlayer = self:GetNextPlayer(false)
 
-			if s_NextPlayer ~= nil then
+			if s_NextPlayer ~= nil and s_NextPlayer.id ~= p_PlayerId then
 				self:SpectatePlayer(s_NextPlayer)
 				return
 			end
 
 			-- we didn't find anyone
+			WebUI:ExecuteJS("SpectatorTarget('');")
 			self:EnableFreecam()
 		end
 	end
