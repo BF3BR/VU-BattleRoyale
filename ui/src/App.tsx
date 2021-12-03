@@ -662,7 +662,7 @@ const App: React.FC<Props> = ({
     }
 
     window.TestInventoryTimer = () => {
-        dispatch(updateProgress({ Name: "Test" }, 500));
+        dispatch(updateProgress({ Name: "Test" }, 50));
     }
 
     window.ItemCancelAction = () => {

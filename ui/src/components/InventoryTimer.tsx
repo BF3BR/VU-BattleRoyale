@@ -20,11 +20,11 @@ const getWidth = () => window.innerWidth || document.documentElement.clientWidth
 const InventoryTimer: React.FC<Props> = ({ progress }) => {
     const dispatch = useDispatch();
     
-    const [size, setSize] = useState<number>(getWidth() * 0.04);
+    const [size, setSize] = useState<number>(getWidth() * 0.05);
 
     useEffect(() => {
         const resizeListener = () => {
-            setSize(getWidth() * 0.04);
+            setSize(getWidth() * 0.05);
         };
         window.addEventListener('resize', resizeListener);
     
@@ -49,11 +49,11 @@ const InventoryTimer: React.FC<Props> = ({ progress }) => {
                         <CountdownCircleTimer
                             isPlaying
                             duration={progress.time}
-                            colors="#FFF"
-                            trailColor="#000"
+                            colors="#fff"
+                            trailColor="rgba(0,0,0,.35)"
                             size={size}
-                            strokeWidth={size * 0.115}
-                            strokeLinecap="round"
+                            strokeWidth={size * 0.065}
+                            strokeLinecap="square"
                             onComplete={() => {
                                 dispatch(updateProgress(null, null));
                             }}
