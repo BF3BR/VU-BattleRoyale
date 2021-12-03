@@ -130,7 +130,7 @@ return {
 	),
 	["attachment-m145"] = BRItemAttachmentDefinition(
 		"attachment-m145",
-		"M145", 
+		"M145",
 		{
 			Description = "Originally developed for the Canadian Army the M145 is commonly mounted on the M240 and M249 with a 3.4x zoom. A Ballistic reticle helps with longer range engagements.",
 			RandomWeight = 25,
@@ -206,7 +206,7 @@ return {
 	-- Other (Secondary)
 	["attachment-foregrip"] = BRItemAttachmentDefinition(
 		"attachment-foregrip",
-		"Foregrip", 
+		"Foregrip",
 		{
 			Description = "A Foregrip is a grip on the front of a firearm that makes controlling recoil easier, and prevents burns from the barrel during firing.",
 			RandomWeight = 25,
@@ -224,7 +224,7 @@ return {
 	),
 	["attachment-bipod"] = BRItemAttachmentDefinition(
 		"attachment-bipod",
-		"Bipod", 
+		"Bipod",
 		{
 			Description = "Bipods are attachments typically reserved for use on light machine guns or sniper rifles; however, it is possible to equip them on assault rifles and carbines. They allow the user to provide more accurate fire from a stabilized position while prone or from a raised surface.",
 			RandomWeight = 25,
@@ -242,7 +242,7 @@ return {
 	),
 	["attachment-laser-sight"] = BRItemAttachmentDefinition(
 		"attachment-laser-sight",
-		"Laser Sight", 
+		"Laser Sight",
 		{
 			Description = "The laser has in most firearms applications been used as a tool to enhance the targeting of other weapon systems. ",
 			RandomWeight = 25,
@@ -260,7 +260,7 @@ return {
 	),
 	["attachment-flashlight"] = BRItemAttachmentDefinition(
 		"attachment-flashlight",
-		"Tactical Light", 
+		"Tactical Light",
 		{
 			Description = "A Tactical Light is a flashlight or torch that can be attached to a user's weapon by means of a standard rail or other mount, freeing the user from having to carry a separate flashlight, or when more advanced night vision equipment is not available.",
 			RandomWeight = 25,

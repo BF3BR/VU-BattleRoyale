@@ -96,7 +96,7 @@ function BRInventoryWeaponSlot:GetUnlockWeaponAndSlot()
 	)
 
 	if #self.m_Item.m_Definition.m_EbxAttachments <= 0 then
-		return s_Weapon 
+		return s_Weapon
 	end
 
 	-- Add attachments

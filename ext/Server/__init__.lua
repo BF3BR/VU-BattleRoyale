@@ -96,7 +96,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 		NetEvents:Subscribe(InventoryNetEvent.MoveItem, self, self.OnInventoryMoveItem),
 		NetEvents:Subscribe(InventoryNetEvent.UseItem, self, self.OnInventoryUseItem),
 		NetEvents:Subscribe(InventoryNetEvent.DropItem, self, self.OnInventoryDropItem),
-	
+
 		Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon),
 		Events:Subscribe("Player:PostReload", self, self.OnPlayerPostReload),
 		Events:Subscribe("BRItem:DestroyItem", self, self.OnItemDestroy),

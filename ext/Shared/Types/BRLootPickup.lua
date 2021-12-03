@@ -21,7 +21,7 @@ function BRLootPickup:__init(p_Id, p_TypeName, p_Transform, p_Items)
 	-- A map of LootPickups {id -> LootPickup}
 	self.m_Items = p_Items
 
-	-- 
+	--
 	self.m_ParentCell = nil
 
 	-- [Client] Contains spawned entities {instanceId -> Entity}

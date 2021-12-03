@@ -4,7 +4,7 @@ local m_Airdrop_Object_FX_Smoke = DC(Guid("25B9AFF0-6622-11DE-9DCF-A96EA7FB2539"
 
 function AirdropSmoke:Draw(p_Transform)
 	local s_Data = EntityManager:CreateEntitiesFromBlueprint(
-		m_Airdrop_Object_FX_Smoke:GetInstance(), 
+		m_Airdrop_Object_FX_Smoke:GetInstance(),
 		LinearTransform(
 			p_Transform.left,
 			p_Transform.up,

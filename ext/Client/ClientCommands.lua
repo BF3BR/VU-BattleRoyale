@@ -37,7 +37,7 @@ ClientCommands =
 
 		NetEvents:Send(InventoryNetEvent.InventoryGiveCommand, p_Args)
 
-		return "Item given."		
+		return "Item given."
 	end,
 
 	Spawn = function(p_Args)
@@ -67,7 +67,7 @@ ClientCommands =
 
 		NetEvents:Send(InventoryNetEvent.InventorySpawnCommand, p_Args)
 
-		return "Item spawned."		
+		return "Item spawned."
 	end,
 
 	SpawnAirdrop = function(p_Args)
@@ -92,12 +92,12 @@ ClientCommands =
 
 		NetEvents:Send("SpawnAirdropCommand")
 
-		return "Airdrop spawned."		
+		return "Airdrop spawned."
 	end,
 
 	List = function(p_Args)
 		local s_Result = "";
-		
+
 		for l_Key, l_Definition in pairs(m_AmmoDefinitions) do
 			s_Result = s_Result .. l_Key .. "\n"
 		end
@@ -126,6 +126,6 @@ ClientCommands =
 			s_Result = s_Result .. l_Key .. "\n"
 		end
 
-		return s_Result		
+		return s_Result
 	end,
 }

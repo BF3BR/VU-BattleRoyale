@@ -7,7 +7,7 @@ function AirdropSound:Draw(p_Transform)
 		m_Airdrop_Object_SFX:GetInstance(),
 		p_Transform
 	)
-	
+
 	if s_Data ~= nil then
 		local s_Entities = {}
 

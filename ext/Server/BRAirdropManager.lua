@@ -99,7 +99,7 @@ function BRAirdropManager:CreateAirdrop(p_Trans)
 	s_CreationParams.networked = true
 
 	local s_CreatedBus = EntityManager:CreateEntitiesFromBlueprint(s_Bp, s_CreationParams)
-	
+
 	if s_CreatedBus == nil then
 		m_Logger:Write("CreatedBus is nil for the Airdrop.")
 		return
@@ -129,7 +129,7 @@ function BRAirdropManager:CreateAirdrop(p_Trans)
 
 				-- Get a randomized attachment
 				local s_AttachmentDefinition = m_LootRandomizer:Randomizer(tostring(s_RandomWeaponDefinition.m_Name) .. "_Attachment", m_AttachmentDefinitions, true, nil, s_RandomWeaponDefinition.m_EbxAttachments)
-		
+
 				-- Get the ammo definition
 				local s_AmmoDefinition = s_RandomWeaponDefinition.m_AmmoDefinition
 

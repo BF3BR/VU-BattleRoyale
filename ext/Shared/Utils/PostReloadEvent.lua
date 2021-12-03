@@ -30,7 +30,7 @@ function PostReloadEvent:OnPlayerChangingWeapon(p_Player)
 			for _, l_Weapon in pairs(s_PlayerWeapons) do
 				-- m_Logger:Write(s_ReloadEvent.WeaponInstanceId == l_Weapon.instanceId)
 				if l_Weapon ~= nil and
-					s_ReloadEvent.WeaponInstanceId == l_Weapon.instanceId and 
+					s_ReloadEvent.WeaponInstanceId == l_Weapon.instanceId and
 					l_Weapon.primaryAmmo ~= s_ReloadEvent.Ammo then
 					Events:Dispatch("Player:PostReload", p_Player, l_Weapon.primaryAmmo - s_ReloadEvent.Ammo, l_Weapon)
 				end

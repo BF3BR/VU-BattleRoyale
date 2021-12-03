@@ -571,7 +571,7 @@ function VuBattleRoyaleClient:OnWebUIDeploy(p_AppearanceName)
 	if p_AppearanceName == nil then
 		return
 	end
-	
+
 	m_Hud:OnWebUIDeploy(p_AppearanceName)
 end
 

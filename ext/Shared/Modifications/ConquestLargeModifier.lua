@@ -112,5 +112,4 @@ function ConquestModifier:OnAddCharacterSpawnReference(p_SpatialPrefabBlueprint,
 	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end
 
-
 return ConquestModifier()

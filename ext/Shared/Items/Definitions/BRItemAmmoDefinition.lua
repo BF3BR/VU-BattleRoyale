@@ -77,7 +77,7 @@ return {
 	),
 	["ammo-12-gauge"] = BRItemAmmoDefinition(
 		"ammo-12-gauge",
-		"12 Gauge", 
+		"12 Gauge",
 		{
 			Description = "The 12 gauge shotgun shell is ammunition.",
 			RandomWeight = 25,

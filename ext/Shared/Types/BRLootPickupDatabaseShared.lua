@@ -58,7 +58,7 @@ end
 function BRLootPickupDatabaseShared:GetClosestLootPickup(p_Position, p_Radius)
 	local s_LootPickups = self:GetCloseLootPickups(p_Position, p_Radius)
 
-	-- return the item at first index in case the items returned 
+	-- return the item at first index in case the items returned
 	-- are empty or only have one item
 	if #s_LootPickups < 2 then
 		return s_LootPickups[1]

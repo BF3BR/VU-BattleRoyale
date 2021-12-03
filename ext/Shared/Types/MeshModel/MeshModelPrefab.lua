@@ -10,7 +10,7 @@ function MeshModelPrefab:Draw(p_Transform)
 
 	for _, l_Item in ipairs(self.m_Items) do
 		local s_WorldTransform = l_Item[2] * p_Transform
-		
+
 		local s_Entity = l_Item[1]:Draw(s_WorldTransform)
 
 		if s_Entity ~= nil then

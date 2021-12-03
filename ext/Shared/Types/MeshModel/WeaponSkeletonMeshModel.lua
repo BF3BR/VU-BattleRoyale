@@ -30,14 +30,14 @@ function WeaponSkeletonMeshModel:Draw(p_LootPickup, p_LocalTransform)
 	local s_SoldierWeaponUnlockAsset = s_SingleItem.m_Definition.m_SoldierWeaponBlueprint:GetInstance()
 	local s_SoldierWeaponData = SoldierWeaponData(s_SoldierWeaponUnlockAsset.weapon.object)
 
-	for _, l_LinearTransform in pairs(s_SoldierWeaponData.weaponStates[1].mesh3pTransforms) do		
+	for _, l_LinearTransform in pairs(s_SoldierWeaponData.weaponStates[1].mesh3pTransforms) do
 		s_Data.basePoseTransforms:add(l_LinearTransform)
 	end
 
 	local s_Params = EntityCreationParams()
 	s_Params.variationNameHash = self.m_Variation
 	s_Params.transform = p_LootPickup.m_Transform
-		
+
 	local s_Entity = EntityManager:CreateEntity(s_Data, s_Params)
 
 	if s_Entity ~= nil then

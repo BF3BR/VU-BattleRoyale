@@ -28,7 +28,7 @@ function SkeletonMeshModel:Draw(p_LootPickup, p_LocalTransform)
 	local s_Params = EntityCreationParams()
 	s_Params.variationNameHash = self.m_Variation
 	s_Params.transform = p_LootPickup.m_Transform
-		
+
 	local s_Entity = EntityManager:CreateEntity(s_Data, s_Params)
 
 	if s_Entity ~= nil then

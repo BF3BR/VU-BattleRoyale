@@ -355,7 +355,7 @@ return {
 	-- SMG
 	["weapon-pp2000"] = BRItemWeaponDefinition(
 		"weapon-pp2000",
-		"PP-2000", 
+		"PP-2000",
 		{
 			Description = "The PP-2000 is a Russian machine pistol designed by the KBP Instrument Design Bureau and is classified as a Personal Defense Weapon (PDW).",
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/pp2000",
@@ -391,7 +391,7 @@ return {
 	),
 	["weapon-pp19"] = BRItemWeaponDefinition(
 		"weapon-pp19",
-		"PP-19", 
+		"PP-19",
 		{
 			Description = "The PP-19 \"Bizon\" is a 9mm submachine gun developed in the early 1990s by a team headed by Victor Kalashnikov in the Izhevsk Machinebuilding Plant (now known as Kalashnikov Concern).",
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP1_PP19",
@@ -426,7 +426,7 @@ return {
 	),
 	["weapon-mp5k"] = BRItemWeaponDefinition(
 		"weapon-mp5k",
-		"MP5K", 
+		"MP5K",
 		{
 			Description = "A tactical machine pistol based on one of the world's most successful submachine gun designs. With the shoulder stock completely removed and the shortened receiver, this ultra compact personal defense weapon is capable of very high rates of fire, as well as great stopping power at close range.",
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP2_MP5K",
@@ -462,7 +462,7 @@ return {
 	),
 	["weapon-ump45"] = BRItemWeaponDefinition(
 		"weapon-ump45",
-		"UMP-45", 
+		"UMP-45",
 		{
 			Description = "German built, the UMP-45 is a fully automatic Personal Defense Weapon noted for its versatility and optimal mobility. The UMP-45 is well-rounded and capable as a Personal Defense Weapon.",
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/ump",
@@ -497,7 +497,7 @@ return {
 	),
 	["weapon-aks-74u"] = BRItemWeaponDefinition(
 		"weapon-aks-74u",
-		"AKS-74u", 
+		"AKS-74u",
 		{
 			Description = "Derived from the AKS-74, the AKS-74u is a shortened Carbine with the power of a rifle cartridge but the size of a submachine gun. Often called by its nickname “Krinkov” the shortened barrel makes the weapon inaccurate at medium ranges but extremely effective in close quarters. Due to its incredibly short length the AKS-74U cannot mount a bipod.",
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/aks74u",
@@ -825,7 +825,7 @@ return {
 	-- Pistols
 	["weapon-m1911"] = BRItemWeaponDefinition(
 		"weapon-m1911",
-		"M1911 TACT.", 
+		"M1911 TACT.",
 		{
 			Description = "The M1911 is one of the most popular pistols in the world. Adopted in 1911 for the US armed forces, the M1911 served as the primary side arm through to 1985. Many clones and copies of the M1911 exist, and the internal action is used in nearly all modern pistols. Modernized and updated versions of the M1911 is still in use by MEU(SOC) US Marine Corps Special Forces. This M1911 has been equipped with a Tactical Light that can be blinding in close quarters.",
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/M1911Tactical_FANCY",
@@ -846,7 +846,7 @@ return {
 	),
 	["weapon-mp412"] = BRItemWeaponDefinition(
 		"weapon-mp412",
-		"MP412 REX", 
+		"MP412 REX",
 		{
 			Description = "Developed for export in Russia (REX stands for Revolver for Export), the MP412 is a compact .357 Magnum handgun with an interesting tilt open and auto extraction design. While not as powerful as the .44 Magnum, the .357 Magnum round from the MP412 offers excellent stopping power and the compact package offers a slightly higher rate of accurate fire.",
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/mp412rex",

@@ -26,7 +26,7 @@ function PickupLight:Draw(p_Transform, p_Tier)
 	s_Data.intensity = 7
 	s_Data.visible = true
 	s_Data.enlightenEnable = false
-		
+
 	local s_Entity = EntityManager:CreateEntity(s_Data, p_Transform)
 
 	if s_Entity ~= nil then

@@ -31,12 +31,12 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 		-- Randomize the type first
 		s_RandomTypeIndex = self:Randomizer("Type", RandomWeightsTable)
 	end
-	
+
 	if s_RandomTypeIndex == nil then
 		m_Logger:Write("No type found.")
 		return
 	end
-	
+
 	local s_RandomTier = nil
 
 	if p_Tier == nil then
@@ -51,11 +51,11 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 	local s_Point = p_Point
 	local s_RandomItemDefinition = nil
 	local s_RandomItemQuantity = 1
-	
+
 	if s_RandomTypeIndex == "Nothing" then
 		return
 	end
-	
+
 	if s_RandomTypeIndex == ItemType.Weapon then
 		-- If we want to spawn a weapon we should randomize an ammo and an attachment or two ammos or nothing just the weapon
 		s_RandomItemDefinition = self:Randomizer(tostring(s_RandomTier) .. "_Weapon", m_WeaponDefinitions, true, s_RandomTier)
@@ -213,13 +213,13 @@ function BRLootRandomizer:Randomizer(p_Name, p_LevelOrDefinitions, p_IsItem, p_T
 		if p_Attachments ~= nil then
 			s_AttachmentsTable = m_MapHelper:Keys(p_Attachments)
 		end
-	
+
 		for l_Index, l_Value in pairs(p_LevelOrDefinitions) do
 			if p_IsItem == true then
 				if p_Tier ~= nil and l_Value.m_Tier ~= p_Tier then
 					goto continue
 				end
-	
+
 				if p_Attachments ~= nil then
 					if not m_MapHelper:Contains(s_AttachmentsTable, l_Value.m_AttachmentId) then
 						goto continue
@@ -229,7 +229,7 @@ function BRLootRandomizer:Randomizer(p_Name, p_LevelOrDefinitions, p_IsItem, p_T
 				if l_Value.m_RandomWeight == 0 then
 					goto continue
 				end
-	
+
 				s_AccumulatedWeight = s_AccumulatedWeight + l_Value.m_RandomWeight
 			else
 				if l_Value.RandomWeight == 0 then

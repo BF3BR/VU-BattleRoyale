@@ -62,7 +62,7 @@ function BRItem:SetUpdated()
 	end
 end
 
--- Updates the quantity value for this item 
+-- Updates the quantity value for this item
 function BRItem:SetQuantity(p_Quantity)
 	local s_NewQuantity = math.max(0, math.min(self.m_Definition.m_MaxStack, p_Quantity))
 

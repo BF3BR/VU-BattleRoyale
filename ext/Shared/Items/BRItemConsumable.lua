@@ -59,7 +59,7 @@ function BRItemConsumable:OnComplete()
 
 	-- execute action and reduce item's quantity
 	self:ApplyAction()
-	
+
 	-- inform player that the action was completed
 	-- KVN: We dont use it yet, but keep it, we might use this later
 	-- self:SendNetEvent(InventoryNetEvent.ItemActionCompleted)
@@ -131,8 +131,8 @@ function BRItemConsumable:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	-- * player is firing
 	-- * player starts sprinting
 	-- * player is jumping
-	if s_Soldier.isFiring or 
-		s_Player.input:GetLevel(EntryInputActionEnum.EIASprint) > 0 or 
+	if s_Soldier.isFiring or
+		s_Player.input:GetLevel(EntryInputActionEnum.EIASprint) > 0 or
 		s_Player.input:GetLevel(EntryInputActionEnum.EIAJump) > 0 then
 		self:Cancel()
 	end
