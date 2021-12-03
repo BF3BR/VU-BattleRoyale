@@ -71,8 +71,8 @@ function BRInventoryAttachmentSlot:ResolveSlot(p_Item)
 	return nil
 end
 
-function BRInventoryAttachmentSlot:OnUpdate()
-	self.m_WeaponSlot:OnUpdate()
+function BRInventoryAttachmentSlot:OnSlotUpdate()
+	self.m_WeaponSlot:OnSlotUpdate()
 end
 
 function BRInventoryAttachmentSlot:SetWeaponSlot(p_WeaponSlot)

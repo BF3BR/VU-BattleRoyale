@@ -47,7 +47,7 @@ function BRInventorySlot:Put(p_Item)
 	self.m_IsUpdated = true
 
 	-- trigger the update event
-	self:OnUpdate()
+	self:OnSlotUpdate()
 
 	return true, s_DroppedItems
 end
@@ -77,7 +77,7 @@ function BRInventorySlot:Drop(p_Quantity)
 
 	-- update slot state
 	self.m_IsUpdated = true
-	self:OnUpdate()
+	self:OnSlotUpdate()
 
 	return s_DroppedItems
 end
@@ -155,7 +155,7 @@ function BRInventorySlot:OnBeforeDrop()
 end
 
 -- @Override
-function BRInventorySlot:OnUpdate()
+function BRInventorySlot:OnSlotUpdate()
 	-- Empty
 end
 

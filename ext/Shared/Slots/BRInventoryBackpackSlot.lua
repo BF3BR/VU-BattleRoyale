@@ -14,7 +14,7 @@ function BRInventoryBackpackSlot:__init(p_Inventory)
 	self.m_Type = SlotType.Backpack
 end
 
-function BRInventoryBackpackSlot:OnUpdate()
+function BRInventoryBackpackSlot:OnSlotUpdate()
 	m_Logger:Write("Backpack slot updated")
 	self.m_Inventory:UpdateWeaponSecondaryAmmo()
 end

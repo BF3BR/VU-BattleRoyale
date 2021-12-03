@@ -145,7 +145,7 @@ function BRInventoryWeaponSlot:HasWeapon(p_WeaponName)
 	return self.m_Item ~= nil and self.m_Item.m_Definition.m_EbxName == p_WeaponName
 end
 
-function BRInventoryWeaponSlot:OnUpdate()
+function BRInventoryWeaponSlot:OnSlotUpdate()
 	self.m_Inventory:DeferUpdateSoldierCustomization()
 end
 
