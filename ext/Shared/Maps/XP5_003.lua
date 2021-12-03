@@ -125,7 +125,7 @@ return {
 		Vec3(524.122437, 155.705521, -836.830017),
 		Vec3(506.119202, 155.705490, -834.631287)
 	},
-	ShowroomTransfrom = LinearTransform(
+	ShowroomTransform = LinearTransform(
 		Vec3(-0.740595, 0.000000, 0.671952),
 		Vec3(0.000000, 1.000000, 0.000000),
 		Vec3(-0.671952, 0.000000, -0.740595),
