@@ -166,10 +166,14 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 	end
 
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_LeftCtrl) then
+		-- We pass the state of the CTRL to the UI, if you hold it down 
+		-- you will split the items when you drop them from the inventory.
 		WebUI:ExecuteJS("OnLeftCtrl(true);")
 	end
 
 	if InputManager:WentKeyUp(InputDeviceKeys.IDK_LeftCtrl) then
+		-- We pass the state of the CTRL to the UI, if you hold it down 
+		-- you will split the items when you drop them from the inventory.
 		WebUI:ExecuteJS("OnLeftCtrl(false);")
 	end
 
