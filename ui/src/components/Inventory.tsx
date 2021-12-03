@@ -536,7 +536,9 @@ const Inventory: React.FC<Props> = ({
                                     </h1>
                                 </div>
                                 <div className="card-content">
-                                    {closeItems.map((item: any, key: number) => (
+                                    {closeItems
+                                    .sort((a: any, b: any) => a.Name.localeCompare(b.Name))
+                                    .map((item: any, key: number) => (
                                         <div className="item-slot" key={key}>
                                             <Draggable id={"loot-" + item.Id} item={item} lootId={item.lootId}>
                                                 {getSlotDrag(item, true, true)}
