@@ -1,7 +1,6 @@
 class "VuBattleRoyaleShared"
 
 require "__shared/Enums/AirdropEnums"
-require "__shared/Enums/ArmorTypes"
 require "__shared/Enums/Attachments"
 require "__shared/Enums/BRPlayerState"
 require "__shared/Enums/CustomEvents"
