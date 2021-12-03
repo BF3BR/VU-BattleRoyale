@@ -2,25 +2,14 @@ import React, { useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import { RootState } from "../store/RootReducer";
 import { updateGameover } from "../store/game/Actions";
-import { VolumeConst } from "../helpers/SoundHelper";
 
-import winner from "../assets/sounds/winner.mp3";
-import winner2 from "../assets/sounds/winner2.mp3";
+import { PlaySound, Sounds } from "../helpers/SoundHelper";
+
 import ending from "../assets/vid/ending.webm";
 import flare from "../assets/img/flare.png"
 import flare2 from "../assets/img/flare2.png"
 
 import "./Gameover.scss";
-
-const alertAudio = new Audio(winner);
-alertAudio.volume = VolumeConst;
-alertAudio.autoplay = false;
-alertAudio.loop = false;
-
-const winnerAudio = new Audio(winner2);
-winnerAudio.volume = VolumeConst;
-winnerAudio.autoplay = false;
-winnerAudio.loop = false;
 
 interface StateFromReducer {
     kills: number|null;
@@ -39,9 +28,9 @@ const Gameover: React.FC<Props> = ({ kills, gameOverIsWin, gameOverPlace, gameOv
     useEffect(() => {
         if (gameOverEnabled) {
             if (gameOverIsWin) {
-                winnerAudio.play();
+                PlaySound(Sounds.GameoverWinner);
             } else {
-                alertAudio.play();
+                PlaySound(Sounds.GameoverLoser);
             }
 
             interval = setInterval(() => {
@@ -56,12 +45,6 @@ const Gameover: React.FC<Props> = ({ kills, gameOverIsWin, gameOverPlace, gameOv
     }, [gameOverEnabled]);
 
     const onEnd = () => {
-        alertAudio.currentTime = 0.0;
-        alertAudio.pause();
-
-        winnerAudio.currentTime = 0.0;
-        winnerAudio.pause();
-
         dispatch(updateGameover(false));
 
         if (interval !== null) {

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { sendToLua } from "../Helpers";
 
 import Modal from "./Modal";
 
 import "./MenuScreen.scss";
+import { PlaySound, Sounds } from "../helpers/SoundHelper";
 
 const MenuScreen: React.FC = () => {
     const [currentFocus, setCurrentFocus] = useState(0);
@@ -69,6 +70,7 @@ const MenuScreen: React.FC = () => {
     }
 
     window.OnMenuEnter = () => {
+        PlaySound(Sounds.Click);
         if (!showQuitModal) {
             buttons[currentFocus].onClick();
         } else {
@@ -84,6 +86,10 @@ const MenuScreen: React.FC = () => {
             setCurrentModalFocus(0);
         }
     }
+
+    useEffect(() => {
+        PlaySound(Sounds.Navigate);
+    }, [currentFocus])
     
     return (
         <div id="MenuScreen">
@@ -94,8 +100,14 @@ const MenuScreen: React.FC = () => {
                     {buttons.map((button: any, key: number) => (
                         <button 
                             key={key}
-                            onClick={button.onClick}
+                            onClick={() => {
+                                PlaySound(Sounds.Click);
+                                button.onClick();
+                            }}
                             className={"btn" + (currentFocus === key ? " active" : "")}
+                            onMouseEnter={() => {
+                                PlaySound(Sounds.Navigate);
+                            }}
                         >
                             {button.label??""}
                         </button>

@@ -79,7 +79,7 @@ import {
 /* Helpers */
 import Player from "./helpers/PlayerHelper";
 import { FireLogicType } from "./helpers/FireLogicTypeHelper";
-import { Sounds } from "./helpers/SoundsHelper";
+import { PlaySound, Sounds } from "./helpers/SoundHelper";
 
 /* Components */
 import MiniMap from "./components/map/MiniMap";
@@ -339,6 +339,7 @@ const App: React.FC<Props> = ({
     }
 
     window.OnOpenCloseMap = (open: boolean) => {
+        PlaySound(Sounds.Navigate);
         dispatch(openMap(open));
     }
 
@@ -625,6 +626,7 @@ const App: React.FC<Props> = ({
 
     const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
     window.OnInventoryOpen = (p_Open: boolean) => {
+        PlaySound(Sounds.Navigate);
         setIsInventoryOpen(p_Open);
     }
 

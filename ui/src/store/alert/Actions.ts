@@ -1,4 +1,4 @@
-import { Sounds } from "../../helpers/SoundsHelper";
+import { Sounds } from "../../helpers/SoundHelper";
 import { 
     AlertActionTypes,
     ADD_ALERT,

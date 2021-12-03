@@ -1,58 +1,18 @@
-import React, { useEffect, useState } from "react";
-
-import loading from "../assets/sounds/loading.mp3";
-
-const loadingAudio = new Audio(loading);
-loadingAudio.volume = 0.2;
-loadingAudio.autoplay = false;
-loadingAudio.loop = true;
+import React, { useEffect } from "react";
+import { FadeInLoading, FadeOutLoading } from "../helpers/SoundHelper";
 
 type Props = {
     uiState: string;
 };
 
 const LoadingSoundManager: React.FC<Props> = ({ uiState }) => {
-    const [currentVolume, setCurrentVolume] = useState(0.2);
-    
-    var fadeInterval: any = null;
     useEffect(() => {
         if (uiState === "loading") {
-            setCurrentVolume(0.2);
-            loadingAudio.volume = 0.2;
-            loadingAudio.play();
+            FadeInLoading();
         } else {
-            if (fadeInterval !== null) {
-                loadingAudio.currentTime = 0.0;
-                loadingAudio.pause();
-                clearInterval(fadeInterval);
-                fadeInterval = null;
-            } else {
-                onEnd();
-            }
+            FadeOutLoading();
         }
     }, [uiState]);
-
-    useEffect(() => {
-        if (currentVolume >= 0) {
-            loadingAudio.volume = currentVolume;
-        }
-    }, [currentVolume]);
-
-    const onEnd = () => {
-        var _vol = currentVolume;
-        fadeInterval = setInterval(function() {
-            if (_vol > 0) {
-                _vol = _vol - 0.0002;
-                setCurrentVolume(_vol);
-            } else {
-                loadingAudio.currentTime = 0.0;
-                loadingAudio.pause();
-                clearInterval(fadeInterval);
-                fadeInterval = null;
-                return;
-            }
-        }, 5);
-    }
 
     return (<></>);
 };

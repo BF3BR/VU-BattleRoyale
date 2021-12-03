@@ -1,4 +1,4 @@
-import { Sounds } from "../../helpers/SoundsHelper";
+import { Sounds } from "../../helpers/SoundHelper";
 
 export const ADD_ALERT = "ADD_ALERT";
 export const RESET_ALERT = "RESET_ALERT";

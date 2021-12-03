@@ -19,6 +19,7 @@ import { sendToLua } from "../Helpers";
 import { updateProgress } from "../store/inventory/Actions";
 
 import "./Inventory.scss";
+import { PlaySound, Sounds } from "../helpers/SoundHelper";
 
 interface StateFromReducer {
     slots: any;
@@ -77,11 +78,13 @@ const Inventory: React.FC<Props> = ({
     function handleDragStart(event: any) {
         const { active } = event;
         setIsDragging(active.data.current);
+        PlaySound(Sounds.Click);
     }
 
     function handleDragEnd(event: any) {
         const { active, over } = event;
         setIsDragging(null);
+        PlaySound(Sounds.Click);
 
         if (over !== null) {
             const slot = over.id;
@@ -119,6 +122,7 @@ const Inventory: React.FC<Props> = ({
     }
 
     const handleChange = (event: any) => {
+        PlaySound(Sounds.Click);
         setSplitModal(prevState => ({
             id: prevState.id,
             show: prevState.show,
@@ -304,12 +308,18 @@ const Inventory: React.FC<Props> = ({
                         <h1 className="split-val">{splitModal.value??0}</h1>
                         <div className="range-grid">
                             <button 
-                                onClick={() => setSplitModal(prevState => ({
-                                    id: prevState.id,
-                                    show: prevState.show,
-                                    maxQuantity: prevState.maxQuantity,
-                                    value: 1,
-                                }))}
+                                onClick={() => {
+                                    PlaySound(Sounds.Click);
+                                    setSplitModal(prevState => ({
+                                        id: prevState.id,
+                                        show: prevState.show,
+                                        maxQuantity: prevState.maxQuantity,
+                                        value: 1,
+                                    }));
+                                }}
+                                onMouseEnter={() => {
+                                    PlaySound(Sounds.Navigate);
+                                }}
                                 className="btn btn-small"
                             >
                                 MIN
@@ -327,12 +337,18 @@ const Inventory: React.FC<Props> = ({
                                 />
                             </div>
                             <button 
-                                onClick={() => setSplitModal(prevState => ({
-                                    id: prevState.id,
-                                    show: prevState.show,
-                                    maxQuantity: prevState.maxQuantity,
-                                    value: splitModal.maxQuantity,
-                                }))}
+                                onClick={() => {
+                                    PlaySound(Sounds.Click);
+                                    setSplitModal(prevState => ({
+                                        id: prevState.id,
+                                        show: prevState.show,
+                                        maxQuantity: prevState.maxQuantity,
+                                        value: splitModal.maxQuantity,
+                                    }));
+                                }}
+                                onMouseEnter={() => {
+                                    PlaySound(Sounds.Navigate);
+                                }}
                                 className="btn btn-small"
                             >
                                 MAX
@@ -340,18 +356,25 @@ const Inventory: React.FC<Props> = ({
                         </div>
                         <div className="button-grid">
                             <button 
-                                onClick={() => setSplitModal(prevState => ({
-                                    id: null,
-                                    show: false,
-                                    maxQuantity: prevState.maxQuantity,
-                                    value: prevState.value,
-                                }))}
+                                onClick={() => {
+                                    PlaySound(Sounds.Click);
+                                    setSplitModal(prevState => ({
+                                        id: null,
+                                        show: false,
+                                        maxQuantity: prevState.maxQuantity,
+                                        value: prevState.value,
+                                    }))
+                                }}
+                                onMouseEnter={() => {
+                                    PlaySound(Sounds.Navigate);
+                                }}
                                 className="btn"
                             >
                                 Cancel
                             </button>
                             <button 
                                 onClick={() => {
+                                    PlaySound(Sounds.Click);
                                     setSplitModal(prevState => ({
                                         id: null,
                                         show: false,
@@ -359,6 +382,9 @@ const Inventory: React.FC<Props> = ({
                                         value: prevState.value,
                                     }));
                                     sendToLua('WebUI:DropItem', JSON.stringify({ item: splitModal.id, quantity: splitModal.value }));
+                                }}
+                                onMouseEnter={() => {
+                                    PlaySound(Sounds.Navigate);
                                 }}
                                 className="btn btn-primary"
                             >

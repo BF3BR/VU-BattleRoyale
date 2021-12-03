@@ -1,17 +1,11 @@
 import React, { useState } from "react";
 
-import { VolumeConst } from "../helpers/SoundHelper";
+import { PlaySound, Sounds } from "../helpers/SoundHelper";
 
-import shieldBreak from "../assets/sounds/shield_break.mp3";
 import shield from "../assets/img/broken_shield.svg";
 
 import "./ArmorSoundManager.scss";
 
-const shieldBreakAudio = new Audio(shieldBreak);
-shieldBreakAudio.volume = VolumeConst * .8;
-shieldBreakAudio.autoplay = false;
-shieldBreakAudio.loop = false;
-shieldBreakAudio.pause();
 
 const ArmorSoundManager: React.FC = () => {
     const [showShield, setShowShield] = useState<boolean>(false);
@@ -23,14 +17,7 @@ const ArmorSoundManager: React.FC = () => {
             setShowShield(false);
         }, 2150);
 
-        shieldBreakAudio.currentTime = 0.0;
-        shieldBreakAudio.pause();
-        shieldBreakAudio.play();
-
-        shieldBreakAudio.onended = function() {
-            shieldBreakAudio.currentTime = 0.0;
-            shieldBreakAudio.pause();
-        };
+        PlaySound(Sounds.ShieldBreak);
     }
 
     return (

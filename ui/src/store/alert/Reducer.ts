@@ -4,7 +4,7 @@ import {
     ADD_ALERT,
     RESET_ALERT,
 } from "./ActionTypes";
-import { Sounds } from "../../helpers/SoundsHelper";
+import { Sounds } from "../../helpers/SoundHelper";
 
 const initialState: AlertState = {
     message: "",

@@ -1,5 +1,6 @@
 import React from "react";
 import Select from 'react-select';
+import { PlaySound, Sounds } from "../../helpers/SoundHelper";
 
 const selectStyle = {
     container: (provided: any, state: any) => {
@@ -100,6 +101,7 @@ interface Props {
 
 const BrSelect: React.FC<Props> = ({ options, onChangeSelected, selectValue }) => {
     const handleChange = (event: any) => {
+        PlaySound(Sounds.Click);
         onChangeSelected(event.value);
     }
 
