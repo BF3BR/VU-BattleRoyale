@@ -1,10 +1,3 @@
-require "__shared/Slots/BRInventoryWeaponSlot"
-require "__shared/Slots/BRInventoryAttachmentSlot"
-require "__shared/Slots/BRInventoryArmorSlot"
-require "__shared/Slots/BRInventoryHelmetSlot"
-require "__shared/Slots/BRInventoryGadgetSlot"
-require "__shared/Slots/BRInventoryBackpackSlot"
-
 local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_InventoryManager = require "BRInventoryManager"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"

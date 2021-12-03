@@ -1,5 +1,3 @@
-require "__shared/Slots/BRInventorySlot"
-
 class("BRInventoryHelmetSlot", BRInventorySlot)
 
 function BRInventoryHelmetSlot:__init(p_Inventory)

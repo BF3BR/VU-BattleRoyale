@@ -1,5 +1,3 @@
-require "__shared/Slots/BRInventorySlot"
-
 local m_Logger = Logger("BRInventoryWeaponSlot", true)
 
 class("BRInventoryWeaponSlot", BRInventorySlot)

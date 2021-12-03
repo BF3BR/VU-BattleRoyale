@@ -1,5 +1,3 @@
-require "__shared/Slots/BRInventorySlot"
-
 class("BRInventoryAttachmentSlot", BRInventorySlot)
 
 function BRInventoryAttachmentSlot:__init(p_Inventory, p_AttachmentType)

@@ -1,6 +1,3 @@
-require "Visuals/CircleRenderers"
-require "RenderableCircle"
-
 class("PhaseManagerClient", PhaseManagerShared)
 
 local m_OOCVision = require "Visuals/OOCVision"

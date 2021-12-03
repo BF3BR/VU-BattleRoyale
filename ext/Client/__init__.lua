@@ -5,8 +5,13 @@ require "ClientCommands"
 require "__shared/Configs/SettingsConfig"
 require "__shared/Configs/CircleConfig"
 require "__shared/Utils/LootPointHelper"
+require "__shared/Utils/CachedJsExecutor"
 
 require "Types/BRInventory"
+require "BRTeam"
+
+require "Visuals/CircleRenderers"
+require "RenderableCircle"
 
 local m_PhaseManagerClient = require "PhaseManagerClient"
 local m_BrPlayer = require "BRPlayer"

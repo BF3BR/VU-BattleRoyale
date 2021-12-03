@@ -1,5 +1,3 @@
-require "BRTeam"
-
 class "BRPlayer"
 
 local m_Logger = Logger("BRPlayer", true)

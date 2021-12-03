@@ -1,5 +1,13 @@
 class "VuBattleRoyaleServer"
 
+require "__shared/Slots/BRInventorySlot"
+require "__shared/Slots/BRInventoryWeaponSlot"
+require "__shared/Slots/BRInventoryAttachmentSlot"
+require "__shared/Slots/BRInventoryArmorSlot"
+require "__shared/Slots/BRInventoryHelmetSlot"
+require "__shared/Slots/BRInventoryGadgetSlot"
+require "__shared/Slots/BRInventoryBackpackSlot"
+
 require "Types/BRTeam"
 require "Types/BRPlayer"
 require "Types/BRInventory"

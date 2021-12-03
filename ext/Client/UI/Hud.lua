@@ -1,7 +1,5 @@
 class "VuBattleRoyaleHud"
 
-require "__shared/Utils/CachedJsExecutor"
-
 local m_EscMenu = require "UI/EscMenu"
 local m_DeployScreen = require "UI/DeployScreen"
 local m_HudUtils = require "UI/Utils/HudUtils"
