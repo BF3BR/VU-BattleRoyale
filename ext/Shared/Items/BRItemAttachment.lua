@@ -9,7 +9,3 @@ end
 function BRItemAttachment:CreateFromTable(p_Table)
 	return BRItemAttachment(p_Table.Id, m_AttachmentDefinitions[p_Table.UId])
 end
-
---==============================
--- Attachment related functions
---==============================

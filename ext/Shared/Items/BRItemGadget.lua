@@ -37,7 +37,3 @@ end
 function BRItemGadget:CreateFromTable(p_Table)
 	return BRItemGadget(p_Table.Id, m_GadgetDefinitions[p_Table.UId], p_Table.Quantity, p_Table.CurrentPrimaryAmmo)
 end
-
---==============================
--- Gadget related functions
---==============================

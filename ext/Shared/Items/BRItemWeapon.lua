@@ -28,7 +28,3 @@ end
 function BRItemWeapon:CreateFromTable(p_Table)
 	return BRItemWeapon(p_Table.Id, m_WeaponDefinitions[p_Table.UId], p_Table.CurrentPrimaryAmmo)
 end
-
---==============================
--- Weapon related functions
---==============================

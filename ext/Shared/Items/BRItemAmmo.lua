@@ -9,7 +9,3 @@ end
 function BRItemAmmo:CreateFromTable(p_Table)
 	return BRItemAmmo(p_Table.Id, m_AmmoDefinitions[p_Table.UId], p_Table.Quantity)
 end
-
---==============================
--- Ammo related functions
---==============================
