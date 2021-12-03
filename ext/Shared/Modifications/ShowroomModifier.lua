@@ -25,13 +25,10 @@ function ShowroomModifier:DeregisterCallbacks()
 end
 
 function ShowroomModifier:ModifyShowRoomReferenceObject(p_ReferenceObjectData)
-	-- TODO: We should get this from the map config
-	p_ReferenceObjectData.blueprintTransform = LinearTransform(
-		Vec3(-0.740595, 0.000000, 0.671952),
-		Vec3(0.000000, 1.000000, 0.000000),
-		Vec3(-0.671952, 0.000000, -0.740595),
-		Vec3(470.017578, 173.259598, -978.172791)
-	)
+	local s_MapId = LevelNameHelper:GetLevelName()
+	if MapsConfig[s_MapId] ~= nil and MapsConfig[s_MapId]["ShowroomTransfrom"] ~= nil then
+		p_ReferenceObjectData.blueprintTransform = MapsConfig[s_MapId]["ShowroomTransfrom"]
+	end
 end
 
 function ShowroomModifier:Disable(p_Data)

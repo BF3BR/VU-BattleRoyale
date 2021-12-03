@@ -125,6 +125,12 @@ return {
 		Vec3(524.122437, 155.705521, -836.830017),
 		Vec3(506.119202, 155.705490, -834.631287)
 	},
+	ShowroomTransfrom = LinearTransform(
+		Vec3(-0.740595, 0.000000, 0.671952),
+		Vec3(0.000000, 1.000000, 0.000000),
+		Vec3(-0.671952, 0.000000, -0.740595),
+		Vec3(470.017578, 173.259598, -978.172791)
+	),
 	LootSpawnPoints = require "__shared/Maps/XP5_003/XP5_003_LootPresets",
 	MapPreset = require "__shared/Maps/XP5_003/XP5_003_MapPreset",
 	Injected_sublevels = require "__shared/Maps/XP5_003/XP5_003_Injected_Sublevels",
