@@ -16,7 +16,7 @@ require "RenderableCircle"
 local m_PhaseManagerClient = require "PhaseManagerClient"
 local m_BrPlayer = require "BRPlayer"
 local m_HudUtils = require "UI/Utils/HudUtils"
-local m_Gunship = require "Gunship"
+local m_GunshipClient = require "GunshipClient"
 local m_Hud = require "UI/Hud"
 local m_Chat = require "UI/Chat"
 local m_SpectatorClient = require "SpectatorClient"
@@ -202,7 +202,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_Hud:OnLevelDestroy()
 	m_HudUtils:OnLevelDestroy()
 	m_SpectatorClient:OnLevelDestroy()
-	m_Gunship:OnLevelDestroy()
+	m_GunshipClient:OnLevelDestroy()
 	m_Chat:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 	m_WindowsCircleSpawner:OnLevelDestroy()
@@ -268,7 +268,7 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
 		m_PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 		m_Ping:OnUpdatePassPreSim(p_DeltaTime)
-		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+		m_GunshipClient:OnUpdatePassPreSim(p_DeltaTime)
 		m_CommonSpatialRaycast:OnUpdatePassPreSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
 		m_PhaseManagerClient:OnUIDrawHud(p_DeltaTime)
@@ -276,12 +276,12 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		m_Ping:OnUIDrawHud(p_DeltaTime)
 		m_CircleEffects:OnUIDrawHud()
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PostFrame then
-		m_Gunship:OnUpdatePassPostFrame(p_DeltaTime)
+		m_GunshipClient:OnUpdatePassPostFrame(p_DeltaTime)
 	end
 end
 
 function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
-	m_Gunship:OnClientUpdateInput()
+	m_GunshipClient:OnClientUpdateInput()
 	m_SpectatorClient:OnClientUpdateInput()
 	m_Hud:OnClientUpdateInput()
 	m_Ping:OnClientUpdateInput(p_DeltaTime)
@@ -420,23 +420,23 @@ end
 
 function VuBattleRoyaleClient:OnGunshipEnable(p_Type)
 	if p_Type == "Paradrop" and not SpectatorManager:GetSpectating() then
-		m_Gunship:OnGunshipEnable(p_Type)
+		m_GunshipClient:OnGunshipEnable(p_Type)
 		m_Hud:OnGunshipEnable()
 	end
 end
 
 function VuBattleRoyaleClient:OnGunshipDisable()
-	m_Gunship:OnGunshipDisable()
+	m_GunshipClient:OnGunshipDisable()
 	m_Hud:OnGunshipDisable()
 end
 
 function VuBattleRoyaleClient:OnJumpOutOfGunship()
-	m_Gunship:OnJumpOutOfGunship()
+	m_GunshipClient:OnJumpOutOfGunship()
 	m_Hud:OnJumpOutOfGunship()
 end
 
 function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
-	m_Gunship:OnForceJumpOufOfGunship()
+	m_GunshipClient:OnForceJumpOufOfGunship()
 end
 
 -- =============================================
@@ -559,7 +559,7 @@ end
 function VuBattleRoyaleClient:OnEnableSpectate()
 	m_Logger:Write("NetEvent: Enable spectator")
 	m_SpectatorClient:Enable()
-	m_Gunship:OnGunshipDisable()
+	m_GunshipClient:OnGunshipDisable()
 	m_Hud:OnJumpOutOfGunship()
 end
 
@@ -654,7 +654,7 @@ function VuBattleRoyaleClient:OnUICreateKillMessage(p_HookCtx)
 end
 
 function VuBattleRoyaleClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
-	m_Gunship:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
+	m_GunshipClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_HookCtx)

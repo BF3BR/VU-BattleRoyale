@@ -24,7 +24,7 @@ local m_BRAirdropManager = require "BRAirdropManager"
 local m_OOCFires = require "OOCFires"
 local m_GameStateManager = require "GameStateManager"
 local m_Match = require "Match"
-local m_Gunship = require "Gunship"
+local m_GunshipServer = require "GunshipServer"
 local m_MapVEManager = require "MapVEManager"
 local m_InventoryManager = require "BRInventoryManager"
 local m_ItemDatabase = require "Types/BRItemDatabase"
@@ -123,7 +123,7 @@ end
 function VuBattleRoyaleServer:OnExtensionUnloading()
 	m_PhaseManagerServer:OnExtensionUnloading()
 	m_OOCFires:OnExtensionUnloading()
-	m_Gunship:OnExtensionUnloading()
+	m_GunshipServer:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -222,7 +222,7 @@ end
 
 function VuBattleRoyaleServer:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
-		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+		m_GunshipServer:OnUpdatePassPreSim(p_DeltaTime)
 		m_Match:OnUpdatePassPreSim(p_DeltaTime)
 	end
 end
@@ -254,7 +254,7 @@ function VuBattleRoyaleServer:OnPlayerUpdateInput(p_Player)
 		return
 	end
 
-	m_Gunship:OnPlayerUpdateInput(p_Player)
+	m_GunshipServer:OnPlayerUpdateInput(p_Player)
 end
 
 function VuBattleRoyaleServer:OnPlayerChangingWeapon(p_Player)
@@ -409,7 +409,7 @@ function VuBattleRoyaleServer:OnJumpOutOfGunship(p_Player, p_Transform)
 		return
 	end
 
-	m_Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
+	m_GunshipServer:OnJumpOutOfGunship(p_Player, p_Transform)
 end
 
 function VuBattleRoyaleServer:OnOpenParachute(p_Player)
@@ -417,7 +417,7 @@ function VuBattleRoyaleServer:OnOpenParachute(p_Player)
 		return
 	end
 
-	m_Gunship:OnOpenParachute(p_Player)
+	m_GunshipServer:OnOpenParachute(p_Player)
 end
 
 function VuBattleRoyaleServer:OnChatMessageSquadSend(p_Player, p_Message)

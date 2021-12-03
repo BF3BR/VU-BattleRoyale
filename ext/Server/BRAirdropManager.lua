@@ -11,7 +11,7 @@ local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefi
 local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_LootRandomizer = require "BRLootRandomizer"
-local m_Gunship = require "Gunship"
+local m_GunshipServer = require "GunshipServer"
 
 function BRAirdropManager:__init()
 	self:RegisterVars()
@@ -29,7 +29,7 @@ function BRAirdropManager:OnEngineUpdate(p_DeltaTime)
     if not self.m_AirdropDropped then
         local s_PlaneDistance = self:GetPlaneDistance()
         if s_PlaneDistance ~= nil and s_PlaneDistance <= 2.5 then
-            self:CreateAirdrop(m_Gunship:GetDropPosition())
+            self:CreateAirdrop(m_GunshipServer:GetDropPosition())
             self.m_AirdropDropped = true
 			NetEvents:BroadcastLocal("Airdrop:Dropped")
         end
@@ -41,11 +41,11 @@ function BRAirdropManager:GetPlaneDistance()
         return
     end
 
-    if not m_Gunship:IsEnabled() or m_Gunship:GetType() ~= "Airdrop" then
+    if not m_GunshipServer:IsEnabled() or m_GunshipServer:GetType() ~= "Airdrop" then
         return nil
     end
 
-    local s_GunshipPos = m_Gunship:GetCurrentPosition(m_Gunship.m_CalculatedTime)
+    local s_GunshipPos = m_GunshipServer:GetCurrentPosition(m_GunshipServer.m_CalculatedTime)
 
     if s_GunshipPos == nil then
         return nil
@@ -73,7 +73,7 @@ function BRAirdropManager:CreatePlane(p_Trans)
         s_OppositeAngle = s_Angle - 180
     end
 
-    m_Gunship:Enable(
+    m_GunshipServer:Enable(
         self:RandomPointWithAngle(p_Trans, math.rad(s_Angle), MapsConfig[s_LevelName]["InitialCircle"]["Radius"] * 1.5),
         self:RandomPointWithAngle(p_Trans, math.rad(s_OppositeAngle), MapsConfig[s_LevelName]["InitialCircle"]["Radius"] * 1.5),
         45,

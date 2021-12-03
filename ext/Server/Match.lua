@@ -2,7 +2,7 @@ class("Match", TimersMixin)
 
 local m_GameStateManager = require "GameStateManager"
 local m_TeamManager = require "BRTeamManager"
-local m_Gunship = require "Gunship"
+local m_GunshipServer = require "GunshipServer"
 local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_BRLootManager = require "BRLootManager"
 local m_BRInventoryManager = require "BRInventoryManager"
@@ -129,10 +129,10 @@ function Match:OnMatchFirstTick()
 		m_BRLootManager:SpawnMapSpecificLootPickups()
 	elseif s_State == GameStates.Plane then
 		-- Spawn the gunship and set its course
-		local s_Path = m_Gunship:GetRandomGunshipPath()
+		local s_Path = m_GunshipServer:GetRandomGunshipPath()
 
 		if s_Path ~= nil then
-			m_Gunship:Enable(
+			m_GunshipServer:Enable(
 				s_Path.StartPos,
 				s_Path.EndPos,
 				ServerConfig.MatchStateTimes[GameStates.Plane],
@@ -148,7 +148,7 @@ function Match:OnMatchFirstTick()
 		self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
 	elseif s_State == GameStates.EndGame then
 		m_PhaseManagerServer:End()
-		m_Gunship:Disable()
+		m_GunshipServer:Disable()
 		-- self.m_Airdrop:Spawn(nil, false)
 
 		if self.m_WinnerTeam ~= nil then
@@ -163,7 +163,7 @@ function Match:OnMatchFirstTick()
 end
 
 function Match:OnRemoveGunship()
-	m_Gunship:Disable()
+	m_GunshipServer:Disable()
 	self:RemoveTimer("RemoveGunship")
 end
 
