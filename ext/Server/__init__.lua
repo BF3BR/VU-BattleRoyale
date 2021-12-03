@@ -64,7 +64,6 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated),
 		Events:Subscribe("Player:Created", self, self.OnPlayerCreated),
 		Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput),
-		Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon),
 		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
 		Events:Subscribe("Player:Killed", self, self.OnPlayerKilled),
 		Events:Subscribe("Player:Left", self, self.OnPlayerLeft),
@@ -83,7 +82,16 @@ function VuBattleRoyaleServer:RegisterEvents()
 		NetEvents:Subscribe("ChatMessage:AllSend", self, self.OnChatMessageAllSend),
 		NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnPhaseManagerInitialState),
 
-		Events:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
+		Events:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
+
+		NetEvents:Subscribe(InventoryNetEvent.PickupItem, self, self.OnInventoryPickupItem),
+		NetEvents:Subscribe(InventoryNetEvent.MoveItem, self, self.OnInventoryMoveItem),
+		NetEvents:Subscribe(InventoryNetEvent.UseItem, self, self.OnInventoryUseItem),
+		NetEvents:Subscribe(InventoryNetEvent.DropItem, self, self.OnInventoryDropItem),
+	
+		Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon),
+		Events:Subscribe("Player:PostReload", self, self.OnPlayerPostReload),
+		Events:Subscribe("BRItem:DestroyItem", self, self.OnItemDestroy),
 	}
 end
 
@@ -247,6 +255,8 @@ function VuBattleRoyaleServer:OnPlayerChangingWeapon(p_Player)
 	end
 
 	p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
+
+	m_InventoryManager:OnPlayerChangingWeapon(p_Player)
 end
 
 function VuBattleRoyaleServer:OnPlayerManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
@@ -432,6 +442,30 @@ end
 
 function VuBattleRoyaleServer:OnGameStateChanged(p_OldGameState, p_GameState)
 	m_Match:InitMatch()
+end
+
+function VuBattleRoyaleServer:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
+	m_InventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
+end
+
+function VuBattleRoyaleServer:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
+	m_InventoryManager:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
+end
+
+function VuBattleRoyaleServer:OnInventoryUseItem(p_Player, p_ItemId)
+	m_InventoryManager:OnInventoryUseItem(p_Player, p_ItemId)
+end
+
+function VuBattleRoyaleServer:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
+	m_InventoryManager:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
+end
+
+function VuBattleRoyaleServer:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
+	m_InventoryManager:OnInventoryDropItem(p_Player, p_AmmoAdded, p_Weapon)
+end
+
+function VuBattleRoyaleServer:OnItemDestroy(p_ItemId)
+	m_InventoryManager:OnInventoryDropItem(p_ItemId)
 end
 
 -- =============================================

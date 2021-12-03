@@ -19,9 +19,7 @@ function BRLootManager:SpawnMapSpecificLootPickups()
 end
 
 function BRLootManager:Clear()
-	--[[for _, l_Pickup in pairs(self.m_LootPickups) do
-		m_LootRandomizer:Spawn(l_Point)
-	end]]
+	-- TODO: Clear out all dropped / non-dropped items (non-inventory items)
 end
 
 return BRLootManager()

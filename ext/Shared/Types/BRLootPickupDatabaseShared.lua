@@ -51,19 +51,10 @@ function BRLootPickupDatabaseShared:ContainsId(p_LootPickupId)
 	return self.m_LootPickups[p_LootPickupId] ~= nil
 end
 
--- WIP
 function BRLootPickupDatabaseShared:GetCloseLootPickups(p_Position, p_Radius)
-	if p_Position == nil then
-		return
-	end
-
-	p_Radius = p_Radius or 5
-
-	-- TODO
 	return {}
 end
 
--- WIP
 function BRLootPickupDatabaseShared:GetClosestLootPickup(p_Position, p_Radius)
 	local s_LootPickups = self:GetCloseLootPickups(p_Position, p_Radius)
 
@@ -75,12 +66,11 @@ function BRLootPickupDatabaseShared:GetClosestLootPickup(p_Position, p_Radius)
 
 	-- find the closest item
 	local s_ClosestPickup = s_LootPickups[1]
-	local s_ClosestDistance = p_Position:Distance(Vec2(0, 0)) -- TODO
+	local s_ClosestDistance = p_Radius + 1
 
 	for l_Index = 2, #s_LootPickups do
 		local s_LootPickup = s_LootPickups[l_Index]
-		-- local s_Distance = p_Position:Distance(s_LootPickup:GetPosition2D()) -- TODO
-		local s_Distance = p_Position:Distance(Vec2(0, 0))
+		local s_Distance = p_Position:Distance(s_LootPickup.m_Transform.trans)
 
 		if s_Distance < s_ClosestDistance then
 			s_ClosestPickup = s_LootPickup

@@ -85,13 +85,11 @@ end
 -- Returns the slot of an item or nil if item was not found
 -- in this inventory
 function BRInventory:GetItemSlot(p_ItemId)
-	-- TODO maybe keep some inventory index for instant access
 	for l_Index, l_Slot in pairs(self.m_Slots) do
 		if l_Slot.m_Item ~= nil and l_Slot.m_Item.m_Id == p_ItemId then
 			return l_Slot
 		end
 	end
-
 	return nil
 end
 
@@ -345,7 +343,6 @@ end
 
 -- Returns the first weapon slot item with the specified weapon name
 -- if it exists in the inventory
--- TODO not sure if good way to search for weapons cause we may have duplicates
 function BRInventory:GetWeaponItemByName(p_WeaponName)
 	for _, l_SlotIndex in pairs({InventorySlot.PrimaryWeapon, InventorySlot.SecondaryWeapon, InventorySlot.Gadget}) do
 		local s_Slot = self.m_Slots[l_SlotIndex]
@@ -448,7 +445,6 @@ end
 
 -- Destroys the `BRInventory` instance
 function BRInventory:Destroy()
-	-- TODO probably needs some more things to cleanup
 	self.m_Owner = nil
 	self.m_Slots = {}
 end

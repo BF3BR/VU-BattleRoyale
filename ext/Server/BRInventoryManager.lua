@@ -23,18 +23,6 @@ function BRInventoryManager:RegisterVars()
 	self.m_Inventories = {}
 end
 
-function BRInventoryManager:RegisterEvents()
-	NetEvents:Subscribe(InventoryNetEvent.PickupItem, self, self.OnInventoryPickupItem)
-	NetEvents:Subscribe(InventoryNetEvent.MoveItem, self, self.OnInventoryMoveItem)
-	NetEvents:Subscribe(InventoryNetEvent.UseItem, self, self.OnInventoryUseItem)
-	NetEvents:Subscribe(InventoryNetEvent.DropItem, self, self.OnInventoryDropItem)
-
-	-- Events:Subscribe("GunSway:UpdateRecoil", self, self.OnGunSwayUpdateRecoil)
-	Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon)
-	Events:Subscribe("Player:PostReload", self, self.OnPlayerPostReload)
-	Events:Subscribe("BRItem:DestroyItem", self, self.OnItemDestroy)
-end
-
 function BRInventoryManager:OnPlayerLeft(p_Player)
 	m_Logger:Write(string.format("Destroying Inventory for '%s'", p_Player.name))
 
@@ -133,9 +121,7 @@ function BRInventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_It
 		return
 	end
 
-	-- TODO get item (validate item exists)
-
-	-- check that player and lootpickup are close (TODO update 3?)
+	-- check that player and lootpickup are close
 	local s_LootPickupPos = s_LootPickup.m_Transform.trans
 	local s_PlayerPos = p_Player.soldier.transform.trans
 
@@ -196,7 +182,6 @@ function BRInventoryManager:OnInventoryUseItem(p_Player, p_ItemId)
 	end
 end
 
--- TODO move this into BRInventory.UpdateOwnerAmmo
 function BRInventoryManager:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
 	if p_Player == nil or p_Player.soldier == nil then
 		return

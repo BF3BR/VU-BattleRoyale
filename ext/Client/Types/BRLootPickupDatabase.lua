@@ -19,8 +19,6 @@ function BRLootPickupDatabase:Add(p_LootPickup)
 		return false
 	end
 
-	-- TODO add required refs to grid
-
 	-- add a reference in close entities too. It will be cleaned up in
 	-- a bit if it's not close, anyways
 	self.m_CachedCloseEntities[p_LootPickup.m_Id] = p_LootPickup
@@ -130,10 +128,6 @@ function BRLootPickupDatabase:DestroyLootPickupEntities(p_LootPickup)
 	end
 
 	p_LootPickup:DestroyEntities()
-end
-
-function BRLootPickupDatabase:UpdateGridSubscriptions()
-	-- TODO
 end
 
 -- =============================================

@@ -173,6 +173,7 @@ function Match:OnRestartRound()
 	m_GameStateManager:SetGameState(GameStates.None)
 
 	-- Spawn loot pickups for warmup
+	-- TODO: Close only code will more than likely fix this, so reenable this line
 	-- m_BRLootManager:SpawnMapSpecificLootPickups()
 end
 

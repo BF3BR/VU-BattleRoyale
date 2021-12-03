@@ -26,8 +26,8 @@ end
 
 function ShowroomModifier:ModifyShowRoomReferenceObject(p_ReferenceObjectData)
 	local s_MapId = LevelNameHelper:GetLevelName()
-	if MapsConfig[s_MapId] ~= nil and MapsConfig[s_MapId]["ShowroomTransfrom"] ~= nil then
-		p_ReferenceObjectData.blueprintTransform = MapsConfig[s_MapId]["ShowroomTransfrom"]
+	if MapsConfig[s_MapId] ~= nil and MapsConfig[s_MapId]["ShowroomTransform"] ~= nil then
+		p_ReferenceObjectData.blueprintTransform = MapsConfig[s_MapId]["ShowroomTransform"]
 	end
 end
 

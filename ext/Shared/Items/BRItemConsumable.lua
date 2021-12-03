@@ -98,8 +98,6 @@ function BRItemConsumable:SendNetEvent(p_Name)
 		table.insert(s_Receivers, s_Player)
 	end
 
-	-- TODO add spectators as receivers
-
 	-- check for any receivers
 	if #s_Receivers < 1 then
 		return
