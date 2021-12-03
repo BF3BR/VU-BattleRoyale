@@ -111,7 +111,7 @@ function BRItemConsumable:SendNetEvent(p_Name)
 	end
 end
 
-function BRItemConsumable:OnEngineUpdate(p_DeltaTime, p_UpdatePass)
+function BRItemConsumable:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	if self.m_Timer == nil then
 		self:UnsubscribeFromEngineUpdates()
 		return
@@ -142,7 +142,7 @@ end
 
 function BRItemConsumable:SubscribeToEngineUpdates()
 	self:UnsubscribeFromEngineUpdates()
-	self.m_UpdateEvent = Events:Subscribe("UpdateManager:Update", self, self.OnEngineUpdate)
+	self.m_UpdateEvent = Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate)
 end
 
 function BRItemConsumable:UnsubscribeFromEngineUpdates()
