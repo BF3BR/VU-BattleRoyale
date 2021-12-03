@@ -15,7 +15,6 @@ local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefi
 
 function BRInventoryManager:__init()
 	self:RegisterVars()
-	self:RegisterEvents()
 end
 
 function BRInventoryManager:RegisterVars()
