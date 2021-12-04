@@ -469,11 +469,11 @@ function VuBattleRoyaleServer:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity
 end
 
 function VuBattleRoyaleServer:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
-	m_InventoryManager:OnInventoryDropItem(p_Player, p_AmmoAdded, p_Weapon)
+	m_InventoryManager:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
 end
 
 function VuBattleRoyaleServer:OnItemDestroy(p_ItemId)
-	m_InventoryManager:OnInventoryDropItem(p_ItemId)
+	m_InventoryManager:OnItemDestroy(p_ItemId)
 end
 
 -- =============================================
