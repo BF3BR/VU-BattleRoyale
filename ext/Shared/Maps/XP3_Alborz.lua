@@ -131,6 +131,6 @@ return {
 	},
 	LootSpawnPoints = {}, --require "__shared/Maps/XP5_003/XP5_003_LootPresets",
 	MapPreset = require "__shared/Maps/XP3_Alborz/XP3_Alborz_MapPreset",
-	Injected_sublevels = nil,
+	ObjectModifications = nil,
 	VEPresets = {},
 }

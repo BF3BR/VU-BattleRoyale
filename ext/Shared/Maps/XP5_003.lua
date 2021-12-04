@@ -133,7 +133,7 @@ return {
 	),
 	LootSpawnPoints = require "__shared/Maps/XP5_003/XP5_003_LootPresets",
 	MapPreset = require "__shared/Maps/XP5_003/XP5_003_MapPreset",
-	Injected_sublevels = require "__shared/Maps/XP5_003/XP5_003_Injected_Sublevels",
+	ObjectModifications = require "__shared/Maps/XP5_003/XP5_003_ObjectModifications",
 	VEPresets = {
 		"XP5_003_Default",
 		--"XP5_003_Foggy",
