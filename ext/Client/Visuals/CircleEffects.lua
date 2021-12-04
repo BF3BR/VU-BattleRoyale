@@ -101,7 +101,7 @@ function CircleEffects:GetVEState()
 end
 
 function CircleEffects:FixedVisionUpdates()
-	if not CircleConfig.EanbleFog then
+	if not CircleConfig.EnableFog then
 		return
 	end
 
@@ -120,7 +120,7 @@ function CircleEffects:FixedVisionUpdates()
 end
 
 function CircleEffects:UpdateFog()
-	if not CircleConfig.EanbleFog then
+	if not CircleConfig.EnableFog then
 		return
 	end
 

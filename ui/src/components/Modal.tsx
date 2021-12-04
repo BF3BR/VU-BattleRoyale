@@ -1,4 +1,5 @@
 import React from "react";
+import { PlaySound, Sounds } from "../helpers/SoundHelper";
 
 import "./Modal.scss";
 
@@ -30,8 +31,14 @@ const Modal: React.FC<Props> = ({ show, title, text, buttons, dismiss, highlight
                                     {buttons.map((button: any, key: number) => (
                                         <button 
                                             key={key}
-                                            onClick={button.handler}
+                                            onClick={() => {
+                                                PlaySound(Sounds.Click);
+                                                button.handler();
+                                            }}
                                             className={"btn" + (highlightedButtonIndex === key ? " active" : "")}
+                                            onMouseEnter={() => {
+                                                PlaySound(Sounds.Navigate);
+                                            }}
                                         >
                                             {button.text??""}
                                         </button>

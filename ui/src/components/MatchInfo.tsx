@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { RootState } from "../store/RootReducer";
 
 import Timer from "./helpers/Timer";
-import Player from "../helpers/PlayerHelper";
 
 import "./MatchInfo.scss";
 
@@ -56,7 +55,7 @@ const MatchInfo: React.FC<Props> = ({
 
     return (
         <>
-            <div id="MatchInfo" className={"card" + ((noMap || spectating) ? ' noMap' : '') + (deployScreen ? ' deployScreen': '')}>
+            <div id="MatchInfo" className={"card" + (noMap ? ' noMap' : '') + (deployScreen ? ' deployScreen': '')}>
                 <div className="card-header">
                     <h1>
                         {getStateString(state, subPhaseIndex)}

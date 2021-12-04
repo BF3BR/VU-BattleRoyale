@@ -4,7 +4,8 @@ import {
     ADD_PING,
     REMOVE_PING,
     UPDATE_PING,
-    LAST_PING
+    LAST_PING,
+    RESET_PING
 } from "./ActionTypes";
 
 export function addPing(ping: Ping): PingActionTypes {
@@ -32,5 +33,12 @@ export function lastPing(id: string): PingActionTypes {
     return {
         type: LAST_PING,
         payload: { id },
+    };
+}
+
+export function resetPing(): PingActionTypes {
+    return {
+        type: RESET_PING,
+        payload: {},
     };
 }

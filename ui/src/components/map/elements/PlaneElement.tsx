@@ -47,7 +47,7 @@ const PlaneElement: React.FC<Props> = ({
                         x={getMapPos(planePos.x, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
                         y={getMapPos(planePos.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
                         angle={planeYaw}
-                        scale={open ? .2 : 0.15}
+                        scale={open ? .12 : 0.105}
                     />
                 </>
             }

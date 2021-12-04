@@ -1,5 +1,6 @@
 import { SpectatorState } from "./Types";
 import { 
+    RESET_SPECTATOR,
     SpectatorActionTypes,
     UPDATE_SPECTATOR_COUNT,
     UPDATE_SPECTATOR_ENABLED,
@@ -32,6 +33,8 @@ const SpectatorReducer = (
                 ...state,
                 count: action.payload.count,
             };
+        case RESET_SPECTATOR:
+            return initialState;
         default:
             return state;
     }

@@ -1,4 +1,5 @@
 /*eslint no-useless-computed-key: off*/
+// -- TODO: UI / WeaponNamesHelper - fill out the remaining weapon names #293
 export var WeaponNames:any = {
     ['Weapons/Knife/Knife']: 'Knife',
 
@@ -26,4 +27,15 @@ export var WeaponNames:any = {
 
     ['Weapons/Gadgets/Medicbag/MedicBag']: 'Medkit',
     ['Weapons/Gadgets/Ammobag/Ammobag']: 'Ammobag',
+    ['Weapons/Gadgets/M320/M320']: 'M320 Smoke',
+    ['Weapons/RPG7/RPG7']: 'RPG-7',
+
+    ['Weapons/AK74M/AK74']: 'AK-74M',
+    ['Weapons/AN94/AN94']: 'AN-94',
+    ['Weapons/XP1_FAMAS/FAMAS']: 'FAMAS',
+    ['Weapons/XP2_SCAR-L/SCAR-L']: 'SCAR-L',
+    ['Weapons/XP2_MP5K/MP5K']: 'MP5K',
+    ['Weapons/UMP45/UMP45']: 'UMP-45',
+    ['Weapons/XP2_SPAS12/SPAS12']: 'SPAS-12',
+    ['Weapons/XP2_HK417/HK417']: 'M417',
 };

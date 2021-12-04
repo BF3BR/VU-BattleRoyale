@@ -1,7 +1,8 @@
 import { KillmsgState } from "./Types";
 import { 
     KillmsgActionTypes,
-    ADD_KILLMSG
+    ADD_KILLMSG,
+    RESET_KILLMSG
 } from "./ActionTypes";
 
 const initialState: KillmsgState = {
@@ -21,6 +22,8 @@ const KillmsgReducer = (
                 kills: action.payload.kills,
                 enemyName: action.payload.enemyName,
             };
+        case RESET_KILLMSG:
+            return initialState;
         default:
             return state;
     }

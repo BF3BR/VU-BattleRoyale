@@ -10,7 +10,7 @@ function RenderableCircle:__init(p_Center, p_Radius)
 	-- number of rectangles that need to be rendered
 	self.m_RectsToRender = nil
 
-	-- the edge points for the rectangles 
+	-- the edge points for the rectangles
 	-- they are precalculated during presim in case some
 	-- raycasts would be needed (depends on the implementation)
 	self.m_RenderPoints = {}

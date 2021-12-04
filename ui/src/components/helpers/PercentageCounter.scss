@@ -15,7 +15,7 @@
 
     .PercentageBg {
         flex: 1 1 auto;
-        height: 0.4vw;
+        height: 0.48vw;
         background-color: rgba(255, 255, 255, 0.4);
         background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) 24%, transparent 25%, transparent);
         background-size: 0.175vw 100%;
@@ -24,7 +24,7 @@
     .PercentageFg {
         position: relative;
         flex: 1 1 auto;
-        height: 0.4vw;
+        height: 0.48vw;
         transition: width 0.1s ease;
         background-color: #fff;
         box-shadow: 0 0 0.2vw 0.05vw #fff inset, 0 0 0.15vw 0.05vw rgba(255, 255, 255, 0.5);
@@ -44,15 +44,35 @@
     }
 
     .PercentageText {
-        width: 1.95vw;
+        width: auto;
         display: flex;
         align-items: center;
         justify-content: flex-end;
         font-size: 0.9vw;
         text-shadow: 0 0 0.15vw rgba(7, 7, 7, 0.45);
+        margin-left: 0.6vw;
     }
 
+    .helmet-icon,
+    .armor-icon {
+        width: 0.8vw;
+        margin-right: 0.65vw;
+        filter: drop-shadow(0 0 0.1vw rgba(7, 7, 7, 0.75));
+    }
+
+    &.PercentageTypeHelmet,
     &.PercentageTypeArmor {
+        .PercentageBg,
+        .PercentageFg {
+            height: .4vw;
+        }
+
+        .PercentageText {
+            display: none;
+        }
+    }
+
+    &.tier-2 {
         .PercentageBg {
             background-color: rgba(151, 215, 246, 0.4);
         }
@@ -66,8 +86,29 @@
             color: #52b0df;
         }
 
-        img {
+        .armor-icon,
+        .helmet-icon {
             filter: drop-shadow(0 0 0.1vw rgba(40, 169, 235, 0.75));
+        }
+    }
+
+    &.tier-3 {
+        .PercentageBg {
+            background-color: rgba(196, 117, 50, 0.4);
+        }
+
+        .PercentageFg {
+            background-color: #ffcb7e;
+            box-shadow: 0 0 0.2vw 0.05vw #ff9900 inset, 0 0 0.15vw 0.05vw rgba(196, 117, 50, 0.5);
+        }
+
+        .PercentageText {
+            color: #ff9900;
+        }
+
+        .armor-icon,
+        .helmet-icon {
+            filter: drop-shadow(0 0 0.1vw rgba(196, 117, 50, 0.75));
         }
     }
 }

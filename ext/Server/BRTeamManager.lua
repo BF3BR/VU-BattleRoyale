@@ -1,6 +1,7 @@
 class "BRTeamManager"
 
 local m_Logger = Logger("BRTeamManager", true)
+local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 function BRTeamManager:__init()
 	self:RegisterVars()
@@ -58,6 +59,11 @@ end
 
 function BRTeamManager:OnPlayerKilled(p_Player)
 	self:OnSendPlayerState(p_Player)
+
+	local s_BRPlayer = self:GetPlayer(p_Player)
+	if s_BRPlayer ~= nil then
+		m_LootPickupDatabase:CreateFromInventory(s_BRPlayer:GetPosition(), s_BRPlayer.m_Inventory)
+	end
 end
 
 function BRTeamManager:OnPlayerLeft(p_Player)
@@ -464,13 +470,6 @@ function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayer
 			s_BRPlayerToSpectate:AddSpectator(p_Player.name)
 
 			if s_BRPlayer ~= nil then
-				if s_BRPlayerToSpectate.m_Armor ~= nil then
-					local s_State = {
-						Armor = s_BRPlayerToSpectate.m_Armor:AsTable()
-					}
-					NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, p_Player, s_State)
-				end
-
 				-- add a NetEvent with all player names of the spectated player team
 				-- if it is a teammate we don't want to do that
 				if s_BRPlayerToSpectate.m_Team ~= nil and not s_BRPlayerToSpectate:IsTeammate(s_BRPlayer) then
@@ -483,7 +482,7 @@ function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayer
 					NetEvents:SendToLocal("SpectatedPlayerTeamMembers", p_Player, s_PlayerNames)
 				end
 
-				s_BRPlayer:SpectatePlayer(p_NewPlayerName)
+				s_BRPlayer:SpectatePlayer(s_BRPlayerToSpectate)
 			end
 		end
 	end

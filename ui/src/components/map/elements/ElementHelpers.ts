@@ -1,17 +1,22 @@
-import React from "react";
 import * as PIXI from 'pixi.js';
 import '@pixi/graphics-extras';
 
 import viewAngles from "../../../assets/img/viewangles_texture.png";
 const viewAnglesTexture = PIXI.Texture.from(viewAngles);
 
-export const drawPlayer = (g: any, color: number) => {
-    var sideLength = 20;
+export const drawPlayer = (g: any, color: number, spectating?: boolean) => {
+    const sideLength = 12;
+    let _color = color;
+
+    if (spectating) {
+        _color = 0xffffff;
+    }
+
     g.clear();
-    g.beginFill(color, 0.4);    
+    g.beginFill(_color, 0.4);    
     g.lineStyle({
-        width: 6,
-        color: color,
+        width: 4,
+        color: _color,
         alpha: 1,
         join: PIXI.LINE_JOIN.ROUND,
         miterLimit: 10,
@@ -26,7 +31,7 @@ export const drawPlayer = (g: any, color: number) => {
 };
 
 export const drawPlayerVision = (g: any) => {
-    var sideLength = 70;
+    const sideLength = 50;
     g.filters = [];
     g.clear();
     
@@ -39,11 +44,11 @@ export const drawPlayerVision = (g: any) => {
         matrix: textureMatrix,
         alpha: 0.35,
     });
-    g.moveTo(-10, -7);
+    g.moveTo(-5, -7);
     g.lineTo(0 - sideLength, -sideLength * 1.5);
     g.lineTo(0 + sideLength, -sideLength * 1.5);
-    g.lineTo(10, -7);
-    g.lineTo(0, -20);
+    g.lineTo(5, -7);
+    g.lineTo(0, -10);
     g.closePath();
     g.endFill();
 };

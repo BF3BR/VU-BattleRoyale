@@ -13,6 +13,7 @@ function HudUtils:RegisterVars()
 	self.m_IsInOptionsMenu = false
 	self.m_IsMapOpened = false
 	self.m_IsInDeployScreen = false
+	self.m_IsInInventory = false
 	self.m_EnableMouseInstanceId = nil
 	self.m_DisableGameInputInstanceId = nil
 	self.m_BlurInstanceId = nil
@@ -75,6 +76,14 @@ end
 
 function HudUtils:GetIsInDeployScreen()
 	return self.m_IsInDeployScreen
+end
+
+function HudUtils:SetIsInventoryOpened(p_Enable)
+	self.m_IsInInventory = p_Enable
+end
+
+function HudUtils:GetIsInventoryOpened()
+	return self.m_IsInInventory
 end
 
 function HudUtils:ShowCrosshair(p_Enable)

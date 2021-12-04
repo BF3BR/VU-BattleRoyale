@@ -1,5 +1,6 @@
 class "BRPlayer"
 
+local m_InventoryManager = require "BRInventoryManager"
 local m_Logger = Logger("BRPlayer", true)
 
 function BRPlayer:__init(p_Player)
@@ -26,23 +27,29 @@ function BRPlayer:__init(p_Player)
 	self.m_PosInSquad = 1
 
 	-- the user selected strategy that is used when the teams are formed
-	self.m_TeamJoinStrategy = TeamJoinStrategy.NoJoin
+	self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
 
-	-- The armor of the player (to be replaced by inventory)
-	self.m_Armor = Armor:BasicArmor()
+	-- the player's inventory
+	self.m_Inventory = nil
 
 	-- The kill count of the player
 	self.m_Kills = 0
 
 	-- The score count of the player
 	self.m_Score = 0
+
+	-- The appearance name
+	self.m_Appearance = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01"
+
+	-- Apply the Appearance so the client has the correct soldiermodel in the deploy screen when joining
+	self:SetAppearance(nil, true)
 end
 
 -- =============================================
 -- Hooks
 -- =============================================
 
-function BRPlayer:OnDamaged(p_Damage, p_Giver)
+function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 	-- check if giver isnt a teammate or the player himself
 	if p_Giver ~= nil and self:IsTeammate(p_Giver) and not self:Equals(p_Giver) then
 		return 0
@@ -53,13 +60,11 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 	end
 
 	local s_Soldier = self:GetSoldier()
-
 	if s_Soldier == nil then
 		return p_Damage
 	end
 
 	local s_Health = s_Soldier.health
-
 	if s_Soldier.isInteractiveManDown and p_Damage >= s_Health then
 		self:Kill(true)
 		Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
@@ -68,21 +73,13 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 	elseif not s_Soldier.isInteractiveManDown then
 		s_Health = s_Health - 100
 
-		-- apply damage to the armor
+		-- apply damage to helmet and armor
 		if p_Giver ~= nil and not self:Equals(p_Giver) then
-			local s_Damage = self.m_Armor:ApplyDamage(p_Damage)
-
-			-- check if we really did damage to the armor
-			if s_Damage ~= p_Damage then
-				p_Damage = s_Damage
-				self:SetArmor(self.m_Armor)
-
-				-- check if the player still has a shield or if the giver broke it
-				if self.m_Armor:GetPercentage() == 0 then
-					NetEvents:SendToLocal("Player:BrokeShield", p_Giver.m_Player, self:GetName())
-				end
-			end
+			p_Damage = self:ApplyDamageToProtectiveItem(p_IsHeadShot and self:GetHelmet(), p_Damage, p_Giver)
+			p_Damage = self:ApplyDamageToProtectiveItem(self:GetArmor(), p_Damage, p_Giver)
 		end
+
+		self.m_Inventory:DeferSendState()
 
 		if p_Damage >= s_Health then
 			-- kill instantly if no teammates left
@@ -111,6 +108,27 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver)
 	end
 
 	return math.max(0.001, p_Damage)
+end
+
+function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage, p_Giver)
+	if not p_Item then
+		return p_Damage
+	end
+
+	local s_WasDestroyed
+	p_Damage, s_WasDestroyed = p_Item:ApplyDamage(p_Damage)
+
+	-- if item was destroyed, remove it from inventory
+	if s_WasDestroyed then
+		-- if it's armor, send an event that it broke
+		if p_Item.m_Definition.m_Type == ItemType.Armor then
+			NetEvents:SendToLocal("Player:BrokeShield", p_Giver.m_Player, self:GetName())
+		end
+
+		self.m_Inventory:DestroyItem(p_Item.m_Id)
+	end
+
+	return p_Damage
 end
 
 -- =============================================
@@ -190,8 +208,7 @@ end
 
 function BRPlayer:Spawn(p_Trans)
 	-- check if alive
-	if self.m_Player.alive then
-		m_Logger:Write("Spawn: Player " .. self.m_Player.name .. " is already alive.")
+	if self:IsAlive() then
 		return
 	end
 
@@ -200,32 +217,28 @@ function BRPlayer:Spawn(p_Trans)
 		return
 	end
 
-	local s_SoldierAsset = nil
-	local s_Appearance = nil
-	local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
+	if self.m_Player.selectedKit == nil then
+		local s_SoldierBlueprint = ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier")
 
-	self.m_Player.selectedKit = s_SoldierBlueprint
+		if s_SoldierBlueprint == nil then
+			m_Logger:Error("Couldn\'t find the SoldierBlueprint")
+			return
+		end
 
-	-- TODO: @Janssent's appearance code gonna land here probably
-	if self.m_Player.teamId == TeamId.Team1 then
-		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/USAssault")
-		s_Appearance = ResourceManager:SearchForDataContainer(
-						"Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01")
-	else
-		s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
-		s_Appearance = ResourceManager:SearchForDataContainer(
-						"Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01")
+		self.m_Player.selectedKit = s_SoldierBlueprint
 	end
 
-	if s_SoldierAsset == nil or s_Appearance == nil or s_SoldierBlueprint == nil then
-		return
-	end
+	self:SetAppearance(nil, true)
 
-	self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
 	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
 		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
 	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
+
+	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
+	s_Inventory:DeferUpdateSoldierCustomization(0.85)
+	s_Inventory:SendState()
+
 	local s_Event = ServerPlayerEvent("Spawn", self.m_Player, true, false, false, false, false, false, self.m_Player.teamId)
 	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
 	local s_Entity = s_EntityIterator:Next()
@@ -248,11 +261,9 @@ function BRPlayer:Spawn(p_Trans)
 
 	g_Timers:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
 		if p_Player.soldier ~= nil then
+			-- the ApplyCustomization is needed otherwise the transform will reset to Vec3(1,0,0) Vec3(0,1,0) Vec3(0,0,1)
 			p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
-			p_Player.soldier.weaponsComponent.currentWeapon.primaryAmmo = 8
-			p_Player.soldier.weaponsComponent.currentWeapon.secondaryAmmo = 4
 			p_Player.soldier:SetTransform(p_Trans)
-
 			-- we are done, so we can destroy this timer
 			p_Timer:Destroy()
 		end
@@ -268,20 +279,20 @@ function BRPlayer:CreateCustomizeSoldierData()
 	s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
 
 	local s_UnlockWeaponAndSlot7 = UnlockWeaponAndSlot()
-	s_UnlockWeaponAndSlot7.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
-																Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),
-																Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73")))
+	s_UnlockWeaponAndSlot7.weapon = SoldierWeaponUnlockAsset(
+		ResourceManager:FindInstanceByGuid(Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73"))
+	)
 	s_UnlockWeaponAndSlot7.slot = WeaponSlot.WeaponSlot_7
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot7)
 
 	local s_UnlockWeaponAndSlot9 = UnlockWeaponAndSlot()
-	s_UnlockWeaponAndSlot9.weapon = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
-																Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
-																Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+	s_UnlockWeaponAndSlot9.weapon = SoldierWeaponUnlockAsset(
+		ResourceManager:FindInstanceByGuid(Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B"))
+	)
 	s_UnlockWeaponAndSlot9.slot = WeaponSlot.WeaponSlot_9
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot9)
 
-	s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_9
+	s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
 	s_CustomizeSoldierData.removeAllExistingWeapons = true
 	s_CustomizeSoldierData.disableDeathPickup = false
 
@@ -292,8 +303,20 @@ end
 	-- Spectator Functions
 -- =============================================
 
-function BRPlayer:SpectatePlayer(p_PlayerName)
-	self.m_SpectatedPlayerName = p_PlayerName
+function BRPlayer:SpectatePlayer(p_BrPlayer)
+	if p_BrPlayer == nil then
+		self.m_SpectatedPlayerName = nil
+		return
+	end
+
+	self.m_SpectatedPlayerName = p_BrPlayer:GetName()
+
+	-- send inventory data of the spectated player
+	if p_BrPlayer.m_Inventory ~= nil then
+		local _, s_SpectatorData = p_BrPlayer.m_Inventory:AsTable(true)
+		m_Logger:Write(json.encode(s_SpectatorData))
+		NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self:GetPlayer(), s_SpectatorData)
+	end
 end
 
 function BRPlayer:AddSpectator(p_PlayerName)
@@ -327,6 +350,20 @@ function BRPlayer:ApplyTeamSquadIds()
 	end
 end
 
+function BRPlayer:SendEventToSpectators(p_EventName, ...)
+	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
+		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
+
+		if s_Spectator ~= nil then
+			m_Logger:WriteF("Send '%s' to spectator '%s'", p_EventName, s_Spectator.name)
+			NetEvents:SendToLocal(p_EventName, s_Spectator, table.unpack({...}))
+		else
+			table.remove(self.m_SpectatorNames, i)
+			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
+		end
+	end
+end
+
 function BRPlayer:SendState(p_Simple, p_TeamData)
 	local s_Data = self:AsTable(p_Simple, p_TeamData)
 	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerState, self.m_Player, s_Data)
@@ -334,7 +371,6 @@ end
 
 -- Resets the state of a player
 function BRPlayer:Reset()
-	self.m_Armor = Armor:BasicArmor()
 	self.m_Kills = 0
 	self.m_Score = 0
 	self.m_KillerName = nil
@@ -350,7 +386,6 @@ function BRPlayer:Destroy()
 	self.m_KillerName = nil
 	self.m_Player = nil
 	self.m_Team = nil
-	self.m_Armor = nil
 	self.m_SpectatedPlayerName = nil
 	self.m_SpectatorNames = {}
 end
@@ -365,28 +400,8 @@ function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
 end
 
 -- =============================================
-	-- Set Functions
+-- Set Functions
 -- =============================================
-
-function BRPlayer:SetArmor(p_Armor)
-	self.m_Armor = p_Armor
-	local s_State = {
-		Armor = self.m_Armor:AsTable()
-	}
-	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, self.m_Player, s_State)
-
-	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
-		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
-
-		if s_Spectator ~= nil then
-			m_Logger:Write("Send PlayerArmorState to spectator " .. s_Spectator.name)
-			NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, s_Spectator, s_State)
-		else
-			table.remove(self.m_SpectatorNames, i)
-			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
-		end
-	end
-end
 
 function BRPlayer:SetTeamJoinStrategy(p_Strategy)
 	if self.m_TeamJoinStrategy == p_Strategy then
@@ -406,6 +421,23 @@ function BRPlayer:SetTeamJoinStrategy(p_Strategy)
 	end
 
 	self:SendState()
+end
+
+function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
+	if p_AppearanceName ~= nil then
+		self.m_Appearance = p_AppearanceName
+	end
+
+	if p_RefreshPlayer then
+		local s_SoldierAsset = ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault")
+		local s_Appearance = ResourceManager:SearchForDataContainer(self.m_Appearance)
+
+		if s_SoldierAsset == nil or s_Appearance == nil then
+			return
+		end
+
+		self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+	end
 end
 
 -- =============================================
@@ -428,7 +460,7 @@ end
 -- Returns the soldier object, if exists, or nil
 function BRPlayer:GetSoldier()
 	local s_Player = self:GetPlayer()
-	return s_Player ~= nil and s_Player.soldier
+	return (s_Player ~= nil and s_Player.soldier) or nil
 end
 
 -- Returns the position of the player if alive
@@ -441,6 +473,16 @@ function BRPlayer:GetPosition()
 	end
 
 	return s_Soldier.transform.trans
+end
+
+-- Returns the current armor item equipped by the player
+function BRPlayer:GetArmor()
+	return (self.m_Inventory ~= nil and self.m_Inventory:GetSlot(InventorySlot.Armor).m_Item) or nil
+end
+
+-- Returns the current helmet item equipped by the player
+function BRPlayer:GetHelmet()
+	return (self.m_Inventory ~= nil and self.m_Inventory:GetSlot(InventorySlot.Helmet).m_Item) or nil
 end
 
 -- Checks if the player is alive
@@ -494,7 +536,6 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 
 	-- get team data
 	local s_Team = p_TeamData
-
 	if s_Team == nil and self.m_Team ~= nil then
 		s_Team = self.m_Team:AsTable()
 	end
@@ -502,7 +543,6 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 	-- state used for local player
 	return {
 		Team = s_Team,
-		Armor = self.m_Armor:AsTable(),
 		Data = {
 			TeamJoinStrategy = self.m_TeamJoinStrategy,
 			IsTeamLeader = self.m_IsTeamLeader,

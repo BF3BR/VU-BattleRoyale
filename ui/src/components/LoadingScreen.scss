@@ -19,23 +19,23 @@
         .PageTitle {
             position: relative;
             display: inline-block;
-            line-height: .8;
-            margin: 0 0 .15vw 0;
-            padding: .8vw .75vw 1.25vw;
+            line-height: 0.8;
+            margin: 0 0 0.15vw 0;
+            padding: 0.8vw 0.75vw 1.25vw;
             color: #d5dde5;
             background-color: rgba(7, 7, 7, 0.6);
             text-transform: uppercase;
             font-size: 3.2vw;
-            text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.35);
+            text-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.35);
             font-weight: 600;
         }
 
         .ModeType {
             position: relative;
             display: inline-block;
-            line-height: .8;
+            line-height: 0.8;
             margin: 0 0 3vw 0;
-            padding: .5vw .78vw 0.8vw;
+            padding: 0.5vw 0.78vw 0.8vw;
             background-color: rgba(7, 7, 7, 0.6);
             text-transform: uppercase;
             font-size: 1.6vw;
@@ -50,7 +50,7 @@
             &.ObjectiveBox {
                 margin-bottom: 0.5vw;
             }
-            
+
             &.TipsBox,
             &.ObjectiveBox {
                 ul {
@@ -60,17 +60,17 @@
                     li {
                         line-height: 1.5vw;
                         color: #d5dde5;
-                        font-size: .8vw;
+                        font-size: 0.8vw;
                         text-transform: uppercase;
                         font-style: normal;
                         font-weight: 600;
-                        margin: 0 0 .65vw;
+                        margin: 0 0 0.65vw;
 
                         b {
                             font-weight: 600;
                             color: var(--warning);
                         }
-    
+
                         &:last-of-type {
                             margin: 0;
                         }
@@ -80,23 +80,27 @@
         }
     }
 
-    .bgVideo {
-        position: absolute;
-        top: 50%; 
-        left: 50%;
-        -webkit-transform: translateX(-50%) translateY(-50%);
-        transform: translateX(-50%) translateY(-50%);
-        min-width: 100%; 
-        min-height: 100%; 
-        width: auto; 
-        height: auto;
-        z-index: -1000;
+    .bgWrapper {
+        width: 100vw;
+        height: 100vh;
+        margin: 0 auto;
         overflow: hidden;
-        filter: grayscale(1);
+        position: relative;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: move 10s infinite alternate;
+            -webkit-animation: move 10s infinite alternate;
+            position: absolute;
+            filter: grayscale(1);
+            z-index: -1000;
+        }
     }
 
-    .bgVideoOverlay {
-        content: '';
+    .bgOverlay {
+        content: "";
         position: absolute;
         left: 0;
         top: 0;
@@ -113,12 +117,12 @@
         bottom: 6vw;
         z-index: 999;
         color: #fff;
-    
+
         img {
             height: auto;
             width: 5vw;
         }
-    
+
         h6 {
             font-size: 1vw;
             text-transform: uppercase;
@@ -127,5 +131,18 @@
             font-weight: 400;
         }
     }
-    
+}
+
+@keyframes move {
+    0% {
+        -webkit-transform-origin: top right;
+        transform-origin: top right;
+        transform: scale(1);
+        -webkit-transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.05);
+        -webkit-transform: scale(1.05);
+    }
 }

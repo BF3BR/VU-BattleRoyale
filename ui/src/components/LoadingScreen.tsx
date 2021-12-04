@@ -1,7 +1,7 @@
 import React from "react";
 import { Oval } from 'svg-loaders-react';
 
-import loop from "../assets/vid/loop.webm";
+import XP5_003 from "../assets/img/loading/XP5_003.jpg";
 
 import "./LoadingScreen.scss";
 
@@ -31,28 +31,19 @@ const LoadingScreen: React.FC = () => {
                     </div>
                     <div className="card-content">
                         <ul>
+                            <li>Press <b>TAB</b> to open/close your inventory</li>
                             <li>Press <b>M</b> to open/close and <b>N</b> to zoom the map</li>
-                            <li>Press <b>TAB</b> to enable mouse on the map</li>
-                            <li>Press <b>Q</b> to ping for your teammates</li>
+                            <li>Press or Hold <b>Q</b> to ping for your teammates</li>
                             <li>You can find more loot near buildings</li>
+                            <li>Watch out for airdrops</li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div className="bgVideoOverlay" />
-            <video
-                className="bgVideo"
-                height="100%"
-                width="100%"
-                loop
-                muted
-                autoPlay
-            >
-                <source
-                    src={loop}
-                    type="video/mp4"
-                />
-            </video>
+            <div className="bgOverlay" />
+            <div className="bgWrapper">
+                <img src={XP5_003} alt="" />
+            </div>
             <div className="loader">
                 <Oval />
             </div>

@@ -2,6 +2,7 @@ class("PhaseManagerServer", PhaseManagerShared)
 
 local m_MathHelper = require "__shared/Utils/MathHelper"
 local m_BRTeamManager = require "BRTeamManager"
+local m_BRAirdropManager = require "BRAirdropManager"
 local m_Logger = Logger("PhaseManagerServer", true)
 
 function PhaseManagerServer:RegisterVars()
@@ -101,6 +102,15 @@ function PhaseManagerServer:InitPhase()
 		-- update initial outer circle center
 		if self.m_PhaseIndex == 1 then
 			self.m_OuterCircle:Update(s_NewCenter, s_NewRadius * 3)
+		end
+
+		if s_Phase.HasAirdrop then
+			m_BRAirdropManager:CreatePlane(
+				self.m_InnerCircle:RandomInnerPoint(
+					nil,
+					MapsConfig[LevelNameHelper:GetLevelName()]["AirdropPlaneFlyHeight"]
+				)
+			)
 		end
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then
 		self.m_PrevOuterCircle = self.m_OuterCircle:Clone()

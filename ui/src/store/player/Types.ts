@@ -4,6 +4,7 @@ export interface PlayerState {
     hud: {
         health: number,
         armor: number,
+        helmet: number,
         primaryAmmo: number,
         secondaryAmmo: number,
         fireLogic: string,
@@ -11,4 +12,5 @@ export interface PlayerState {
     },
     isOnPlane: boolean,
     player: Player,
+    isCtrlDown: boolean,
 }

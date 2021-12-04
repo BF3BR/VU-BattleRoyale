@@ -4,7 +4,8 @@ import {
     OPEN_MAP,
     SWITCH_OPEN_MAP,
     SHOW_MAP,
-    SWITCH_ROTATION
+    SWITCH_ROTATION,
+    RESET_MAP
 } from "./ActionTypes";
 
 const initialState: MapState = {
@@ -38,6 +39,8 @@ const MapReducer = (
                 ...state,
                 minimapRotation: !state.minimapRotation,
             };
+        case RESET_MAP:
+            return initialState;
         default:
             return state;
     }

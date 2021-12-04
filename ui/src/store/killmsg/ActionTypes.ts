@@ -1,4 +1,5 @@
 export const ADD_KILLMSG = "ADD_KILLMSG";
+export const RESET_KILLMSG = "RESET_KILLMSG";
 
 interface AddKillmsg {
     type: typeof ADD_KILLMSG;
@@ -9,6 +10,12 @@ interface AddKillmsg {
     };
 }
 
+interface ResetKillmsg {
+    type: typeof RESET_KILLMSG;
+    payload: {};
+}
+
 export type KillmsgActionTypes = 
     | AddKillmsg
+    | ResetKillmsg
 ;

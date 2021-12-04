@@ -9,7 +9,6 @@ local m_PhysicsModifier = require "__shared/Modifications/Soldiers/PhysicsModifi
 local m_WeaponsModifier = require "__shared/Modifications/WeaponsModifier"
 local m_DropShipModifier = require "__shared/Modifications/DropShipModifier"
 local m_VanillaUIModifier = require "__shared/Modifications/VanillaUIModifier"
-local m_LootCreation = require "__shared/Modifications/LootCreation"
 local m_2dTreeRemoving = require "__shared/Modifications/2dTreeRemoving"
 local m_MapSpecificModifier = require "__shared/Modifications/MapSpecificModifier"
 local m_FireEffectsModifier = require "__shared/Modifications/FX/FireEffectsModifier"
@@ -17,6 +16,9 @@ local m_RemoveVanillaLoadingScreen = require "__shared/Modifications/LoadingScre
 local m_RemoveAutotriggerVO = require "__shared/Modifications/Sound/RemoveAutoTriggerVO"
 local m_TimeOutFix = require "__shared/Modifications/TimeOutFix"
 local m_DisableDebugRenderer = require "__shared/Modifications/DisableDebugRenderer"
+local m_AirdropSmokeModifier = require "__shared/Modifications/FX/AirdropSmokeModifier"
+local m_Airdrop = require "__shared/Modifications/Airdrop"
+local m_ShowroomModifier = require "__shared/Modifications/ShowroomModifier"
 local m_ConquestLargeModifier = require "__shared/Modifications/ConquestLargeModifier"
 local m_GameModeSettingsModifier = require "__shared/Modifications/GameModeSettingsModifier"
 
@@ -30,12 +32,14 @@ function ModificationsCommon:RegisterCallbacks()
 	m_DropShipModifier:RegisterCallbacks()
 	m_VanillaUIModifier:RegisterCallbacks()
 	m_PhysicsModifier:RegisterCallbacks()
-	m_WeaponDropModifier:RegisterCallbacks()
 	m_2dTreeRemoving:RegisterCallbacks()
 	m_FireEffectsModifier:RegisterCallbacks()
+	m_AirdropSmokeModifier:RegisterCallbacks()
 	m_ManDownModifier:RegisterCallbacks()
 	m_RemoveAutotriggerVO:RegisterCallbacks()
 	m_TimeOutFix:RegisterCallbacks()
+	m_ShowroomModifier:RegisterCallbacks()
+	m_Airdrop:RegisterCallbacks()
 	m_ConquestLargeModifier:RegisterCallbacks()
 	m_GameModeSettingsModifier:RegisterCallbacks()
 end
@@ -59,7 +63,7 @@ end
 
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_FireEffectsModifier:OnRegisterEntityResources()
-	m_WeaponDropModifier:OnRegisterEntityResources(p_LevelData)
+	m_Airdrop:OnRegisterEntityResources()
 end
 
 function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
@@ -77,11 +81,13 @@ function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedica
 		m_VanillaUIModifier:DeregisterCallbacks()
 		m_MapSpecificModifier:DeregisterCallbacks()
 		m_PhysicsModifier:DeregisterCallbacks()
-		m_WeaponDropModifier:DeregisterCallbacks()
 		m_2dTreeRemoving:DeregisterCallbacks()
 		m_FireEffectsModifier:DeregisterCallbacks()
+		m_AirdropSmokeModifier:DeregisterCallbacks()
 		m_ManDownModifier:DeregisterCallbacks()
 		m_RemoveAutotriggerVO:DeregisterCallbacks()
+		m_ShowroomModifier:DeregisterCallbacks()
+		m_Airdrop:DeregisterCallbacks()
 		m_ConquestLargeModifier:DeregisterCallbacks()
 		m_GameModeSettingsModifier:DeregisterCallbacks()
 		return
@@ -106,8 +112,6 @@ function ModificationsCommon:OnSubWorldLoaded(p_SubWorldData)
 	s_Registry.referenceObjectRegistry:add(s_WorldPartReferenceObjectData)
 
 	p_SubWorldData.objects:add(s_WorldPartReferenceObjectData)
-
-	m_LootCreation:OnSubWorldLoaded(s_WorldPartData)
 end
 --]]
 

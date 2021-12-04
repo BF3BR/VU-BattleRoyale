@@ -5,8 +5,8 @@
     left: 2.5vw;
     height: 12vw;
     width: 12vw;
-    border: 0.1vw solid rgba(7,7,7,.8);
-    background: transparent url('../../assets/img/noise.gif') 50% 50% no-repeat;
+    border: 0.1vw solid rgba(7, 7, 7, 0.8);
+    background: transparent url("../../assets/img/noise.gif") 50% 50% no-repeat;
     background-size: cover;
     box-shadow: 0 0 0.25vw rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -57,17 +57,51 @@
     }
 }
 
+.nextmap-details {
+    position: absolute;
+    bottom: 2.5vw;
+    left: 15.5vw;
+    font-size: 0.52vw;
+    animation: scale-out-hor-left 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) both;
+    animation-delay: 3s;
+
+    .detail {
+        margin-bottom: 0.75vw;
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+
+    span {
+        &.keyboard {
+            border: 0.15vw solid #fff;
+            border-radius: 0.25vw;
+            margin: 0 0.45vw 0 0;
+            background: rgba(255, 255, 255, 0.1);
+            height: 0.7vw;
+            line-height: 0.8vw;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.2);
+            padding: 0 0.3vw 0.15vw 0.3vw;
+        }
+    }
+}
+
 .details {
     position: absolute;
     top: 10vh;
     left: calc(50% + 45vh);
     font-size: 0.75vw;
-    text-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
+    text-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.6);
     text-transform: uppercase;
     display: flex;
     flex-flow: column;
     background: rgba(0, 0, 0, 0.6);
-    padding: .75vw 1vw;
+    padding: 0.75vw 1vw;
 
     .detail {
         margin-bottom: 1vw;
@@ -79,18 +113,27 @@
 
     span {
         &.keyboard {
-            border: .15vw solid #fff;
+            border: 0.15vw solid #fff;
             border-radius: 0.25vw;
-            margin: 0 .65vw 0 0;
+            margin: 0 0.65vw 0 0;
             background: rgba(255, 255, 255, 0.1);
             height: 1.15vw;
             line-height: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            text-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
-            box-shadow: 0 0 .3vw rgba(255, 255, 255, 0.6);
-            padding: 0 .3vw .15vw .3vw;
+            text-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 0.3vw rgba(255, 255, 255, 0.6);
+            padding: 0 0.3vw 0.15vw 0.3vw;
         }
+    }
+}
+
+@keyframes scale-out-hor-left {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }

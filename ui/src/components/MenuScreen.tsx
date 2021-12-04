@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { sendToLua } from "../Helpers";
 
 import Modal from "./Modal";
 
 import "./MenuScreen.scss";
+import { PlaySound, Sounds } from "../helpers/SoundHelper";
 
 const MenuScreen: React.FC = () => {
     const [currentFocus, setCurrentFocus] = useState(0);
@@ -15,14 +16,14 @@ const MenuScreen: React.FC = () => {
             label: "Resume",
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "resume"),
         },
-        {
+        /*{
             label: "Team / Squad",
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "team"),
         },
         {
             label: "Inventory",
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "inventory"),
-        },
+        },*/
         {
             label: "Options",
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "options"),
@@ -69,6 +70,7 @@ const MenuScreen: React.FC = () => {
     }
 
     window.OnMenuEnter = () => {
+        PlaySound(Sounds.Click);
         if (!showQuitModal) {
             buttons[currentFocus].onClick();
         } else {
@@ -84,6 +86,10 @@ const MenuScreen: React.FC = () => {
             setCurrentModalFocus(0);
         }
     }
+
+    useEffect(() => {
+        PlaySound(Sounds.Navigate);
+    }, [currentFocus])
     
     return (
         <div id="MenuScreen">
@@ -94,8 +100,14 @@ const MenuScreen: React.FC = () => {
                     {buttons.map((button: any, key: number) => (
                         <button 
                             key={key}
-                            onClick={button.onClick}
+                            onClick={() => {
+                                PlaySound(Sounds.Click);
+                                button.onClick();
+                            }}
                             className={"btn" + (currentFocus === key ? " active" : "")}
+                            onMouseEnter={() => {
+                                PlaySound(Sounds.Navigate);
+                            }}
                         >
                             {button.label??""}
                         </button>
@@ -125,7 +137,7 @@ const MenuScreen: React.FC = () => {
             </div>
             <div className="card CreditsBox">
                 <div className="card-header">
-                    <h1>Credits</h1>
+                    <h1>Developers</h1>
                 </div>
                 <div className="card-content">
                     <ul>
@@ -136,6 +148,24 @@ const MenuScreen: React.FC = () => {
                         <li>keku645</li>
                         <li>kiwidog</li>
                         <li>KVN</li>
+                    </ul>
+                </div>
+            </div>
+            <div className="card AssociatesBox">
+                <div className="card-header">
+                    <h1>Associates</h1>
+                </div>
+                <div className="card-content">
+                    <ul>
+                        <li>Nofate</li>
+                        <li>Milk</li>
+                        <li>Paul</li>
+                        <li>Imposter</li>
+                        <li>IllustrisJack</li>
+                        <li>Greatapo</li>
+                        <li>Powback</li>
+                        <li>Afroh Music</li>
+                        <li>alx1f9k</li>
                     </ul>
                 </div>
             </div>

@@ -35,12 +35,12 @@ end
 -- =============================================
 
 function SpectatorClient:OnExtensionUnloading()
-	WebUI:ExecuteJS("UpdateSpectatorCount(0);")
+	WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	self:Disable()
 end
 
 function SpectatorClient:OnLevelDestroy()
-	WebUI:ExecuteJS("UpdateSpectatorCount(0);")
+	WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	self:Disable()
 	self.m_SpectatingPlayerPitch = 0.0
 	self.m_SpectatingPlayerYaw = 0.0
@@ -242,8 +242,9 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			end
 
 			-- if we find a squadmate we want to spectate him
-			if s_NextPlayer ~= nil then
+			if s_NextPlayer ~= nil and s_NextPlayer.id ~= p_PlayerId then
 				self:SpectatePlayer(s_NextPlayer)
+				return
 			-- otherwise spectate the inflictor if there is one
 			elseif p_InflictorId ~= nil then
 				local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
@@ -255,7 +256,18 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 				end
 			end
 
-			self:SpectateNextPlayer()
+			-- no squad mate alive and also didn't find an inflictor
+			-- so now we just search a random player
+			s_NextPlayer = self:GetNextPlayer(false)
+
+			if s_NextPlayer ~= nil and s_NextPlayer.id ~= p_PlayerId then
+				self:SpectatePlayer(s_NextPlayer)
+				return
+			end
+
+			-- we didn't find anyone
+			WebUI:ExecuteJS("SpectatorTarget('');")
+			self:EnableFreecam()
 		end
 	end
 end
@@ -277,6 +289,10 @@ end
 function SpectatorClient:OnGameStateChanged(p_GameState)
 	if p_GameState == nil then
 		return
+	end
+
+	if p_GameState == GameStates.None then
+		WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	end
 
 	self.m_GameState = p_GameState
@@ -308,10 +324,9 @@ function SpectatorClient:Enable(p_InflictorId)
 		return
 	end
 
-	m_Logger:Write("Spectating should work at this point")
-
 	if not SpectatorManager:GetSpectating() then
 		SpectatorManager:SetSpectating(true)
+		m_Logger:Write("Spectating should work at this point")
 	end
 
 	local s_PlayerToSpectate = self:FindFirstPlayerToSpectate(true)
@@ -321,7 +336,6 @@ function SpectatorClient:Enable(p_InflictorId)
 	end
 
 	if s_PlayerToSpectate ~= nil then
-		-- self:RemoveTimer("NoPlayerFoundTimer")
 		if self.m_IsSpectatingGunship then
 			self:SpectateGunship(false)
 		end
@@ -341,14 +355,12 @@ function SpectatorClient:Enable(p_InflictorId)
 
 		WebUI:ExecuteJS("SpectatorTarget('');")
 		WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
-		SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
+		self:EnableFreecam()
+	end
 
-		if not self.m_IsDefaultFreeCamSet then
-			m_Logger:Write("Set freecam transform")
-			local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
-			SpectatorManager:SetFreecameraTransform(s_Transform)
-			g_Timers:Interval(0.1, self, self.OnSetFreecameraTransform)
-		end
+	-- if the match is already running nobody will spawn
+	if self.m_GameState == nil or self.m_GameState >= GameStates.Match then
+		return
 	end
 
 	self:SetTimer("NoPlayerFoundTimer", g_Timers:Timeout(4, self, self.ReEnable))
@@ -400,6 +412,8 @@ function SpectatorClient:OnSetFreecameraTransform(p_Timer)
 		m_Logger:Write("Setting freecam transform failed.")
 		m_Logger:Write(s_Transform.trans:Distance(s_CameraTransform.trans))
 		m_Logger:Write(s_CameraTransform)
+
+		SpectatorManager:SetFreecameraTransform(s_Transform)
 	end
 end
 
@@ -747,36 +761,17 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 end
 
 -- =============================================
-	-- FireEvents
+	-- Freecam
 -- =============================================
 
-function SpectatorClient:EnterUIGraph()
-	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
-	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
+function SpectatorClient:EnableFreecam()
+	SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
 
-	while s_UIGraphEntity do
-		if s_UIGraphEntity.data.instanceGuid == Guid("133D3825-5F17-4210-A4DB-3694FDBAD26D") then
-			s_UIGraphEntity = Entity(s_UIGraphEntity)
-			s_UIGraphEntity:FireEvent("EnterUIGraph")
-			return
-		end
-
-		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
-	end
-end
-
-function SpectatorClient:ExitSoundState()
-	local s_SoundStateEntityIterator = EntityManager:GetIterator("SoundStateEntity")
-	local s_SoundStateEntity = s_SoundStateEntityIterator:Next()
-
-	while s_SoundStateEntity do
-		if s_SoundStateEntity.data.instanceGuid == Guid("AC7A757C-D9FA-4693-97E7-7A5C50EF29C7") then
-			s_SoundStateEntity = Entity(s_SoundStateEntity)
-			s_SoundStateEntity:FireEvent("Exit")
-			return
-		end
-
-		s_SoundStateEntity = s_SoundStateEntityIterator:Next()
+	if not self.m_IsDefaultFreeCamSet then
+		m_Logger:Write("Set freecam transform")
+		local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
+		SpectatorManager:SetFreecameraTransform(s_Transform)
+		g_Timers:Interval(0.1, self, self.OnSetFreecameraTransform)
 	end
 end
 

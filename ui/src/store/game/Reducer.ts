@@ -1,6 +1,7 @@
 import { GameState } from "./Types";
 import { 
     GameActionTypes,
+    RESET_GAME,
     SWITCH_DEPLOY_SCREEN,
     UPDATE_COMMO_ROSE,
     UPDATE_DEPLOY_APPEARANCE,
@@ -29,11 +30,12 @@ const initialState: GameState = {
         enabled: false,
         place: 99,
         win: false,
+        team: [],
     },
     deployScreen: {
         enabled: false,
         selectedAppearance: 0,
-        selectedTeamType: 1,
+        selectedTeamType: 2,
         teamId: "-",
         teamSize: 4,
         teamLocked: false,
@@ -65,6 +67,7 @@ const GameReducer = (
                     enabled: action.payload.enabled ?? state.gameOver.enabled,
                     place: action.payload.place ?? state.gameOver.place,
                     win: action.payload.win ?? state.gameOver.win,
+                    team: action.payload.team ?? state.gameOver.team,
                 },
             };
         case UPDATE_TIME:
@@ -137,6 +140,21 @@ const GameReducer = (
             return {
                 ...state,
                 showCommoRose: action.payload.show,
+            };
+        case RESET_GAME:
+            return {
+                ...state,
+                players: {
+                    ...state.players,
+                    alive: 0,
+                    dead: 0,
+                    all: 0,
+                },
+                gameState: initialState.gameState,
+                uiState: initialState.uiState,
+                time: initialState.time,
+                gameOver: initialState.gameOver,
+                showCommoRose: initialState.showCommoRose,
             };
         default:
             return state;

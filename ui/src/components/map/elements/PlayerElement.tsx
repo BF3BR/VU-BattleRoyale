@@ -14,6 +14,8 @@ interface StateFromReducer {
     playerYaw: number|null;
     playerIsInPlane: boolean;
     color: string|null;
+    spectating: boolean;
+    spectatorTarget: string;
 }
 
 type Props = {
@@ -36,6 +38,8 @@ const PlayerElement: React.FC<Props> = ({
     color,
     playerIsInPlane,
     innerCircle,
+    spectating,
+    spectatorTarget
 }) => {
     function isInsideTheRadius(x: number, y: number, cx: number, cy: number, r: number) {
         var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
@@ -94,7 +98,7 @@ const PlayerElement: React.FC<Props> = ({
                 visible={!playerIsInPlane}
             />
             <Graphics 
-                draw={(g: any) => drawPlayer(g, color !== null ? getConvertedPlayerColor(color) : 0xff0000)}
+                draw={(g: any) => drawPlayer(g, color !== null ? getConvertedPlayerColor(color) : 0xff0000, spectating)}
                 x={getMapPos(playerPos?.x??0, topLeftPos.x, textureWidthHeight, worldWidthHeight)}
                 y={getMapPos(playerPos?.z??0, topLeftPos.z,  textureWidthHeight, worldWidthHeight)}
                 angle={playerYaw}
@@ -115,6 +119,9 @@ const mapStateToProps = (state: RootState) => {
         color: state.PlayerReducer.player.color,
         // CircleReducer
         innerCircle: state.CircleReducer.innerCircle,
+        // SpectatorReducer
+        spectating: state.SpectatorReducer.enabled,
+        spectatorTarget: state.SpectatorReducer.target,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

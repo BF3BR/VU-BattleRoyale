@@ -15,14 +15,15 @@ return {
 		"XP3Chunks",
 		"Levels/XP3_Shield/XP3_Shield",
 		"Levels/XP3_Alborz/XP3_Alborz",
-		"Levels/COOP_010/COOP_010"
+		"Levels/COOP_009/COOP_009",
 	},
 	Bundles = {
 		"Levels/XP1_004/XP1_004",
 		"Levels/XP3_Shield/XP3_Shield",
 		"Levels/XP3_Alborz/XP3_Alborz",
-		"Levels/COOP_010/COOP_010",
-		"Levels/XP5_003/XP5_003"
+		"Levels/COOP_009/COOP_009",
+		"Levels/COOP_009/AB03_Parent",
+		"Levels/XP5_003/XP5_003",
 	},
 	TerrainName = "levels/xp5_003/xp5_003_terrain/xp5_003_terrain",
 	SubWorldInstance = DC(Guid("CB9932E2-19E0-11E2-93EC-B0D4179CEA18"), Guid("FB11A0AA-BC0A-31C1-8F95-A8B8D7746908")),
@@ -35,72 +36,82 @@ return {
 		Vec3(-0.068781, -0.106536, 0.991927),
 		Vec3(-0.007370, 0.994309, 0.106281),
 		Vec3(98.216576, 889.539246, -815.457642)),
-	MapTopLeftPos = Vec3(667.28, 0, -290.44),
-	MapWidthHeight = 1250.0,
-	PlaneFlyHeight = 755.0,
-	BeforeFirstCircleDelay = 30.0,
+	MapTopLeftPos = Vec3(1334.88, 0, 286.57),
+	MapWidthHeight = 2500.0,
+	PlaneFlyHeight = 825.0,
+	AirdropPlaneFlyHeight = 745.0,
+	BeforeFirstCircleDelay = 60.0,
 	SkyComponentDataGuid = Guid("9159BC49-8F6C-4422-BD1E-EA76D956DFA3"),
 	ConquestGameplayGuid = Guid("B795C24B-21CA-4E57-AA32-86BEFDDF471D"),
-	CircleWallY = 200,
-	CircleWallHeightModifier = 400,
+	CircleWallY = 220,
+	CircleWallHeightModifier = 300,
 	PhasesCount = 9,
 	Phases = {
 		{
-			StartsAt = 60.0,
-			MoveDuration = 60.0,
+			StartsAt = 100.0,
+			MoveDuration = 140.0,
 			Damage = 0.4,
-			Ratio = 0.550
+			Ratio = 0.55,
+			HasAirdrop = false,
+		},{
+			StartsAt = 100.0,
+			MoveDuration = 70.0,
+			Damage = 0.8,
+			Ratio = 0.7,
+			HasAirdrop = true,
+		},{
+			StartsAt = 80.0,
+			MoveDuration = 60.0,
+			Damage = 1.0,
+			Ratio = 0.6,
+			HasAirdrop = false,
 		},{
 			StartsAt = 60.0,
-			MoveDuration = 45.0,
-			Damage = 0.6,
-			Ratio = 0.700
+			MoveDuration = 50.0,
+			Damage = 2.0,
+			Ratio = 0.6,
+			HasAirdrop = true,
 		},{
-			StartsAt = 45.0,
-			MoveDuration = 45.0,
-			Damage = 0.8,
-			Ratio = 0.600
+			StartsAt = 50.0,
+			MoveDuration = 40.0,
+			Damage = 4.0,
+			Ratio = 0.6,
+			HasAirdrop = false,
+		},{
+			StartsAt = 40.0,
+			MoveDuration = 30.0,
+			Damage = 6.0,
+			Ratio = 0.5,
+			HasAirdrop = true,
 		},{
 			StartsAt = 30.0,
-			MoveDuration = 30.0,
-			Damage = 1.0,
-			Ratio = 0.600
+			MoveDuration = 20.0,
+			Damage = 8.0,
+			Ratio = 0.5,
+			HasAirdrop = true,
 		},{
 			StartsAt = 30.0,
-			MoveDuration = 30.0,
-			Damage = 3.0,
-			Ratio = 0.600
+			MoveDuration = 20.0,
+			Damage = 10.0,
+			Ratio = 0.5,
+			HasAirdrop = false,
 		},{
-			StartsAt = 30.0,
-			MoveDuration = 30.0,
-			Damage = 5.0,
-			Ratio = 0.500
-		},{
-			StartsAt = 15.0,
-			MoveDuration = 15.0,
-			Damage = 7.0,
-			Ratio = 0.500
-		},{
-			StartsAt = 15.0,
-			MoveDuration = 15.0,
-			Damage = 9.0,
-			Ratio = 0.500
-		},{
-			StartsAt = 15.0,
-			MoveDuration = 15.0,
-			Damage = 11.0,
-			Ratio = 0.001
+			StartsAt = 20.0,
+			MoveDuration = 20.0,
+			Damage = 12.0,
+			Ratio = 0.001,
+			HasAirdrop = false,
 		}
 	},
 	InitialCircle = {
-		Radius = 650,
+		Radius = 600,
 		Triangles = {
-			{ Vec2(697.380 , -1557.180), Vec2(672.380 , -613.430), Vec2(372.380 , -894.680) },
-			{ Vec2(-390.120 , -850.930), Vec2(-496.370 , -800.930), Vec2(-508.870 , -1594.680) },
-			{ Vec2(-508.870 , -1594.680), Vec2(697.380 , -1557.180), Vec2(372.380 , -894.680) },
-			{ Vec2(372.380 , -894.680), Vec2(-390.120 , -850.930), Vec2(-508.870 , -1594.680) }
+			{ Vec2(191.130 , -1538.430), Vec2(684.880 , -1425.930), Vec2(641.130 , -738.430) },
+			{ Vec2(159.880 , -900.930), Vec2(-321.370 , -825.930), Vec2(-246.370 , -1419.680) },
+			{ Vec2(-246.370 , -1419.680), Vec2(191.130 , -1538.430), Vec2(641.130 , -738.430) },
+			{ Vec2(641.130 , -738.430), Vec2(159.880 , -900.930), Vec2(-246.370 , -1419.680) }
 		},
-		CumulativeDistribution = { 0.16497867803837954, 0.21328624733475482, 0.6745957711442787, 1 }
+		CumulativeDistribution = { 0.28424039205571316, 0.5154436419912303, 0.84843306680423, 1 }
 	},
 	WarmupSpawnPoints = {
 		Vec3(522.175720, 155.705505, -822.253479),
@@ -114,11 +125,21 @@ return {
 		Vec3(524.122437, 155.705521, -836.830017),
 		Vec3(506.119202, 155.705490, -834.631287)
 	},
+	ShowroomTransform = LinearTransform(
+		Vec3(-0.740595, 0.000000, 0.671952),
+		Vec3(0.000000, 1.000000, 0.000000),
+		Vec3(-0.671952, 0.000000, -0.740595),
+		Vec3(470.017578, 173.259598, -978.172791)
+	),
 	LootSpawnPoints = require "__shared/Maps/XP5_003/XP5_003_LootPresets",
 	MapPreset = require "__shared/Maps/XP5_003/XP5_003_MapPreset",
-	Injected_sublevels = require "__shared/Maps/XP5_003/XP5_003_Injected_sublevels",
+	Injected_sublevels = require "__shared/Maps/XP5_003/XP5_003_Injected_Sublevels",
 	VEPresets = {
 		"XP5_003_Default",
-		"XP5_003_Foggy",
+		--"XP5_003_Foggy",
+		--"XP5_003_Sunset",
+		--"XP5_003_Night",
+		--"XP5_003_Night_Two",
+		--"XP5_003_Night_Three",
 	},
 }

@@ -10,6 +10,7 @@ import "./AmmoAndHealthCounter.scss";
 interface StateFromReducer {
     playerHealth: number;
     playerArmor: number;
+    playerHelmet: number;
     playerPrimaryAmmo: number;
     playerSecondaryAmmo: number;
     playerFireLogic: string;
@@ -17,20 +18,26 @@ interface StateFromReducer {
     playerIsInPlane: boolean;
     spectating: boolean;
     spectatorTarget: string;
+    slots: any;
 }
 
-type Props = StateFromReducer;
+type Props = {
+    isInventoryOpen: boolean;
+} & StateFromReducer;
 
 const AmmoAndHealthCounter: React.FC<Props> = ({ 
-    playerHealth, 
-    playerArmor, 
-    playerPrimaryAmmo, 
-    playerSecondaryAmmo, 
-    playerFireLogic, 
-    playerCurrentWeapon, 
+    playerHealth,
+    playerArmor,
+    playerHelmet,
+    playerPrimaryAmmo,
+    playerSecondaryAmmo,
+    playerFireLogic,
+    playerCurrentWeapon,
     playerIsInPlane,
     spectating,
-    spectatorTarget
+    spectatorTarget,
+    slots,
+    isInventoryOpen
 }) => {
     const [visible, setVisible] = useState<boolean>(false);
 
@@ -75,7 +82,7 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
     return (
         <>
             <div id="AmmoAndHealthCounter">
-                {(playerIsInPlane === false) &&
+                {(playerIsInPlane === false && !isInventoryOpen) &&
                     <>
                         {spectating === false &&
                             <>
@@ -90,14 +97,17 @@ const AmmoAndHealthCounter: React.FC<Props> = ({
                                     <div className="current" dangerouslySetInnerHTML={padLeadingZeros(playerPrimaryAmmo, playerCurrentWeapon)}></div>
                                     <div className="left">
                                         <span className="mag" dangerouslySetInnerHTML={padLeadingZeros(playerSecondaryAmmo, playerCurrentWeapon)}></span>
-                                        <span className="type">{playerFireLogic??"AUTO"}</span>
+                                        <span className="type">{playerFireLogic??"SINGLE"}</span>
                                     </div>
                                 </div>
                             </>
                         }
                         {((spectating && spectatorTarget !== "") || spectating === false) &&
                             <>
-                                <PercentageCounter type="Armor" value={playerArmor??0} />
+                                <div className="PercentageGrid">
+                                    <PercentageCounter type="Armor" slot={slots[8]} value={playerArmor??0} />
+                                    <PercentageCounter type="Helmet" slot={slots[9]} value={playerHelmet??0} />
+                                </div>
                                 <PercentageCounter type="Health" value={playerHealth??0} />
                             </>
                         }
@@ -114,6 +124,7 @@ const mapStateToProps = (state: RootState) => {
         // PlayerReducer
         playerHealth: state.PlayerReducer.hud.health, 
         playerArmor: state.PlayerReducer.hud.armor,
+        playerHelmet: state.PlayerReducer.hud.helmet,
         playerPrimaryAmmo: state.PlayerReducer.hud.primaryAmmo,
         playerSecondaryAmmo: state.PlayerReducer.hud.secondaryAmmo,
         playerFireLogic: state.PlayerReducer.hud.fireLogic,
@@ -122,6 +133,8 @@ const mapStateToProps = (state: RootState) => {
         // SpectatorReducer
         spectating: state.SpectatorReducer.enabled,
         spectatorTarget: state.SpectatorReducer.target,
+        // InventoryReducer
+        slots: state.InventoryReducer.slots,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

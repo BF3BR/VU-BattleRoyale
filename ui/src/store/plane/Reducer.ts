@@ -1,6 +1,7 @@
 import { PlaneState } from "./Types";
 import { 
     PlaneActionTypes,
+    RESET_PLANE,
     UPDATE_PLANE_POSITION,
     UPDATE_PLANE_YAW
 } from "./ActionTypes";
@@ -25,6 +26,8 @@ const PlaneReducer = (
                 ...state,
                 yaw: action.payload.yaw,
             };
+        case RESET_PLANE:
+            return initialState;
         default:
             return state;
     }

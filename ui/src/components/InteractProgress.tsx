@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 
-import "./InteractProgress.scss";
+import health from "../assets/img/medic.svg";
 
+import "./InventoryTimer.scss";
 
 interface Props {
     onComplete: () => void;
@@ -11,11 +12,11 @@ interface Props {
 const getWidth = () => window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
 const InteractProgress: React.FC<Props> = ({ onComplete, time }) => {
-    const [size, setSize] = useState<number>(getWidth() * 0.04);
+    const [size, setSize] = useState<number>(getWidth() * 0.05);
 
     useEffect(() => {
         const resizeListener = () => {
-            setSize(getWidth() * 0.1);
+            setSize(getWidth() * 0.05);
         };
         window.addEventListener('resize', resizeListener);
     
@@ -27,7 +28,7 @@ const InteractProgress: React.FC<Props> = ({ onComplete, time }) => {
     const renderTime = (elapsedTime: number) => {
         return (
             <div className="time-wrapper">
-                <div className="time">{(time - elapsedTime).toFixed(1)}</div>
+                <img src={health} alt="" />
             </div>
         );
     };
@@ -35,21 +36,26 @@ const InteractProgress: React.FC<Props> = ({ onComplete, time }) => {
     return (
         <>
             {time !== null &&
-                <div className="inventoryTimer">
-                    <CountdownCircleTimer
-                        isPlaying
-                        duration={time}
-                        colors="#FFF"
-                        trailColor="#000"
-                        size={size}
-                        strokeWidth={size * 0.115}
-                        strokeLinecap="round"
-                        onComplete={() => onComplete()}
-                    >
-                        {({ elapsedTime }: any) =>
-                            renderTime(elapsedTime)
-                        }
-                    </CountdownCircleTimer>
+                <div className="inventoryTimerWrapper">
+                    <div className="inventoryTimer">
+                        <CountdownCircleTimer
+                            isPlaying
+                            duration={time}
+                            colors="#fff"
+                            trailColor="rgba(0,0,0,.35)"
+                            size={size}
+                            strokeWidth={size * 0.065}
+                            strokeLinecap="square"
+                            onComplete={() => onComplete()}
+                        >
+                            {({ elapsedTime }: any) =>
+                                renderTime(elapsedTime)
+                            }
+                        </CountdownCircleTimer>
+                    </div>
+                    <h4 id="InventoryTimerName">
+                        Reviving
+                    </h4>
                 </div>
             }
         </>

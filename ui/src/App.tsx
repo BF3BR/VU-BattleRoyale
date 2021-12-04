@@ -4,11 +4,14 @@ import React, { useState } from "react";
 import { connect, useDispatch } from "react-redux";
 import { RootState } from "./store/RootReducer";
 import {
+    resetPlayer,
+    updateCtrlDown,
     updatePlayerArmor,
     updatePlayerCurrentWeapon,
     updatePlayerData,
     updatePlayerFireLogic,
     updatePlayerHealth,
+    updatePlayerHelmet,
     updatePlayerIsOnPlane,
     updatePlayerPosition,
     updatePlayerPrimaryAmmo,
@@ -19,31 +22,38 @@ import {
     addPing,
     lastPing,
     removePing,
+    resetPing,
     updatePing
 } from "./store/ping/Actions";
 import {
     showMap,
     openMap,
-    switchRotation
+    switchRotation,
+    resetMap
 } from "./store/map/Actions";
 import {
+    resetPlane,
     updatePlanePosition,
     updatePlaneYaw
 } from "./store/plane/Actions";
 import {
+    resetCircle,
     updateInnerCircle,
     updateOuterCircle,
     updateSubphaseIndex
 } from "./store/circle/Actions";
 import {
+    resetTeam,
     updateTeam
 } from "./store/team/Actions";
 import {
+    resetSpectator,
     updateSpectatorCount,
     updateSpectatorEnabled,
     updateSpectatorTarget
 } from "./store/spectator/Actions";
 import {
+    resetGame,
     switchDeployScreen,
     updateCommoRose,
     updateDeployScreen,
@@ -55,14 +65,21 @@ import {
     updateTime,
     updateUiState
 } from "./store/game/Actions";
-import { addAlert } from "./store/alert/Actions";
-import { addKillmsg } from "./store/killmsg/Actions";
-import { addInteractivemsg } from "./store/interactivemsg/Actions";
+import { addAlert, resetAlert } from "./store/alert/Actions";
+import { addKillmsg, resetKillmsg } from "./store/killmsg/Actions";
+import { addInteractivemsg, resetInteractivemsg } from "./store/interactivemsg/Actions";
+import {
+    resetInventory,
+    updateCloseLootPickup, 
+    updateInventory, 
+    updateOverlayLoot,
+    updateProgress
+} from "./store/inventory/Actions";
 
 /* Helpers */
 import Player from "./helpers/PlayerHelper";
 import { FireLogicType } from "./helpers/FireLogicTypeHelper";
-import { Sounds } from "./helpers/SoundsHelper";
+import { PlaySound, Sounds } from "./helpers/SoundHelper";
 
 /* Components */
 import MiniMap from "./components/map/MiniMap";
@@ -74,7 +91,7 @@ import Gameover from "./components/Gameover";
 import DeployScreen from "./components/DeployScreen";
 import TeamInfo from "./components/TeamInfo";
 import LoadingScreen from "./components/LoadingScreen";
-import MapMarkers from "./components/MapMarkers";
+// import MapMarkers from "./components/MapMarkers";
 import Inventory from "./components/Inventory";
 import MenuScreen from "./components/MenuScreen";
 import Chat from "./components/chat/Chat";
@@ -83,7 +100,8 @@ import Rose from "./components/rose/Rose";
 import PingSoundManager from "./components/PingSoundManager";
 import LoadingSoundManager from "./components/LoadingSoundManager";
 import ArmorSoundManager from "./components/ArmorSoundManager";
-import AlertManager from "./components/AlertManager";
+import InventoryTimer from "./components/InventoryTimer";
+import LootOverlay from "./components/LootOverlay";
 
 /* Style */
 import './App.scss';
@@ -136,15 +154,15 @@ const App: React.FC<Props> = ({
     window.OnGameState = (state: string) => {
         dispatch(updateGameState(state));
 
-        if (state === "None") {
-            dispatch(updateGameover(false));
-        } else if (state === "Warmup") {
+        if (state === "Warmup") {
             dispatch(updateGameover(false));
             dispatch(addAlert(
                 "The round is starting soon...",
                 6,
                 Sounds.Notification
             ));
+        } else if(state === "Before Plane") {
+            garbageCollection();
         } else if (state === "EndGame" && gameOverScreen === false) {
             dispatch(addAlert(
                 "The round is ended, restarting soon...",
@@ -166,16 +184,19 @@ const App: React.FC<Props> = ({
         }
     }
 
-
     window.OnGameOverScreen = (data: any) => {
-        dispatch(updateGameover(true, data.isWin));
+        if (data === null) {
+            return;
+        }
+
+        dispatch(updateGameover(true, data.isWin, 1, data.team));
     }
 
     window.OnUpdatePlacement = (placement: number | null) => {
         if (placement !== null) {
-            dispatch(updateGameover(undefined, undefined, placement));
+            dispatch(updateGameover(undefined, undefined, placement, undefined));
         } else {
-            dispatch(updateGameover(undefined, undefined, 99));
+            dispatch(updateGameover(undefined, undefined, 99, undefined));
         }
     }
 
@@ -183,6 +204,10 @@ const App: React.FC<Props> = ({
     * Player
     */
     window.OnPlayersInfo = (data: any) => {
+        if (data === null) {
+            return;
+        }
+
         let values = Object.values(data);
         dispatch(updatePlayers(
             data !== null ? values.filter((player: any) => player.state === 1).length : 0,
@@ -196,6 +221,10 @@ const App: React.FC<Props> = ({
     }
 
     window.OnLocalPlayerInfo = (data: any) => {
+        if (data === null) {
+            return;
+        }
+        
         dispatch(updatePlayerData(data));
     }
 
@@ -207,6 +236,10 @@ const App: React.FC<Props> = ({
         dispatch(updatePlayerArmor(Math.ceil(data)));
     }
 
+    window.OnPlayerHelmet = (data: number) => {
+        dispatch(updatePlayerHelmet(Math.ceil(data)));
+    }
+
     window.OnPlayerPrimaryAmmo = (data: number) => {
         dispatch(updatePlayerPrimaryAmmo(data));
     }
@@ -216,15 +249,11 @@ const App: React.FC<Props> = ({
     }
 
     window.OnPlayerFireLogic = (data: number) => {
-        dispatch(updatePlayerFireLogic(FireLogicType[data] ?? "AUTO"));
+        dispatch(updatePlayerFireLogic(FireLogicType[data] ?? "SINGLE"));
     }
 
     window.OnPlayerCurrentWeapon = (weaponName: string) => {
         dispatch(updatePlayerCurrentWeapon(weaponName));
-    }
-
-    window.OnPlayerWeapons = (data: any) => {
-        // console.log(data);
     }
 
     const setInteractiveMessageAndKey = (msg: string | null, key: string | null) => {
@@ -276,11 +305,13 @@ const App: React.FC<Props> = ({
     * Map
     */
     window.OnPlayerPos = (p_DataJson: any) => {
-        dispatch(updatePlayerPosition({
-            x: p_DataJson.x,
-            y: p_DataJson.y,
-            z: p_DataJson.z,
-        }));
+        if (p_DataJson !== undefined && p_DataJson !== null) {
+            dispatch(updatePlayerPosition({
+                x: p_DataJson.x,
+                y: p_DataJson.y,
+                z: p_DataJson.z,
+            }));
+        }
     }
 
     window.OnPlayerYaw = (p_Yaw: number) => {
@@ -288,7 +319,7 @@ const App: React.FC<Props> = ({
     }
 
     window.OnPlanePos = (p_DataJson: any) => {
-        if (p_DataJson !== undefined && p_DataJson !== null && p_DataJson.x !== undefined && p_DataJson.y !== undefined && p_DataJson.z !== undefined) {
+        if (p_DataJson !== null && p_DataJson.x !== undefined && p_DataJson.y !== undefined && p_DataJson.z !== undefined) {
             dispatch(updatePlanePosition({
                 x: p_DataJson.x,
                 y: p_DataJson.y,
@@ -308,6 +339,7 @@ const App: React.FC<Props> = ({
     }
 
     window.OnOpenCloseMap = (open: boolean) => {
+        PlaySound(Sounds.Navigate);
         dispatch(openMap(open));
     }
 
@@ -321,6 +353,10 @@ const App: React.FC<Props> = ({
 
 
     window.OnUpdateCircles = (data: any) => {
+        if (data === null) {
+            return;
+        }
+
         if (data.InnerCircle) {
             dispatch(updateInnerCircle({
                 center: {
@@ -406,6 +442,10 @@ const App: React.FC<Props> = ({
 
     const [downedTeammates, setDownedTeammates] = useState<string[]>([]);
     window.OnUpdateTeamPlayers = (p_Team: any) => {
+        if (p_Team === null) {
+            return;
+        }
+
         let tempTeam: Player[] = [];
         let tempDowned: string[] = [];
         if (p_Team !== undefined && p_Team.length > 0) {
@@ -584,6 +624,88 @@ const App: React.FC<Props> = ({
         dispatch(updateCommoRose(false));
     }
 
+    const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
+    window.OnInventoryOpen = (p_Open: boolean) => {
+        PlaySound(Sounds.Navigate);
+        setIsInventoryOpen(p_Open);
+    }
+
+    window.SyncInventory = (p_DataJson: any) => {
+        dispatch(updateInventory(p_DataJson));
+    }
+
+    window.SyncOverlayLoot = (p_DataJson: any) => {
+        dispatch(updateOverlayLoot(p_DataJson));
+    }
+
+    window.SyncCloseLootPickupData = (p_DataJson: any) => {
+        if (p_DataJson === null || p_DataJson.length === undefined) {
+            dispatch(updateCloseLootPickup([]));
+            return;
+        }
+        
+        let tempData: any = [];
+        p_DataJson.forEach((loot: any, key: number) => {
+            if (loot.Items.length > 0) {
+                loot.Items.forEach((item: any, key: number) => {
+                    item.lootId = loot.Id;
+                    tempData.push(item);
+                });
+            }
+        });
+
+        dispatch(updateCloseLootPickup(tempData));
+    }
+
+    window.OnLeftCtrl = (p_Down: boolean) => {
+        dispatch(updateCtrlDown(p_Down));
+    }
+
+    window.TestInventoryTimer = () => {
+        dispatch(updateProgress({ Name: "Test" }, 50));
+    }
+
+    window.ItemCancelAction = () => {
+        dispatch(updateProgress(null, null));
+        dispatch(addAlert(
+            "Item canceled",
+            1.5,
+            Sounds.Error
+        ));
+    }
+
+    window.ResetAllValues = () => {
+        console.info("RESETTING ALL VALUES!!");
+        dispatch(resetAlert());
+        dispatch(resetCircle());
+        // dispatch(resetGame());
+        dispatch(resetInteractivemsg());
+        dispatch(resetInventory());
+        dispatch(resetInventory());
+        dispatch(resetKillmsg());
+        dispatch(resetMap());
+        dispatch(resetPing());
+        dispatch(resetPlane());
+        // dispatch(resetPlayer());
+        dispatch(resetSpectator());
+        // dispatch(resetTeam());
+        garbageCollection();
+    }
+
+    window.OnAirdropDropped = () => {
+        dispatch(addAlert(
+            "Heads up, care package dropped from the plane!",
+            5,
+            Sounds.Airdrop
+        ));
+    }
+
+    const garbageCollection = () => {
+        if (window.gc) {
+            window.gc();
+        }
+    }
+
     return (
         <>
             {debugMode &&
@@ -639,14 +761,32 @@ const App: React.FC<Props> = ({
                         }}>
                             Set Spectator
                         </button>
-                        <button onClick={() => dispatch(updateGameover(true))}>Set Gameover Screen</button>
-                        <button onClick={() => window.OnLocalPlayerInfo({
-                            name: 'KVN',
-                            kill: 15,
-                            state: 1,
-                            isTeamLeader: true,
-                            color: "rgba(255, 0, 0, 0.3)",
-                        })}>SetDummyLocalPlayer</button>
+                        <button onClick={() => dispatch(updateGameover(true, true, 44, [
+                            {
+                                Name: "KVN",
+                            },
+                            {
+                                Name: "Bree",
+                            },
+                            {
+                                Name: "Breaknix",
+                            },
+                            {
+                                Name: "Kiwidog",
+                            }
+                        ]))}>Set Gameover Screen</button>
+                        <button onClick={() =>{
+                            window.OnLocalPlayerInfo({
+                                name: 'KVN',
+                                kill: 15,
+                                state: 1,
+                                isTeamLeader: true,
+                                color: "rgba(255, 0, 0, 0.3)",
+                            });
+                            window.OnPlayerHealth(Math.random() * 100);
+                            window.OnPlayerArmor(Math.random() * 100);
+                            window.OnPlayerHelmet(Math.random() * 100);
+                        }}>SetDummyLocalPlayer</button>
                         <button onClick={() => {
                             dispatch(updateInnerCircle({
                                 center: {
@@ -690,19 +830,20 @@ const App: React.FC<Props> = ({
                             <>
                                 <KillAndAliveInfo />
                                 <SpectatorInfo />
-                                <AmmoAndHealthCounter />
+                                <AmmoAndHealthCounter isInventoryOpen={isInventoryOpen}  />
                                 <Gameover />
-                                <Rose />
-                                {/*<MapMarkers />*/}
-
+                                <MiniMap />
                                 {!spectating &&
                                     <>
-                                        <MiniMap />
                                         <InteractProgress 
                                             time={interactTimeout}
                                             onComplete={() => setInteractTimeout(null)}
                                         />
-                                        {/*<Inventory />*/}
+                                        <Rose />
+                                        <Inventory isOpen={isInventoryOpen} />
+                                        {isInventoryOpen === false &&
+                                            <LootOverlay />
+                                        }
                                     </>
                                 }
                             </>
@@ -713,7 +854,7 @@ const App: React.FC<Props> = ({
             <LoadingSoundManager uiState={uiState} />
             <PingSoundManager />
             <ArmorSoundManager />
-            <AlertManager />
+            <InventoryTimer />
             <Chat />
         </>
     );
@@ -743,54 +884,53 @@ declare global {
         OnPlayerYaw: (p_YawRad: number) => void;
         OnPlanePos: (p_DataJson: any) => void;
         OnPlaneYaw: (p_Yaw: number | null) => void;
-
         OnOpenCloseMap: (open: boolean) => void;
         OnMapShow: (show: boolean) => void;
         OnMapSwitchRotation: () => void;
         OnUpdateCircles: (data: any) => void;
         OnGameState: (state: string) => void;
         OnUpdateTimer: (time: number) => void;
-
         OnPlayersInfo: (data: any) => void;
         OnLocalPlayerInfo: (data: any) => void;
         OnMinPlayersToStart: (minPlayersToStart: number) => void;
-
         OnPlayerHealth: (data: number) => void;
         OnPlayerArmor: (data: number) => void;
+        OnPlayerHelmet: (data: number) => void;
         OnPlayerPrimaryAmmo: (data: number) => void;
         OnPlayerSecondaryAmmo: (data: number) => void;
         OnPlayerFireLogic: (data: number) => void;
         OnPlayerCurrentWeapon: (weaponName: string) => void;
-        OnPlayerWeapons: (data: any) => void;
         OnPlayerIsOnPlane: (isOnPlane: boolean) => void;
         OnGameOverScreen: (data: any) => void;
         OnUpdatePlacement: (placemen: number | null) => void;
-
         SpectatorTarget: (p_TargetName: string) => void;
         SpectatorEnabled: (p_Enabled: boolean) => void;
         UpdateSpectatorCount: (p_Count: string | null) => void;
-
         OnUpdateTeamId: (p_Id: string) => void;
         OnUpdateTeamSize: (p_Size: number) => void;
         OnUpdateTeamLocked: (p_Locked: boolean) => void;
         OnUpdateTeamPlayers: (p_Team: any) => void;
         OnTeamJoinError: (p_Error: number) => void;
-
         ToggleDeployMenu: (p_Toggle?: boolean) => void;
-
         OnNotifyInflictorAboutKillOrKnock: (data: any) => void;
         OnInteractiveMessageAndKey: (data: any) => void;
-
         OnSetUIState: (p_Toggle: "hidden" | "loading" | "game" | "menu") => void;
-
         OnCreateMarker: (p_Key: string, p_Color: string, p_PositionX: number, p_PositionZ: number, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
         OnRemoveMarker: (p_Key: string) => void;
         OnUpdateMarker: (p_Key: string, p_WorldToScreenX: number, p_WorldToScreenY: number) => void;
-
         OnInteractStart: (p_Time: number) => void;
         OnInteractEnd: () => void;
-
         OnShowCommoRose: () => void;
         OnHideCommoRose: () => void;
+        OnInventoryOpen: (p_Open: boolean) => void;
+        SyncInventory: (p_DataJson: any) => void;
+        SyncOverlayLoot: (p_DataJson: any) => void;
+        SyncCloseLootPickupData: (p_DataJson: any) => void;
+        OnLeftCtrl: (p_Down: boolean) => void;
+        TestInventoryTimer: (slot: any, time: number) => void;
+        ItemCancelAction: () => void;
+        ResetAllValues: () => void;
+        OnAirdropDropped: () => void;
+        gc: () => void;
     }
 }

@@ -19,17 +19,11 @@ function PhaseManagerShared:RegisterVars()
 	self.m_PhaseIndex = 1
 	self.m_SubphaseIndex = SubphaseType.InitialDelay
 	self.m_Completed = false
+
+	-- self:LoadPhases()
 end
 
--- =============================================
--- Events
--- =============================================
-
-function PhaseManagerShared:OnExtensionUnloading()
-	self:Destroy()
-end
-
-function PhaseManagerShared:OnLevelLoaded()
+function PhaseManagerShared:LoadPhases()
 	-- get and check config for the current map
 	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
 
@@ -41,6 +35,23 @@ function PhaseManagerShared:OnLevelLoaded()
 	self.m_Phases = s_MapConfig.Phases
 	self.m_InitialDelay = s_MapConfig.BeforeFirstCircleDelay
 end
+
+-- =============================================
+-- Events
+-- =============================================
+
+function PhaseManagerShared:OnExtensionUnloading()
+	self:Destroy()
+end
+
+function PhaseManagerShared:OnLevelLoaded()
+	self:LoadPhases()
+end
+
+function PhaseManagerShared:OnLoadResources()
+	self:LoadPhases()
+end
+
 
 function PhaseManagerShared:OnLevelDestroy()
 	self:Destroy()

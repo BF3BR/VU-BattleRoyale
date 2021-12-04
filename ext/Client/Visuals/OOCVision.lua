@@ -1,9 +1,15 @@
 class "OOCVision"
 
+local m_MapVEManager = require "Visuals/MapVEManager"
+
 local m_Logger = Logger("OOCVision", false)
 
 local m_OutOfCirclePreset = require "Visuals/Presets/Common/OutOfCirclePreset"
+local m_OutOfCircleNightPreset = require "Visuals/Presets/Common/OutOfCircleNightPreset"
+
 local m_OutOfCirclePresetName = "OutOfCircle"
+local m_OutOfCircleNightPresetName = "OutOfCircleNight"
+
 local m_OOBSoundEntityData = DC(Guid("9C1F7ED0-61F0-4987-82FA-469AD965DCAB"), Guid("0047C675-053C-4D84-860E-661555D20D27"))
 
 function OOCVision:__init()
@@ -13,6 +19,9 @@ end
 function OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_Logger:Write("Dispatching event to load preset " .. m_OutOfCirclePresetName .. "!")
 	Events:Dispatch("VEManager:RegisterPreset", m_OutOfCirclePresetName, m_OutOfCirclePreset)
+
+	m_Logger:Write("Dispatching event to load preset " .. m_OutOfCircleNightPresetName .. "!")
+	Events:Dispatch("VEManager:RegisterPreset", m_OutOfCircleNightPresetName, m_OutOfCircleNightPreset)
 end
 
 function OOCVision:CreateSoundEntity()
@@ -57,7 +66,12 @@ function OOCVision:Enable()
 	end
 
 	-- change VE state
-	Events:Dispatch("VEManager:FadeIn", m_OutOfCirclePresetName, 400)
+	local s_CurrentPresetName = m_MapVEManager.m_CurrentMapPresetNames[m_MapVEManager.m_CurrentMapPresetIndex]
+	if string.find(s_CurrentPresetName, "Night") then
+		Events:Dispatch("VEManager:FadeIn", m_OutOfCircleNightPresetName, 400)
+	else
+		Events:Dispatch("VEManager:FadeIn", m_OutOfCirclePresetName, 400)
+	end
 	self.m_IsEnabled = true
 end
 
@@ -74,7 +88,12 @@ function OOCVision:Disable()
 	end
 
 	-- change VE state
-	Events:Dispatch("VEManager:FadeOut", m_OutOfCirclePresetName, 400)
+	local s_CurrentPresetName = m_MapVEManager.m_CurrentMapPresetNames[m_MapVEManager.m_CurrentMapPresetIndex]
+	if string.find(s_CurrentPresetName, "Night") then
+		Events:Dispatch("VEManager:FadeOut", m_OutOfCircleNightPresetName, 400)
+	else
+		Events:Dispatch("VEManager:FadeOut", m_OutOfCirclePresetName, 400)
+	end
 	self.m_IsEnabled = false
 end
 

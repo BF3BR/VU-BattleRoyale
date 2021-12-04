@@ -1,0 +1,41 @@
+.inventoryTimerWrapper {
+    .inventoryTimer {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,.15);
+        border-radius: 50%;
+        width: 5vw;
+        height: 5vw;
+        filter: drop-shadow(0 0 .5vw rgba(0, 0, 0, .25));
+    
+        div {
+            font-size: 1.125vw;
+            color: #fff !important;
+            text-shadow: 0 0 0.25vw rgba(7, 7, 7, 0.25);
+            line-height: 1;
+
+            img {
+                max-width: 1.5vw;
+            }
+        }
+    }
+    
+    #InventoryTimerName {
+        position: absolute;
+        left: 50%;
+        top: 58.25%;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        line-height: 1vw;
+        font-size: .95vw;
+        text-transform: uppercase;
+        margin: 0;
+        font-style: normal;
+        font-weight: 600;
+        text-shadow: 0 0 0.25vw rgba(196, 117, 50, 0.25);
+        color: var(--warning);
+    }    
+}

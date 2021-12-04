@@ -117,7 +117,7 @@ const PingsElement: React.FC<Props> = ({
             {(pingsTable !== null && pingsTable.length > 0) &&
                 <>
                     <Pings />
-                    {pingsTable.map((ping: Ping) => 
+                    {pingsTable.map((ping: Ping, key: number) => 
                         <Sprite
                             texture={getPingTexture(ping.type)}
                             anchor={0.5}
@@ -127,6 +127,7 @@ const PingsElement: React.FC<Props> = ({
                             y={getMapPos(ping.position.z, topLeftPos.z, textureWidthHeight, worldWidthHeight)}
                             scale={getPingScale(ping.type)}
                             angle={(open || !minimapRotation) ? 0 : playerYaw}
+                            key={ping.id + "" + key}
                         />
                     )}
                 </>

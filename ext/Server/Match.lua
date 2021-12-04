@@ -2,9 +2,11 @@ class("Match", TimersMixin)
 
 local m_GameStateManager = require "GameStateManager"
 local m_TeamManager = require "BRTeamManager"
-local m_Gunship = require "Gunship"
+local m_GunshipServer = require "GunshipServer"
 local m_PhaseManagerServer = require "PhaseManagerServer"
-local m_LootManager = require("LootManagerServer")
+local m_BRLootManager = require "BRLootManager"
+local m_BRInventoryManager = require "BRInventoryManager"
+local m_BRAirdropManager = require "BRAirdropManager"
 local m_Logger = Logger("Match", true)
 
 function Match:__init()
@@ -15,9 +17,8 @@ function Match:__init()
 	self.m_WinnerTeam = nil
 
 	-- Airdrop
-	-- self.m_Airdrop = Airdrop(self)
-	-- self.m_AirdropTimer = 0.0
-	-- self.m_AirdropNextDrop = nil
+	self.m_AirdropTimer = 0.0
+	self.m_AirdropNextDrop = nil
 
 	self.m_RestartQueue = false
 
@@ -29,14 +30,6 @@ end
 -- =============================================
 -- Events
 -- =============================================
-
---[[
-function Match:OnEngineUpdate(p_GameState, p_DeltaTime)
-	if m_ServerGameStateManager:IsGameState(GameStates.Match) then
-		self:AirdropManager(p_DeltaTime)
-	end
-end
-]]
 
 function Match:OnUpdatePassPreSim(p_DeltaTime)
 	if self.m_RestartQueue then
@@ -81,6 +74,12 @@ function Match:NextMatchState()
 	elseif s_State == GameStates.PlaneToFirstCircle then
 		m_PhaseManagerServer:Start()
 	elseif s_State == GameStates.EndGame then
+		-- Clear out all inventories
+		m_BRInventoryManager:Clear()
+
+		-- Clear out all dropped / non-dropped items
+		m_BRLootManager:Clear()
+
 		self.m_RestartQueue = true
 	end
 
@@ -120,14 +119,20 @@ function Match:OnMatchFirstTick()
 		-- Assign all players to teams
 		m_TeamManager:AssignTeams()
 
-		-- Enable regular pickups
-		m_LootManager:EnableMatchPickups()
+		-- Clear out all inventories
+		m_BRInventoryManager:Clear()
+
+		-- Clear out all dropped / non-dropped items
+		m_BRLootManager:Clear()
+
+		-- Spawn new loot pickups
+		m_BRLootManager:SpawnMapSpecificLootPickups()
 	elseif s_State == GameStates.Plane then
 		-- Spawn the gunship and set its course
-		local s_Path = self:GetRandomGunshipPath()
+		local s_Path = m_GunshipServer:GetRandomGunshipPath()
 
 		if s_Path ~= nil then
-			m_Gunship:Enable(
+			m_GunshipServer:Enable(
 				s_Path.StartPos,
 				s_Path.EndPos,
 				ServerConfig.MatchStateTimes[GameStates.Plane],
@@ -143,14 +148,14 @@ function Match:OnMatchFirstTick()
 		self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
 	elseif s_State == GameStates.EndGame then
 		m_PhaseManagerServer:End()
-		m_Gunship:Disable()
+		m_GunshipServer:Disable()
 		-- self.m_Airdrop:Spawn(nil, false)
 
 		if self.m_WinnerTeam ~= nil then
 			m_Logger:Write("INFO: We have a winner team: " .. self.m_WinnerTeam.m_Id)
 
 			-- Broadcast the winnin teams ID to clients
-			NetEvents:Broadcast(PlayerEvents.WinnerTeamUpdate, self.m_WinnerTeam.m_Id)
+			NetEvents:Broadcast(PlayerEvents.WinnerTeamUpdate, self.m_WinnerTeam:AsTable())
 		else
 			m_Logger:Write("INFO: Round ended without a winner.")
 		end
@@ -158,7 +163,7 @@ function Match:OnMatchFirstTick()
 end
 
 function Match:OnRemoveGunship()
-	m_Gunship:Disable()
+	m_GunshipServer:Disable()
 	self:RemoveTimer("RemoveGunship")
 end
 
@@ -166,6 +171,10 @@ function Match:OnRestartRound()
 	self.m_RestartQueue = false
 	self.m_WinnerTeam = nil
 	m_GameStateManager:SetGameState(GameStates.None)
+
+	-- Spawn loot pickups for warmup
+	-- TODO: Close only code will more than likely fix this, so reenable this line
+	-- m_BRLootManager:SpawnMapSpecificLootPickups()
 end
 
 -- =============================================
@@ -185,95 +194,13 @@ function Match:GetRandomWarmupSpawnpoint()
 	return s_SpawnTrans
 end
 
-function Match:GetRandomGunshipPath()
-	local s_LevelName = LevelNameHelper:GetLevelName()
-
-	if s_LevelName == nil then
-		return nil
-	end
-
-	local s_Return = nil
-
-	local s_Side = math.random(1, 2)
-
-	if s_Side == 1 then
-		-- Left to right
-		s_Return = {
-			StartPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x,
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
-			),
-			EndPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - MapsConfig[s_LevelName]["MapWidthHeight"],
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
-			)
-		}
-	else
-		-- Top to bottom
-		s_Return = {
-			StartPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z
-			),
-			EndPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - MapsConfig[s_LevelName]["MapWidthHeight"]
-			)
-		}
-	end
-
-	local s_Invert = math.random(1, 2)
-
-	if s_Invert == 2 then
-		return {
-			StartPos = s_Return.EndPos,
-			EndPos = s_Return.StartPos
-		}
-	end
-
-	return s_Return
-end
-
 function Match:SetClientTimer(p_Time)
 	if p_Time == nil then
 		return
 	end
 
-	NetEvents:Broadcast(PlayerEvents.UpdateTimer, p_Time)
+	NetEvents:BroadcastUnreliable(PlayerEvents.UpdateTimer, p_Time)
 end
-
---[[function Match:AirdropManager(p_DeltaTime)
-	if self.m_Airdrop:GetEnabled() then
-		self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
-
-		-- Remove the airdrop plane after 120 sec
-		if self.m_AirdropTimer >= 120.0 then
-			m_Logger:Write("INFO: Airdrop unspawned")
-			self.m_AirdropTimer = 0.0
-			self.m_Airdrop:Spawn(nil, false, nil)
-		end
-	end
-
-	if self.m_AirdropNextDrop == nil then
-		self.m_AirdropNextDrop = MathUtils:GetRandom(30, 180)
-	end
-
-	self.m_AirdropTimer = self.m_AirdropTimer + p_DeltaTime
-
-	if self.m_AirdropTimer >= self.m_AirdropNextDrop then
-		self.m_AirdropNextDrop = nil
-		self.m_AirdropTimer = 0.0
-
-		if not self.m_Airdrop:GetEnabled() then
-			m_Logger:Write("INFO: Airdrop spawned")
-			self.m_Airdrop:Spawn(self:GetRandomGunshipStart(), true, MathUtils:GetRandom(20, 60))
-		end
-	end
-end]]
 
 function Match:DoWeHaveAWinner()
 	if PlayerManager:GetPlayerCount() == 0 then

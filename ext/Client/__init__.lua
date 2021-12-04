@@ -1,18 +1,26 @@
 class "VuBattleRoyaleClient"
 
+require "ClientCommands"
+
 require "__shared/Configs/SettingsConfig"
-require "__shared/Utils/LootPointHelper"
 require "__shared/Configs/CircleConfig"
+require "__shared/Utils/LootPointHelper"
+require "__shared/Utils/CachedJsExecutor"
+
+require "Types/BRInventory"
+require "BRTeam"
+
+require "Visuals/CircleRenderers"
+require "RenderableCircle"
 
 local m_PhaseManagerClient = require "PhaseManagerClient"
 local m_BrPlayer = require "BRPlayer"
 local m_HudUtils = require "UI/Utils/HudUtils"
-local m_Gunship = require "Gunship"
+local m_GunshipClient = require "GunshipClient"
 local m_Hud = require "UI/Hud"
 local m_Chat = require "UI/Chat"
 local m_SpectatorClient = require "SpectatorClient"
 local m_Ping = require "PingClient"
-local m_ClientManDownLoot = require "ClientManDownLoot"
 local m_AntiCheat = require "AntiCheat"
 local m_Settings = require "Settings"
 local m_TeamManager = require "BRTeamManager"
@@ -21,6 +29,10 @@ local m_CircleEffects = require "Visuals/CircleEffects"
 local m_OOCVision = require "Visuals/OOCVision"
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 local m_MapVEManager = require "Visuals/MapVEManager"
+local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
+local m_CommonSpatialRaycast = require "CommonSpatialRaycast"
+local m_BRLooting = require "Types/BRLooting"
+local m_SoundModifier = require "SoundModifier"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -35,6 +47,7 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
 	self:RegisterEvents()
 	self:RegisterWebUIEvents()
 	self:RegisterHooks()
+	self:RegisterCommands()
 
 	m_Hud:OnExtensionLoaded()
 	self:OnHotReload()
@@ -86,9 +99,6 @@ function VuBattleRoyaleClient:RegisterEvents()
 
 		NetEvents:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers),
 
-		NetEvents:Subscribe(ManDownLootEvents.UpdateLootPosition, self, self.OnUpdateLootPosition),
-		NetEvents:Subscribe(ManDownLootEvents.OnInteractionFinished, self, self.OnLootInteractionFinished),
-
 		NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied),
 		NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
 		NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer),
@@ -102,12 +112,23 @@ function VuBattleRoyaleClient:RegisterEvents()
 
 		NetEvents:Subscribe("MapVEManager:SetMapVEPreset", self, self.SetMapVEPreset),
 		Events:Subscribe("VEManager:PresetsLoaded", self, self.OnPresetsLoaded),
+
+		NetEvents:Subscribe(InventoryNetEvent.InventoryState, self, self.OnReceiveInventoryState),
+		NetEvents:Subscribe(InventoryNetEvent.CreateLootPickup, self, self.OnCreateLootPickup),
+		NetEvents:Subscribe(InventoryNetEvent.UnregisterLootPickup, self, self.OnUnregisterLootPickup),
+		NetEvents:Subscribe(InventoryNetEvent.UpdateLootPickup, self, self.OnUpdateLootPickup),
+		NetEvents:Subscribe(InventoryNetEvent.ItemActionCanceled, self, self.OnItemActionCanceled),
+
+		Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded),
+
+		NetEvents:Subscribe("Airdrop:Dropped", self, self.OnAirdropDropped),
 	}
 end
 
 function VuBattleRoyaleClient:RegisterWebUIEvents()
 	self.m_WebUIEvents = {
 		Events:Subscribe("WebUI:Deploy", self, self.OnWebUIDeploy),
+		Events:Subscribe("WebUI:SetSkin", self, self.OnWebUISetSkin),
 		Events:Subscribe("WebUI:SetTeamJoinStrategy", self, self.OnWebUISetTeamJoinStrategy),
 		Events:Subscribe("WebUI:ToggleLock", self, self.OnWebUIToggleLock),
 		Events:Subscribe("WebUI:JoinTeam", self, self.OnWebUIJoinTeam),
@@ -117,6 +138,10 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 		Events:Subscribe("WebUI:OutgoingChatMessage", self, self.OnWebUIOutgoingChatMessage),
 		Events:Subscribe("WebUI:SetCursor", self, self.OnWebUISetCursor),
 		Events:Subscribe("WebUI:HoverCommoRose", self, self.OnWebUIHoverCommoRose),
+		Events:Subscribe("WebUI:MoveItem", self, self.OnWebUIMoveItem),
+		Events:Subscribe("WebUI:DropItem", self, self.OnWebUIDropItem),
+		Events:Subscribe("WebUI:UseItem", self, self.OnWebUIUseItem),
+		Events:Subscribe("WebUI:PickupItem", self, self.OnWebUIPickupItem),
 	}
 end
 
@@ -128,6 +153,20 @@ function VuBattleRoyaleClient:RegisterHooks()
 		Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage),
 		Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate),
 		Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag),
+	}
+end
+
+function VuBattleRoyaleClient:RegisterCommands()
+	if not ServerConfig.Debug.EnableDebugCommands then
+		self.m_Commands = {}
+		return
+	end
+
+	self.m_Commands = {
+		Console:Register("give", "Gives player items", ClientCommands.Give),
+		Console:Register("spawn", "Spawns items under the player", ClientCommands.Spawn),
+		Console:Register("list", "List all the items", ClientCommands.List),
+		Console:Register("spawn-airdrop", "spawn-airdrop", ClientCommands.SpawnAirdrop),
 	}
 end
 
@@ -144,6 +183,7 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 	m_OOCFires:OnExtensionUnloading()
 	m_WindowsCircleSpawner:OnExtensionUnloading()
 	m_CircleEffects:OnExtensionUnloading()
+	m_BRLootPickupDatabase:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -162,7 +202,7 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_Hud:OnLevelDestroy()
 	m_HudUtils:OnLevelDestroy()
 	m_SpectatorClient:OnLevelDestroy()
-	m_Gunship:OnLevelDestroy()
+	m_GunshipClient:OnLevelDestroy()
 	m_Chat:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 	m_WindowsCircleSpawner:OnLevelDestroy()
@@ -170,6 +210,8 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 	m_PhaseManagerClient:OnLevelDestroy()
 	m_CircleEffects:OnLevelDestroy()
 	m_MapVEManager:OnLevelDestroy()
+	m_BrPlayer:OnLevelDestroy()
+	m_BRLootPickupDatabase:OnLevelDestroy()
 end
 
 function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
@@ -186,9 +228,14 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 			l_Hook:Uninstall()
 		end
 
+		for _, l_Command in pairs(self.m_Commands) do
+			l_Command:Deregister()
+		end
+
 		self.m_Events = {}
 		self.m_WebUIEvents = {}
 		self.m_Hooks = {}
+		self.m_Commands = {}
 
 		m_Hud:OnExtensionUnloading()
 		WebUI:Hide()
@@ -203,6 +250,7 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 
 	m_OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
 	m_MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_PhaseManagerClient:OnLoadResources()
 end
 
 -- =============================================
@@ -220,22 +268,24 @@ function VuBattleRoyaleClient:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
 		m_PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 		m_Ping:OnUpdatePassPreSim(p_DeltaTime)
-		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+		m_GunshipClient:OnUpdatePassPreSim(p_DeltaTime)
+		m_CommonSpatialRaycast:OnUpdatePassPreSim(p_DeltaTime)
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PreFrame then
 		m_PhaseManagerClient:OnUIDrawHud(p_DeltaTime)
 		m_Hud:OnUIDrawHud()
 		m_Ping:OnUIDrawHud(p_DeltaTime)
 		m_CircleEffects:OnUIDrawHud()
 	elseif p_UpdatePass == UpdatePass.UpdatePass_PostFrame then
-		m_Gunship:OnUpdatePassPostFrame(p_DeltaTime)
+		m_GunshipClient:OnUpdatePassPostFrame(p_DeltaTime)
 	end
 end
 
 function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
-	m_Gunship:OnClientUpdateInput()
+	m_GunshipClient:OnClientUpdateInput()
 	m_SpectatorClient:OnClientUpdateInput()
 	m_Hud:OnClientUpdateInput()
 	m_Ping:OnClientUpdateInput(p_DeltaTime)
+	m_BRLooting:OnClientUpdateInput(p_DeltaTime)
 end
 
 -- =============================================
@@ -370,23 +420,23 @@ end
 
 function VuBattleRoyaleClient:OnGunshipEnable(p_Type)
 	if p_Type == "Paradrop" and not SpectatorManager:GetSpectating() then
-		m_Gunship:OnGunshipEnable(p_Type)
+		m_GunshipClient:OnGunshipEnable(p_Type)
 		m_Hud:OnGunshipEnable()
 	end
 end
 
 function VuBattleRoyaleClient:OnGunshipDisable()
-	m_Gunship:OnGunshipDisable()
+	m_GunshipClient:OnGunshipDisable()
 	m_Hud:OnGunshipDisable()
 end
 
 function VuBattleRoyaleClient:OnJumpOutOfGunship()
-	m_Gunship:OnGunshipDisable()
+	m_GunshipClient:OnJumpOutOfGunship()
 	m_Hud:OnJumpOutOfGunship()
 end
 
 function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
-	m_Gunship:OnForceJumpOufOfGunship()
+	m_GunshipClient:OnForceJumpOufOfGunship()
 end
 
 -- =============================================
@@ -413,18 +463,6 @@ end
 
 function VuBattleRoyaleClient:OnSpectatedPlayerTeamMembers(p_PlayerNames)
 	m_TeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
-end
-
--- =============================================
-	-- ManDownLoot Events
--- =============================================
-
-function VuBattleRoyaleClient:OnUpdateLootPosition(p_IndexInBlueprint, p_Transform)
-	m_ClientManDownLoot:OnUpdateLootPosition(p_IndexInBlueprint, p_Transform)
-end
-
-function VuBattleRoyaleClient:OnLootInteractionFinished(p_ManDownLootTable)
-	m_ClientManDownLoot:OnLootInteractionFinished(p_ManDownLootTable)
 end
 
 -- =============================================
@@ -458,6 +496,7 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 	m_TeamManager:OnGameStateChanged(p_GameState)
 	m_Hud:OnGameStateChanged(p_GameState)
 	m_SpectatorClient:OnGameStateChanged(p_GameState)
+	m_BRLooting:OnGameStateChanged(p_GameState)
 end
 
 function VuBattleRoyaleClient:OnUpdateTimer(p_Time)
@@ -504,26 +543,23 @@ function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
 	m_Hud.m_MinPlayersToStart = p_MinPlayersToStart
 end
 
-function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeamId)
-	if p_WinnerTeamId == nil then
+function VuBattleRoyaleClient:OnWinnerTeamUpdate(p_WinnerTeam)
+	if p_WinnerTeam == nil then
 		return
 	end
 
-	if m_BrPlayer.m_Team == nil then
-		return
+	local s_Winner = false
+	if m_BrPlayer.m_Team ~= nil and p_WinnerTeam.Id == m_BrPlayer.m_Team.m_Id then
+		s_Winner = true
 	end
 
-	if p_WinnerTeamId ~= m_BrPlayer.m_Team.m_Id then
-		return
-	end
-
-	m_Hud:OnGameOverScreen(true)
+	m_Hud:OnGameOverScreen(s_Winner, p_WinnerTeam)
 end
 
 function VuBattleRoyaleClient:OnEnableSpectate()
 	m_Logger:Write("NetEvent: Enable spectator")
 	m_SpectatorClient:Enable()
-	m_Gunship:OnGunshipDisable()
+	m_GunshipClient:OnGunshipDisable()
 	m_Hud:OnJumpOutOfGunship()
 end
 
@@ -531,8 +567,20 @@ end
 -- WebUI Events
 -- =============================================
 
-function VuBattleRoyaleClient:OnWebUIDeploy()
-	m_Hud:OnWebUIDeploy()
+function VuBattleRoyaleClient:OnWebUIDeploy(p_AppearanceName)
+	if p_AppearanceName == nil then
+		return
+	end
+
+	m_Hud:OnWebUIDeploy(p_AppearanceName)
+end
+
+function VuBattleRoyaleClient:OnWebUISetSkin(p_AppearanceName)
+	if p_AppearanceName == nil then
+		return
+	end
+
+	NetEvents:Send(PlayerEvents.PlayerSetSkin, p_AppearanceName)
 end
 
 function VuBattleRoyaleClient:OnWebUISetTeamJoinStrategy(p_Strategy)
@@ -606,7 +654,7 @@ function VuBattleRoyaleClient:OnUICreateKillMessage(p_HookCtx)
 end
 
 function VuBattleRoyaleClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
-	m_Gunship:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
+	m_GunshipClient:OnInputPreUpdate(p_HookCtx, p_Cache, p_DeltaTime)
 end
 
 function VuBattleRoyaleClient:OnUIDrawEnemyNametag(p_HookCtx)
@@ -721,6 +769,51 @@ function VuBattleRoyaleClient:StartWindTurbines()
 
 		s_Entity = s_EntityIterator:Next()
 	end
+end
+
+function VuBattleRoyaleClient:OnWebUIMoveItem(p_JsonData)
+	m_BrPlayer.m_Inventory:OnWebUIMoveItem(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnWebUIDropItem(p_JsonData)
+	m_BrPlayer.m_Inventory:OnWebUIDropItem(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnWebUIUseItem(p_JsonData)
+	m_BrPlayer.m_Inventory:OnWebUIUseItem(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnWebUIPickupItem(p_JsonData)
+	m_BrPlayer.m_Inventory:OnWebUIPickupItem(p_JsonData)
+end
+
+function VuBattleRoyaleClient:OnReceiveInventoryState(p_State)
+	m_BrPlayer.m_Inventory:OnReceiveInventoryState(p_State)
+end
+
+function VuBattleRoyaleClient:OnCreateLootPickup(p_DataArray)
+	m_BRLootPickupDatabase:OnCreateLootPickup(p_DataArray)
+end
+
+function VuBattleRoyaleClient:OnUnregisterLootPickup(p_LootPickupId)
+	m_BRLootPickupDatabase:OnUnregisterLootPickup(p_LootPickupId)
+	m_BRLooting:OnUnregisterLootPickup(p_LootPickupId)
+end
+
+function VuBattleRoyaleClient:OnUpdateLootPickup(p_DataArray)
+	m_BRLootPickupDatabase:OnUpdateLootPickup(p_DataArray)
+end
+
+function VuBattleRoyaleClient:OnItemActionCanceled()
+	m_BrPlayer.m_Inventory:OnItemActionCanceled()
+end
+
+function VuBattleRoyaleClient:OnPartitionLoaded(p_Partition)
+	m_SoundModifier:OnPartitionLoaded(p_Partition)
+end
+
+function VuBattleRoyaleClient:OnAirdropDropped()
+	m_Hud:OnAirdropDropped()
 end
 
 return VuBattleRoyaleClient()
