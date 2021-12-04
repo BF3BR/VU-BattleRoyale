@@ -293,6 +293,15 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	s_SpottingTargetComponentData.activeSpottedTime = 2.0
 	s_SpottingTargetComponentData.passiveSpottedTime = 1.0
 
+	-- Disabling all perks
+	for _, l_Instance in pairs(s_Partition.instances) do
+		if l_Instance:Is("UnlockComponentData") then
+			l_Instance = UnlockComponentData(l_Instance)
+			l_Instance:MakeWritable()
+			l_Instance.excluded = true
+		end
+	end
+
 	m_Logger:Write("ManDown state modified")
 end
 
