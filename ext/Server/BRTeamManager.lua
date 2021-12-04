@@ -61,7 +61,7 @@ function BRTeamManager:OnPlayerKilled(p_Player)
 	self:OnSendPlayerState(p_Player)
 
 	local s_BRPlayer = self:GetPlayer(p_Player)
-	if s_BRPlayer ~= nil then
+	if s_BRPlayer ~= nil and s_BRPlayer.m_Inventory ~= nil then
 		m_LootPickupDatabase:CreateFromInventory(s_BRPlayer:GetPosition(), s_BRPlayer.m_Inventory)
 	end
 end
