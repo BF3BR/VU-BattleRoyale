@@ -123,6 +123,7 @@ function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_
 		self.m_Events = {}
 		self.m_Hooks = {}
 
+		m_MapLoader:Reset()
 		return
 	elseif #self.m_Events == 0 then
 		m_Logger:Write("Subscribe, install & register everything again.")

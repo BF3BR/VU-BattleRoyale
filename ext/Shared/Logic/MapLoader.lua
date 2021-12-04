@@ -9,6 +9,10 @@ local GameObjectOriginType = {
 }
 
 function MapLoader:__init()
+	self:Reset()
+end
+
+function MapLoader:Reset()
 	self.m_LevelName = ""
 	self.m_MapPreset = nil
 
