@@ -45,7 +45,7 @@ function MapVEManager:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
 	p_OldFadeTime = p_OldFadeTime or 0
 	p_NewFadeTime = p_NewFadeTime or 0
 
-	if not self.m_CurrentMapPresetNames[p_VEIndex] then
+	if self.m_CurrentMapPresetNames == nil or not self.m_CurrentMapPresetNames[p_VEIndex] then
 		m_Logger:Warning("Tried setting a map VE preset that doesn't exist, id: " .. p_VEIndex)
 		return
 	end
