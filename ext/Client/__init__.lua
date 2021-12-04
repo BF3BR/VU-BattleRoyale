@@ -756,14 +756,24 @@ function VuBattleRoyaleClient:StartWindTurbines()
 	local s_Entity = s_EntityIterator:Next()
 
 	while s_Entity do
-		s_Entity = Entity(s_Entity)
-
 		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("F2E30E34-2E82-467B-B160-4BAD4502A465") then
-			m_Logger:Write("Start turbine")
 			local s_Delay = math.random(0, 5000) / 1000
 
-			g_Timers:Timeout(s_Delay, s_Entity, function(p_Entity)
-				p_Entity:FireEvent("Start")
+			g_Timers:Timeout(s_Delay, s_Entity.instanceId, function(p_EntityInstanceId)
+				-- find the entity again
+				-- there is a possibilty that we skipped to another level in this delay
+				local s_TimerEntityIterator = EntityManager:GetIterator('SequenceEntity')
+				local s_TimerEntity = s_TimerEntityIterator:Next()
+
+				while s_TimerEntity do
+					if s_TimerEntity.instanceId == p_EntityInstanceId then
+						m_Logger:Write("Start turbine")
+						s_TimerEntity:FireEvent("Start")
+						return
+					end
+
+					s_TimerEntity = s_TimerEntityIterator:Next()
+				end
 			end)
 		end
 
