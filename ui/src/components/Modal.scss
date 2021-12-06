@@ -35,6 +35,48 @@
             font-size: 1vw;
         }
 
+        .credits {
+            width: 100%;
+            display: grid;
+            grid-gap: 1vw;
+            margin-bottom: 2vw;
+
+            b {
+                color: var(--warning);
+                text-shadow: 0 0 0.25vw rgba(196, 117, 50, 0.9);
+                font-size: .9vw;
+                text-transform: uppercase;
+                margin: 0 0 .7vw;
+                display: block;
+            }
+
+            ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+
+                li {
+                    line-height: 1.5vw;
+                    color: #fff;
+                    font-size: .8vw;
+                    text-transform: uppercase;
+                    font-style: normal;
+                    font-weight: 600;
+
+                    b {
+                        font-weight: 600;
+                        color: var(--warning);
+                    }
+
+                    &:last-of-type {
+                        margin: 0;
+                    }
+                }
+            }
+        }
+
         button {
             font-family: Purista, sans-serif;
             font-style: normal;

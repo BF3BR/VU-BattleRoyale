@@ -19,6 +19,7 @@ const MenuScreen: React.FC<Props> = ({ team, localPlayerName }) => {
     const [currentFocus, setCurrentFocus] = useState(0);
     const [currentModalFocus, setCurrentModalFocus] = useState(0);
     const [showQuitModal, setShowQuitModal] = useState(false);
+    const [showCreditsModal, setShowCreditModal] = useState(false);
 
     const buttons = [
         {
@@ -38,12 +39,16 @@ const MenuScreen: React.FC<Props> = ({ team, localPlayerName }) => {
             onClick: () => sendToLua("WebUI:TriggerMenuFunction", "options"),
         },
         {
+            label: "Credits",
+            onClick: () => setShowCreditModal(true),
+        },
+        {
             label: "Quit",
             onClick: () => setShowQuitModal(true),
         },
     ];
 
-    const modalButtons = [
+    const quitModalButtons = [
         {
             text: "OK", 
             handler: () => sendToLua("WebUI:TriggerMenuFunction", "quit"),
@@ -51,6 +56,13 @@ const MenuScreen: React.FC<Props> = ({ team, localPlayerName }) => {
         {
             text: "Cancel", 
             handler: () => setShowQuitModal(false),
+        },
+    ];
+
+    const creditModalButtons = [
+        {
+            text: "OK", 
+            handler: () => setShowCreditModal(false),
         },
     ];
     
@@ -75,32 +87,46 @@ const MenuScreen: React.FC<Props> = ({ team, localPlayerName }) => {
 
     window.OnMenuArrowRight = () => {
         if (showQuitModal) {
-            setCurrentModalFocus(currentModalFocus === modalButtons.length - 1 ? 0 : currentModalFocus + 1);
+            setCurrentModalFocus(currentModalFocus === quitModalButtons.length - 1 ? 0 : currentModalFocus + 1);
         }
     }
 
     window.OnMenuArrowLeft = () => {
         if (showQuitModal) {
-            setCurrentModalFocus(currentModalFocus === 0 ? modalButtons.length - 1 : currentModalFocus - 1);
+            setCurrentModalFocus(currentModalFocus === 0 ? quitModalButtons.length - 1 : currentModalFocus - 1);
         }
     }
 
     window.OnMenuEnter = () => {
         PlaySound(Sounds.Click);
-        if (!showQuitModal) {
-            buttons[currentFocus].onClick();
-        } else {
-            modalButtons[currentModalFocus].handler();
+
+        if (showQuitModal) {  
+            quitModalButtons[currentModalFocus].handler();
+            return;
         }
+
+        if (showCreditsModal) {
+            creditModalButtons[currentModalFocus].handler();
+            return;
+        }
+
+        buttons[currentFocus].onClick();
     }
 
     window.OnMenuEsc = () => {
-        if (!showQuitModal) {
-            buttons[0].onClick();
-        } else {
+        if (showQuitModal) {
             setShowQuitModal(false);
             setCurrentModalFocus(0);
+            return;
         }
+
+        if (showCreditsModal) {
+            setShowCreditModal(false);
+            setCurrentModalFocus(0);
+            return;
+        }
+
+        buttons[0].onClick();
     }
 
     useEffect(() => {
@@ -170,10 +196,48 @@ const MenuScreen: React.FC<Props> = ({ team, localPlayerName }) => {
 
             <Modal 
                 show={showQuitModal}
-                buttons={modalButtons}
+                buttons={quitModalButtons}
                 highlightedButtonIndex={currentModalFocus}
                 title="Are you sure?"
-                text="Are you sure you want to quit? Any unsaved progress will be lost."
+                text={<p>Are you sure you want to quit? Any unsaved progress will be lost.</p>}
+                dismiss={() => setShowQuitModal(false)}
+            />
+
+            <Modal 
+                show={showCreditsModal}
+                buttons={creditModalButtons}
+                highlightedButtonIndex={currentModalFocus}
+                title="Credits"
+                text={
+                    <div className="credits">
+                        <div className="credits-left">
+                            <b>Developers</b>
+                            <ul>
+                                <li>breaknix</li>
+                                <li>Bree_Arnold</li>
+                                <li>FoolHen</li>
+                                <li>Janssent</li>
+                                <li>keku645</li>
+                                <li>kiwidog</li>
+                                <li>KVN</li>
+                            </ul>
+                        </div>
+                        <div className="credits-right">
+                            <b>Associates</b>
+                            <ul>
+                                <li>Nofate</li>
+                                <li>Milk</li>
+                                <li>Paul</li>
+                                <li>Imposter</li>
+                                <li>IllustrisJack</li>
+                                <li>Greatapo</li>
+                                <li>Powback</li>
+                                <li>Afroh Music</li>
+                                <li>alx1f9k</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
                 dismiss={() => setShowQuitModal(false)}
             />
 
@@ -188,7 +252,7 @@ const MenuScreen: React.FC<Props> = ({ team, localPlayerName }) => {
                     </ul>
                 </div>
             </div>
-            <div className="card CreditsBox">
+            {/*<div className="card CreditsBox">
                 <div className="card-header">
                     <h1>Developers</h1>
                 </div>
@@ -221,7 +285,7 @@ const MenuScreen: React.FC<Props> = ({ team, localPlayerName }) => {
                         <li>alx1f9k</li>
                     </ul>
                 </div>
-            </div>
+            </div>*/}
         </div>
     );
 };

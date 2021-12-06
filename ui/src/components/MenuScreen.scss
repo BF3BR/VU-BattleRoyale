@@ -230,22 +230,22 @@
             }
         }
 
-        &.CommunityBox {
+        /*&.CommunityBox {
             right: 24vw;
         }
 
         &.AssociatesBox,
         &.CreditsBox {
-            bottom: 15vw;
+            bottom: 17vw;
 
             .card-content ul {
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         &.AssociatesBox {
-            bottom: 5vw;
-        }
+            bottom: 3vw;
+        }*/
     }
 }

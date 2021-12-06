@@ -714,6 +714,8 @@ const App: React.FC<Props> = ({
         if (window.gc) {
             window.gc();
         }
+    }
+
     window.VoipEmitterEmitting = (playerName: string, isSpeaking: boolean, isParty: boolean) => {
         dispatch(updateSpeaking(playerName, isSpeaking, isParty));
     }
@@ -948,7 +950,6 @@ declare global {
         ResetAllValues: () => void;
         OnAirdropDropped: () => void;
         gc: () => void;
-
         VoipEmitterEmitting: (playerName: string, isSpeaking: boolean, isParty: boolean) => void;
         VoipPlayerMuted: (playerName: string, isMuted: boolean) => void;
     }

@@ -75,14 +75,14 @@ function VuBattleRoyaleClient:RegisterEvents()
 		Events:Subscribe("Player:Deleted", self, self.OnPlayerDeleted),
 		Events:Subscribe("Player:TeamChange", self, self.OnPlayerTeamChange),
 
-		Events:Subscribe('Soldier:HealthAction', self, self.OnSoldierHealthAction),
-		Events:Subscribe('Soldier:Spawn', self, self.OnSoldierSpawn),
+		Events:Subscribe("Soldier:HealthAction", self, self.OnSoldierHealthAction),
+		Events:Subscribe("Soldier:Spawn", self, self.OnSoldierSpawn),
 
-		Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate),
+		Events:Subscribe("GunSway:Update", self, self.OnGunSwayUpdate),
 
-		Events:Subscribe('VoipChannel:PlayerJoined', self, self.OnVoipChannelPlayerJoined),
-		Events:Subscribe('VoipChannel:PlayerLeft', self, self.OnVoipChannelPlayerLeft),
-		Events:Subscribe('VoipEmitter:Emitting', self, self.OnVoipEmitterEmitting),
+		Events:Subscribe("VoipChannel:PlayerJoined", self, self.OnVoipChannelPlayerJoined),
+		Events:Subscribe("VoipChannel:PlayerLeft", self, self.OnVoipChannelPlayerLeft),
+		Events:Subscribe("VoipEmitter:Emitting", self, self.OnVoipEmitterEmitting),
 
 		NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled),
 		NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown),
@@ -155,10 +155,10 @@ function VuBattleRoyaleClient:RegisterHooks()
 	self.m_Hooks = {
 		Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent),
 		Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen),
-		Hooks:Install('UI:CreateChatMessage',999, self, self.OnUICreateChatMessage),
+		Hooks:Install("UI:CreateChatMessage",999, self, self.OnUICreateChatMessage),
 		Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage),
 		Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate),
-		Hooks:Install('UI:DrawEnemyNametag', 1, self, self.OnUIDrawEnemyNametag),
+		Hooks:Install("UI:DrawEnemyNametag", 1, self, self.OnUIDrawEnemyNametag),
 	}
 end
 
@@ -785,7 +785,7 @@ function VuBattleRoyaleClient:FixParachuteSound(p_Soldier)
 end
 
 function VuBattleRoyaleClient:StartWindTurbines()
-	local s_EntityIterator = EntityManager:GetIterator('SequenceEntity')
+	local s_EntityIterator = EntityManager:GetIterator("SequenceEntity")
 	local s_Entity = s_EntityIterator:Next()
 
 	while s_Entity do
@@ -795,7 +795,7 @@ function VuBattleRoyaleClient:StartWindTurbines()
 			g_Timers:Timeout(s_Delay, s_Entity.instanceId, function(p_EntityInstanceId)
 				-- find the entity again
 				-- there is a possibilty that we skipped to another level in this delay
-				local s_TimerEntityIterator = EntityManager:GetIterator('SequenceEntity')
+				local s_TimerEntityIterator = EntityManager:GetIterator("SequenceEntity")
 				local s_TimerEntity = s_TimerEntityIterator:Next()
 
 				while s_TimerEntity do
