@@ -33,6 +33,7 @@ local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_CommonSpatialRaycast = require "CommonSpatialRaycast"
 local m_BRLooting = require "Types/BRLooting"
 local m_SoundModifier = require "SoundModifier"
+local m_VoipManager = require "VoipManager"
 
 local m_Logger = Logger("VuBattleRoyaleClient", true)
 
@@ -78,6 +79,10 @@ function VuBattleRoyaleClient:RegisterEvents()
 		Events:Subscribe('Soldier:Spawn', self, self.OnSoldierSpawn),
 
 		Events:Subscribe('GunSway:Update', self, self.OnGunSwayUpdate),
+
+		Events:Subscribe('VoipChannel:PlayerJoined', self, self.OnVoipChannelPlayerJoined),
+		Events:Subscribe('VoipChannel:PlayerLeft', self, self.OnVoipChannelPlayerLeft),
+		Events:Subscribe('VoipEmitter:Emitting', self, self.OnVoipEmitterEmitting),
 
 		NetEvents:Subscribe("ServerPlayer:Killed", self, self.OnPlayerKilled),
 		NetEvents:Subscribe(DamageEvent.PlayerDown, self, self.OnDamageConfirmPlayerDown),
@@ -142,6 +147,7 @@ function VuBattleRoyaleClient:RegisterWebUIEvents()
 		Events:Subscribe("WebUI:DropItem", self, self.OnWebUIDropItem),
 		Events:Subscribe("WebUI:UseItem", self, self.OnWebUIUseItem),
 		Events:Subscribe("WebUI:PickupItem", self, self.OnWebUIPickupItem),
+		Events:Subscribe("WebUI:VoipMutePlayer", self, self.OnWebUIVoipMutePlayer),
 	}
 end
 
@@ -286,6 +292,7 @@ function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
 	m_Hud:OnClientUpdateInput()
 	m_Ping:OnClientUpdateInput(p_DeltaTime)
 	m_BRLooting:OnClientUpdateInput(p_DeltaTime)
+	m_VoipManager:OnClientUpdateInput()
 end
 
 -- =============================================
@@ -350,6 +357,22 @@ end
 
 function VuBattleRoyaleClient:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
 	m_AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
+end
+
+-- =============================================
+	-- Voip Events
+-- =============================================
+
+function VuBattleRoyaleClient:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
+	m_VoipManager:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
+end
+
+function VuBattleRoyaleClient:OnVoipChannelPlayerLeft(p_Channel, p_Player)
+	m_VoipManager:OnVoipChannelPlayerLeft(p_Channel, p_Player)
+end
+
+function VuBattleRoyaleClient:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
+	m_VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 end
 
 -- =============================================
@@ -629,6 +652,16 @@ end
 
 function VuBattleRoyaleClient:OnWebUIHoverCommoRose(p_TypeIndex)
 	m_Ping:OnWebUIHoverCommoRose(p_TypeIndex)
+end
+
+function VuBattleRoyaleClient:OnWebUIVoipMutePlayer(p_Params)
+	local s_DecodedParams = json.decode(p_Params)
+
+	if s_DecodedParams.playerName == nil or s_DecodedParams.mute == nil then
+		return
+	end
+
+	m_VoipManager:OnWebUIVoipMutePlayer(s_DecodedParams.playerName, s_DecodedParams.mute)
 end
 
 -- =============================================
