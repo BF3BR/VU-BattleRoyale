@@ -636,8 +636,10 @@ const App: React.FC<Props> = ({
 
     const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
     window.OnInventoryOpen = (p_Open: boolean) => {
-        PlaySound(Sounds.Navigate);
-        setIsInventoryOpen(p_Open);
+        if (isInventoryOpen !== p_Open) {
+            PlaySound(Sounds.Navigate);
+            setIsInventoryOpen(p_Open);
+        }
     }
 
     window.SyncInventory = (p_DataJson: any) => {
