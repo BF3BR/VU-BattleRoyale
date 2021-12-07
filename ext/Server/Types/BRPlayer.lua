@@ -236,7 +236,7 @@ function BRPlayer:Spawn(p_Trans)
 	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
 
 	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
-	s_Inventory:DeferUpdateSoldierCustomization(0.85)
+	local s_CustomizeSoldierData = s_Inventory:CreateCustomizeSoldierData()
 	s_Inventory:SendState()
 
 	local s_Event = ServerPlayerEvent("Spawn", self.m_Player, true, false, false, false, false, false, self.m_Player.teamId)
@@ -262,7 +262,7 @@ function BRPlayer:Spawn(p_Trans)
 	g_Timers:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
 		if p_Player.soldier ~= nil then
 			-- the ApplyCustomization is needed otherwise the transform will reset to Vec3(1,0,0) Vec3(0,1,0) Vec3(0,0,1)
-			p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
+			p_Player.soldier:ApplyCustomization(s_CustomizeSoldierData)
 			p_Player.soldier:SetTransform(p_Trans)
 			-- we are done, so we can destroy this timer
 			p_Timer:Destroy()

@@ -611,11 +611,14 @@ function BRInventory:CreateCustomizeSoldierData()
 	s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)]]
 
-	local s_CurrWeaponSlot = self:GetOwnerSoldier().weaponsComponent.currentWeaponSlot
-	if s_CurrWeaponSlot then
-		s_CustomizeSoldierData.activeSlot = self:GetOwnerSoldier().weaponsComponent.currentWeaponSlot
-	else
-		s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
+	local s_Soldier = self:GetOwnerSoldier()
+	if s_Soldier ~= nil then
+		local s_CurrWeaponSlot = s_Soldier.weaponsComponent.currentWeaponSlot
+		if s_CurrWeaponSlot then
+			s_CustomizeSoldierData.activeSlot = s_CurrWeaponSlot
+		else
+			s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
+		end
 	end
 
 	s_CustomizeSoldierData.removeAllExistingWeapons = true
