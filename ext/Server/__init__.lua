@@ -258,13 +258,15 @@ function VuBattleRoyaleServer:OnPlayerUpdateInput(p_Player)
 end
 
 function VuBattleRoyaleServer:OnPlayerChangingWeapon(p_Player)
-	if p_Player == nil or p_Player.soldier == nil or p_Player.soldier.isInteractiveManDown == false then
+	if p_Player == nil or p_Player.soldier == nil then
 		return
 	end
 
-	p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
-
-	m_InventoryManager:OnPlayerChangingWeapon(p_Player)
+	if p_Player.soldier.isInteractiveManDown == false then
+		m_InventoryManager:OnPlayerChangingWeapon(p_Player)
+	else
+		p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
+	end
 end
 
 function VuBattleRoyaleServer:OnPlayerManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)

@@ -36,7 +36,7 @@ function BRInventoryManager:OnPlayerChangingWeapon(p_Player)
 	end
 
 	local s_CurrentWeapon = p_Player.soldier.weaponsComponent.currentWeapon
-	local s_Inventory = self.m_Inventories[p_Player.id]
+	local s_Inventory = self:GetOrCreateInventory(p_Player)
 
 	if s_CurrentWeapon == nil or s_Inventory == nil then
 		return
