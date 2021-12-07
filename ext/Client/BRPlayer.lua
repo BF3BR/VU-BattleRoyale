@@ -1,19 +1,21 @@
-require "BRTeam"
-
 class "BRPlayer"
 
 local m_Logger = Logger("BRPlayer", true)
 
 function BRPlayer:__init()
 	self.m_Team = BRTeam()
-	self.m_Armor = Armor:NoArmor()
+	self.m_Inventory = BRInventory()
 	self.m_IsTeamLeader = false
 	self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
-	self.m_Kills = 0
-	self.m_Score = 0
 	self.m_PosInSquad = 1
 
+	self:ResetVars()
 	self:RegisterEvents()
+end
+
+function BRPlayer:ResetVars()
+	self.m_Kills = 0
+	self.m_Score = 0
 end
 
 function BRPlayer:RegisterEvents()
@@ -29,11 +31,6 @@ end
 function BRPlayer:OnReceivePlayerState(p_State)
 	if p_State.Team ~= nil then
 		self.m_Team:UpdateFromTable(p_State.Team)
-	end
-
-	if p_State.Armor ~= nil then
-		m_Logger:Write("Update Armor")
-		self.m_Armor:UpdateFromTable(p_State.Armor)
 	end
 
 	if p_State.Data ~= nil then
@@ -78,6 +75,16 @@ function BRPlayer:GetState()
 	end
 end
 
+function BRPlayer:GetArmorPercentage()
+	local s_Armor = self.m_Inventory:GetSlot(InventorySlot.Armor)
+	return s_Armor ~= nil and s_Armor:GetPercentage() or 0
+end
+
+function BRPlayer:GetHelmetPercentage()
+	local s_Helmet = self.m_Inventory:GetSlot(InventorySlot.Helmet)
+	return s_Helmet ~= nil and s_Helmet:GetPercentage() or 0
+end
+
 function BRPlayer:GetColor(p_AsRgba)
 	local s_Color = ServerConfig.PlayerColors[self.m_PosInSquad] or Vec4(1, 1, 1, 1)
 
@@ -88,6 +95,11 @@ function BRPlayer:GetColor(p_AsRgba)
 
 	-- return color as an rgba string
 	return string.format("rgba(%s, %s, %s, %s)", s_Color.x * 255, s_Color.y * 255, s_Color.z * 255, s_Color.w)
+end
+
+function BRPlayer:OnLevelDestroy()
+	self:ResetVars()
+	self.m_Inventory:Reset()
 end
 
 return BRPlayer()

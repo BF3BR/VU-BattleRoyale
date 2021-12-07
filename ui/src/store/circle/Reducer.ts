@@ -1,6 +1,7 @@
 import { CircleState } from "./Types";
 import { 
     CircleActionTypes,
+    RESET_CIRCLE,
     UPDATE_INNER_CIRLCE,
     UPDATE_OUTER_CIRLCE,
     UPDATE_SUBPHASE_INDEX
@@ -32,6 +33,8 @@ const MapReducer = (
                 ...state,
                 subPhaseIndex: action.payload.subPhaseIndex,
             };
+        case RESET_CIRCLE:
+            return initialState;
         default:
             return state;
     }

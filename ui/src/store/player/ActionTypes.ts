@@ -4,12 +4,15 @@ export const UPDATE_PLAYER_POSITION = "UPDATE_PLAYER_POSITION";
 export const UPDATE_PLAYER_YAW = "UPDATE_PLAYER_YAW";
 export const UPDATE_PLAYER_HEALTH = "UPDATE_PLAYER_HEALTH";
 export const UPDATE_PLAYER_ARMOR = "UPDATE_PLAYER_ARMOR";
+export const UPDATE_PLAYER_HELMET = "UPDATE_PLAYER_HELMET";
 export const UPDATE_PLAYER_PRIMARY_AMMO = "UPDATE_PLAYER_PRIMARY_AMMO";
 export const UPDATE_PLAYER_SECONDARY_AMMO = "UPDATE_PLAYER_SECONDARY_AMMO";
 export const UPDATE_PLAYER_FIRELOGIC = "UPDATE_PLAYER_FIRELOGIC";
 export const UPDATE_PLAYER_CURRENT_WEAPON = "UPDATE_PLAYER_CURRENT_WEAPON";
 export const UPDATE_PLAYER_IS_ON_PLANE = "UPDATE_PLAYER_IS_ON_PLANE";
 export const UPDATE_PLAYER_DATA = "UPDATE_PLAYER_DATA";
+export const UPDATE_CTRL_DOWN = "UPDATE_CTRL_DOWN";
+export const RESET_PLAYER = "RESET_PLAYER";
 
 interface UpdatePlayerPosition {
     type: typeof UPDATE_PLAYER_POSITION;
@@ -29,6 +32,11 @@ interface UpdatePlayerHealth {
 interface UpdatePlayerArmor {
     type: typeof UPDATE_PLAYER_ARMOR;
     payload: { armor: number };
+}
+
+interface UpdatePlayerHelmet {
+    type: typeof UPDATE_PLAYER_HELMET;
+    payload: { helmet: number };
 }
 
 interface UpdatePlayerPrimaryAmmo {
@@ -61,15 +69,28 @@ interface UpdatePlayerData {
     payload: { playerData: any };
 }
 
+interface UpdateCtrlDown {
+    type: typeof UPDATE_CTRL_DOWN;
+    payload: { isDown: boolean };
+}
+
+interface ResetPlayer {
+    type: typeof RESET_PLAYER;
+    payload: {};
+}
+
 export type PlayerActionTypes = 
     | UpdatePlayerPosition
     | UpdatePlayerYaw
     | UpdatePlayerHealth
     | UpdatePlayerArmor
+    | UpdatePlayerHelmet
     | UpdatePlayerPrimaryAmmo
     | UpdatePlayerSecondaryAmmo
     | UpdatePlayerFireLogic
     | UpdatePlayerCurrentWeapon
     | UpdatePlayerIsOnPlane
     | UpdatePlayerData
+    | UpdateCtrlDown
+    | ResetPlayer
 ;

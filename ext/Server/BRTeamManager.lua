@@ -1,6 +1,7 @@
 class "BRTeamManager"
 
 local m_Logger = Logger("BRTeamManager", true)
+local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 function BRTeamManager:__init()
 	self:RegisterVars()
@@ -53,12 +54,16 @@ function BRTeamManager:OnLevelDestroy()
 end
 
 function BRTeamManager:OnPlayerAuthenticated(p_Player)
-	m_Logger:Write(string.format("Creating BRPlayer for '%s'", p_Player.name))
 	self:CreatePlayer(p_Player)
 end
 
 function BRTeamManager:OnPlayerKilled(p_Player)
 	self:OnSendPlayerState(p_Player)
+
+	local s_BRPlayer = self:GetPlayer(p_Player)
+	if s_BRPlayer ~= nil and s_BRPlayer.m_Inventory ~= nil then
+		m_LootPickupDatabase:CreateFromInventory(s_BRPlayer:GetPosition(), s_BRPlayer.m_Inventory)
+	end
 end
 
 function BRTeamManager:OnPlayerLeft(p_Player)
@@ -241,6 +246,8 @@ function BRTeamManager:CreatePlayer(p_Player)
 	if self.m_Players[s_Name] ~= nil then
 		return self.m_Players[s_Name]
 	end
+
+	m_Logger:Write(string.format("Creating BRPlayer for '%s'", s_Name))
 
 	-- create player
 	local s_BrPlayer = BRPlayer(p_Player)
@@ -463,29 +470,35 @@ function BRTeamManager:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayer
 			s_BRPlayerToSpectate:AddSpectator(p_Player.name)
 
 			if s_BRPlayer ~= nil then
-				if s_BRPlayerToSpectate.m_Armor ~= nil then
-					local s_State = {
-						Armor = s_BRPlayerToSpectate.m_Armor:AsTable()
-					}
-					NetEvents:SendToLocal(TeamManagerNetEvent.PlayerArmorState, p_Player, s_State)
-				end
-
 				-- add a NetEvent with all player names of the spectated player team
 				-- if it is a teammate we don't want to do that
 				if s_BRPlayerToSpectate.m_Team ~= nil and not s_BRPlayerToSpectate:IsTeammate(s_BRPlayer) then
 					local s_PlayerNames = {}
 
-					for _, l_Player in pairs(s_BRPlayerToSpectate.m_Team.m_Players) do
-						table.insert(s_PlayerNames, l_Player.name)
+					for l_PlayerName, _ in pairs(s_BRPlayerToSpectate.m_Team.m_Players) do
+						table.insert(s_PlayerNames, l_PlayerName)
 					end
 
 					NetEvents:SendToLocal("SpectatedPlayerTeamMembers", p_Player, s_PlayerNames)
 				end
 
-				s_BRPlayer:SpectatePlayer(p_NewPlayerName)
+				s_BRPlayer:SpectatePlayer(s_BRPlayerToSpectate)
 			end
 		end
 	end
+end
+
+function BRTeamManager:DestroyAll()
+	for l_Id, l_BrPlayer in pairs(self.m_Players) do
+		l_BrPlayer:Destroy()
+	end
+
+	for l_Id, l_BrTeam in pairs(self.m_Teams) do
+		l_BrTeam:Destroy()
+	end
+
+	self.m_Players = {}
+	self.m_Teams = {}
 end
 
 return BRTeamManager()

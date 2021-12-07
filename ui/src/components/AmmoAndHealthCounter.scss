@@ -2,7 +2,7 @@
     position: absolute;
     bottom: 1.85vw;
     right: 2.5vw;
-    width: 12vw;
+    width: 14vw;
     height: auto;
     display: flex;
     flex-flow: column;
@@ -62,7 +62,7 @@
             .mag {
                 font-size: 1.1vw;
                 display: flex;
-                min-width: 2.4vw;
+                min-width: 1.85vw;
                 
                 span {
                     width: 0.7vw;
@@ -90,4 +90,10 @@
             }
         }
     }
+}
+
+.PercentageGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: .75vw;
 }

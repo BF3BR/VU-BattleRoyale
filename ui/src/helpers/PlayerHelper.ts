@@ -11,6 +11,8 @@ export interface Player {
     health?: number|null;
     armor?: number|null;
     posInSquad?: number|null;
+    isSpeaking?: number;
+    isMuted?: boolean;
 }
 
 export const rgbaToRgb = (input: string) => {

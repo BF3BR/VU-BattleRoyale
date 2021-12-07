@@ -4,7 +4,8 @@ import {
     ADD_PING,
     REMOVE_PING,
     UPDATE_PING,
-    LAST_PING
+    LAST_PING,
+    RESET_PING
 } from "./ActionTypes";
 import Ping from "../../helpers/PingHelper";
 
@@ -52,6 +53,8 @@ const PingReducer = (
                 ...state,
                 lastPing: action.payload.id,
             };
+        case RESET_PING:
+            return initialState;
         default:
             return state;
     }

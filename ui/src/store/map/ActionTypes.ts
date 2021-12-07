@@ -2,6 +2,7 @@ export const OPEN_MAP = "OPEN_MAP";
 export const SWITCH_OPEN_MAP = "SWITCH_OPEN_MAP";
 export const SHOW_MAP = "SHOW_MAP";
 export const SWITCH_ROTATION = "SWITCH_ROTATION";
+export const RESET_MAP = "RESET_MAP";
 
 interface OpenMap {
     type: typeof OPEN_MAP;
@@ -23,9 +24,15 @@ interface SwitchRotation {
     payload: {};
 }
 
+interface ResetMap {
+    type: typeof RESET_MAP;
+    payload: {};
+}
+
 export type MapActionTypes = 
     | OpenMap
     | SwitchOpenMap
     | ShowMap
     | SwitchRotation
+    | ResetMap
 ;

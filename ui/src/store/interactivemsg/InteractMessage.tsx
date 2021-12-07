@@ -6,17 +6,17 @@ import { InteractivemsgState } from "./Types";
 import "./InteractMessage.scss";
 
 interface StateFromReducer {
-    gameState: string;
     uiState: "hidden" | "loading" | "game" | "menu";
-    gameOverScreen: boolean;
     deployScreen: boolean;
+    spectating: boolean;
 }
 
 type Props = StateFromReducer;
 
 const InteractMessage: React.FC<Props> = ({
     deployScreen,
-    uiState
+    uiState,
+    spectating
 }) => {
     const interactivemsgFromReducer = useSelector(
         (state: RootState) => state.InteractivemsgReducer
@@ -45,7 +45,7 @@ const InteractMessage: React.FC<Props> = ({
 
     return (
         <div id="Messages">
-            {(localInteractivemsg !== null && !deployScreen && uiState === "game") &&
+            {(localInteractivemsg !== null && !deployScreen && uiState === "game" && !spectating) &&
                 <>
                     {localInteractivemsg.message &&
                         <div className="MessageCenter">
@@ -64,10 +64,10 @@ const InteractMessage: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => {
     return {
         // GameReducer
-        gameState: state.GameReducer.gameState,
         uiState: state.GameReducer.uiState,
-        gameOverScreen: state.GameReducer.gameOver.enabled,
         deployScreen: state.GameReducer.deployScreen.enabled,
+        // SpectatorReducer
+        spectating: state.SpectatorReducer.enabled,
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

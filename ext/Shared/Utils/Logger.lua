@@ -15,6 +15,10 @@ function Logger:__init(p_ClassName, p_ActivateLogging)
 	self.m_ClassName = p_ClassName
 end
 
+function Logger:WriteF(...)
+	self:Write(string.format(table.unpack({...})))
+end
+
 function Logger:Write(p_Message, p_Highlight)
 	if not ServerConfig.Debug.Logger_Enabled then
 		return
@@ -58,6 +62,10 @@ function Logger:WriteTable(p_Table, p_Highlight, p_Key)
 	end
 end
 
+function Logger:WarningF(...)
+	self:Warning(string.format(table.unpack({...})))
+end
+
 function Logger:Warning(p_Message)
 	if self.m_ClassName == nil then
 		return
@@ -68,6 +76,10 @@ function Logger:Warning(p_Message)
 	else
 		print("["..self.m_ClassName.."] WARNING: " .. tostring(p_Message))
 	end
+end
+
+function Logger:ErrorF(...)
+	self:Error(string.format(table.unpack({...})))
 end
 
 function Logger:Error(p_Message)

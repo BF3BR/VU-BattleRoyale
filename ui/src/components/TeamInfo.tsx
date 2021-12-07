@@ -6,6 +6,9 @@ import { Player, rgbaToRgb } from "../helpers/PlayerHelper";
 
 import medic from "../assets/img/medic.svg";
 import skull from "../assets/img/skull.svg";
+import speaker from "../assets/img/speaker.svg";
+import speaker_blue from "../assets/img/speaker_blue.svg";
+
 
 import "./TeamInfo.scss";
 
@@ -31,6 +34,18 @@ const TeamInfo: React.FC<Props> = ({ team, deployScreen }) => {
         }
     }
 
+    const getVoiceIcon = (player: Player) => {
+        switch (player.isSpeaking) {
+            default:
+            case 0:
+                return "";
+            case 1:
+                return <img src={speaker} alt="Speaker" />;
+            case 2:
+                return <img src={speaker_blue} alt="Speaker (party)" />;
+        }
+    }
+
     return (
         <>
             {team.length > 1 &&
@@ -53,6 +68,9 @@ const TeamInfo: React.FC<Props> = ({ team, deployScreen }) => {
                                     <div className="PercentageFg" style={{width: player.health + "%"}}></div>
                                 </div>
                             }
+                            <div className="speaker">
+                                {getVoiceIcon(player)}
+                            </div>
                         </div>
                     ))}
                 </div>

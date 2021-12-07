@@ -6,6 +6,7 @@ local m_RegistryManager = require("__shared/Logic/RegistryManager")
 
 local m_ReviveCustomizeSoldierData = DC(Guid("4EF77C47-6512-11E0-9AE6-EF0E747BA479"), Guid("B407182A-1C98-13DE-49A3-EE7F7EADFB4D"))
 local m_M9UnlockAsset = DC(Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"), Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B"))
+local m_M9FiringFunctionData = DC(Guid("94D0FEE8-E685-11DF-805B-F4FA4757ED08"), Guid("4CDDA2E9-C167-4F81-9958-835EAC8C65D7"))
 
 local m_AimingConstraints = DC(Guid("0309271B-3E7A-11E0-8B89-BBAF7A9E99DB"), Guid("922C1DF4-0208-0A6D-2651-7EEA9A13C468"))
 
@@ -71,11 +72,13 @@ local m_SoldierInteraction_Inputs = {
 function ManDownModifier:RegisterCallbacks()
 	m_ReviveCustomizeSoldierData:RegisterLoadHandler(self, self.OnReviveCustomizeSoldierData)
 	m_AimingConstraints:RegisterLoadHandler(self, self.OnAimingConstraintsData)
+	m_M9FiringFunctionData:RegisterLoadHandler(self, self.OnM9FiringFunctionData)
 end
 
 function ManDownModifier:DeregisterCallbacks()
 	m_ReviveCustomizeSoldierData:Deregister()
 	m_AimingConstraints:Deregister()
+	m_M9FiringFunctionData:Deregister()
 end
 
 function ManDownModifier:OnReviveCustomizeSoldierData(p_CustomizeSoldierData)
@@ -85,6 +88,12 @@ end
 function ManDownModifier:OnAimingConstraintsData(p_AimingConstraintEntityCommonData)
 	p_AimingConstraintEntityCommonData.aimingConstraints.minPitch = -15.0
 end
+
+function ManDownModifier:OnM9FiringFunctionData(p_FiringFunctionData)
+	p_FiringFunctionData.ammo.magazineCapacity = 0
+	p_FiringFunctionData.ammo.numberOfMagazines = 0
+end
+
 
 function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	local s_Partition = p_SoldierBlueprint.partition
@@ -197,6 +206,7 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	local s_InteractionComponentData = EntityInteractionComponentData(s_Partition:FindInstance(Guid("9C51D42E-94F9-424A-89D2-CBBCA32F1BCE")))
 	s_InteractionComponentData:MakeWritable()
 	s_InteractionComponentData.allowInteractionWithSoldiers = true
+	s_InteractionComponentData.isEventConnectionTarget = Realm.Realm_ClientAndServer
 
 	local s_InterfaceDescriptorData = InterfaceDescriptorData(s_Partition:FindInstance(Guid("9C158C06-AFDA-4CE5-8323-F41D356B2971")))
 	s_InterfaceDescriptorData:MakeWritable()
@@ -233,6 +243,9 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_StartEventSplitterEntityData, "OnBeingInteractedStarted", "Impulse", 2)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, "OnBeingInteractedCancelled", "Impulse", 2)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_FinishEventSplitterEntityData, "OnBeingInteractedFinished", "Impulse", 2)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_StartEventSplitterEntityData, "OnSoldierInteractionStarted", "Impulse", 5)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_FinishEventSplitterEntityData, "OnSoldierInteractionCancelled", "Impulse", 5)
+	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_FinishEventSplitterEntityData, "OnSoldierInteractionFinished", "Impulse", 5)
 
 	-- BeingInteracted inputrestriction
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierEntityData, s_BeingInteracted_InputRestrictionEntityData, "OnBeingInteractedStarted", "Activate", 3)
@@ -280,6 +293,15 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	s_SpottingTargetComponentData.activeSpottedTime = 2.0
 	s_SpottingTargetComponentData.passiveSpottedTime = 1.0
 
+	-- Disabling all perks
+	for _, l_Instance in pairs(s_Partition.instances) do
+		if l_Instance:Is("UnlockComponentData") then
+			l_Instance = UnlockComponentData(l_Instance)
+			l_Instance:MakeWritable()
+			l_Instance.excluded = true
+		end
+	end
+
 	m_Logger:Write("ManDown state modified")
 end
 
@@ -307,6 +329,12 @@ function ManDownModifier:CreateManDownCustomizeSoldierData()
 	s_CoopManDownSoldierData.clearVisualState = false
 	s_CoopManDownSoldierData.overrideMaxHealth = -1.0
 	s_CoopManDownSoldierData.overrideCriticalHealthThreshold = -1.0
+
+	local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
+	s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(m_M9UnlockAsset:GetInstance())
+	s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_9
+	s_CoopManDownSoldierData.weapons:add(s_UnlockWeaponAndSlot)
+
 	s_CoopManDownSoldierData.activeSlot = WeaponSlot.WeaponSlot_9
 	s_CoopManDownSoldierData.removeAllExistingWeapons = false
 	s_CoopManDownSoldierData.disableDeathPickup = false

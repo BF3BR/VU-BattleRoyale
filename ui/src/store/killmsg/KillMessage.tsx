@@ -1,25 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+
 import { RootState } from "../RootReducer";
 import { KillmsgState } from "./Types";
-
-import kill from "../../assets/sounds/kill.mp3";
-import downed from "../../assets/sounds/downed.mp3";
+import { PlaySound, Sounds } from "../../helpers/SoundHelper";
 
 import "./KillMessage.scss";
-import { VolumeConst } from "../../helpers/SoundHelper";
-
-const killAudio = new Audio(kill);
-killAudio.volume = VolumeConst;
-killAudio.autoplay = false;
-killAudio.loop = false;
-killAudio.pause();
-
-const downAudio = new Audio(downed);
-downAudio.volume = VolumeConst;
-downAudio.autoplay = false;
-downAudio.loop = false;
-downAudio.pause();
 
 const KillMessage: React.FC = () => {
     const killmsgFromReducer = useSelector(
@@ -32,9 +18,9 @@ const KillMessage: React.FC = () => {
     useEffect(() => {
         if (killmsgFromReducer.killed !== null) {
             if (killmsgFromReducer.killed) {
-                killAudio.play();
+                PlaySound(Sounds.Kill);
             } else {
-                downAudio.play();
+                PlaySound(Sounds.Downed);
             }
 
             setLocalKillmsg({
@@ -57,14 +43,7 @@ const KillMessage: React.FC = () => {
     }, [killmsgFromReducer]);
 
     const onEnd = () => {
-        killAudio.currentTime = 0.0;
-        killAudio.pause();
-
-        downAudio.currentTime = 0.0;
-        downAudio.pause();
-
         setLocalKillmsg(null);
-
         if (interval !== null) {
             clearInterval(interval);
         }

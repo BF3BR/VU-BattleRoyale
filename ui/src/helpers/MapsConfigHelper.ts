@@ -2,10 +2,10 @@
 export var MapsConfig:any = {
     ["XP5_003"]: {
         topLeftPos: {
-            x: 667.28,
-            z: -290.44,
+            x: 1334.88,
+            z: 286.57,
         },
         textureWidthHeight: 1024,
-        worldWidthHeight: 1250,
+        worldWidthHeight: 2500,
     },
 };

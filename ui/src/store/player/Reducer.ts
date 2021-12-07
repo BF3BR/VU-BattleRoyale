@@ -1,11 +1,14 @@
 import { PlayerState } from "./Types";
 import { 
     PlayerActionTypes,
+    RESET_PLAYER,
+    UPDATE_CTRL_DOWN,
     UPDATE_PLAYER_ARMOR,
     UPDATE_PLAYER_CURRENT_WEAPON,
     UPDATE_PLAYER_DATA,
     UPDATE_PLAYER_FIRELOGIC,
     UPDATE_PLAYER_HEALTH,
+    UPDATE_PLAYER_HELMET,
     UPDATE_PLAYER_IS_ON_PLANE,
     UPDATE_PLAYER_POSITION,
     UPDATE_PLAYER_PRIMARY_AMMO,
@@ -17,6 +20,7 @@ const initialState: PlayerState = {
     hud: {
         health: 0,
         armor: 0,
+        helmet: 0,
         primaryAmmo: 0,
         secondaryAmmo: 0,
         fireLogic: "AUTO",
@@ -31,7 +35,8 @@ const initialState: PlayerState = {
         color: "rgba(255, 0, 0, 0.3)",
         position: null,
         yaw: null,
-    }
+    },
+    isCtrlDown: false,
 };
 
 const PlayerReducer = (
@@ -74,6 +79,14 @@ const PlayerReducer = (
                 hud: {
                     ...state.hud,
                     armor: action.payload.armor,
+                },
+            };
+        case UPDATE_PLAYER_HELMET:
+            return {
+                ...state,
+                hud: {
+                    ...state.hud,
+                    helmet: action.payload.helmet,
                 },
             };
         case UPDATE_PLAYER_PRIMARY_AMMO:
@@ -120,6 +133,13 @@ const PlayerReducer = (
                     color: action.payload.playerData.color ?? "rgba(255, 0, 0, 0.3)",
                 },
             };
+        case UPDATE_CTRL_DOWN:
+            return {
+                ...state,
+                isCtrlDown: action.payload.isDown,
+            };
+        case RESET_PLAYER:
+            return initialState;
         default:
             return state;
     }

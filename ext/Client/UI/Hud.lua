@@ -1,7 +1,5 @@
 class "VuBattleRoyaleHud"
 
-require "__shared/Utils/CachedJsExecutor"
-
 local m_EscMenu = require "UI/EscMenu"
 local m_DeployScreen = require "UI/DeployScreen"
 local m_HudUtils = require "UI/Utils/HudUtils"
@@ -21,6 +19,8 @@ function VuBattleRoyaleHud:__init()
 
 	self.m_ManDownMapMarkers = {}
 
+	self.m_ShowInteractiveReviveMessage = false
+
 	self:RegisterVars()
 end
 
@@ -31,18 +31,18 @@ function VuBattleRoyaleHud:RegisterVars()
 	self.m_HudOnPlanePos = CachedJsExecutor("OnPlanePos(%s)", nil)
 	self.m_HudOnPlaneYaw = CachedJsExecutor("OnPlaneYaw(%s)", 0)
 	self.m_HudOnUpdateCircles = CachedJsExecutor("OnUpdateCircles(%s)", nil)
-	self.m_HudOnGameState = CachedJsExecutor("OnGameState('%s')", GameStates.None)
+	self.m_HudOnGameState = CachedJsExecutor("OnGameState('%s')", GameStatesStrings[GameStates.None])
 	self.m_HudOnPlayersInfo = CachedJsExecutor("OnPlayersInfo(%s)", nil)
 	self.m_HudOnLocalPlayerInfo = CachedJsExecutor("OnLocalPlayerInfo(%s)", nil)
 	self.m_HudOnUpdateTimer = CachedJsExecutor("OnUpdateTimer(%s)", nil)
 	self.m_HudOnMinPlayersToStart = CachedJsExecutor("OnMinPlayersToStart(%s)", nil)
 	self.m_HudOnPlayerHealth = CachedJsExecutor("OnPlayerHealth(%s)", 0)
 	self.m_HudOnPlayerArmor = CachedJsExecutor("OnPlayerArmor(%s)", 0)
+	self.m_HudOnPlayerHelmet = CachedJsExecutor("OnPlayerHelmet(%s)", 0)
 	self.m_HudOnPlayerPrimaryAmmo = CachedJsExecutor("OnPlayerPrimaryAmmo(%s)", 0)
 	self.m_HudOnPlayerSecondaryAmmo = CachedJsExecutor("OnPlayerSecondaryAmmo(%s)", 0)
 	self.m_HudOnPlayerFireLogic = CachedJsExecutor("OnPlayerFireLogic(%s)", 0)
 	self.m_HudOnPlayerCurrentWeapon = CachedJsExecutor("OnPlayerCurrentWeapon('%s')", "")
-	self.m_HudOnPlayerWeapons = CachedJsExecutor("OnPlayerWeapons(%s)", nil)
 	self.m_HudOnUpdateTeamPlayers = CachedJsExecutor("OnUpdateTeamPlayers(%s)", nil)
 	self.m_HudOnUpdateTeamLocked = CachedJsExecutor("OnUpdateTeamLocked(%s)", false)
 	self.m_HudOnUpdateTeamId = CachedJsExecutor("OnUpdateTeamId('%s')", "-")
@@ -53,6 +53,37 @@ function VuBattleRoyaleHud:RegisterVars()
 	self.m_HudOnGameOverScreen = CachedJsExecutor("OnGameOverScreen(%s)", nil)
 	self.m_HudOnUpdatePlacement = CachedJsExecutor("OnUpdatePlacement(%s)", 99)
 	self.m_HudOnSetUIState = CachedJsExecutor("OnSetUIState('%s')", UiStates.Loading)
+end
+
+function VuBattleRoyaleHud:ResetVars()
+	self.m_HudOnPlayerPos:ForceUpdate(nil)
+	self.m_HudOnPlayerYaw:ForceUpdate(0)
+	self.m_HudOnPlayerIsOnPlane:ForceUpdate(false)
+	self.m_HudOnPlanePos:ForceUpdate(nil)
+	self.m_HudOnPlaneYaw:ForceUpdate(0)
+	self.m_HudOnUpdateCircles:ForceUpdate(nil)
+	self.m_HudOnGameState:ForceUpdate(GameStatesStrings[GameStates.None])
+	self.m_HudOnPlayersInfo:ForceUpdate(nil)
+	self.m_HudOnLocalPlayerInfo:ForceUpdate(nil)
+	self.m_HudOnUpdateTimer:ForceUpdate(nil)
+	self.m_HudOnMinPlayersToStart:ForceUpdate(self.m_MinPlayersToStart)
+	self.m_HudOnPlayerHealth:ForceUpdate(0)
+	self.m_HudOnPlayerArmor:ForceUpdate(0)
+	self.m_HudOnPlayerHelmet:ForceUpdate(0)
+	self.m_HudOnPlayerPrimaryAmmo:ForceUpdate(0)
+	self.m_HudOnPlayerSecondaryAmmo:ForceUpdate(0)
+	self.m_HudOnPlayerFireLogic:ForceUpdate(0)
+	self.m_HudOnPlayerCurrentWeapon:ForceUpdate("")
+	-- self.m_HudOnUpdateTeamPlayers:ForceUpdate(nil)
+	-- self.m_HudOnUpdateTeamLocked:ForceUpdate(false)
+	-- self.m_HudOnUpdateTeamId:ForceUpdate("-")
+	-- self.m_HudOnUpdateTeamSize:ForceUpdate(0)
+	self.m_HudOnTeamJoinError:ForceUpdate(nil)
+	self.m_HudOnNotifyInflictorAboutKillOrKnock:ForceUpdate(nil)
+	self.m_HudOnInteractiveMessageAndKey:ForceUpdate(nil)
+	self.m_HudOnGameOverScreen:ForceUpdate(nil)
+	self.m_HudOnUpdatePlacement:ForceUpdate(99)
+	-- self.m_HudOnSetUIState:ForceUpdate(UiStates.Loading)
 end
 
 -- =============================================
@@ -91,11 +122,6 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 	if self.m_Ticks >= ServerConfig.HudUpdateRate then
 		self.m_HudOnMinPlayersToStart:Update(self.m_MinPlayersToStart)
 
-		if m_BrPlayer.m_Team ~= nil then
-			self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
-			self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
-		end
-
 		self:PushUpdatePlayersInfo()
 		self:PushLocalPlayerTeam()
 		self.m_Ticks = 0.0
@@ -115,6 +141,7 @@ function VuBattleRoyaleHud:OnUIDrawHud()
 	self:PushLocalPlayerYaw()
 	self:PushLocalPlayerAmmoArmorAndHealth()
 	self:OnUpdatePlacement()
+	self:OnUpdateTeamData()
 end
 
 function VuBattleRoyaleHud:OnClientUpdateInput()
@@ -130,9 +157,22 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10)
 	and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle then
-		if self.m_GameState ~= GameStates.Match or s_LocalPlayer.soldier == nil then
+		if self.m_GameState ~= GameStates.Match and s_LocalPlayer.soldier ~= nil then
 			m_DeployScreen:OpenDeployScreen()
+			NetEvents:Send(PlayerEvents.Despawn)
 		end
+	end
+
+	if InputManager:WentKeyDown(InputDeviceKeys.IDK_LeftCtrl) then
+		-- We pass the state of the CTRL to the UI, if you hold it down
+		-- you will split the items when you drop them from the inventory.
+		WebUI:ExecuteJS("OnLeftCtrl(true);")
+	end
+
+	if InputManager:WentKeyUp(InputDeviceKeys.IDK_LeftCtrl) then
+		-- We pass the state of the CTRL to the UI, if you hold it down
+		-- you will split the items when you drop them from the inventory.
+		WebUI:ExecuteJS("OnLeftCtrl(false);")
 	end
 
 	m_EscMenu:OnClientUpdateInput()
@@ -156,7 +196,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 		return
 	end
 
-	self:RegisterOnBeingInteractedCallbacks(p_Player.soldier)
+	self:RegisterSoldierInteractionCallbacks(p_Player.soldier)
 end
 
 function VuBattleRoyaleHud:OnSoldierHealthAction(p_Soldier, p_Action)
@@ -252,26 +292,32 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 		return
 	end
 
+	if self.m_GameState == p_GameState then
+		return
+	end
+
 	self.m_GameState = p_GameState
+
+	if self.m_GameState == GameStates.None then
+		WebUI:ExecuteJS("ResetAllValues();")
+		self:ResetVars()
+	end
 
 	if not self.m_IsLevelLoaded then
 		return
 	end
 
-	if self.m_GameState == GameStates.None or self.m_GameState == GameStates.Warmup then
-		self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
-			["msg"] = "Open team lobby",
-			["key"] = "F10",
-		}))
-		self.m_HudOnSetUIState:Update(UiStates.Game)
-	elseif self.m_GameState == GameStates.WarmupToPlane then
+	if self.m_GameState == GameStates.WarmupToPlane then
 		self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
 			["msg"] = nil,
 			["key"] = nil,
 		}))
+		self.m_ShowInteractiveReviveMessage = false
 
-		m_DeployScreen:CloseDeployScreen()
-		self.m_HudOnSetUIState:Update(UiStates.Loading)
+		if not SpectatorManager:GetSpectating() then
+			m_DeployScreen:CloseDeployScreen()
+			self.m_HudOnSetUIState:Update(UiStates.Loading)
+		end
 	else
 		self.m_HudOnSetUIState:Update(UiStates.Game)
 	end
@@ -279,9 +325,10 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 	self.m_HudOnGameState:Update(GameStatesStrings[p_GameState])
 end
 
-function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin)
+function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin, p_Team)
 	self.m_HudOnGameOverScreen:ForceUpdate(json.encode({
 		["isWin"] = p_IsWin,
+		["team"] = p_Team,
 	}))
 end
 
@@ -291,6 +338,15 @@ function VuBattleRoyaleHud:OnUpdatePlacement()
 	end
 
 	self.m_HudOnUpdatePlacement:Update(m_BrPlayer.m_Team.m_Placement)
+end
+
+function VuBattleRoyaleHud:OnUpdateTeamData()
+	if m_BrPlayer.m_Team == nil then
+		return
+	end
+
+	self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
+	self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
 end
 
 -- =============================================
@@ -393,7 +449,7 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
-	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed or SpectatorManager:GetSpectating() then
+	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed then
 		return
 	end
 
@@ -404,6 +460,12 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 			m_HudUtils:HUDEnterUIGraph()
 			m_HudUtils:ShowCrosshair(true)
 		else
+			-- close the inventory before opening the minimap
+			if m_HudUtils:GetIsInventoryOpened() then
+				m_HudUtils:SetIsInventoryOpened(false)
+				WebUI:ExecuteJS("OnInventoryOpen(false);")
+			end
+
 			m_HudUtils:SetIsMapOpened(true)
 			WebUI:ExecuteJS("OnOpenCloseMap(true);")
 			m_HudUtils:OnEnableMouse()
@@ -423,6 +485,40 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 		WebUI:ExecuteJS("OnMapSwitchRotation();")
 		p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 		return
+	end
+
+	if SpectatorManager:GetSpectating() then
+		return
+	end
+
+	-- Open / Close Inventory UI
+	if p_Action == UIInputAction.UIInputAction_Tab then
+		-- make sure the player is in no other menu
+		if not m_HudUtils:GetIsInOptionsMenu()
+		and not m_HudUtils:GetIsInEscMenu()
+		and not m_HudUtils:GetIsInDeployScreen() then
+			if m_HudUtils:GetIsInventoryOpened() then
+				m_HudUtils:SetIsInventoryOpened(false)
+				WebUI:ExecuteJS("OnInventoryOpen(false);")
+				m_HudUtils:HUDEnterUIGraph()
+				m_HudUtils:ShowCrosshair(true)
+			else
+				-- if the minimap is opened we close it
+				if m_HudUtils:GetIsMapOpened() then
+					m_HudUtils:SetIsMapOpened(false)
+					WebUI:ExecuteJS("OnOpenCloseMap(false);")
+				end
+
+				if not self.m_IsPlayerOnPlane then
+					m_HudUtils:SetIsInventoryOpened(true)
+					WebUI:ExecuteJS("OnInventoryOpen(true);")
+					m_HudUtils:OnEnableMouse()
+				end
+			end
+
+			p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
+			return
+		end
 	end
 end
 
@@ -444,7 +540,7 @@ end
 -- WebUI Events
 -- =============================================
 
-function VuBattleRoyaleHud:OnWebUIDeploy()
+function VuBattleRoyaleHud:OnWebUIDeploy(p_AppearanceName)
 	m_DeployScreen:CloseDeployScreen()
 
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
@@ -453,7 +549,11 @@ function VuBattleRoyaleHud:OnWebUIDeploy()
 		m_HudUtils:ShowCrosshair(true)
 	end
 
-	NetEvents:Send(PlayerEvents.PlayerDeploy)
+	if self.m_GameState == GameStates.WarmupToPlane and SpectatorManager:GetSpectating() then
+		self.m_HudOnSetUIState:Update(UiStates.Loading)
+	end
+
+	NetEvents:Send(PlayerEvents.PlayerDeploy, p_AppearanceName)
 end
 
 function VuBattleRoyaleHud:OnWebUITriggerMenuFunction(p_Function)
@@ -468,25 +568,25 @@ end
 	-- Being Interacted Callbacks
 -- =============================================
 
-function VuBattleRoyaleHud:RegisterOnBeingInteractedCallbacks(p_Soldier)
+function VuBattleRoyaleHud:RegisterSoldierInteractionCallbacks(p_Soldier)
 	for i, l_Entity in pairs(p_Soldier.bus.entities) do
 		if l_Entity.data ~= nil then
 			if l_Entity.data.instanceGuid == Guid("34130787-22C3-0F9D-6AA7-4BC214FA1734") then
-				l_Entity:RegisterEventCallback(self, self.OnBeingInteractedStarted)
+				l_Entity:RegisterEventCallback(self, self.OnSoldierInteractionStarted)
 			elseif l_Entity.data.instanceGuid == Guid("D0F06E9A-AE8B-E614-F8C3-54A47CF22565") then
-				l_Entity:RegisterEventCallback(self, self.OnBeingInteractedFinished)
+				l_Entity:RegisterEventCallback(self, self.OnSoldierInteractionFinished)
 			end
 		end
 	end
 end
 
-function VuBattleRoyaleHud:OnBeingInteractedStarted(p_Entity, p_Event)
-	m_Logger:Write("The interaction with the local player started")
+function VuBattleRoyaleHud:OnSoldierInteractionStarted(p_Entity, p_Event)
+	m_Logger:Write("The soldier interaction started")
 	WebUI:ExecuteJS("OnInteractStart(5);")
 end
 
-function VuBattleRoyaleHud:OnBeingInteractedFinished(p_Entity, p_Event)
-	m_Logger:Write("The interaction with the local player ended")
+function VuBattleRoyaleHud:OnSoldierInteractionFinished(p_Entity, p_Event)
+	m_Logger:Write("The soldier interaction started")
 	WebUI:ExecuteJS("OnInteractEnd();")
 end
 
@@ -510,6 +610,57 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 	self:OnGameStateChanged(self.m_GameState)
 	m_EscMenu:RegisterEscMenuCallbacks()
 	m_HudUtils:OnEnableMouse()
+
+	self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+		["msg"] = "Open team lobby",
+		["key"] = "F10",
+	}))
+	self.m_HudOnSetUIState:Update(UiStates.Game)
+end
+
+
+-- =============================================
+	-- Custom OnSpatialRaycast "event" (called from CommonSpatialRaycast)
+-- =============================================
+
+function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
+	-- loop all entities
+	for _, l_Entity in pairs(p_Entities) do
+		-- filter out the SoldierEntities
+		if l_Entity:Is("ClientSoldierEntity") then
+			l_Entity = SoldierEntity(l_Entity)
+
+			-- we found a teammate that we can revive
+			if l_Entity.isInteractiveManDown and l_Entity.teamId == TeamId.Team1 then
+				-- make sure this is not the local player
+				if l_Entity.player ~= PlayerManager:GetLocalPlayer() then
+					self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+						["msg"] = "Revive teammate",
+						["key"] = "E",
+					}))
+					self.m_ShowInteractiveReviveMessage = true
+
+					-- stop here
+					return
+				else
+					-- fyi: p_Entities[1] is the soldier of the local player most of the time
+					-- this is the local player and he is interactive mandown
+					-- so he can't revive anyone else (even when he is close to a mate)
+					-- thats why we break the for loop here
+					break
+				end
+			end
+		end
+	end
+
+	-- we found no teammate to revive
+	if self.m_ShowInteractiveReviveMessage then
+		self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+			["msg"] = nil,
+			["key"] = nil,
+		}))
+		self.m_ShowInteractiveReviveMessage = false
+	end
 end
 
 -- =============================================
@@ -517,24 +668,29 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	local s_Player = nil
+	local s_Position = nil
 
-	if s_LocalPlayer == nil then
+	if SpectatorManager:GetSpectating() then
+		s_Player = SpectatorManager:GetSpectatedPlayer()
+	else
+		s_Player = PlayerManager:GetLocalPlayer()
+	end
+
+	if s_Player == nil then
 		return
 	end
 
-	if s_LocalPlayer.alive == false then
-		return
+	if s_Player.alive then
+		local s_Soldier = s_Player.soldier
+
+		if s_Soldier ~= nil then
+			s_Position = s_Soldier.worldTransform.trans
+		end
+	else
+		s_Position = ClientUtils:GetCameraTransform().trans
 	end
 
-	local s_LocalSoldier = s_LocalPlayer.soldier
-
-	if s_LocalSoldier == nil then
-		return
-	end
-
-	local s_SoldierLinearTransform = s_LocalSoldier.worldTransform
-	local s_Position = s_SoldierLinearTransform.trans
 	local s_Table = {
 		x = s_Position.x,
 		y = s_Position.y,
@@ -546,18 +702,31 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerYaw()
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	if SpectatorManager:GetSpectating() then
+		local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
+		local s_Forward = nil
 
-	if s_LocalPlayer == nil or (s_LocalPlayer.soldier == nil and s_LocalPlayer.corpse == nil) then
-		return
+		if s_SpectatedPlayer == nil or s_SpectatedPlayer.soldier == nil then
+			s_Forward = ClientUtils:GetCameraTransform().forward * -1
+		else
+			s_Forward = s_SpectatedPlayer.soldier.worldTransform.forward
+		end
+
+		local s_YawRad = (math.atan(s_Forward.z, s_Forward.x) - (math.pi / 2)) % (2 * math.pi)
+		self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
+	else
+		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+		if s_LocalPlayer == nil or (s_LocalPlayer.soldier == nil and s_LocalPlayer.corpse == nil) then
+			return
+		end
+
+		local s_Camera = ClientUtils:GetCameraTransform()
+
+		-- TODO: Put this in utils
+		local s_YawRad = (math.atan(s_Camera.forward.z, s_Camera.forward.x) + (math.pi / 2)) % (2 * math.pi)
+		self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
 	end
-
-	local s_Camera = ClientUtils:GetCameraTransform()
-
-	-- TODO: Put this in utils
-	local s_YawRad = (math.atan(s_Camera.forward.z, s_Camera.forward.x) + (math.pi / 2)) % (2 * math.pi)
-	self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
-	return
 end
 
 function VuBattleRoyaleHud:PushUpdatePlayersInfo()
@@ -598,49 +767,42 @@ function VuBattleRoyaleHud:PushUpdatePlayersInfo()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
-	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+	local s_Player = PlayerManager:GetLocalPlayer()
 
 	if SpectatorManager:GetSpectating() then
-		s_LocalPlayer = SpectatorManager:GetSpectatedPlayer()
+		s_Player = SpectatorManager:GetSpectatedPlayer()
 	end
 
-	if s_LocalPlayer == nil then
+	if s_Player == nil then
 		return
 	end
 
-	if s_LocalPlayer.alive == false then
+	if s_Player.alive == false then
 		self.m_HudOnPlayerHealth:Update(0)
 		return
 	end
 
-	local s_LocalSoldier = s_LocalPlayer.soldier
+	local s_Soldier = s_Player.soldier
 
-	if s_LocalSoldier == nil then
+	if s_Soldier == nil then
 		return
 	end
 
-	local s_Inventory = { }
-
-	for l_Index, l_Weapon in pairs(s_LocalSoldier.weaponsComponent.weapons) do
-		if l_Weapon ~= nil then
-			s_Inventory[l_Index] = l_Weapon.name
-		end
-	end
-
-	if s_LocalSoldier.isInteractiveManDown then
-		self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health)
+	if s_Soldier.isInteractiveManDown then
+		self.m_HudOnPlayerHealth:Update(s_Soldier.health)
 	else
-		self.m_HudOnPlayerHealth:Update(s_LocalSoldier.health - 100)
+		self.m_HudOnPlayerHealth:Update(s_Soldier.health - 100)
 	end
 
-	self.m_HudOnPlayerArmor:Update(m_BrPlayer.m_Armor:GetPercentage())
-	self.m_HudOnPlayerPrimaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.primaryAmmo)
-	self.m_HudOnPlayerSecondaryAmmo:Update(s_LocalSoldier.weaponsComponent.currentWeapon.secondaryAmmo)
-	self.m_HudOnPlayerFireLogic:Update(s_LocalSoldier.weaponsComponent.currentWeapon.fireLogic)
-	self.m_HudOnPlayerCurrentWeapon:Update(s_LocalSoldier.weaponsComponent.currentWeapon.name)
-	self.m_HudOnPlayerWeapons:Update(json.encode(s_Inventory))
-	--self.m_HudOnPlayerCurrentSlot:Update(s_LocalSoldier.weaponsComponent.currentWeaponSlot)
-	return
+	self.m_HudOnPlayerArmor:Update(m_BrPlayer:GetArmorPercentage())
+	self.m_HudOnPlayerHelmet:Update(m_BrPlayer:GetHelmetPercentage())
+
+	if s_Soldier.weaponsComponent.currentWeapon then
+		self.m_HudOnPlayerPrimaryAmmo:Update(s_Soldier.weaponsComponent.currentWeapon.primaryAmmo)
+		self.m_HudOnPlayerSecondaryAmmo:Update(s_Soldier.weaponsComponent.currentWeapon.secondaryAmmo)
+		self.m_HudOnPlayerFireLogic:Update(s_Soldier.weaponsComponent.currentWeapon.fireLogic)
+		self.m_HudOnPlayerCurrentWeapon:Update(s_Soldier.weaponsComponent.currentWeapon.name)
+	end
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerTeam()
@@ -704,6 +866,27 @@ function VuBattleRoyaleHud:PushManDownMapMarkers()
 	end
 end
 
+function VuBattleRoyaleHud:OpenInventory()
+	-- make sure the player is in no other menu
+	if not m_HudUtils:GetIsInOptionsMenu()
+	and not m_HudUtils:GetIsInEscMenu()
+	and not m_HudUtils:GetIsInDeployScreen() then
+		m_Logger:Write("Open Inventory")
+
+		-- if the minimap is opened we close it
+		if m_HudUtils:GetIsMapOpened() then
+			m_HudUtils:SetIsMapOpened(false)
+			WebUI:ExecuteJS("OnOpenCloseMap(false);")
+		end
+
+		if not self.m_IsPlayerOnPlane then
+			m_HudUtils:SetIsInventoryOpened(true)
+			WebUI:ExecuteJS("OnInventoryOpen(true);")
+			m_HudUtils:OnEnableMouse()
+		end
+	end
+end
+
 -- =============================================
 	-- Create / Remove Marker
 -- =============================================
@@ -755,6 +938,10 @@ end
 
 function VuBattleRoyaleHud:HideCommoRose()
 	WebUI:ExecuteJS("OnHideCommoRose()")
+end
+
+function VuBattleRoyaleHud:OnAirdropDropped()
+	WebUI:ExecuteJS("OnAirdropDropped()")
 end
 
 return VuBattleRoyaleHud()

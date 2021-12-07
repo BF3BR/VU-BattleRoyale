@@ -3,11 +3,31 @@ class 'BRTeamManager'
 local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("BRTeamManager", true)
 
+function BRTeamManager:__init()
+	self:RegisterVars()
+end
+
+function BRTeamManager:RegisterVars()
+	self.m_SpectatedPlayerNames = {}
+end
+
 -- =============================================
 -- Events
 -- =============================================
 
 function BRTeamManager:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
+	-- we have to ignore spectated players
+	-- otherwise we would switch them back to team2
+	for _, l_PlayerName in pairs(self.m_SpectatedPlayerNames) do
+		if p_Player.name == l_PlayerName then
+			if p_TeamId ~= TeamId.Team3 then
+				self:SetTeamId(p_Player, TeamId.Team3)
+			end
+
+			return
+		end
+	end
+
 	self:OverrideTeamIds(p_Player)
 end
 
@@ -21,6 +41,7 @@ end
 
 function BRTeamManager:OnGameStateChanged(p_GameState)
 	if p_GameState == GameStates.WarmupToPlane then
+		self.m_SpectatedPlayerNames = {}
 		local s_Players = PlayerManager:GetPlayers()
 
 		for _, l_Player in pairs(s_Players) do
@@ -30,6 +51,11 @@ function BRTeamManager:OnGameStateChanged(p_GameState)
 end
 
 function BRTeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
+	self.m_SpectatedPlayerNames = p_PlayerNames
+
+	m_Logger:Write("Set SpectatedPlayer TeamMembers:")
+	m_Logger:WriteTable(p_PlayerNames)
+
 	-- First we want to move all old spectated players from Team3 to Team2
 	local s_Team3Players = PlayerManager:GetPlayersByTeam(TeamId.Team3)
 
@@ -38,7 +64,7 @@ function BRTeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
 	end
 
 	-- now we move the new spectated team to Team3
-	for _, l_PlayerName in pairs(p_PlayerNames) do
+	for _, l_PlayerName in pairs(self.m_SpectatedPlayerNames) do
 		local s_Player = PlayerManager:GetPlayerByName(l_PlayerName)
 
 		if s_Player ~= nil then
@@ -69,8 +95,10 @@ function BRTeamManager:SetTeamId(p_Player, p_TeamId)
 
 	p_Player.squadId = SquadId.Squad1
 
-	g_Timers:Timeout(1, function()
-		if p_Player.soldier ~= nil then
+	g_Timers:Timeout(1, p_Player.name, function(p_PlayerName)
+		local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
+
+		if s_Player and s_Player.soldier ~= nil then
 			m_Logger:Write("OverrideTeamId of soldier for this player from Team" .. p_Player.soldier.teamId .. " to Team" .. p_TeamId)
 			p_Player.teamId = p_TeamId
 			p_Player.soldier.teamId = p_TeamId

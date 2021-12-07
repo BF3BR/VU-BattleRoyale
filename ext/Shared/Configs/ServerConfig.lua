@@ -1,26 +1,26 @@
 ServerConfig = {
 	-- Minimum ammounts of players to start the warmup and then the match
-	MinPlayersToStart = 5,
+	MinPlayersToStart = 99,
 
 	-- Number of player per team
-	PlayersPerTeam = 4,
+	PlayersPerTeam = 1,
 
 	-- Time to update some of the HUD components
-	HudUpdateRate = 2.5,
+	HudUpdateRate = 1.5,
 
-	GunshipDespawn = 60.0,
+	GunshipDespawn = 50.0,
 
-	ParachuteRaycastUpdateRate = 0.2,
+	RaycastUpdateRate = 0.2,
 
-	ForceParachuteHeight = 125.0,
+	ForceParachuteHeight = 135.0,
 
 	UseOfficialImage = false,
 
 	MatchStateTimes = {
 		[GameStates.None] = nil,
-		[GameStates.Warmup] = 20.0,
+		[GameStates.Warmup] = 10.0,
 		[GameStates.WarmupToPlane] = 5.0,
-		[GameStates.Plane] = 35.0,
+		[GameStates.Plane] = 80.0,
 		[GameStates.PlaneToFirstCircle] = 10.0,
 		[GameStates.Match] = nil,
 		[GameStates.EndGame] = 15.0,
@@ -39,17 +39,19 @@ ServerConfig = {
 
 		EnableLootPointSpheres = false,
 
-		EnableDebugRenderer = false,
+		EnableDebugRenderer = true,
 
 		Logger_Enabled = true,
 
-		Logger_Print_All = true,
+		Logger_Print_All = false,
 
 		DisableWinningCheck = true,
 
-		DisableMapLoader = true,
+		DisableMapLoader = false,
 
 		EnableWhitelist = true,
+
+		EnableDebugCommands = true,
 
 		Whitelist = {
 			"voteban_flash",
@@ -73,6 +75,9 @@ ServerConfig = {
 			"milkman dan",
 			"P!NK_Lesley",
 			"P!NK_Illustris",
+			"paulhobbel",
+			"paul",
+			"GreatApo",
 		},
 	}
 }

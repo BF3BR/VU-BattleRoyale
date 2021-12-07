@@ -1,23 +1,37 @@
 class "VuBattleRoyaleServer"
 
+require "__shared/Slots/BRInventorySlot"
+require "__shared/Slots/BRInventoryWeaponSlot"
+require "__shared/Slots/BRInventoryAttachmentSlot"
+require "__shared/Slots/BRInventoryArmorSlot"
+require "__shared/Slots/BRInventoryHelmetSlot"
+require "__shared/Slots/BRInventoryGadgetSlot"
+require "__shared/Slots/BRInventoryBackpackSlot"
+
 require "Types/BRTeam"
 require "Types/BRPlayer"
+require "Types/BRInventory"
+
+require "DebugCommands"
 
 local m_Whitelist = require "Whitelist"
-local m_ServerManDownLoot = require "ServerManDownLoot"
 local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_PingServer = require "PingServer"
-local m_LootManager = require "LootManagerServer"
 local m_TeamManager = require "BRTeamManager"
 local m_SpectatorServer = require "SpectatorServer"
 local m_AntiCheat = require "AntiCheat"
+local m_BRAirdropManager = require "BRAirdropManager"
 local m_OOCFires = require "OOCFires"
 local m_GameStateManager = require "GameStateManager"
 local m_Match = require "Match"
-local m_Gunship = require "Gunship"
+local m_GunshipServer = require "GunshipServer"
 local m_MapVEManager = require "MapVEManager"
-local m_Logger = Logger("VuBattleRoyaleServer", true)
+local m_InventoryManager = require "BRInventoryManager"
+local m_ItemDatabase = require "Types/BRItemDatabase"
+local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
+
+local m_Logger = Logger("VuBattleRoyaleServer", true)
 
 function VuBattleRoyaleServer:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -58,13 +72,15 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated),
 		Events:Subscribe("Player:Created", self, self.OnPlayerCreated),
 		Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput),
-		Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon),
 		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
 		Events:Subscribe("Player:Killed", self, self.OnPlayerKilled),
 		Events:Subscribe("Player:Left", self, self.OnPlayerLeft),
+		Events:Subscribe('Player:Destroyed', self, self.OnPlayerDestroyed),
 
 		NetEvents:Subscribe(PlayerEvents.PlayerConnected, self, self.OnPlayerConnected),
 		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
+		NetEvents:Subscribe(PlayerEvents.PlayerSetSkin, self, self.OnPlayerSetSkin),
+		NetEvents:Subscribe(PlayerEvents.Despawn, self, self.OnPlayerDespawn),
 		NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw),
 		NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing),
 		NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing),
@@ -74,7 +90,16 @@ function VuBattleRoyaleServer:RegisterEvents()
 		NetEvents:Subscribe("ChatMessage:AllSend", self, self.OnChatMessageAllSend),
 		NetEvents:Subscribe(PhaseManagerNetEvent.InitialState, self, self.OnPhaseManagerInitialState),
 
-		Events:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged)
+		Events:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
+
+		NetEvents:Subscribe(InventoryNetEvent.PickupItem, self, self.OnInventoryPickupItem),
+		NetEvents:Subscribe(InventoryNetEvent.MoveItem, self, self.OnInventoryMoveItem),
+		NetEvents:Subscribe(InventoryNetEvent.UseItem, self, self.OnInventoryUseItem),
+		NetEvents:Subscribe(InventoryNetEvent.DropItem, self, self.OnInventoryDropItem),
+
+		Events:Subscribe("Player:ChangingWeapon", self, self.OnPlayerChangingWeapon),
+		Events:Subscribe("Player:PostReload", self, self.OnPlayerPostReload),
+		Events:Subscribe("BRItem:DestroyItem", self, self.OnItemDestroy),
 	}
 end
 
@@ -98,7 +123,7 @@ end
 function VuBattleRoyaleServer:OnExtensionUnloading()
 	m_PhaseManagerServer:OnExtensionUnloading()
 	m_OOCFires:OnExtensionUnloading()
-	m_Gunship:OnExtensionUnloading()
+	m_GunshipServer:OnExtensionUnloading()
 end
 
 -- =============================================
@@ -119,27 +144,30 @@ function VuBattleRoyaleServer:OnLevelLoadResources()
 		self.m_Hooks = {}
 
 		ServerUtils:ClearCustomGameModeName()
+		m_TeamManager:DestroyAll()
 
 		return
 	elseif #self.m_Events == 0 then
 		self:RegisterEvents()
 		self:RegisterHooks()
 		ServerUtils:SetCustomGameModeName("Battle Royale - " .. self:CurrentTeamSize())
+
+		for _, l_Player in pairs(PlayerManager:GetPlayers()) do
+			m_TeamManager:CreatePlayer(l_Player)
+		end
 	end
 
-	m_LootManager:OnLevelLoadResources()
 	m_MapVEManager:OnLevelLoadResources()
+	self:SetupRconVariables()
 end
 
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 	self:DisablePreRound()
-	self:SetupRconVariables()
 	m_Match:OnRestartRound()
 	self.m_WaitForStart = false
 	self.m_ForcedWarmup = false
 	m_PhaseManagerServer:OnLevelLoaded()
 	m_PingServer:OnLevelLoaded()
-	m_ServerManDownLoot:OnLevelLoaded()
 	m_AntiCheat:OnLevelLoaded()
 	m_MapVEManager:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 end
@@ -151,6 +179,7 @@ function VuBattleRoyaleServer:OnLevelDestroy()
 	m_OOCFires:OnLevelDestroy()
 	m_PhaseManagerServer:OnLevelDestroy()
 	m_MapVEManager:OnLevelDestroy()
+	m_LootPickupDatabase:OnLevelDestroy()
 end
 
 -- =============================================
@@ -164,6 +193,7 @@ function VuBattleRoyaleServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 
 	m_PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	m_AntiCheat:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+	m_BRAirdropManager:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 
 	if self.m_CumulatedTime < 1 then
 		self.m_CumulatedTime = self.m_CumulatedTime + p_DeltaTime
@@ -192,7 +222,7 @@ end
 
 function VuBattleRoyaleServer:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	if p_UpdatePass == UpdatePass.UpdatePass_PreSim then
-		m_Gunship:OnUpdatePassPreSim(p_DeltaTime)
+		m_GunshipServer:OnUpdatePassPreSim(p_DeltaTime)
 		m_Match:OnUpdatePassPreSim(p_DeltaTime)
 	end
 end
@@ -206,7 +236,6 @@ function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
 		return
 	end
 
-	m_LootManager:OnPlayerAuthenticated(p_Player)
 	m_TeamManager:OnPlayerAuthenticated(p_Player)
 	m_MapVEManager:OnPlayerAuthenticated(p_Player)
 end
@@ -225,15 +254,19 @@ function VuBattleRoyaleServer:OnPlayerUpdateInput(p_Player)
 		return
 	end
 
-	m_Gunship:OnPlayerUpdateInput(p_Player)
+	m_GunshipServer:OnPlayerUpdateInput(p_Player)
 end
 
 function VuBattleRoyaleServer:OnPlayerChangingWeapon(p_Player)
-	if p_Player == nil or p_Player.soldier == nil or p_Player.soldier.isInteractiveManDown == false then
+	if p_Player == nil or p_Player.soldier == nil then
 		return
 	end
 
-	p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
+	if p_Player.soldier.isInteractiveManDown == false then
+		m_InventoryManager:OnPlayerChangingWeapon(p_Player)
+	else
+		p_Player.soldier:ApplyCustomization(m_ManDownModifier:CreateManDownCustomizeSoldierData())
+	end
 end
 
 function VuBattleRoyaleServer:OnPlayerManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
@@ -267,6 +300,16 @@ end
 function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
 	m_Logger:Write(p_Player.name .. " left")
 	m_TeamManager:OnPlayerLeft(p_Player)
+	m_InventoryManager:OnPlayerLeft(p_Player)
+end
+
+function VuBattleRoyaleServer:OnPlayerDestroyed(p_Player)
+	if p_Player.onlineId ~= 0 then
+		return
+	end
+
+	-- bot left
+	self:OnPlayerLeft(p_Player)
 end
 
 -- =============================================
@@ -287,11 +330,13 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
 	NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, m_GameStateManager:GetGameState())
 
+	m_LootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
+
 	-- Fade in the default (showroom) camera
 	p_Player:Fade(1.0, false)
 end
 
-function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
+function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 	if p_Player == nil then
 		return
 	end
@@ -301,8 +346,11 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 		local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
 
 		if s_BrPlayer == nil then
-			return
+			m_Logger:Warning("BrPlayer for " .. p_Player.name .. " not found. Create it now.")
+			s_BrPlayer = m_TeamManager:CreatePlayer(p_Player)
 		end
+
+		s_BrPlayer:SetAppearance(p_AppearanceName)
 
 		local s_SpawnTrans = m_Match:GetRandomWarmupSpawnpoint()
 
@@ -311,14 +359,43 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player)
 		end
 
 		s_BrPlayer:Spawn(LinearTransform(
-			Vec3(1.0, 0.0, 0.0), 
-			Vec3(0.0, 1.0, 0.0), 
+			Vec3(1.0, 0.0, 0.0),
+			Vec3(0.0, 1.0, 0.0),
 			Vec3(0.0, 0.0, 1.0),
 			s_SpawnTrans
 		))
 	else
 		NetEvents:SendTo(PlayerEvents.EnableSpectate, p_Player)
 	end
+end
+
+function VuBattleRoyaleServer:OnPlayerSetSkin(p_Player, p_AppearanceName)
+	if p_Player == nil then
+		return
+	end
+
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
+	if s_BrPlayer == nil then
+		return
+	end
+
+	s_BrPlayer:SetAppearance(p_AppearanceName, true)
+end
+
+
+function VuBattleRoyaleServer:OnPlayerDespawn(p_Player)
+	if p_Player == nil then
+		return
+	end
+
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
+	if s_BrPlayer == nil then
+		return
+	end
+
+	s_BrPlayer:Kill(true)
 end
 
 -- =============================================
@@ -354,7 +431,7 @@ function VuBattleRoyaleServer:OnJumpOutOfGunship(p_Player, p_Transform)
 		return
 	end
 
-	m_Gunship:OnJumpOutOfGunship(p_Player, p_Transform)
+	m_GunshipServer:OnJumpOutOfGunship(p_Player, p_Transform)
 end
 
 function VuBattleRoyaleServer:OnOpenParachute(p_Player)
@@ -362,7 +439,7 @@ function VuBattleRoyaleServer:OnOpenParachute(p_Player)
 		return
 	end
 
-	m_Gunship:OnOpenParachute(p_Player)
+	m_GunshipServer:OnOpenParachute(p_Player)
 end
 
 function VuBattleRoyaleServer:OnChatMessageSquadSend(p_Player, p_Message)
@@ -397,6 +474,30 @@ function VuBattleRoyaleServer:OnGameStateChanged(p_OldGameState, p_GameState)
 	m_Match:InitMatch()
 end
 
+function VuBattleRoyaleServer:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
+	m_InventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
+end
+
+function VuBattleRoyaleServer:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
+	m_InventoryManager:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
+end
+
+function VuBattleRoyaleServer:OnInventoryUseItem(p_Player, p_ItemId)
+	m_InventoryManager:OnInventoryUseItem(p_Player, p_ItemId)
+end
+
+function VuBattleRoyaleServer:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
+	m_InventoryManager:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
+end
+
+function VuBattleRoyaleServer:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
+	m_InventoryManager:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
+end
+
+function VuBattleRoyaleServer:OnItemDestroy(p_ItemId)
+	m_InventoryManager:OnItemDestroy(p_ItemId)
+end
+
 -- =============================================
 -- Hooks
 -- =============================================
@@ -418,17 +519,13 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 		return
 	end
 
-	if p_Soldier == nil or p_Info == nil or p_Soldier.player == nil then
+	if p_Soldier == nil or p_Info == nil or p_Soldier.player == nil or p_GiverInfo == nil then
 		return
 	end
 
-	if p_GiverInfo == nil then
-		return
-	end
-
-	if p_Soldier.player == nil then
-		-- already dead
-		return
+	-- let healing items "damage" pass
+	if p_Info.damage < 0 then
+		return p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
 	end
 
 	local s_BrPlayer = m_TeamManager:GetPlayer(p_Soldier.player)
@@ -438,13 +535,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_Hook, p_Soldier, p_Info, p_Giver
 		s_BrGiver = m_TeamManager:GetPlayer(p_GiverInfo.giver)
 	end
 
-	p_Info.damage = s_BrPlayer:OnDamaged(p_Info, s_BrGiver)
-
-	-- if we have a giver and it's not self damage then we update the damage that player dealt
-	if s_BrGiver ~= nil and not s_BrGiver:Equals(s_BrPlayer) then
-		s_BrGiver:IncreaseDamageDealt(p_Info.damage)
-	end
-
+	p_Info.damage = s_BrPlayer:OnDamaged(p_Info.damage, s_BrGiver, p_Info.boneIndex == 1)
 	p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
 end
 
@@ -549,7 +640,6 @@ function VuBattleRoyaleServer:OnHotReload()
 		return
 	end
 
-	m_LootManager:OnModReload()
 	self:OnLevelLoaded()
 	PlayerManager:FadeInAll(1.0)
 end
@@ -622,7 +712,7 @@ function VuBattleRoyaleServer:SetupRconVariables()
 		["vars.hud"] = "true",
 		["vu.SquadSize"] = "4",
 		["vu.ColorCorrectionEnabled"] = "false",
-		["vu.SunFlareEnabled"] = "false",
+		["vu.SunFlareEnabled"] = "true",
 		["vu.SuppressionMultiplier"] = "0",
 		["vu.DestructionEnabled"] = "true",
 		["vu.DesertingAllowed"] = "true",

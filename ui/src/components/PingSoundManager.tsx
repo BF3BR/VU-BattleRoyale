@@ -1,23 +1,9 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import Ping from "../helpers/PingHelper";
 import { RootState } from "../store/RootReducer";
 
-import ping from "../assets/sounds/ping.mp3";
-import pingEnemy from "../assets/sounds/ping_enemy.mp3";
-import { VolumeConst } from "../helpers/SoundHelper";
-
-const pingAudio = new Audio(ping);
-pingAudio.volume = VolumeConst * .7;
-pingAudio.autoplay = false;
-pingAudio.loop = false;
-pingAudio.pause();
-
-const pingEnemyAudio = new Audio(pingEnemy);
-pingEnemyAudio.volume = VolumeConst;
-pingEnemyAudio.autoplay = false;
-pingEnemyAudio.loop = false;
-pingEnemyAudio.pause();
+import Ping from "../helpers/PingHelper";
+import { PlaySound, Sounds } from "../helpers/SoundHelper";
 
 /*
 	Default = 0,
@@ -42,9 +28,9 @@ const PingSoundManager: React.FC<Props> = ({ pingsTable, lastPing }) => {
         const latestPing = pingsTable.filter((ping: Ping) => ping.id === lastPing);
         if (latestPing.length > 0) {
             if (latestPing[0].type === 1) {
-                pingEnemyAudio.play();
+                PlaySound(Sounds.PingEnemy);
             } else {
-                pingAudio.play();
+                PlaySound(Sounds.Ping);
             }
     
             interval = setInterval(() => {
@@ -58,12 +44,6 @@ const PingSoundManager: React.FC<Props> = ({ pingsTable, lastPing }) => {
     }, [pingsTable]);
 
     const onEnd = () => {
-        pingAudio.currentTime = 0.0;
-        pingAudio.pause();
-
-        pingEnemyAudio.currentTime = 0.0;
-        pingEnemyAudio.pause();
-
         if (interval !== null) {
             clearInterval(interval);
         }

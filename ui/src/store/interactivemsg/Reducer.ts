@@ -1,7 +1,8 @@
 import { InteractivemsgState } from "./Types";
 import { 
     InteractivemsgActionTypes,
-    ADD_INTERACTIVEMSG
+    ADD_INTERACTIVEMSG,
+    RESET_INTERACTIVEMSG
 } from "./ActionTypes";
 
 const initialState: InteractivemsgState = {
@@ -19,6 +20,8 @@ const InteractivemsgReducer = (
                 message: action.payload.message,
                 key: action.payload.key,
             };
+        case RESET_INTERACTIVEMSG:
+            return initialState;
         default:
             return state;
     }

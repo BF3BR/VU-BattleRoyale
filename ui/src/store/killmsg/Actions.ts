@@ -1,6 +1,7 @@
 import { 
     KillmsgActionTypes,
-    ADD_KILLMSG
+    ADD_KILLMSG,
+    RESET_KILLMSG
 } from "./ActionTypes";
 
 export function addKillmsg(killed: boolean|null, kills: number|null, enemyName: string|null): KillmsgActionTypes {
@@ -11,5 +12,12 @@ export function addKillmsg(killed: boolean|null, kills: number|null, enemyName: 
             kills,
             enemyName,
         },
+    };
+}
+
+export function resetKillmsg(): KillmsgActionTypes {
+    return {
+        type: RESET_KILLMSG,
+        payload: {},
     };
 }

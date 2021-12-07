@@ -2,8 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { RootState } from "../store/RootReducer";
 
-import arrow from "../assets/img/arrow.svg";
-
 import "./SpectatorInfo.scss";
 
 

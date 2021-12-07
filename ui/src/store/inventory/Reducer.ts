@@ -1,110 +1,21 @@
 import { InventoryState } from "./Types";
-import InventorySlot from "../../helpers/InventoryHelper";
 import { 
     InventoryActionTypes,
-    UPDATE_INVENTORY
+    UPDATE_INVENTORY,
+    UPDATE_OVERLAY_LOOT,
+    UPDATE_CLOSE_LOOT_PICKUP,
+    UPDATE_PROGRESS,
+    RESET_INVENTORY
 } from "./ActionTypes";
 
 const initialState: InventoryState = {
-    primaryWeapon: {
-        weaponSlot: {
-            id: "primary-weapon-slot",
-            item: null,
-            accepts: ["weapon"],
-        },
-        attachmentSlot1: {
-            id: "primary-attachment-slot-1",
-            item: null,
-            accepts: ["attachment"],
-        },
-        attachmentSlot2: {
-            id: "primary-attachment-slot-2",
-            item: null,
-            accepts: ["attachment"],
-        },
-        attachmentSlot3: {
-            id: "primary-attachment-slot-3",
-            item: null,
-            accepts: ["attachment"],
-        },
+    slots: [],
+    overlayLoot: null,
+    closeItems: [],
+    progress: {
+        slot: null,
+        time: null,
     },
-    secondaryWeapon: {
-        weaponSlot: {
-            id: "secondary-weapon-slot",
-            item: null,
-            accepts: ["weapon"],
-        },
-        attachmentSlot1: {
-            id: "secondary-attachment-slot-1",
-            item: null,
-            accepts: ["attachment"],
-        },
-        attachmentSlot2: {
-            id: "secondary-attachment-slot-2",
-            item: null,
-            accepts: ["attachment"],
-        },
-        attachmentSlot3: {
-            id: "secondary-attachment-slot-3",
-            item: null,
-            accepts: ["attachment"],
-        },
-    },
-    backpack: [
-        {
-            id: "backpack-slot-1",
-            item: null,
-            accepts: ["attachment", "backpack"],
-        },
-        {
-            id: "backpack-slot-2",
-            item: null,
-            accepts: ["attachment", "backpack"],
-        },
-        {
-            id: "backpack-slot-3",
-            item: null,
-            accepts: ["attachment", "backpack"],
-        },
-        {
-            id: "backpack-slot-4",
-            item: null,
-            accepts: ["attachment", "backpack"],
-        },
-        {
-            id: "backpack-slot-5",
-            item: null,
-            /*{
-                id: "dummy-attachment",
-                name: "Attachment test",
-                count: 1,
-                type: "attachment",
-            },*/
-            accepts: ["attachment", "backpack"],
-        },
-    ],
-    ammo: [
-        {
-            id: "ammo-slot-1",
-            item: null,
-            accepts: ["attachment", "backpack"],
-        },
-        {
-            id: "ammo-slot-2",
-            item: null,
-            accepts: ["attachment", "backpack"],
-        },
-        {
-            id: "ammo-slot-3",
-            item: null,
-            accepts: ["attachment", "backpack"],
-        },
-        {
-            id: "ammo-slot-4",
-            item: null,
-            accepts: ["attachment", "backpack"],
-        },
-    ],
 };
 
 const InventoryReducer = (
@@ -115,8 +26,28 @@ const InventoryReducer = (
         case UPDATE_INVENTORY:
             return {
                 ...state,
-                //players: action.payload.players,
+                slots: action.payload.slots,
             };
+        case UPDATE_OVERLAY_LOOT:
+            return {
+                ...state,
+                overlayLoot: action.payload.overlayLoot,
+            };
+        case UPDATE_CLOSE_LOOT_PICKUP:
+            return {
+                ...state,
+                closeItems: action.payload.items,
+            };
+        case UPDATE_PROGRESS:
+            return {
+                ...state,
+                progress: {
+                    slot: action.payload.slot,
+                    time: action.payload.time,
+                },
+            }
+        case RESET_INVENTORY:
+            return initialState;
         default:
             return state;
     }

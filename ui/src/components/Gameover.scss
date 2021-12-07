@@ -8,10 +8,10 @@
     flex-flow: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 22vh 0 0;
-    font-size: .8vw;
-    text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
-    background: rgba(0,0,0,0.0);
+    padding: 0;
+    font-size: 0.8vw;
+    text-shadow: 0 0 0.3vw rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0);
     z-index: 999;
     -webkit-animation: dark-background 1.5s ease both;
     animation: dark-background 1.5s ease both;
@@ -21,37 +21,43 @@
         animation: scale-up-center 0.15s ease both;
         animation-delay: 2s;
         position: relative;
-        margin-bottom: 2vw;
+        margin: 15vh 0 3vw;
 
         span {
-            font-size: 4.5vw;
+            font-size: 7.5vw;
+            padding-bottom: 1vw;
             text-transform: uppercase;
             font-style: normal;
             font-weight: 600;
-            width: 30vw;
+            width: 40vw;
             height: 9vw;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #fff;
+            text-shadow: 0 0 1.5vh rgba(255, 255, 255, 0.55);
+            box-shadow: 0 0 4vh 0.05vh rgba(255, 255, 255, 0.1);
 
-            &.won {
-                color: #d1ffbe;
-                text-shadow: 0 0 0.5vw rgba(209, 255, 190, 0.4);
-                background: rgba(209, 255, 190, .25);
-                border: 0.1vw solid #d1ffbe;
-            }
-
-            &.lost {
-                color: #ff9f80;
-                text-shadow: 0 0 0.5vw rgba(255, 159, 128, 0.4);
-                background: rgba(255, 159, 128, .25);
-                border: 0.1vw solid #ff9f80;
-            }
+            background: rgb(0, 0, 0);
+            background: linear-gradient(
+                65deg,
+                rgba(0, 0, 0, 0.5) 0%,
+                rgba(0, 0, 0, 0.2) 20%,
+                rgba(0, 0, 0, 0.2) 50%,
+                rgba(0, 0, 0, 0.2) 80%,
+                rgba(0, 0, 0, 0.5) 100%
+            );
+            border: 0.1vw solid #fff;
 
             &::before {
-                content: '';
-                background: transparent url('../assets/img/noise.gif') 50% 50% repeat;
-                background-size: 200px;
+                content: "";
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #fff;
+                box-shadow: 0 0 2vh 2vh #fff inset;
+
                 position: absolute;
                 left: 0;
                 top: 0;
@@ -60,7 +66,39 @@
                 z-index: -5;
                 opacity: 0.3;
             }
+
+            &::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                background-image: -webkit-linear-gradient(
+                    left,
+                    rgba(0, 0, 0, 0.05),
+                    rgba(0, 0, 0, 0.05) 24%,
+                    rgba(0, 0, 0, 0) 25%,
+                    rgba(0, 0, 0, 0)
+                );
+                background-image: linear-gradient(
+                    to right,
+                    rgba(0, 0, 0, 0.05),
+                    rgba(0, 0, 0, 0.05) 24%,
+                    rgba(0, 0, 0, 0) 25%,
+                    rgba(0, 0, 0, 0)
+                );
+                background-size: 0.35vh 100%;
+            }
         }
+    }
+
+    .inner {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        width: 30vw;
+        margin-bottom: 2vw;
     }
 
     .Name {
@@ -81,6 +119,7 @@
     }
 
     .Rank,
+    .Team,
     .Kills {
         color: #d5dde5;
         font-size: 1.45vw;
@@ -88,10 +127,10 @@
         font-style: normal;
         font-weight: 600;
         text-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.4);
-        
+
         span {
             color: #94cdf3;
-            margin-left: .4vw;
+            margin-left: 0.4vw;
             text-shadow: 0 0 0.5vw rgba(148, 205, 243, 0.4);
         }
     }
@@ -110,7 +149,6 @@
         animation-delay: 2.9s;
     }*/
 
-    
     .Rank {
         -webkit-animation: scale-up-center 0.15s ease both;
         animation: scale-up-center 0.15s ease both;
@@ -122,7 +160,23 @@
         -webkit-animation: scale-up-center 0.15s ease both;
         animation: scale-up-center 0.15s ease both;
         animation-delay: 2.9s;
+        margin: 0 0 1vw;
+    }
+
+    .Team {
+        -webkit-animation: scale-up-center 0.15s ease both;
+        animation: scale-up-center 0.15s ease both;
+        animation-delay: 2.9s;
         margin: 0;
+        font-weight: 600;
+
+        b {
+            display: block;
+            text-align: center;
+            color: #d1ffbe;
+            text-shadow: 0 0 0.5vw rgba(209, 255, 190, 0.4);
+            font-weight: 600;
+        }
     }
 
     .btn {
@@ -131,25 +185,188 @@
         animation-delay: 3.5s;
         margin-top: 3vw;
     }
+
+    &.Winner {
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0;
+        font-size: 0.8vw;
+
+        #VictoryVideo {
+            position: absolute;
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            -webkit-animation: video-background 4.5s ease both;
+            animation: video-background 4.5s ease both;
+        }
+
+        .Rank {
+            animation-delay: 2.6s;
+        }
+    
+        .Kills {
+            animation-delay: 2.6s;
+        }
+    
+        .Team {
+            animation-delay: 2.6s;
+        }
+
+        .Victory {
+            -webkit-animation: scale-up-center 0.15s ease both;
+            animation: scale-up-center 0.15s ease both;
+            animation-delay: .5s;
+            position: relative;
+            margin: 15vh 0 3vw;
+            background: rgba(83, 54, 10, 0.5);
+
+            .flare {
+                position: absolute;
+                width: 20vw;
+                top: -52%;
+                left: -16.5%;
+                animation: blink 4s infinite both;
+            }
+
+            .flare2 {
+                position: absolute;
+                width: 16vw;
+                bottom: -49.5%;
+                right: -26.6%;
+                animation: blink 4s infinite both;
+            }
+
+            span {
+                font-size: 8.25vw;
+                padding-bottom: 1vw;
+                text-transform: uppercase;
+                font-style: normal;
+                font-weight: 600;
+                width: 40vw;
+                height: 9vw;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                text-shadow: 0 0 1.5vh rgba(255, 255, 255, 0.55);
+                background: rgb(255, 115, 0);
+                background: linear-gradient(
+                    65deg,
+                    rgba(255, 115, 0, 0.5) 0%,
+                    rgba(255, 115, 0, 0.2) 20%,
+                    rgba(255, 115, 0, 0.2) 50%,
+                    rgba(255, 115, 0, 0.2) 80%,
+                    rgba(255, 115, 0, 0.5) 100%
+                );
+                box-shadow: 0 .25vh 4vh 0.02vh rgba(255, 183, 74, 0.4);
+
+                &::before {
+                    content: "";
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: -webkit-linear-gradient(left, #bd620d, rgba(189, 98, 13, 0));
+                    background: linear-gradient(to right, #bd620d, rgba(189, 98, 13, 0));
+                    box-shadow: 0 0 10vh 0.5vh rgb(255, 115, 0) inset;
+
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: -5;
+                    opacity: 0.3;
+                }
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-image: -webkit-linear-gradient(
+                        left,
+                        rgba(0, 0, 0, 0.05),
+                        rgba(0, 0, 0, 0.05) 24%,
+                        rgba(0, 0, 0, 0) 25%,
+                        rgba(0, 0, 0, 0)
+                    );
+                    background-image: linear-gradient(
+                        to right,
+                        rgba(0, 0, 0, 0.05),
+                        rgba(0, 0, 0, 0.05) 24%,
+                        rgba(0, 0, 0, 0) 25%,
+                        rgba(0, 0, 0, 0)
+                    );
+                    background-size: 0.35vh 100%;
+                }
+            }
+        }
+    }
 }
 
 @-webkit-keyframes dark-background {
     0% {
-        background: rgba(0,0,0,0.0);
+        background: rgba(0, 0, 0, 0);
     }
 
     100% {
-        background: rgba(0,0,0,0.75);
+        background: rgba(0, 0, 0, 0.45);
     }
 }
 
 @keyframes dark-background {
     0% {
-        background: rgba(0,0,0,0.0);
+        background: rgba(0, 0, 0, 0);
     }
 
     100% {
-        background: rgba(0,0,0,0.75);
+        background: rgba(0, 0, 0, 0.45);
     }
 }
 
+@keyframes video-background {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    74% {
+        opacity: 0;
+    }
+
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes blink {
+    0%,
+    50%,
+    100% {
+        opacity: 1;
+        transform: rotateX(0);
+    }
+    25%,
+    75% {
+        opacity: .7;
+        transform: rotateX(15deg);
+    }
+}

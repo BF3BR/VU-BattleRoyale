@@ -1,7 +1,5 @@
 class 'TreeRemoving'
 
-require "__shared/Enums/ParameterModificationType"
-
 local TreeConfig = require "__shared/Configs/2dTreeConfig"
 
 local m_XP5_003 = DC(Guid("2155927F-76C7-84F2-0BAF-4862CD442CF8"), Guid("2155927F-76C7-84F2-0BAF-4862CD442CF8"))

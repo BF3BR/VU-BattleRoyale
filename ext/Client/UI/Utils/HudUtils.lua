@@ -13,6 +13,7 @@ function HudUtils:RegisterVars()
 	self.m_IsInOptionsMenu = false
 	self.m_IsMapOpened = false
 	self.m_IsInDeployScreen = false
+	self.m_IsInInventory = false
 	self.m_EnableMouseInstanceId = nil
 	self.m_DisableGameInputInstanceId = nil
 	self.m_BlurInstanceId = nil
@@ -77,6 +78,14 @@ function HudUtils:GetIsInDeployScreen()
 	return self.m_IsInDeployScreen
 end
 
+function HudUtils:SetIsInventoryOpened(p_Enable)
+	self.m_IsInInventory = p_Enable
+end
+
+function HudUtils:GetIsInventoryOpened()
+	return self.m_IsInInventory
+end
+
 function HudUtils:ShowCrosshair(p_Enable)
 	if SpectatorManager:GetSpectating() then
 		return
@@ -88,13 +97,16 @@ function HudUtils:ShowCrosshair(p_Enable)
 	while s_UIGraphEntity do
 		if s_UIGraphEntity.data.instanceGuid == Guid('9F8D5FCA-9B2A-484F-A085-AFF309DC5B7A') then
 			s_UIGraphEntity = Entity(s_UIGraphEntity)
+
 			if p_Enable then
 				s_UIGraphEntity:FireEvent('ShowCrosshair')
 			else
 				s_UIGraphEntity:FireEvent('HideCrosshair')
 			end
+
 			return
 		end
+
 		s_UIGraphEntity = s_UIGraphEntityIterator:Next()
 	end
 end
@@ -131,6 +143,7 @@ function HudUtils:DisableMenuVisualEnv()
 			s_Entity:FireEvent("Disable")
 			return
 		end
+
 		s_Entity = s_Iterator:Next()
 	end
 end
@@ -149,6 +162,7 @@ function HudUtils:ExitSoundState()
 			s_SoundStateEntity:FireEvent("Exit")
 			return
 		end
+
 		s_SoundStateEntity = s_SoundStateEntityIterator:Next()
 	end
 end

@@ -12,14 +12,30 @@ import lock from "../assets/img/lock.svg";
 import lockOpen from "../assets/img/lock-open.svg";
 
 import "./DeployScreen.scss";
+import { PlaySound, Sounds } from "../helpers/SoundHelper";
 
 let isFirstLoad = true;
 
 const AppearanceArray = [
-    "RU Woodland",
-    "US Woodland",
-    "RU Urban",
-    "US Urban",
+    "RU Assault Woodland",
+    "US Assault Woodland",
+    "RU Recon Woodland",
+    "US Recon Woodland",
+    "RU Assault Specact",
+    "US Assault Specact",
+    "RU Assault Spec Ops",
+    "US Assault Spec Ops",
+];
+
+const AppearanceKeyArray = [
+    "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01",
+    "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Wood01",
+    "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Recon_Appearance_Wood01",
+    "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Recon_Appearance_Wood01",
+    "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Specact",
+    "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Specact",
+    "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Ninja",
+    "Persistence/Unlocks/Soldiers/Visual/MP/Us/MP_US_Assault_Appearance_Ninja",
 ];
 
 const TeamType = [
@@ -49,10 +65,12 @@ interface StateFromReducer {
     teamSize: number;
     teamOpen: boolean;
     isTeamLeader: boolean;
+    localPlayerName: string;
     teamCode: string|null;
     teamJoinError: number|null;
     selectedAppearance: number;
     selectedTeamType: number;
+    deployScreen: boolean;
 }
 
 type Props = DispatchFromReducer & StateFromReducer;
@@ -62,16 +80,29 @@ const DeployScreen: React.FC<Props> = ({
     team, 
     teamSize, 
     teamOpen, 
-    isTeamLeader, 
+    isTeamLeader,
+    localPlayerName,
     teamCode, 
     teamJoinError, 
     setTeamJoinError,
     selectedAppearance,
     setSelectedAppearance,
     selectedTeamType,
-    setSelectedTeamType
+    setSelectedTeamType,
+    deployScreen
 }) => {
+    useEffect(() => {
+        sendToLua('WebUI:SetSkin', AppearanceKeyArray[selectedAppearance]);
+    }, [selectedAppearance]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            sendToLua('WebUI:SetSkin', AppearanceKeyArray[selectedAppearance]);
+        }, 1250);
+    }, [deployScreen]);
+
     const OnAppearanceRight = () => {
+        PlaySound(Sounds.Click);
         if (selectedAppearance === AppearanceArray.length - 1) {
             setSelectedAppearance(0);
         } else {
@@ -80,6 +111,7 @@ const DeployScreen: React.FC<Props> = ({
     }
 
     const OnAppearanceLeft = () => {
+        PlaySound(Sounds.Click);
         if (selectedAppearance === 0) {
             setSelectedAppearance(Object.keys(AppearanceArray).length - 1);
         } else {
@@ -88,11 +120,12 @@ const DeployScreen: React.FC<Props> = ({
     }
 
     const OnDeploy = () => {
-        sendToLua('WebUI:Deploy'); // synced
+        sendToLua('WebUI:Deploy', AppearanceKeyArray[selectedAppearance]);
         setDeployScreen(false);
     }
 
     const OnTeamOpenClose = () => {
+        PlaySound(Sounds.Click);
         sendToLua('WebUI:ToggleLock'); // synced
     }
 
@@ -129,6 +162,13 @@ const DeployScreen: React.FC<Props> = ({
 
     const OnLeaveTeam = () => {
         OnChangeTeamType(1);
+    }
+
+    const OnMute = (player: Player) => {
+        sendToLua('WebUI:VoipMutePlayer', JSON.stringify({
+            playerName: player.name,
+            mute: typeof player.isMuted === "boolean" ? !player.isMuted : true,
+        }));
     }
 
     const items = []
@@ -178,7 +218,13 @@ const DeployScreen: React.FC<Props> = ({
                                 <h1>
                                     Your Team                                    
                                     <span>Code: <b className="codeNumbers">{teamCode??' - '}</b></span>
-                                    <label id="TeamOpenClose" className={teamOpen ? "isOpen" : "isClose"}>
+                                    <label 
+                                        id="TeamOpenClose" 
+                                        className={teamOpen ? "isOpen" : "isClose"}
+                                        onMouseEnter={() => {
+                                            PlaySound(Sounds.Navigate);
+                                        }}
+                                    >
                                         {teamOpen ?
                                             <img src={lockOpen} alt="FILL" />
                                         :
@@ -209,16 +255,36 @@ const DeployScreen: React.FC<Props> = ({
                                         <div className={"TeamPlayer"} key={index}>
                                             <div className="TeamPlayerName">
                                                 <div className="circle" style={{ background: rgbaToRgb(player.color), boxShadow: "0 0 0.5vw " + rgbaToRgb(player.color) }}></div>
-                                                <span>{player.name??''}</span>
+                                                <span>
+                                                    {player.name??''}
+                                                    {player.isTeamLeader &&
+                                                        <span className="teamLeader">[LEADER]</span>
+                                                    }
+                                                </span>
                                             </div>
-                                            {player.isTeamLeader &&
-                                                <span className="teamLeader">[LEADER]</span>
+                                            {player.name !== localPlayerName &&                                            
+                                                <button className="btn btn-small" onClick={() => OnMute(player)}>
+                                                    {player.isMuted ?
+                                                        "Unmute"
+                                                    :
+                                                        "Mute"
+                                                    }
+                                                </button>
                                             }
                                         </div>
                                     ))}
                                     {items??''}
                                 </div>
-                                <button className="btn btn-small btn-leave-team" onClick={OnLeaveTeam}>
+                                <button 
+                                    className="btn btn-small btn-leave-team" 
+                                    onClick={() => {
+                                        PlaySound(Sounds.Click);
+                                        OnLeaveTeam();
+                                    }}
+                                    onMouseEnter={() => {
+                                        PlaySound(Sounds.Navigate);
+                                    }}
+                                >
                                     Leave team
                                 </button>
                             </div>
@@ -268,13 +334,36 @@ const DeployScreen: React.FC<Props> = ({
                         <h1>Appearance</h1>
                     </div>
                     <div className="card-content">
-                        <button onClick={OnAppearanceLeft}><img src={arrow} className="left" alt="Left" /></button>
-                        <div className="AppearanceText">{AppearanceArray[selectedAppearance]}</div>
-                        <button onClick={OnAppearanceRight}><img src={arrow} className="right" alt="Right" /></button>
+                        <button 
+                            onClick={OnAppearanceLeft}
+                        >
+                            <img src={arrow} className="left" alt="Left" />
+                        </button>
+                        <div className="AppearanceText">
+                            {AppearanceArray[selectedAppearance]}
+                        </div>
+                        <button 
+                            onClick={OnAppearanceRight}
+                            onMouseEnter={() => {
+                                PlaySound(Sounds.Navigate);
+                            }}
+                        >
+                            <img src={arrow} className="right" alt="Right" />
+                        </button>
                     </div>
                 </div>
 
-                <button className="btn btn-full-width Deploy" disabled={btnDisabled} onClick={OnDeploy}>
+                <button 
+                    className="btn btn-full-width Deploy"
+                    disabled={btnDisabled} 
+                    onClick={() => {
+                        PlaySound(Sounds.Click);
+                        OnDeploy();
+                    }}
+                    onMouseEnter={() => {
+                        PlaySound(Sounds.Navigate);
+                    }}
+                >
                     Ready
                 </button>
             </div>
@@ -284,7 +373,7 @@ const DeployScreen: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => {
     return {
-        // PlayerReducer
+        // TeamReducer
         team: state.TeamReducer.players,
         // GameReducer
         teamSize: state.GameReducer.deployScreen.teamSize,
@@ -295,6 +384,9 @@ const mapStateToProps = (state: RootState) => {
         selectedTeamType: state.GameReducer.deployScreen.selectedTeamType,
         // PlayerReducer
         isTeamLeader: state.PlayerReducer.player.isTeamLeader ?? false,
+        // GameReducer
+        deployScreen: state.GameReducer.deployScreen.enabled,
+        localPlayerName: state.PlayerReducer.player.name ?? "",
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

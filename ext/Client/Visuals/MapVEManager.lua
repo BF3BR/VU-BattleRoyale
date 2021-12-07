@@ -1,8 +1,5 @@
 class "MapVEManager"
 
-require "__shared/Configs/MapsConfig"
-require "__shared/Utils/LevelNameHelper"
-
 local m_Logger = Logger("MapVEManager", false)
 
 function MapVEManager:__init()

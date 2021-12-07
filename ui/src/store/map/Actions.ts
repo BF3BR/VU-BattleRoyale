@@ -1,6 +1,7 @@
 import { 
     MapActionTypes,
     OPEN_MAP,
+    RESET_MAP,
     SHOW_MAP,
     SWITCH_OPEN_MAP,
     SWITCH_ROTATION
@@ -30,6 +31,13 @@ export function showMap(show: boolean): MapActionTypes {
 export function switchRotation(): MapActionTypes {
     return {
         type: SWITCH_ROTATION,
+        payload: {},
+    };
+}
+
+export function resetMap(): MapActionTypes {
+    return {
+        type: RESET_MAP,
         payload: {},
     };
 }

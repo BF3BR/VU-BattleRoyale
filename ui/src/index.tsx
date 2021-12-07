@@ -11,6 +11,7 @@ import KillMessage from './store/killmsg/KillMessage';
 import InteractMessage from './store/interactivemsg/InteractMessage';
 
 import App from './App';
+import AlertManager from './components/AlertManager';
 
 
 const store = createStore(
@@ -24,6 +25,7 @@ ReactDOM.render(
     <Provider store={store}>
         <KillMessage />
         <InteractMessage />
+        <AlertManager />
         <App />
     </Provider>,
     document.getElementById('root')
