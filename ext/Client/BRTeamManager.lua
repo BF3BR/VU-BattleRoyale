@@ -99,10 +99,10 @@ function BRTeamManager:SetTeamId(p_Player, p_TeamId)
 		local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
 
 		if s_Player and s_Player.soldier ~= nil then
-			m_Logger:Write("OverrideTeamId of soldier for this player from Team" .. p_Player.soldier.teamId .. " to Team" .. p_TeamId)
-			p_Player.teamId = p_TeamId
-			p_Player.soldier.teamId = p_TeamId
-			p_Player.squadId = SquadId.Squad1
+			m_Logger:Write("OverrideTeamId of soldier for this player from Team" .. s_Player.soldier.teamId .. " to Team" .. p_TeamId)
+			s_Player.teamId = p_TeamId
+			s_Player.soldier.teamId = p_TeamId
+			s_Player.squadId = SquadId.Squad1
 		end
 	end)
 end
