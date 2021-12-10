@@ -16,6 +16,9 @@ function BRPlayer:__init(p_Player)
 	-- indicates if the player joined the team by code
 	self.m_JoinedByCode = false
 
+	-- if a player quits per esc menu this will be set to true
+	self.m_QuitManually = false
+
 	-- the name of the player who killed this BRPlayer
 	self.m_KillerName = nil
 
@@ -206,7 +209,7 @@ end
 	-- Player Spawn Functions
 -- =============================================
 
-function BRPlayer:Spawn(p_Trans)
+function BRPlayer:Spawn(p_Trans, p_MatchStarted)
 	-- check if alive
 	if self:IsAlive() then
 		return
@@ -264,10 +267,126 @@ function BRPlayer:Spawn(p_Trans)
 			-- the ApplyCustomization is needed otherwise the transform will reset to Vec3(1,0,0) Vec3(0,1,0) Vec3(0,0,1)
 			p_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
 			p_Player.soldier:SetTransform(p_Trans)
+
+			if p_MatchStarted then
+				-- we need this to replace crashed/ disconnected players with bots
+				self:RegisterUnspawnCallback(p_Player.soldier)
+			end
+
 			-- we are done, so we can destroy this timer
 			p_Timer:Destroy()
 		end
 	end)
+end
+
+function BRPlayer:RegisterUnspawnCallback(p_Soldier)
+	p_Soldier:RegisterUnspawnCallback(function(p_Entity)
+		p_Entity = SoldierEntity(p_Entity)
+
+		if p_Entity.player ~= nil and not self.m_QuitManually and p_Entity.isAlive then
+			self:ReplaceSoldierWithBot(p_Entity)
+		else
+			-- TODO: drop his loot
+		end
+	end)
+end
+
+function BRPlayer:ReplaceSoldierWithBot(p_Soldier)
+	local s_Bot = PlayerManager:CreatePlayer(p_Soldier.player.name, p_Soldier.player.teamId, p_Soldier.player.squadId)
+
+	if s_Bot == nil then
+		m_Logger:Warning("Couldn't create bot player: " .. p_Soldier.player.name)
+		return
+	end
+
+	local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier"))
+	local s_VeniceSoldierCustomizationAsset = VeniceSoldierCustomizationAsset(ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault"))
+
+	-- Get it from BRPlayer.m_Appearance
+	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer("persistence/unlocks/soldiers/visual/mp/us/mp_us_assault_appearance01"))
+
+	-- TODO: replace with Inventory code
+	-- will be replaced by the InventoryManager
+	-- this is also complete garbage: doesn't work for medkit, defib
+	-- didn't copy the unlocks + ammo
+	-- it won't select the correct weapon,
+	-- so better use soldier:ApplyCustomization
+	for l_WeaponSlot = 1, #p_Soldier.weaponsComponent.weapons do
+		if p_Soldier.weaponsComponent.weapons[l_WeaponSlot] ~= nil then
+			local s_WeaponName = p_Soldier.weaponsComponent.weapons[l_WeaponSlot].data.partition.name
+			local s_WeaponAssetName = "weapons/" .. s_WeaponName:gsub(".*/", "") .. "/U_" .. s_WeaponName:gsub(".*/", "")
+
+			local s_WeaponAsset = ResourceManager:SearchForDataContainer(s_WeaponAssetName)
+
+			if s_WeaponAsset == nil then
+				s_WeaponAssetName = "weapons/gadgets/" .. s_WeaponName:gsub(".*/", "") .. "/U_" .. s_WeaponName:gsub(".*/", "")
+				s_WeaponAsset = ResourceManager:SearchForDataContainer(s_WeaponAssetName)
+			end
+
+			if s_WeaponAsset ~= nil then
+				s_WeaponAsset = _G[s_WeaponAsset.typeInfo.name](s_WeaponAsset)
+				s_Bot:SelectWeapon(l_WeaponSlot - 1, s_WeaponAsset, {})
+			end
+		end
+	end
+
+	s_Bot:SelectUnlockAssets(s_VeniceSoldierCustomizationAsset, {s_VisualUnlockAsset})
+	local s_Soldier = s_Bot:CreateSoldier(s_SoldierBlueprint, p_Soldier.transform)
+
+	-- copy health
+	s_Soldier.health = p_Soldier.health
+
+	-- copy transform & characterpose
+	s_Bot:SpawnSoldierAt(s_Soldier, p_Soldier.transform, p_Soldier.pose)
+	s_Bot:AttachSoldier(s_Soldier)
+
+	self.m_Player = s_Bot
+	m_Logger:Write("Replaced player with bot: " .. s_Bot.name)
+end
+
+function BRPlayer:ReplaceBotSoldierWithPlayer(p_BotSoldier)
+	local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier"))
+	local s_VeniceSoldierCustomizationAsset = VeniceSoldierCustomizationAsset(ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault"))
+
+	-- Get it from BRPlayer.m_Appearance
+	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer("persistence/unlocks/soldiers/visual/mp/us/mp_us_assault_appearance01"))
+
+	-- TODO: replace with Inventory code
+	-- will be replaced by the InventoryManager
+	-- this is also complete garbage: doesn't work for medkit, defib
+	-- didn't copy the unlocks + ammo
+	-- it won't select the correct weapon,
+	-- so better use soldier:ApplyCustomization
+	for l_WeaponSlot = 1, #p_BotSoldier.weaponsComponent.weapons do
+		if p_BotSoldier.weaponsComponent.weapons[l_WeaponSlot] ~= nil then
+			local s_WeaponName = p_BotSoldier.weaponsComponent.weapons[l_WeaponSlot].data.partition.name
+			local s_WeaponAssetName = "weapons/" .. s_WeaponName:gsub(".*/", "") .. "/U_" .. s_WeaponName:gsub(".*/", "")
+
+			local s_WeaponAsset = ResourceManager:SearchForDataContainer(s_WeaponAssetName)
+
+			if s_WeaponAsset == nil then
+				s_WeaponAssetName = "weapons/gadgets/" .. s_WeaponName:gsub(".*/", "") .. "/U_" .. s_WeaponName:gsub(".*/", "")
+				s_WeaponAsset = ResourceManager:SearchForDataContainer(s_WeaponAssetName)
+			end
+
+			if s_WeaponAsset ~= nil then
+				s_WeaponAsset = _G[s_WeaponAsset.typeInfo.name](s_WeaponAsset)
+				self.m_Player:SelectWeapon(l_WeaponSlot - 1, s_WeaponAsset, {})
+			end
+		end
+	end
+
+	self.m_Player:SelectUnlockAssets(s_VeniceSoldierCustomizationAsset, {s_VisualUnlockAsset})
+	local s_Soldier = self.m_Player:CreateSoldier(s_SoldierBlueprint, p_BotSoldier.transform)
+
+	-- copy health
+	s_Soldier.health = p_BotSoldier.health
+
+	-- copy transform & characterpose
+	self.m_Player:SpawnSoldierAt(s_Soldier, p_BotSoldier.transform, p_BotSoldier.pose)
+	self.m_Player:AttachSoldier(s_Soldier)
+
+	m_Logger:Write("Replaced bot with player: " .. self.m_Player.name)
 end
 
 -- TODO move to a util
@@ -438,6 +557,10 @@ function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
 
 		self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
 	end
+end
+
+function BRPlayer:SetQuitManually(p_QuitManually)
+	self.m_QuitManually = p_QuitManually
 end
 
 -- =============================================

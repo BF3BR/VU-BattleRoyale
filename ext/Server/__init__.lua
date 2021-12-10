@@ -81,6 +81,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
 		NetEvents:Subscribe(PlayerEvents.PlayerSetSkin, self, self.OnPlayerSetSkin),
 		NetEvents:Subscribe(PlayerEvents.Despawn, self, self.OnPlayerDespawn),
+		NetEvents:Subscribe("Player:Quit", self, self.OnPlayerQuit),
 		NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw),
 		NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing),
 		NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing),
@@ -180,6 +181,14 @@ function VuBattleRoyaleServer:OnLevelDestroy()
 	m_PhaseManagerServer:OnLevelDestroy()
 	m_MapVEManager:OnLevelDestroy()
 	m_LootPickupDatabase:OnLevelDestroy()
+
+	-- destroy all bots
+	for _, l_Player in pairs(PlayerManager:GetPlayers()) do
+		if l_Player.onlineId == 0 then
+			-- this will trigger Player:Destroyed and from there we remove the BrPlayer
+			PlayerManager:DeletePlayer(l_Player)
+		end
+	end
 end
 
 -- =============================================
@@ -277,7 +286,23 @@ end
 
 function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
 	m_Logger:Write(p_Player.name .. " left")
+
+	if p_Player.onlineId ~= 0 then
+		local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
+		if s_BrPlayer == nil then
+			return
+		end
+
+		-- check if this BrPlayer was replaced with a bot
+		if s_BrPlayer:GetPlayer().onlineId == 0 then
+			return
+		end
+	end
+
+	-- that player left, so we remove his BrPlayer
 	m_TeamManager:OnPlayerLeft(p_Player)
+	-- TODO use name for Inventory instead of id
 	m_InventoryManager:OnPlayerLeft(p_Player)
 end
 
@@ -336,12 +361,15 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 			return
 		end
 
-		s_BrPlayer:Spawn(LinearTransform(
-			Vec3(1.0, 0.0, 0.0),
-			Vec3(0.0, 1.0, 0.0),
-			Vec3(0.0, 0.0, 1.0),
-			s_SpawnTrans
-		))
+		s_BrPlayer:Spawn(
+			LinearTransform(
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 1.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				s_SpawnTrans
+			),
+			false
+		)
 	else
 		NetEvents:SendTo(PlayerEvents.EnableSpectate, p_Player)
 	end
@@ -361,7 +389,6 @@ function VuBattleRoyaleServer:OnPlayerSetSkin(p_Player, p_AppearanceName)
 	s_BrPlayer:SetAppearance(p_AppearanceName, true)
 end
 
-
 function VuBattleRoyaleServer:OnPlayerDespawn(p_Player)
 	if p_Player == nil then
 		return
@@ -374,6 +401,16 @@ function VuBattleRoyaleServer:OnPlayerDespawn(p_Player)
 	end
 
 	s_BrPlayer:Kill(true)
+end
+
+function VuBattleRoyaleServer:OnPlayerQuit(p_Player)
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+
+	if s_BrPlayer == nil then
+		return
+	end
+
+	s_BrPlayer:SetQuitManually(true)
 end
 
 -- =============================================

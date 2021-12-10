@@ -241,16 +241,31 @@ function BRTeamManager:CreatePlayer(p_Player)
 	end
 
 	local s_Name = p_Player.name
+	local s_BrPlayer = self.m_Players[s_Name]
 
 	-- check if BRPlayer already exists
-	if self.m_Players[s_Name] ~= nil then
+	if s_BrPlayer ~= nil then
+		-- check if its a bot and replace him with the real player
+		local s_BotPlayer = s_BrPlayer:GetPlayer()
+
+		if s_BotPlayer.onlineId == 0 then
+			s_BrPlayer.m_Player = p_Player
+
+			if s_BotPlayer.alive then
+				-- replace bot with player
+				s_BrPlayer:ReplaceBotSoldierWithPlayer(s_BotPlayer.soldier)
+			end
+
+			PlayerManager:DeletePlayer(s_BotPlayer)
+		end
+
 		return self.m_Players[s_Name]
 	end
 
 	m_Logger:Write(string.format("Creating BRPlayer for '%s'", s_Name))
 
 	-- create player
-	local s_BrPlayer = BRPlayer(p_Player)
+	s_BrPlayer = BRPlayer(p_Player)
 	self.m_Players[s_Name] = s_BrPlayer
 
 	-- create a team and put the player in it

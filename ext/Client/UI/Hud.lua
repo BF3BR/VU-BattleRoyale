@@ -664,6 +664,18 @@ function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
 end
 
 -- =============================================
+	-- Rejoined Player
+-- =============================================
+
+function VuBattleRoyaleHud:Rejoined()
+	m_DeployScreen:CloseDeployScreen()
+	self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+		["msg"] = nil,
+		["key"] = nil,
+	}))
+end
+
+-- =============================================
 	-- Push HUD Information
 -- =============================================
 
