@@ -287,22 +287,24 @@ end
 function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
 	m_Logger:Write(p_Player.name .. " left")
 
-	if p_Player.onlineId ~= 0 then
-		local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
 
-		if s_BrPlayer == nil then
-			return
-		end
+	if s_BrPlayer == nil or s_BrPlayer.m_QuitManually then
+		return
+	end
 
-		-- check if this BrPlayer was replaced with a bot
-		if s_BrPlayer:GetPlayer().onlineId == 0 then
-			return
-		end
+	-- check if this BrPlayer was replaced with a bot
+	if s_BrPlayer:GetPlayer().onlineId == 0	and p_Player.onlineId ~= 0 then
+		return
+	end
+
+	-- check if this bot was replaced with a real player
+	if s_BrPlayer:GetPlayer().onlineId ~= 0	and p_Player.onlineId == 0 then
+		return
 	end
 
 	-- that player left, so we remove his BrPlayer
 	m_TeamManager:OnPlayerLeft(p_Player)
-	-- TODO use name for Inventory instead of id
 	m_InventoryManager:OnPlayerLeft(p_Player)
 end
 

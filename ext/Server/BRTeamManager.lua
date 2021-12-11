@@ -250,6 +250,7 @@ function BRTeamManager:CreatePlayer(p_Player)
 
 		if s_BotPlayer.onlineId == 0 then
 			s_BrPlayer.m_Player = p_Player
+			s_BrPlayer:SetQuitManually(false)
 
 			if s_BotPlayer.alive then
 				-- replace bot with player

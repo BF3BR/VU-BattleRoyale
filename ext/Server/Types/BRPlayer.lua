@@ -305,30 +305,14 @@ function BRPlayer:ReplaceSoldierWithBot(p_Soldier)
 	-- Get it from BRPlayer.m_Appearance
 	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer("persistence/unlocks/soldiers/visual/mp/us/mp_us_assault_appearance01"))
 
-	-- TODO: replace with Inventory code
-	-- will be replaced by the InventoryManager
-	-- this is also complete garbage: doesn't work for medkit, defib
-	-- didn't copy the unlocks + ammo
-	-- it won't select the correct weapon,
-	-- so better use soldier:ApplyCustomization
-	for l_WeaponSlot = 1, #p_Soldier.weaponsComponent.weapons do
-		if p_Soldier.weaponsComponent.weapons[l_WeaponSlot] ~= nil then
-			local s_WeaponName = p_Soldier.weaponsComponent.weapons[l_WeaponSlot].data.partition.name
-			local s_WeaponAssetName = "weapons/" .. s_WeaponName:gsub(".*/", "") .. "/U_" .. s_WeaponName:gsub(".*/", "")
+	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
+		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
 
-			local s_WeaponAsset = ResourceManager:SearchForDataContainer(s_WeaponAssetName)
-
-			if s_WeaponAsset == nil then
-				s_WeaponAssetName = "weapons/gadgets/" .. s_WeaponName:gsub(".*/", "") .. "/U_" .. s_WeaponName:gsub(".*/", "")
-				s_WeaponAsset = ResourceManager:SearchForDataContainer(s_WeaponAssetName)
-			end
-
-			if s_WeaponAsset ~= nil then
-				s_WeaponAsset = _G[s_WeaponAsset.typeInfo.name](s_WeaponAsset)
-				s_Bot:SelectWeapon(l_WeaponSlot - 1, s_WeaponAsset, {})
-			end
-		end
-	end
+	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
+	s_Inventory:DeferUpdateSoldierCustomization(0.85)
+	s_Inventory:SendState()
 
 	s_Bot:SelectUnlockAssets(s_VeniceSoldierCustomizationAsset, {s_VisualUnlockAsset})
 	local s_Soldier = s_Bot:CreateSoldier(s_SoldierBlueprint, p_Soldier.transform)
@@ -341,6 +325,7 @@ function BRPlayer:ReplaceSoldierWithBot(p_Soldier)
 	s_Bot:AttachSoldier(s_Soldier)
 
 	self.m_Player = s_Bot
+
 	m_Logger:Write("Replaced player with bot: " .. s_Bot.name)
 end
 
@@ -351,30 +336,14 @@ function BRPlayer:ReplaceBotSoldierWithPlayer(p_BotSoldier)
 	-- Get it from BRPlayer.m_Appearance
 	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer("persistence/unlocks/soldiers/visual/mp/us/mp_us_assault_appearance01"))
 
-	-- TODO: replace with Inventory code
-	-- will be replaced by the InventoryManager
-	-- this is also complete garbage: doesn't work for medkit, defib
-	-- didn't copy the unlocks + ammo
-	-- it won't select the correct weapon,
-	-- so better use soldier:ApplyCustomization
-	for l_WeaponSlot = 1, #p_BotSoldier.weaponsComponent.weapons do
-		if p_BotSoldier.weaponsComponent.weapons[l_WeaponSlot] ~= nil then
-			local s_WeaponName = p_BotSoldier.weaponsComponent.weapons[l_WeaponSlot].data.partition.name
-			local s_WeaponAssetName = "weapons/" .. s_WeaponName:gsub(".*/", "") .. "/U_" .. s_WeaponName:gsub(".*/", "")
+	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
+		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
 
-			local s_WeaponAsset = ResourceManager:SearchForDataContainer(s_WeaponAssetName)
-
-			if s_WeaponAsset == nil then
-				s_WeaponAssetName = "weapons/gadgets/" .. s_WeaponName:gsub(".*/", "") .. "/U_" .. s_WeaponName:gsub(".*/", "")
-				s_WeaponAsset = ResourceManager:SearchForDataContainer(s_WeaponAssetName)
-			end
-
-			if s_WeaponAsset ~= nil then
-				s_WeaponAsset = _G[s_WeaponAsset.typeInfo.name](s_WeaponAsset)
-				self.m_Player:SelectWeapon(l_WeaponSlot - 1, s_WeaponAsset, {})
-			end
-		end
-	end
+	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
+	s_Inventory:DeferUpdateSoldierCustomization(0.85)
+	s_Inventory:SendState()
 
 	self.m_Player:SelectUnlockAssets(s_VeniceSoldierCustomizationAsset, {s_VisualUnlockAsset})
 	local s_Soldier = self.m_Player:CreateSoldier(s_SoldierBlueprint, p_BotSoldier.transform)
