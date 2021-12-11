@@ -1,6 +1,7 @@
 class "BRPlayer"
 
 local m_InventoryManager = require "BRInventoryManager"
+local m_GameStateManager = require "GameStateManager"
 local m_Logger = Logger("BRPlayer", true)
 
 function BRPlayer:__init(p_Player)
@@ -281,6 +282,10 @@ end
 
 function BRPlayer:RegisterUnspawnCallback(p_Soldier)
 	p_Soldier:RegisterUnspawnCallback(function(p_Entity)
+		if m_GameStateManager:IsGameState(GameStates.EndGame) then
+			return
+		end
+
 		p_Entity = SoldierEntity(p_Entity)
 
 		if p_Entity.player ~= nil and not self.m_QuitManually and p_Entity.isAlive then
