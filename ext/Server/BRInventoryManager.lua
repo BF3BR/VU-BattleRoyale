@@ -18,14 +18,14 @@ function BRInventoryManager:__init()
 end
 
 function BRInventoryManager:RegisterVars()
-	-- [Player.id] -> [BRInventory]
+	-- [Player.name] -> [BRInventory]
 	self.m_Inventories = {}
 end
 
 function BRInventoryManager:OnPlayerLeft(p_Player)
 	m_Logger:Write(string.format("Destroying Inventory for '%s'", p_Player.name))
 
-	if self.m_Inventories[p_Player.id] ~= nil then
+	if self.m_Inventories[p_Player.name] ~= nil then
 		self:RemoveInventory(p_Player)
 	end
 end
@@ -36,7 +36,7 @@ function BRInventoryManager:OnPlayerChangingWeapon(p_Player)
 	end
 
 	local s_CurrentWeapon = p_Player.soldier.weaponsComponent.currentWeapon
-	local s_Inventory = self.m_Inventories[p_Player.id]
+	local s_Inventory = self.m_Inventories[p_Player.name]
 
 	if s_CurrentWeapon == nil or s_Inventory == nil then
 		return
@@ -51,7 +51,7 @@ end
 
 function BRInventoryManager:GetOrCreateInventory(p_Player)
 	-- get existing inventory
-	local s_Inventory = self.m_Inventories[p_Player.id]
+	local s_Inventory = self.m_Inventories[p_Player.name]
 
 	-- get BRPlayer for this player
 	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
@@ -69,7 +69,7 @@ end
 -- @param p_Inventory BRInventory
 -- @param p_Player Player
 function BRInventoryManager:AddInventory(p_Inventory, p_Player)
-	self.m_Inventories[p_Player.id] = p_Inventory
+	self.m_Inventories[p_Player.name] = p_Inventory
 
 	-- set inventory reference in BRPlayer
 	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
@@ -82,13 +82,13 @@ end
 -- Removes a BRInventory
 -- @param p_Player Player
 function BRInventoryManager:RemoveInventory(p_Player)
-	if self.m_Inventories[p_Player.id] == nil then
+	if self.m_Inventories[p_Player.name] == nil then
 		return
 	end
 
 	-- destroy inventory and clear reference
-	self.m_Inventories[p_Player.id]:Destroy()
-	self.m_Inventories[p_Player.id] = nil
+	self.m_Inventories[p_Player.name]:Destroy()
+	self.m_Inventories[p_Player.name] = nil
 
 	-- clear inventory reference in BRPlayer
 	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
@@ -186,7 +186,7 @@ function BRInventoryManager:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
 		return
 	end
 
-	local s_Inventory = self.m_Inventories[p_Player.id]
+	local s_Inventory = self.m_Inventories[p_Player.name]
 	local p_Weapon = p_Weapon or p_Player.soldier.weaponsComponent.currentWeapon
 
 	if s_Inventory == nil or p_Weapon == nil then
