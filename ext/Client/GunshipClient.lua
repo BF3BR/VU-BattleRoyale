@@ -7,6 +7,7 @@ local m_GunshipCamera = require "GunshipCamera"
 function GunshipClient:__init()
 	self.m_Type = nil
 	self.m_IsInFreeFall = false
+	self.m_OpenedParachute = false
 	self.m_CumulatedTime = 0.0
 end
 
@@ -16,6 +17,7 @@ end
 
 function GunshipClient:OnLevelDestroy()
 	self.m_IsInFreeFall = false
+	self.m_OpenedParachute = false
 	m_GunshipCamera:OnLevelDestroy()
 end
 
@@ -37,7 +39,7 @@ function GunshipClient:OnUpdatePassPostFrame(p_DeltaTime)
 end
 
 function GunshipClient:OnUpdatePassPreSim(p_DeltaTime)
-	if not self.m_IsInFreeFall then
+	if not self.m_IsInFreeFall or self.m_OpenedParachute then
 		return
 	end
 
@@ -62,19 +64,20 @@ function GunshipClient:OnUpdatePassPreSim(p_DeltaTime)
 		m_Logger:Write("Open parachute now")
 		NetEvents:SendLocal(GunshipEvents.OpenParachute)
 		self.m_IsInFreeFall = false
+		self.m_OpenedParachute = true
 	end
 end
 
 function GunshipClient:OnClientUpdateInput()
+	if self.m_OpenedParachute or self.m_IsInFreeFall then
+		return
+	end
+
 	if self.m_Type ~= "Paradrop" then
 		return
 	end
 
 	if SpectatorManager:GetSpectating() then
-		return
-	end
-
-	if self.m_IsInFreeFall then
 		return
 	end
 
@@ -113,6 +116,7 @@ function GunshipClient:OnForceJumpOufOfGunship()
 	if self.m_Type == "Paradrop" then
 		NetEvents:SendLocal(GunshipEvents.JumpOut, m_GunshipCamera:GetTransform())
 		self.m_IsInFreeFall = true
+		self.m_OpenedParachute = false
 	end
 end
 
@@ -135,6 +139,7 @@ function GunshipClient:OnInputPreUpdate(p_Hook, p_Cache, p_Dt)
 
 	if p_Cache[InputConceptIdentifiers.ConceptParachute] == 1.0 then
 		self.m_IsInFreeFall = false
+		self.m_OpenedParachute = true
 	end
 end
 
