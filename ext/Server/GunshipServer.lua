@@ -15,6 +15,7 @@ function GunshipServer:RegisterVars()
 
 	self.m_VehicleEntity = nil
 	self.m_Enabled = false
+	self.m_Type = nil
 	self.m_CalculatedTime = 0.0
 
 	self.m_OpenParachuteList = {}
@@ -56,7 +57,8 @@ function GunshipServer:OnUpdatePassPreSim(p_DeltaTime)
 end
 
 function GunshipServer:OnPlayerUpdateInput(p_Player)
-	if not self.m_Enabled and self.m_Type ~= "Paradrop" then
+	-- if disabled or wrong type
+	if not self.m_Enabled or self.m_Type ~= "Paradrop" then
 		return
 	end
 
@@ -129,6 +131,7 @@ function GunshipServer:Enable(p_StartPos, p_EndPos, p_TimeToFly, p_Type, p_Remov
 	self.m_EndPos = p_EndPos
 	self.m_TimeToFly = p_TimeToFly
 	self.m_Enabled = true
+	self.m_Type = p_Type
 	self.m_RemoveOnEnd = p_RemoveOnEnd or false
 
 	self:Spawn()
