@@ -1,3 +1,4 @@
+---@class g_AttachmentIds
 g_AttachmentIds = {
 	-- Optics
 	NoOptics = 1,

@@ -1,3 +1,4 @@
+---@class SubphaseType
 SubphaseType = {
 	-- Initial subphase before the circles start appearing
 	InitialDelay = 1,

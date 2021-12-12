@@ -1,12 +1,25 @@
+---@type BRItemAmmoDefinition
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
 
 ---@class BRItemWeaponDefinition : BRItemDefinition
 local BRItemWeaponDefinition = class("BRItemWeaponDefinition", BRItemDefinition)
 
+---@class BRItemWeaponDefinitionOptions : BRItemDefinitionOptions
+---@field SoldierWeaponBlueprint DC
+---@field AmmoDefinition BRItemAmmoDefinition
+---@field EbxName string
+---@field EbxAttachments table<g_AttachmentIds|integer, DC>
+---@field Tier Tier|integer
+
+---Creates a new BRItemAttachmentDefinition
+---@param p_UId string
+---@param p_Name string
+---@param p_Options BRItemWeaponDefinitionOptions
 function BRItemWeaponDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}
 
 	-- set fixed shared option values for weapons
+	---@type ItemType|integer
 	p_Options.Type = ItemType.Weapon
 	p_Options.Stackable = false
 	p_Options.MaxStack = nil
@@ -32,10 +45,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/ak74m",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("F365F081-D11B-B278-F6E3-062116758181"), Guid("8940BC20-0F27-1C19-58E6-CB07E1ADA643"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("1556281A-0F0B-4EB3-B280-661018F8D52F"), Guid("3BA55147-6619-4697-8E2B-AC6B1D183C0E")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
@@ -72,10 +85,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/scarh",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("219E7419-DAC8-57FA-1B75-4735722EA738"), Guid("8B9C95BC-03E6-DCF9-398F-193D543F1C55"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("26923311-294E-11E0-9658-B1395B1E88C3"), Guid("386F9329-7DE7-6FB9-1366-2877C698D9B7")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
@@ -114,10 +127,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/sg553lb",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("C088B8E6-995D-A055-1600-2C04FF6EC76C"), Guid("BA91ABD1-6A01-102F-9416-0B941BE124F2"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("4217BE66-19E7-4AA6-A4AE-4B9AA3AD3172"), Guid("0733BF61-8EBC-4666-9610-7E27D7313791")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
@@ -156,10 +169,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/an94",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("9CF3317A-3039-6BA0-0137-07A39C5DD153"), Guid("9B0A088E-364B-2A7D-B7DA-F06E2B43623E"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("AA415B68-DE3D-45D1-BBC6-BE7875E7AAB0"), Guid("65D4A9F9-0ACD-46FD-9AE2-3E9670DD22FB")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
@@ -197,10 +210,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP1_FAMAS",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("A735154E-0510-ADA6-6F2E-83B5E6D830D2"), Guid("8F24FDE8-1C50-32A0-F6AB-BAE6C337D102"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.25)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.25)
 			),
 			SoldierWeaponBlueprint = DC(Guid("A307F2D5-2649-42A9-99AE-8AA2CE3F0C4D"), Guid("9A97A9FE-DCE5-41E8-8D89-A421B103FA75")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
@@ -238,10 +251,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP2_SCARL",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("0CEE29A7-978A-0A3D-534D-244DD297C742"), Guid("3589BBEB-0664-A01B-9E2A-30ECD4193AFD"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("CD15BA6A-43A8-4389-A50E-B1F4399C5F52"), Guid("94FADBCE-8D16-4736-85E8-D42FADCD174F")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
@@ -279,10 +292,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP1_L85A2",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("AECDAEB3-6E6D-C25C-2F58-2E665572A9DC"), Guid("24DFA9B6-D393-40CA-AF18-BD7AF0E1EECE"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("129E8E2B-3E68-47BC-897D-728D0E1E725D"), Guid("8DCA9ABD-0723-454C-9575-7E4CA0791D0B")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
@@ -320,10 +333,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/m4a1",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("FD655F2A-2464-BBCB-6514-843EDF435AC3"), Guid("E77A3441-0DF7-0AFB-556E-589C94D8D62F"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("D278B71E-F1A5-11DF-8772-E40A91BD3778"), Guid("B1575807-C480-7286-719C-EE2520292A79")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
@@ -362,10 +375,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/pp2000",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("BCAF822E-48AA-055F-E617-ECDD89799E22"), Guid("BE6743C4-8558-52DA-3AFE-5D5EAA7E188F"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("E104EF1F-807C-4576-A22A-CC849AE3EDB9"), Guid("50849B49-F3DA-4C92-9830-D4A2932BC9E7")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-9mm"],
@@ -398,10 +411,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP1_PP19",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("DAA8CB46-270B-44C3-87E3-9C0C34E036B6"), Guid("693A6341-B736-63D4-B531-0D6F79178F2D"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("773D1B6A-B8BC-4F9F-94FF-A6B531C9AD6F"), Guid("CECC74B7-403F-4BA1-8ECD-4A59FB5379BD")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-9mm"],
@@ -433,10 +446,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP2_MP5K",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("A9787E3D-E1C6-4FF9-BABF-7936AAC3C468"), Guid("D0D089BC-0006-0FB0-07E9-E125472D001F"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("87530EBC-4B95-4AEC-AFE1-0339D61A649A"), Guid("DFBF6EA5-39C5-4ABA-B2C6-CAA6AD6C3786")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-9mm"],
@@ -469,10 +482,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/ump",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("A0E8D6A4-8A21-1BC0-F5CD-80C62366D4E8"), Guid("211B7657-1297-F025-C975-FD201BF3C7C6"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("7F0DDB9E-EB3D-4121-BE07-A21573F5210B"), Guid("2A267103-14F2-4255-B0D4-819139A4E202")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-9mm"],
@@ -504,10 +517,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/aks74u",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("8E8F0B2B-AE42-048F-C6DF-534A03B17E06"), Guid("43FDC875-2875-6B70-2680-2AEC5E259E49"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("52A8131B-751E-429B-84F5-17A73D38ECA3"), Guid("A4F108EB-1FA2-4C94-93FE-357B1D7EBF4A")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-9mm"],
@@ -544,10 +557,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/remington870",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("244BD656-B62A-715A-FC6E-BCE517D4CE95"), Guid("B72B2A83-8B14-F5B3-3A31-844B2EC15EB6"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("0B1B0AF6-75F5-4CA4-A945-372090333A83"), Guid("07A4C87A-D325-4A73-8C5A-C001ACD13334")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-12-gauge"],
@@ -588,10 +601,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP2_SPAS12",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("F1361463-6309-9721-99E9-058808584C69"), Guid("571A2311-98FC-4ACF-9B0D-2CEB511F4BD1"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("7B22C83D-7CFC-46A5-A871-C9EE651BD3B8"), Guid("6D99F118-04BD-449A-BA0E-1978DDF5894D")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-12-gauge"],
@@ -632,10 +645,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/m98b",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("4167372B-8261-610E-464F-E3666AF6DFF7"), Guid("7FC60BE5-28DC-F4A4-4176-508F73727830"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.6)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.6)
 			),
 			SoldierWeaponBlueprint = DC(Guid("D61A38DA-17D0-4146-9305-100183EB3E5F"), Guid("05EB2892-8B51-488E-8956-4350C3D2BA27")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-762mm"],
@@ -671,10 +684,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP2_HK417",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("E0C98D6F-02A2-E31B-6A02-639EB19C7F0C"), Guid("C72F7F84-92B7-6EB8-EE25-7286AEC365C1"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.6)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.6)
 			),
 			SoldierWeaponBlueprint = DC(Guid("556D806D-3C40-478D-A690-631E29A98E5A"), Guid("C48BC95B-1271-4F19-9D6C-A91C836F5432")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-762mm"],
@@ -711,10 +724,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/sks",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("9D1C543A-31B2-8528-0CD4-F07CE7289851"), Guid("B7E411D5-9CA4-85B8-3F68-C624AFE4C05B"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.6)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.6)
 			),
 			SoldierWeaponBlueprint = DC(Guid("E0C474A6-341F-43A8-A5AF-6FD66578F031"), Guid("CB651B07-2CE4-4527-B1AC-2AEB6D04CBF5")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-762mm"],
@@ -752,10 +765,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/XP2_JNG90",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("1F2D2C2C-1CA0-99E1-8C8C-40A4B8636FAB"), Guid("F64BCB4E-85E0-5F77-FB8F-09EDEF965CE5"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.6)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.6)
 			),
 			SoldierWeaponBlueprint = DC(Guid("8DCEDFCF-0E5E-46E5-A03B-AD68808248E1"), Guid("B8CA6D09-62C2-4208-A094-B8E50F716E47")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-762mm"],
@@ -792,10 +805,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/sv98",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("D46DB381-4D7D-3E39-8AE1-EC9A7DE86F73"), Guid("BB9F180C-0854-AED5-926B-6D9A643EAF22"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.6)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.6)
 			),
 			SoldierWeaponBlueprint = DC(Guid("5E3A1E2F-9635-4031-9DAF-A6B7AA74BE13"), Guid("9351DDBF-795A-4BC6-84D7-37B537E3D049")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-762mm"],
@@ -832,10 +845,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/M1911Tactical_FANCY",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("FA63640A-68A1-1532-A199-05586E171A44"), Guid("6F02F6BB-1D83-F88F-4482-259D913A22F7"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("CC735999-6BFE-48AA-8C83-E48F117460C0"), Guid("9B3AF503-2018-4BC9-893F-CD393D3BAD77")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-9mm"],
@@ -853,10 +866,10 @@ return {
 			UIIcon = "UI/Art/Persistence/Weapons/Fancy/mp412rex",
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("D83A8D2D-CAF0-D658-3619-4437D01E6E4F"), Guid("421A3CD2-0C3E-3EBC-C993-C7048FB09253"))),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("757E577E-313F-45E7-BC74-F6BB1F53E67F"), Guid("38C20C39-EE43-489F-AE95-DF0519F72409")),
 			AmmoDefinition = m_AmmoDefinitions["ammo-9mm"],
