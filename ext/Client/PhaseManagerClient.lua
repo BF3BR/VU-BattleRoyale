@@ -68,11 +68,10 @@ function PhaseManagerClient:OnUIDrawHud()
 		return
 	end
 
-	-- TODO: check arguments for Render function. Remove args?
 	-- render circles
-	self.m_OuterCircle:Render(OuterCircleRenderer, s_PlayerPos)
+	self.m_OuterCircle:Render()
 	if CircleConfig.RenderInnerCircle and not self.m_Completed then
-		self.m_InnerCircle:Render(InnerCircleRenderer, s_PlayerPos)
+		self.m_InnerCircle:Render()
 	end
 end
 
