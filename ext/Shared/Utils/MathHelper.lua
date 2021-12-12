@@ -1,4 +1,5 @@
-class "MathHelper"
+---@class MathHelper
+local MathHelper = class "MathHelper"
 
 function MathHelper:VectorAngle(p_VectorA, p_VectorB)
 	return math.atan(p_VectorB.z - p_VectorA.z, p_VectorB.x - p_VectorA.x)

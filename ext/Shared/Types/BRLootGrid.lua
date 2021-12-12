@@ -1,4 +1,5 @@
-class "BRLootGrid"
+---@class BRLootGrid
+BRLootGrid = class "BRLootGrid"
 
 function BRLootGrid:__init(p_CellSize)
 	self.m_CellSize = p_CellSize

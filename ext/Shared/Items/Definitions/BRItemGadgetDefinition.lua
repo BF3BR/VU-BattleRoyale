@@ -1,4 +1,5 @@
-class("BRItemGadgetDefinition", BRItemDefinition)
+---@class BRItemGadgetDefinition : BRItemDefinition
+local BRItemGadgetDefinition = class("BRItemGadgetDefinition", BRItemDefinition)
 
 function BRItemGadgetDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}

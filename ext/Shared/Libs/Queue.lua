@@ -1,4 +1,5 @@
-class "Queue"
+---@class Queue
+Queue = class "Queue"
 
 function Queue:__init()
 	self:ResetVars()

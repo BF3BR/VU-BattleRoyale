@@ -1,4 +1,5 @@
-class "TimerManager"
+---@class TimerManager
+local TimerManager = class "TimerManager"
 
 function TimerManager:__init()
 	self.m_LastId = 1
@@ -89,8 +90,8 @@ function TimerManager:Interval(p_Delay, p_UserData, p_Callback)
 	return self:CreateTimer(p_Delay, 0, p_UserData, p_Callback)
 end
 
--- Timer
-class "Timer"
+---@class Timer
+local Timer = class "Timer"
 
 function Timer:__init(p_Manager, p_Id, p_Delay, p_Cycles, p_UserData, p_Callback)
 	self.m_Manager = p_Manager
@@ -171,4 +172,5 @@ function Timer:Reset()
 end
 
 -- TimerManager singleton
+---@type TimerManager
 g_Timers = TimerManager()

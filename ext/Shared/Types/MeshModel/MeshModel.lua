@@ -1,4 +1,5 @@
-class("MeshModel")
+---@class MeshModel
+MeshModel = class("MeshModel")
 
 function MeshModel:__init(p_MeshAsset, p_Variation)
 	self.m_Mesh = p_MeshAsset

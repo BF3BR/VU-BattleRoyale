@@ -1,15 +1,26 @@
+---@type table<string, BRItemAmmoDefinition>
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
+---@type table<string, BRItemArmorDefinition>
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
+---@type table<string, BRItemAttachmentDefinition>
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
+---@type table<string, BRItemConsumableDefinition>
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
+---@type table<string, BRItemHelmetDefinition>
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
+---@type table<string, BRItemWeaponDefinition>
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
+---@type table<string, BRItemGadgetDefinition>
 local m_GadgetDefinition = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
+---@class ClientCommands
 ClientCommands =
 {
 	errInvalidCommand = "Invalid command",
 
+	---Give Command
+	---@param p_Args string[]
+	---@return string
 	Give = function(p_Args)
 		-- If we have any arguments, ignore them
 		if #p_Args == 0 then
@@ -40,6 +51,9 @@ ClientCommands =
 		return "Item given."
 	end,
 
+	---Spawn Command
+	---@param p_Args string[]
+	---@return string
 	Spawn = function(p_Args)
 		-- If we have any arguments, ignore them
 		if #p_Args == 0 then
@@ -70,6 +84,9 @@ ClientCommands =
 		return "Item spawned."
 	end,
 
+	---SpawnAirdrop Command
+	---@param p_Args string[]
+	---@return string
 	SpawnAirdrop = function(p_Args)
 		-- Get the local player
 		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
@@ -95,6 +112,9 @@ ClientCommands =
 		return "Airdrop spawned."
 	end,
 
+	---List Command
+	---@param p_Args string[]
+	---@return string
 	List = function(p_Args)
 		local s_Result = "";
 

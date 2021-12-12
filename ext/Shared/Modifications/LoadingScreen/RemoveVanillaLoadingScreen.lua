@@ -1,4 +1,5 @@
-class 'RemoveVanillaLoadingScreen'
+---@class RemoveVanillaLoadingScreen
+local RemoveVanillaLoadingScreen = class 'RemoveVanillaLoadingScreen'
 
 local m_Logger = Logger("RemoveVanillaLoadingScreen", false)
 local m_LoadingScreenLookup = require "__shared/Modifications/LoadingScreen/LoadingScreenLookup"

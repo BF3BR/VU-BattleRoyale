@@ -1,8 +1,11 @@
-class 'DeployScreen'
+---@class DeployScreen
+local DeployScreen = class 'DeployScreen'
 
+---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Logger = Logger("DeployScreen", true)
 
+---VEXT Client Level:Loaded Event
 function DeployScreen:OnLevelLoaded()
 	WebUI:ExecuteJS("ToggleDeployMenu(true);")
 	m_HudUtils:ShowroomCamera(true)
@@ -18,6 +21,7 @@ function DeployScreen:OnLevelLoaded()
 	end)
 end
 
+---Opens the DeployScreen and does a bunch of entity related stuff
 function DeployScreen:OpenDeployScreen()
 	if m_HudUtils:GetIsInventoryOpened() then
 		m_HudUtils:SetIsInventoryOpened(false)
@@ -32,6 +36,7 @@ function DeployScreen:OpenDeployScreen()
 	m_HudUtils:SetIsInDeployScreen(true)
 end
 
+---Closes the DeployScreen and does a bunch of entity related stuff
 function DeployScreen:CloseDeployScreen()
 	m_HudUtils:SetIsInDeployScreen(false)
 	WebUI:ExecuteJS("ToggleDeployMenu(false);")

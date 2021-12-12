@@ -1,4 +1,5 @@
-class 'GameStateManager'
+---@class GameStateManager
+local GameStateManager = class 'GameStateManager'
 
 local m_Logger = Logger("GameStateManager", true)
 

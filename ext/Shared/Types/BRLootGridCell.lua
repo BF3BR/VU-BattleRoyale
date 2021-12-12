@@ -1,4 +1,5 @@
-class "BRLootGridCell"
+---@class BRLootGridCell
+BRLootGridCell = class "BRLootGridCell"
 
 function BRLootGridCell:__init()
 	-- references to LootPickups that reside in this cell

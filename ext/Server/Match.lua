@@ -1,7 +1,8 @@
-class("Match", TimersMixin)
+---@class Match : TimersMixin
+local Match = class("Match", TimersMixin)
 
 local m_GameStateManager = require "GameStateManager"
-local m_TeamManager = require "BRTeamManager"
+local m_TeamManagerServer = require "BRTeamManagerServer"
 local m_GunshipServer = require "GunshipServer"
 local m_PhaseManagerServer = require "PhaseManagerServer"
 local m_BRLootManager = require "BRLootManager"
@@ -114,10 +115,10 @@ function Match:OnMatchFirstTick()
 
 	if s_State == GameStates.WarmupToPlane then
 		-- Fade out then unspawn all soldiers
-		m_TeamManager:UnspawnAllSoldiers()
+		m_TeamManagerServer:UnspawnAllSoldiers()
 
 		-- Assign all players to teams
-		m_TeamManager:AssignTeams()
+		m_TeamManagerServer:AssignTeams()
 
 		-- Clear out all inventories
 		m_BRInventoryManager:Clear()
@@ -213,7 +214,7 @@ function Match:DoWeHaveAWinner()
 		return
 	end
 
-	local s_WinningTeam = m_TeamManager:GetWinningTeam()
+	local s_WinningTeam = m_TeamManagerServer:GetWinningTeam()
 
 	if s_WinningTeam ~= nil then
 		self.m_WinnerTeam = s_WinningTeam

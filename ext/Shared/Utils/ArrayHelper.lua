@@ -1,4 +1,5 @@
-class "ArrayHelper"
+---@class ArrayHelper
+local ArrayHelper = class "ArrayHelper"
 
 -- Returns the first index at which a given value can be found in the array
 function ArrayHelper:IndexOf(p_Array, p_Value)

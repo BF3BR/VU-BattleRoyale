@@ -1,5 +1,7 @@
-class "HudUtils"
+---@class HudUtils
+local HudUtils = class "HudUtils"
 
+---@type ConnectionHelper
 local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"
 local m_Logger = Logger("HudUtils", true)
 
@@ -24,11 +26,13 @@ end
 -- Events
 -- =============================================
 
+---VEXT Shared Extension:Unloading Event
 function HudUtils:OnExtensionUnloading()
 	self:DestroyEntities()
 	self:RegisterVars()
 end
 
+---VEXT Shared Level:Destroy Event
 function HudUtils:OnLevelDestroy()
 	self:DestroyEntities()
 	self:RegisterVars()
@@ -38,54 +42,68 @@ end
 -- Functions
 -- =============================================
 
+---@param p_Enable boolean
 function HudUtils:SetDisabledFreecamMovement(p_Enable)
 	self.m_DisabledFreecamMovement = p_Enable
 end
 
+---@return boolean
 function HudUtils:GetDisabledFreecamMovement()
 	return self.m_DisabledFreecamMovement
 end
 
+---@param p_Enable boolean
 function HudUtils:SetIsInEscMenu(p_Enable)
 	self.m_IsInEscMenu = p_Enable
 end
 
+---@return boolean
 function HudUtils:GetIsInEscMenu()
 	return self.m_IsInEscMenu
 end
 
+---@param p_Enable boolean
 function HudUtils:SetIsInOptionsMenu(p_Enable)
 	self.m_IsInOptionsMenu = p_Enable
 end
 
+---@return boolean
 function HudUtils:GetIsInOptionsMenu()
 	return self.m_IsInOptionsMenu
 end
 
+---@param p_Enable boolean
 function HudUtils:SetIsMapOpened(p_Enable)
 	self.m_IsMapOpened = p_Enable
 end
 
+---@return boolean
 function HudUtils:GetIsMapOpened()
 	return self.m_IsMapOpened
 end
 
+---@param p_Enable boolean
 function HudUtils:SetIsInDeployScreen(p_Enable)
 	self.m_IsInDeployScreen = p_Enable
 end
 
+---@return boolean
 function HudUtils:GetIsInDeployScreen()
 	return self.m_IsInDeployScreen
 end
 
+---@param p_Enable boolean
 function HudUtils:SetIsInventoryOpened(p_Enable)
 	self.m_IsInInventory = p_Enable
 end
 
+---@return boolean
 function HudUtils:GetIsInventoryOpened()
 	return self.m_IsInInventory
 end
 
+---Show/ Hide crosshair
+---@param p_Enable boolean
 function HudUtils:ShowCrosshair(p_Enable)
 	if SpectatorManager:GetSpectating() then
 		return
@@ -111,6 +129,8 @@ function HudUtils:ShowCrosshair(p_Enable)
 	end
 end
 
+---ShowroomCamera (only in DeployScreen)
+---@param p_Enable boolean
 function HudUtils:ShowroomCamera(p_Enable)
 	local s_CameraEntityIterator = EntityManager:GetIterator("ClientCameraEntity")
 	local s_CameraEntity = s_CameraEntityIterator:Next()
@@ -133,6 +153,7 @@ function HudUtils:ShowroomCamera(p_Enable)
 	end
 end
 
+---When resuming
 function HudUtils:DisableMenuVisualEnv()
 	local s_Iterator = EntityManager:GetIterator("LogicVisualEnvironmentEntity")
 	local s_Entity = s_Iterator:Next()
@@ -148,6 +169,7 @@ function HudUtils:DisableMenuVisualEnv()
 	end
 end
 
+---When resuming
 function HudUtils:ExitSoundState()
 	if self.m_IsInEscMenu or self.m_IsInDeployScreen then
 		return
@@ -167,6 +189,7 @@ function HudUtils:ExitSoundState()
 	end
 end
 
+---When resuming
 function HudUtils:HUDEnterUIGraph()
 	if self.m_IsInEscMenu or self.m_IsInDeployScreen then
 		return
@@ -194,6 +217,7 @@ function HudUtils:HUDEnterUIGraph()
 	end
 end
 
+---When resuming
 function HudUtils:EnableTabScoreboard()
 	local s_UIGraphEntityIterator = EntityManager:GetIterator("ClientUIGraphEntity")
 	local s_UIGraphEntity = s_UIGraphEntityIterator:Next()
@@ -209,6 +233,7 @@ function HudUtils:EnableTabScoreboard()
 	end
 end
 
+---When resuming
 function HudUtils:StartupChat()
 	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 	local s_Entity = s_EntityIterator:Next()
@@ -228,6 +253,7 @@ end
 	-- Mouse
 -- =============================================
 
+---When going into a menu
 function HudUtils:OnEnableMouse()
 	if self.m_EnableMouseInstanceId == nil then
 		local s_DataMouse = self:GetEnableMouseEntityData()
@@ -251,6 +277,8 @@ function HudUtils:OnEnableMouse()
 	end
 end
 
+---Creates an UIGraphEntityData that is needed to create the Entity
+---@return UIGraphEntityData
 function HudUtils:GetEnableMouseEntityData()
 	local s_MousePopupGraphAsset = UIGraphAsset()
 	s_MousePopupGraphAsset.modal = false
@@ -315,6 +343,7 @@ end
 	-- GameInput
 -- =============================================
 
+---When going into a menu
 function HudUtils:OnDisableGameInput()
 	if self.m_DisableGameInputInstanceId == nil then
 		local s_DataGameInput = self:GetDisableGameInputEntityData()
@@ -338,6 +367,8 @@ function HudUtils:OnDisableGameInput()
 	end
 end
 
+---Creates an UIGraphEntityData that is needed to create the Entity
+---@return UIGraphEntityData
 function HudUtils:GetDisableGameInputEntityData()
 	local s_DisableGameInputGraphAsset = UIGraphAsset()
 	s_DisableGameInputGraphAsset.modal = false
@@ -402,6 +433,8 @@ end
 	-- BlurEffect
 -- =============================================
 
+---When going into a menu (true) or leaving it (false)
+---@param p_Enable boolean
 function HudUtils:EnableBlurEffect(p_Enable)
 	if self.m_BlurInstanceId ~= nil then
 		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')
@@ -427,6 +460,7 @@ function HudUtils:EnableBlurEffect(p_Enable)
 	end
 end
 
+---Creates a VisualEnvironmentEntity that has a DofComponent which causes a blur effect
 function HudUtils:CreateBlurEffect()
 	local s_DofComponentData = ResourceManager:FindInstanceByGuid(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"))
 
@@ -458,6 +492,7 @@ end
 	-- ShowroomSoldier
 -- =============================================
 
+---@param p_Enable boolean
 function HudUtils:EnableShowroomSoldier(p_Enable)
 	local s_EventId = 'HideSoldier'
 
@@ -493,28 +528,35 @@ function HudUtils:EnableShowroomSoldier(p_Enable)
 	end
 end
 
+---Creates an UIGraphEntityData that is needed to create the Entity
+---@return UIGraphEntityData
 function HudUtils:GetShowSoldierGraphEntityData()
 	local s_GraphAsset = UIGraphAsset()
 
 	-- SpawnCustomization
+	---@type InstanceInputNode
 	local s_ShowSoldierInputNode = m_ConnectionHelper:GetNode('InstanceInputNode', s_GraphAsset, { 'out' })
 	s_ShowSoldierInputNode.name = 'ShowSoldier'
 
+	---@type ActionNode
 	local s_ShowSoldierActionNode = m_ConnectionHelper:GetNode('ActionNode', s_GraphAsset, { 'inValue', 'out' })
 	s_ShowSoldierActionNode.actionKey = UIAction.SpawnCustomization
 	s_ShowSoldierActionNode.params:add('-1')
 	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_ShowSoldierInputNode, s_ShowSoldierActionNode, s_ShowSoldierInputNode.out, s_ShowSoldierActionNode.inValue)
 
 	-- UnSpawnCustomization
+	---@type InstanceInputNode
 	local s_HideSoldierInputNode = m_ConnectionHelper:GetNode('InstanceInputNode', s_GraphAsset, { 'out' })
 	s_HideSoldierInputNode.name = 'HideSoldier'
 
+	---@type ActionNode
 	local s_HideSoldierActionNode = m_ConnectionHelper:GetNode('ActionNode', s_GraphAsset, { 'inValue', 'out' })
 	s_HideSoldierActionNode.actionKey = UIAction.UnSpawnCustomization
 	s_HideSoldierActionNode.params:add('-1')
 	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_HideSoldierInputNode, s_HideSoldierActionNode, s_HideSoldierInputNode.out, s_HideSoldierActionNode.inValue)
 
 	-- Outputs
+	---@type InstanceOutputNode
 	local s_OutputNode = m_ConnectionHelper:GetNode('InstanceOutputNode', s_GraphAsset, { 'inValue' })
 	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_ShowSoldierActionNode, s_OutputNode, s_ShowSoldierActionNode.out, s_OutputNode.inValue)
 	m_ConnectionHelper:AddNodeConnection(s_GraphAsset, s_HideSoldierActionNode, s_OutputNode, s_HideSoldierActionNode.out, s_OutputNode.inValue)
@@ -530,6 +572,7 @@ end
 	-- Clear Entities
 -- =============================================
 
+---Destroy all custom created entities to avoid issues
 function HudUtils:DestroyEntities()
 	if self.m_BlurInstanceId ~= nil then
 		local s_EntityIterator = EntityManager:GetIterator('VisualEnvironmentEntity')

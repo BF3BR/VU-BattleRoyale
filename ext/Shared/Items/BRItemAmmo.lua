@@ -1,6 +1,7 @@
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
 
-class("BRItemAmmo", BRItem)
+---@class BRItemAmmo : BRItem
+BRItemAmmo = class("BRItemAmmo", BRItem)
 
 function BRItemAmmo:__init(p_Id, p_Definition, p_Quantity)
 	BRItem.__init(self, p_Id, p_Definition, p_Quantity)

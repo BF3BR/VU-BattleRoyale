@@ -1,4 +1,5 @@
-class "BundleManager"
+---@class BundleManager
+local BundleManager = class "BundleManager"
 
 local m_Logger = Logger("BundleManager", true)
 

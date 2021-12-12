@@ -1,4 +1,5 @@
-class("BRInventoryAttachmentSlot", BRInventorySlot)
+---@class BRInventoryAttachmentSlot : BRInventorySlot
+BRInventoryAttachmentSlot = class("BRInventoryAttachmentSlot", BRInventorySlot)
 
 function BRInventoryAttachmentSlot:__init(p_Inventory, p_AttachmentType)
 	BRInventorySlot.__init(self, p_Inventory, { ItemType.Attachment })

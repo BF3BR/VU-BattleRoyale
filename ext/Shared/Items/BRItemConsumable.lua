@@ -1,7 +1,8 @@
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
 local m_Logger = Logger("BRItemConsumable", true)
 
-class("BRItemConsumable", BRItem)
+---@class BRItemConsumable : BRItem
+BRItemConsumable = class("BRItemConsumable", BRItem)
 
 function BRItemConsumable:__init(p_Id, p_Definition, p_Quantity)
 	BRItem.__init(self, p_Id, p_Definition, p_Quantity)

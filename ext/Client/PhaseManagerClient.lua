@@ -1,5 +1,7 @@
-class("PhaseManagerClient", PhaseManagerShared)
+---@class PhaseManagerClient : PhaseManagerShared
+local PhaseManagerClient = class("PhaseManagerClient", PhaseManagerShared)
 
+---@type OOCVision
 local m_OOCVision = require "Visuals/OOCVision"
 
 function PhaseManagerClient:RegisterVars()
@@ -16,12 +18,16 @@ end
 -- Events
 -- =============================================
 
+---VEXT Client Level:Loaded Event
 function PhaseManagerClient:OnLevelLoaded()
 	PhaseManagerShared.OnLevelLoaded(self)
 
 	self:RequestInitialState()
 end
 
+---Called from VEXT UpdateManager:Update
+---UpdatePass.UpdatePass_PreSim
+---@param p_DeltaTime number
 function PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 	if self:IsIdle() then
 		return
@@ -48,7 +54,9 @@ function PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 	end
 end
 
--- Renders the two circles
+-- Renders the two circles.
+---Called from VEXT UpdateManager:Update
+---UpdatePass.UpdatePass_PreFrame
 function PhaseManagerClient:OnUIDrawHud()
 	if self:IsIdle() then
 		return
@@ -60,6 +68,7 @@ function PhaseManagerClient:OnUIDrawHud()
 		return
 	end
 
+	-- TODO: check arguments for Render function. Remove args?
 	-- render circles
 	self.m_OuterCircle:Render(OuterCircleRenderer, s_PlayerPos)
 	if CircleConfig.RenderInnerCircle and not self.m_Completed then
@@ -71,7 +80,9 @@ end
 -- Custom (Net-) Events
 -- =============================================
 
--- Updates the state of the PhaseManager from the server
+-- Updates the state of the PhaseManager from the server.
+---Custom Client PhaseManagerNetEvent.UpdateState NetEvent
+---@param p_State table
 function PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
 	-- destroy moving circle update timer
 	self:RemoveTimer("MovingCircle")
@@ -117,7 +128,8 @@ function PhaseManagerClient:RequestInitialState()
 	end
 end
 
--- Returns the position of the local or the spectated player
+---Returns the position of the local or the spectated player
+---@return Vec3|nil
 function PhaseManagerClient:GetActivePlayerPosition()
 	local s_Player = PlayerManager:GetLocalPlayer()
 

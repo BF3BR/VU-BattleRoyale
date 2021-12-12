@@ -1,4 +1,5 @@
-class "WeaponDropModifier"
+---@class WeaponDropModifier
+local WeaponDropModifier = class "WeaponDropModifier"
 
 local m_Logger = Logger("WeaponDropModifier", true)
 

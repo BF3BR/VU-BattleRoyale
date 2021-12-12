@@ -1,4 +1,5 @@
-class "CachedJsExecutor"
+---@class CachedJsExecutor
+CachedJsExecutor = class "CachedJsExecutor"
 
 function CachedJsExecutor:__init(p_FuncTemplate, p_InitialValue)
 	self.m_FuncTemplate = p_FuncTemplate

@@ -1,4 +1,5 @@
-class("PickupLight")
+---@class PickupLight
+local PickupLight = class("PickupLight")
 
 local m_Colors = {
 	[Tier.Tier1] = Vec3(1.0, 0.9, 0.9),

@@ -1,6 +1,7 @@
 local m_GadgetDefinitions = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
-class("BRItemGadget", BRItem)
+---@class BRItemGadget : BRItem
+BRItemGadget = class("BRItemGadget", BRItem)
 
 function BRItemGadget:__init(p_Id, p_Definition, p_Quantity, p_CurrentPrimaryAmmo)
 	BRItem.__init(self, p_Id, p_Definition, p_Quantity)

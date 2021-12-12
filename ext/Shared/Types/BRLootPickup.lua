@@ -1,4 +1,5 @@
-class "BRLootPickup"
+---@class BRLootPickup
+BRLootPickup = class "BRLootPickup"
 
 local m_Logger = Logger("BRLootPickup", true)
 local m_RotationHelper = require "__shared/Utils/RotationHelper"

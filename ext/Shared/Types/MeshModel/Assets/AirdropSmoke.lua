@@ -1,4 +1,5 @@
-class("AirdropSmoke")
+---@class AirdropSmoke
+local AirdropSmoke = class("AirdropSmoke")
 
 local m_Airdrop_Object_FX_Smoke = DC(Guid("25B9AFF0-6622-11DE-9DCF-A96EA7FB2539"), Guid("EB9BAF48-75CA-3413-DE82-0CF9EC98603F"))
 

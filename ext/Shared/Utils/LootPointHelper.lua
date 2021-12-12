@@ -1,4 +1,5 @@
-class "LootPointHelper"
+---@class LootPointHelper
+LootPointHelper = class "LootPointHelper"
 
 function LootPointHelper:__init()
 	self.m_Points = {}

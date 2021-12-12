@@ -1,5 +1,10 @@
-class "DC"
+---@class DC
+---@field WaitForInstances fun(p_Instances : DC[], p_Userdata : userdata|function, p_Callback : function|nil)
+DC = class "DC"
 
+---Creates a new DC class
+---@param p_PartitionGuid Guid
+---@param p_InstanceGuid Guid
 function DC:__init(p_PartitionGuid, p_InstanceGuid)
 	if p_PartitionGuid == nil or p_InstanceGuid == nil then
 		error("Invalid guids specified")
@@ -7,9 +12,11 @@ function DC:__init(p_PartitionGuid, p_InstanceGuid)
 
 	self.m_PartitionGuid = p_PartitionGuid
 	self.m_InstanceGuid = p_InstanceGuid
+	---@type ContainerCallback[]
 	self.m_ContainerCallbacks = {}
 end
 
+---@return DataContainer|nil
 function DC:GetInstance()
 	local s_Instance = ResourceManager:FindInstanceByGuid(self.m_PartitionGuid, self.m_InstanceGuid)
 
@@ -20,6 +27,8 @@ function DC:GetInstance()
 	return _G[s_Instance.typeInfo.name](s_Instance)
 end
 
+---@param p_Userdata userdata|function
+---@param p_Callback function|nil
 function DC:CallOrRegisterLoadHandler(p_Userdata, p_Callback)
 	local s_Instance = self:GetInstance()
 
@@ -34,14 +43,19 @@ function DC:CallOrRegisterLoadHandler(p_Userdata, p_Callback)
 	end
 end
 
+---@param p_Userdata userdata|function
+---@param p_Callback function|nil
 function DC:RegisterLoadHandler(p_Userdata, p_Callback)
 	self:_RegisterLoadHandlerInternal(false, p_Userdata, p_Callback)
 end
 
+---@param p_Userdata userdata|function
+---@param p_Callback function|nil
 function DC:RegisterLoadHandlerOnce(p_Userdata, p_Callback)
 	self:_RegisterLoadHandlerInternal(true, p_Userdata, p_Callback)
 end
 
+---Deregister all ContainerCallbacks
 function DC:Deregister()
 	for _, l_ContainerCallback in ipairs(self.m_ContainerCallbacks) do
 		l_ContainerCallback:Deregister()
@@ -50,6 +64,9 @@ function DC:Deregister()
 	self.m_ContainerCallbacks = {}
 end
 
+---@param p_Once boolean
+---@param p_Userdata userdata|function
+---@param p_Callback function|nil
 function DC:_RegisterLoadHandlerInternal(p_Once, p_Userdata, p_Callback)
 	local s_Args
 
@@ -68,17 +85,25 @@ function DC:_RegisterLoadHandlerInternal(p_Once, p_Userdata, p_Callback)
 	end
 end
 
+---@param p_Instance DataContainer
+---@return DataContainer
 function DC:_CastedAndWritable(p_Instance)
 	p_Instance = _G[p_Instance.typeInfo.name](p_Instance)
 	p_Instance:MakeWritable()
 	return p_Instance
 end
 
+---@param p_Instances DC[]
+---@param p_Userdata userdata|function
+---@param p_Callback function|nil
 function DC.static:WaitForInstances(p_Instances, p_Userdata, p_Callback)
+	---@type DataContainer[]
 	local s_Instances = {}
 
 	for l_Index, l_DC in ipairs(p_Instances) do
-		local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandlerOnce(l_DC.m_PartitionGuid, l_DC.m_InstanceGuid, function(p_Instance)
+		local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandlerOnce(l_DC.m_PartitionGuid, l_DC.m_InstanceGuid,
+		---@param p_Instance DataContainer
+		function(p_Instance)
 			s_Instances[l_Index] = p_Instance
 
 			for i = 1, #p_Instances do

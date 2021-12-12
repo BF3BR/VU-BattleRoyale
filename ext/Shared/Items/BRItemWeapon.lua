@@ -1,6 +1,7 @@
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
-class("BRItemWeapon", BRItem)
+---@class BRItemWeapon : BRItem
+BRItemWeapon = class("BRItemWeapon", BRItem)
 
 function BRItemWeapon:__init(p_Id, p_Definition, p_CurrentPrimaryAmmo)
 	BRItem.__init(self, p_Id, p_Definition, 1)

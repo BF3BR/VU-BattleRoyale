@@ -1,4 +1,5 @@
-class "PingServer"
+---@class PingServer
+local PingServer = class "PingServer"
 
 local m_Logger = Logger("PingServer", true)
 

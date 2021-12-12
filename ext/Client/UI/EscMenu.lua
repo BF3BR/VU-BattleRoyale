@@ -1,5 +1,7 @@
-class 'EscMenu'
+---@class EscMenu
+local EscMenu = class 'EscMenu'
 
+---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Logger = Logger("EscMenu", true)
 
@@ -11,6 +13,7 @@ end
 -- Event
 -- =============================================
 
+---VEXT Client Client:UpdateInput Event
 function EscMenu:OnClientUpdateInput()
 	if m_HudUtils:GetIsInOptionsMenu() then
 		return
@@ -41,6 +44,9 @@ function EscMenu:OnClientUpdateInput()
 	end
 end
 
+-- TODO: switch to enum
+---Custom Client WebUI:TriggerMenuFunction WebUI Event
+---@param p_Function string
 function EscMenu:OnWebUITriggerMenuFunction(p_Function)
 	if p_Function == "resume" then
 		self:OnResume()
@@ -59,6 +65,7 @@ end
 	-- Esc Menu Callbacks
 -- =============================================
 
+---Loop through ClientUIGraphEntities and RegisterEventCallbacks for the one that gets triggered when pressing Escape
 function EscMenu:RegisterEscMenuCallbacks()
 	local s_EntityIterator = EntityManager:GetIterator('ClientUIGraphEntity')
 	local s_Entity = s_EntityIterator:Next()
@@ -67,7 +74,6 @@ function EscMenu:RegisterEscMenuCallbacks()
 		s_Entity = Entity(s_Entity)
 
 		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("B9437F95-2EBC-4F22-A5F6-F4D0F1331A5E") then
-			-- Registering the EventCallback on modreload => crash on first call
 			s_Entity:RegisterEventCallback(self, self.OnEscapeMenuCallback)
 		end
 
@@ -75,6 +81,10 @@ function EscMenu:RegisterEscMenuCallbacks()
 	end
 end
 
+---Whenever you press Escape this gets triggered
+---@param p_Entity Entity
+---@param p_EntityEvent EntityEvent
+---@return boolean
 function EscMenu:OnEscapeMenuCallback(p_Entity, p_EntityEvent)
 	if p_EntityEvent.eventId == MathUtils:FNVHash("EnterFromGame") then
 		self:OnOpenEscapeMenu()
@@ -89,6 +99,7 @@ end
 	-- Open Escape Menu
 -- =============================================
 
+---Opens the Escape Menu and does a bunch of entity related stuff
 function EscMenu:OnOpenEscapeMenu()
 	if m_HudUtils:GetIsInventoryOpened() then
 		m_HudUtils:SetIsInventoryOpened(false)
@@ -109,6 +120,7 @@ end
 	-- Close Escape Menu
 -- =============================================
 
+---Closes the Escape Menu and does a bunch of entity related stuff
 function EscMenu:OnResume()
 	m_HudUtils:SetIsInEscMenu(false)
 	m_HudUtils:DisableMenuVisualEnv()
@@ -124,6 +136,7 @@ end
 	-- Open Options
 -- =============================================
 
+---Enter the Options Menu from BF
 function EscMenu:OnOptions()
 	m_HudUtils:SetIsInOptionsMenu(true)
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
@@ -145,12 +158,15 @@ end
 	-- Quit the game
 -- =============================================
 
+---When pressing Quit
 function EscMenu:OnQuit()
 	local s_Data = self:GetQuitEntityData()
 	local s_QuitPopupGraphEntity = EntityManager:CreateEntity(s_Data, LinearTransform())
 	s_QuitPopupGraphEntity:FireEvent('Quit')
 end
 
+---Create an UIGraphEntityData that we need to create the entity to let us quit
+---@return UIGraphEntityData
 function EscMenu:GetQuitEntityData()
 	local s_QuitPopupGraphAsset = UIGraphAsset()
 	s_QuitPopupGraphAsset.modal = false

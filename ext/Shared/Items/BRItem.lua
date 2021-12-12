@@ -1,6 +1,7 @@
 local m_Logger = Logger("BRItem", true)
 
-class "BRItem"
+---@class BRItem
+BRItem = class "BRItem"
 
 function BRItem:__init(p_Id, p_Definition, p_Quantity)
 	-- Unique Id for each item

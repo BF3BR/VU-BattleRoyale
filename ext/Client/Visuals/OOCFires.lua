@@ -1,4 +1,5 @@
-class "OOCFires"
+---@class OOCFires
+local OOCFires = class "OOCFires"
 
 local m_Logger = Logger("OOCFires", true)
 

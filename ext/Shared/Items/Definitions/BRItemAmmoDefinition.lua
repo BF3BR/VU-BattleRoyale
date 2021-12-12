@@ -1,4 +1,5 @@
-class("BRItemAmmoDefinition", BRItemDefinition)
+---@class BRItemAmmoDefinition : BRItemDefinition
+local BRItemAmmoDefinition = class("BRItemAmmoDefinition", BRItemDefinition)
 
 function BRItemAmmoDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}

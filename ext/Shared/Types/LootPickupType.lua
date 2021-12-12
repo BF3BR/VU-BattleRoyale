@@ -1,3 +1,4 @@
+---@class LootPickupType
 LootPickupType = {
 	Basic = {
 		Name = "Basic",

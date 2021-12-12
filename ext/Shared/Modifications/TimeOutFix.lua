@@ -1,4 +1,5 @@
-class 'TimeOutFix'
+---@class TimeOutFix
+local TimeOutFix = class 'TimeOutFix'
 
 local m_Logger = Logger("TimeOutFix", true)
 

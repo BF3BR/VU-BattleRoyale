@@ -1,14 +1,19 @@
-class "BRLooting"
+---@class BRLooting
+local BRLooting = class "BRLooting"
 
 local m_Logger = Logger("BRLooting", true)
+---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
+---@type BRLootPickupDatabaseClient
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
+---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
 
 function BRLooting:__init()
 	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
 
 	-- Read-only
+	---@type GameStates|integer
 	self.m_GameState = GameStates.None
 
 	self:ResetVars()
@@ -23,8 +28,10 @@ end
 -- Events
 -- =============================================
 
+---Custom Client PlayerEvents.GameStateChanged NetEvent
+---@param p_GameState GameStates|integer
 function BRLooting:OnGameStateChanged(p_GameState)
-	if p_GameState == nil or self.m_GameState == p_GameState then
+	if self.m_GameState == p_GameState then
 		return
 	end
 
@@ -35,7 +42,8 @@ function BRLooting:OnGameStateChanged(p_GameState)
 	end
 end
 
-function BRLooting:OnClientUpdateInput(p_Delta)
+---VEXT Client Client:UpdateInput Event
+function BRLooting:OnClientUpdateInput()
 	if self.m_GameState == GameStates.EndGame then
 		return
 	end
@@ -77,7 +85,7 @@ function BRLooting:UpdateCloseToPlayerItems()
 	-- Our prop-picking ray will start at what the camera is looking at and
 	-- extend forward by 3.0m.
 	local s_CameraTransform = ClientUtils:GetCameraTransform()
-	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0, 0, 0) then
+	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0.0, 0.0, 0.0) then
 		return nil
 	end
 
@@ -89,7 +97,8 @@ function BRLooting:UpdateCloseToPlayerItems()
 	self:SendCloseLootPickupData(s_LootPickups)
 end
 
--- Custom Event called from CommonSpatialRaycast
+---Gets called every UpdatePass_PreSim
+---@param p_Entities Entity[]
 function BRLooting:OnSpatialRaycast(p_Entities)
 	local s_LootPickup = self:GetLootPickup(p_Entities)
 
@@ -107,6 +116,7 @@ function BRLooting:OnSpatialRaycast(p_Entities)
 	end
 end
 
+---@param p_Entities Entity[]
 function BRLooting:GetLootPickup(p_Entities)
 	for _, l_Entity in ipairs(p_Entities) do
 		local l_LootPickup = m_BRLootPickupDatabase:GetByInstanceId(l_Entity.instanceId)
@@ -119,7 +129,11 @@ function BRLooting:GetLootPickup(p_Entities)
 	return nil
 end
 
+---Returns the mesh or nil
+---@param p_Entity Entity
+---@return MeshAsset|nil
 function BRLooting:GetMesh(p_Entity)
+	---@type StaticModelEntityData|DataContainer|nil
 	local s_Data = p_Entity.data
 	if s_Data == nil then
 		return nil

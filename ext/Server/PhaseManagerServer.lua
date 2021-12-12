@@ -1,7 +1,8 @@
-class("PhaseManagerServer", PhaseManagerShared)
+---@class PhaseManagerServer : PhaseManagerShared
+local PhaseManagerServer = class("PhaseManagerServer", PhaseManagerShared)
 
 local m_MathHelper = require "__shared/Utils/MathHelper"
-local m_BRTeamManager = require "BRTeamManager"
+local m_BRTeamManagerServer = require "BRTeamManagerServer"
 local m_BRAirdropManager = require "BRAirdropManager"
 local m_Logger = Logger("PhaseManagerServer", true)
 
@@ -173,7 +174,7 @@ function PhaseManagerServer:ApplyDamage()
 	-- get damage for current phase
 	local s_Damage = self:GetCurrentPhase().Damage
 
-	for _, l_BrPlayer in pairs(m_BRTeamManager.m_Players) do
+	for _, l_BrPlayer in pairs(m_BRTeamManagerServer.m_Players) do
 		local s_Soldier = l_BrPlayer:GetSoldier()
 
 		-- check if soldier is outside of the circle

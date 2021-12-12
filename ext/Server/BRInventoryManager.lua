@@ -1,16 +1,25 @@
-class "BRInventoryManager"
+---@class BRInventoryManager
+local BRInventoryManager = class "BRInventoryManager"
 
 local m_Logger = Logger("BRInventoryManager", true)
 
 local m_ItemDatabase = require "Types/BRItemDatabase"
+---@type BRLootPickupDatabaseServer
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
-local m_BRTeamManager = require "BRTeamManager"
+---@type BRTeamManagerServer
+local m_BRTeamManagerServer = require "BRTeamManagerServer"
 
+---@type BRItemAmmoDefinition
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
+---@type BRItemArmorDefinition
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
+---@type BRItemAttachmentDefinition
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
+---@type BRItemConsumableDefinition
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
+---@type BRItemHelmetDefinition
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
+---@type BRItemWeaponDefinition
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
 function BRInventoryManager:__init()
@@ -54,7 +63,7 @@ function BRInventoryManager:GetOrCreateInventory(p_Player)
 	local s_Inventory = self.m_Inventories[p_Player.id]
 
 	-- get BRPlayer for this player
-	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
+	local s_BRPlayer = m_BRTeamManagerServer:GetPlayer(p_Player)
 
 	-- create a new one if needed
 	if s_Inventory == nil then
@@ -72,7 +81,7 @@ function BRInventoryManager:AddInventory(p_Inventory, p_Player)
 	self.m_Inventories[p_Player.id] = p_Inventory
 
 	-- set inventory reference in BRPlayer
-	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
+	local s_BRPlayer = m_BRTeamManagerServer:GetPlayer(p_Player)
 	if s_BRPlayer ~= nil then
 		m_Logger:Write("Set inventory for BRPlayer " .. s_BRPlayer:GetName())
 		s_BRPlayer.m_Inventory = p_Inventory
@@ -91,7 +100,7 @@ function BRInventoryManager:RemoveInventory(p_Player)
 	self.m_Inventories[p_Player.id] = nil
 
 	-- clear inventory reference in BRPlayer
-	local s_BRPlayer = m_BRTeamManager:GetPlayer(p_Player)
+	local s_BRPlayer = m_BRTeamManagerServer:GetPlayer(p_Player)
 	if s_BRPlayer ~= nil then
 		s_BRPlayer.m_Inventory = nil
 	end

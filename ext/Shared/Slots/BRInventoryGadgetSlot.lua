@@ -1,6 +1,7 @@
 local m_Logger = Logger("BRInventoryGadgetSlot", true)
 
-class("BRInventoryGadgetSlot", BRInventorySlot)
+---@class BRInventoryGadgetSlot : BRInventorySlot
+BRInventoryGadgetSlot = class("BRInventoryGadgetSlot", BRInventorySlot)
 
 function BRInventoryGadgetSlot:__init(p_Inventory)
 	BRInventorySlot.__init(self, p_Inventory, { ItemType.Gadget })

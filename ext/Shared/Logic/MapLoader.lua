@@ -1,4 +1,5 @@
-class 'MapLoader'
+---@class MapLoader
+local MapLoader = class 'MapLoader'
 
 local m_Logger = Logger("MapLoader", true)
 
@@ -105,6 +106,7 @@ function MapLoader:OnLevelLoadingInfo(p_ScreenInfo)
 			return
 		end
 
+		---@type LevelData|nil
 		local s_PrimaryLevel = ResourceManager:FindInstanceByGuid(self.m_CustomLevelData.partitionGuid, self.m_CustomLevelData.instanceGuid)
 
 		if s_PrimaryLevel == nil then

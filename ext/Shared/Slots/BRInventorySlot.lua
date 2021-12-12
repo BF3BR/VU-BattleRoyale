@@ -1,4 +1,5 @@
-class "BRInventorySlot"
+---@class BRInventorySlot
+BRInventorySlot = class "BRInventorySlot"
 
 local m_Logger = Logger("BRInventorySlot", true)
 local m_ItemDatabase = require "Types/BRItemDatabase"

@@ -1,18 +1,19 @@
-class "OOCFires"
+---@class OOCFiresServer
+local OOCFiresServer = class "OOCFiresServer"
 
-local m_Logger = Logger("OOCFires", true)
+local m_Logger = Logger("OOCFiresServer", true)
 
 local m_MaxEffectsNumber = 256
 local m_GridSize = 16
 
-function OOCFires:__init()
+function OOCFiresServer:__init()
 	self.m_Queue = Queue()
 
 	self:ResetVars()
 	self:RegisterEvents()
 end
 
-function OOCFires:ResetVars()
+function OOCFiresServer:ResetVars()
 	self.m_Queue:ResetVars()
 	self.m_LastSpawnRadius = 0
 
@@ -20,12 +21,12 @@ function OOCFires:ResetVars()
 	self.m_SpawnGrid = {}
 end
 
-function OOCFires:RegisterEvents()
+function OOCFiresServer:RegisterEvents()
 	Events:Subscribe(PhaseManagerEvent.Update, self, self.OnCircleUpdate)
 	Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnCircleMove)
 end
 
-function OOCFires:GetRandomCircumPositions(p_Circle, p_Num)
+function OOCFiresServer:GetRandomCircumPositions(p_Circle, p_Num)
 	local s_RandomAngle = MathUtils:GetRandom(0, 2 * math.pi)
 	local s_AngleDiff = (2 * math.pi) / p_Num
 
@@ -40,12 +41,12 @@ function OOCFires:GetRandomCircumPositions(p_Circle, p_Num)
 	return s_Points
 end
 
-function OOCFires:ShouldSpawnItems(p_Circle)
+function OOCFiresServer:ShouldSpawnItems(p_Circle)
 	-- return MathUtils:GetRandom(0, 1) > 0.999
 	return math.abs(self.m_LastSpawnRadius - p_Circle.m_Radius) > 4
 end
 
-function OOCFires:AddItems(p_Positions)
+function OOCFiresServer:AddItems(p_Positions)
 	local s_AddedItems = {}
 
 	-- try to all add new items
@@ -66,11 +67,11 @@ function OOCFires:AddItems(p_Positions)
 	end
 end
 
-function OOCFires:CanAddItem(p_Item)
+function OOCFiresServer:CanAddItem(p_Item)
 	return not self.m_SpawnGrid[self:GridKey(p_Item)]
 end
 
-function OOCFires:GetRandomEffectIndex()
+function OOCFiresServer:GetRandomEffectIndex()
 	local s_RandNum = MathUtils:GetRandom(0, 1)
 
 	if s_RandNum > 0.3 then
@@ -80,7 +81,7 @@ function OOCFires:GetRandomEffectIndex()
 	end
 end
 
-function OOCFires:AddItem(p_Position)
+function OOCFiresServer:AddItem(p_Position)
 	local s_Item = {
 		Position = p_Position,
 		Effect = self:GetRandomEffectIndex()
@@ -99,7 +100,7 @@ function OOCFires:AddItem(p_Position)
 end
 
 -- Removes the oldest item if the queue is above the limit
-function OOCFires:RemoveOldestItem(p_Force)
+function OOCFiresServer:RemoveOldestItem(p_Force)
 	p_Force = not (not p_Force)
 
 	-- check if queue is over the limit
@@ -117,7 +118,7 @@ function OOCFires:RemoveOldestItem(p_Force)
 	self.m_SpawnGrid[self:GridKey(s_Item)] = nil
 end
 
-function OOCFires:SendState(p_Player)
+function OOCFiresServer:SendState(p_Player)
 	local s_State = {
 		MaxEffectsNumber = m_MaxEffectsNumber,
 		Items = self.m_Queue:AsList()
@@ -126,20 +127,20 @@ function OOCFires:SendState(p_Player)
 	NetEvents:SendToLocal("OOCF:State", p_Player, s_State)
 end
 
-function OOCFires:GridKey(p_Item)
+function OOCFiresServer:GridKey(p_Item)
 	return string.format("%.0f:%.0f", p_Item.Position.x // m_GridSize, p_Item.Position.y // m_GridSize)
 end
 
-function OOCFires:OnPlayerConnected(p_Player)
+function OOCFiresServer:OnPlayerConnected(p_Player)
 	m_Logger:Write("OnPlayerConnected")
 	self:SendState(p_Player)
 end
 
-function OOCFires:OnCircleUpdate()
+function OOCFiresServer:OnCircleUpdate()
 	-- TODO
 end
 
-function OOCFires:OnCircleMove(p_Circle)
+function OOCFiresServer:OnCircleMove(p_Circle)
 	p_Circle = Circle:FromTable(p_Circle)
 
 	if not self:ShouldSpawnItems(p_Circle) then
@@ -151,12 +152,12 @@ function OOCFires:OnCircleMove(p_Circle)
 	self:AddItems(s_Positions)
 end
 
-function OOCFires:OnLevelDestroy()
+function OOCFiresServer:OnLevelDestroy()
 	self:ResetVars()
 end
 
-function OOCFires:OnExtensionUnloading()
+function OOCFiresServer:OnExtensionUnloading()
 	self:ResetVars()
 end
 
-return OOCFires()
+return OOCFiresServer()

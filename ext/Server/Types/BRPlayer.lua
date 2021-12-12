@@ -1,4 +1,6 @@
-class "BRPlayer"
+---@class BRPlayerServer
+---@field GetPlayerName fun(p_Player : Player|BRPlayerServer|string)
+BRPlayer = class "BRPlayer"
 
 local m_InventoryManager = require "BRInventoryManager"
 local m_Logger = Logger("BRPlayer", true)
@@ -274,17 +276,17 @@ end
 	-- Spectator Functions
 -- =============================================
 
-function BRPlayer:SpectatePlayer(p_BrPlayer)
-	if p_BrPlayer == nil then
+function BRPlayer:SpectatePlayer(p_BRPlayer)
+	if p_BRPlayer == nil then
 		self.m_SpectatedPlayerName = nil
 		return
 	end
 
-	self.m_SpectatedPlayerName = p_BrPlayer:GetName()
+	self.m_SpectatedPlayerName = p_BRPlayer:GetName()
 
 	-- send inventory data of the spectated player
-	if p_BrPlayer.m_Inventory ~= nil then
-		local _, s_SpectatorData = p_BrPlayer.m_Inventory:AsTable(true)
+	if p_BRPlayer.m_Inventory ~= nil then
+		local _, s_SpectatorData = p_BRPlayer.m_Inventory:AsTable(true)
 		m_Logger:Write(json.encode(s_SpectatorData))
 		NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self:GetPlayer(), s_SpectatorData)
 	end
@@ -462,9 +464,9 @@ function BRPlayer:IsAlive()
 	return s_Player ~= nil and s_Player.alive
 end
 
--- Checks if the player and `p_OtherBrPlayer` are on the same team
-function BRPlayer:IsTeammate(p_OtherBrPlayer)
-	return self.m_Team ~= nil and self.m_Team:Equals(p_OtherBrPlayer.m_Team)
+-- Checks if the player and `p_OtherBRPlayer` are on the same team
+function BRPlayer:IsTeammate(p_OtherBRPlayer)
+	return self.m_Team ~= nil and self.m_Team:Equals(p_OtherBRPlayer.m_Team)
 end
 
 -- Checks if the player has any alive teammates
@@ -473,13 +475,13 @@ function BRPlayer:HasAliveTeammates()
 end
 
 -- Compare two BRPlayer instances for equality
-function BRPlayer:Equals(p_OtherBrPlayer)
-	return p_OtherBrPlayer ~= nil and self:GetName() == p_OtherBrPlayer:GetName()
+function BRPlayer:Equals(p_OtherBRPlayer)
+	return p_OtherBRPlayer ~= nil and self:GetName() == p_OtherBRPlayer:GetName()
 end
 
 -- `==` metamethod
-function BRPlayer:__eq(p_OtherBrPlayer)
-	return self:Equals(p_OtherBrPlayer)
+function BRPlayer:__eq(p_OtherBRPlayer)
+	return self:Equals(p_OtherBRPlayer)
 end
 
 function BRPlayer:AsTable(p_Simple, p_TeamData)

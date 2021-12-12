@@ -1,5 +1,6 @@
 -- https://github.com/Rylius/VU-Racing/blob/main/ext/shared/util/emitter_helper.lua
-class "EmitterHelper"
+---@class EmitterHelper
+local EmitterHelper = class "EmitterHelper"
 
 function EmitterHelper:Clone(sourceEmitterEntityData)
 	local s_EmitterEntityData = EmitterEntityData(sourceEmitterEntityData):Clone(MathUtils:RandomGuid())
@@ -25,6 +26,7 @@ function EmitterHelper:Clone(sourceEmitterEntityData)
 		return s_EmitterEntityData
 	end
 
+	---@type ProcessorData
 	local s_RootProcessor = ProcessorData(s_EmitterTemplateData.rootProcessor):Clone()
 	s_RootProcessor:MakeWritable()
 	s_EmitterTemplateData.rootProcessor = s_RootProcessor

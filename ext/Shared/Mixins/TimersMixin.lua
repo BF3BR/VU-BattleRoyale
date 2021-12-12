@@ -1,4 +1,5 @@
-class "TimersMixin"
+---@class TimersMixin
+TimersMixin = class "TimersMixin"
 
 function TimersMixin:__init()
 	self.m__Timers = {}

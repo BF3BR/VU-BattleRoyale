@@ -1,4 +1,5 @@
-class ("BRLootPickupDatabase", BRLootPickupDatabaseShared)
+---@class BRLootPickupDatabaseClient : BRLootPickupDatabaseShared
+local BRLootPickupDatabase = class ("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
 function BRLootPickupDatabase:ResetVars()
 	BRLootPickupDatabaseShared.ResetVars(self)
@@ -88,7 +89,7 @@ function BRLootPickupDatabase:UpdateCachedCloseLootPickups(p_Position, p_CachedR
 	end
 
 	p_CachedRadius = p_CachedRadius or InventoryConfig.CloseItemCacheRadius
-	s_Pos2D = Vec2(p_Position.x, p_Position.z)
+	local s_Pos2D = Vec2(p_Position.x, p_Position.z)
 
 	-- search the LootPickups that are inside the cache radius
 	self.m_CachedCloseEntities = {}
@@ -135,9 +136,7 @@ end
 -- =============================================
 
 function BRLootPickupDatabase:OnCreateLootPickup(p_LootPickupData)
-	if p_LootPickupData ~= nil then
-		self:Add(BRLootPickup:CreateFromTable(p_LootPickupData))
-	end
+	self:Add(BRLootPickup:CreateFromTable(p_LootPickupData))
 end
 
 function BRLootPickupDatabase:OnUpdateLootPickup(p_LootPickupData)

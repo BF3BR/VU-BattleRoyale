@@ -1,22 +1,23 @@
-class "MapVEManager"
+---@class MapVEManagerServer
+local MapVEManagerServer = class "MapVEManagerServer"
 
-local m_Logger = Logger("MapVEManager", false)
+local m_Logger = Logger("MapVEManagerServer", false)
 
-function MapVEManager:__init()
+function MapVEManagerServer:__init()
 	self:RegisterVars()
 end
 
-function MapVEManager:RegisterVars()
+function MapVEManagerServer:RegisterVars()
 	self:ResetVars()
 end
 
-function MapVEManager:ResetVars()
+function MapVEManagerServer:ResetVars()
 	self.m_CurrentMapPresetNames = nil
 	self.m_CurrentMapPresetIndex = 1
 	--self.m_TransitionInProgress = false
 end
 
-function MapVEManager:OnLevelLoadResources()
+function MapVEManagerServer:OnLevelLoadResources()
 	local m_Map = MapsConfig[LevelNameHelper:GetLevelName()]
 
 	-- Update new map presets
@@ -27,11 +28,11 @@ function MapVEManager:OnLevelLoadResources()
 	end
 end
 
-function MapVEManager:OnLevelDestroy()
+function MapVEManagerServer:OnLevelDestroy()
 	self:ResetVars()
 end
 
-function MapVEManager:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
+function MapVEManagerServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
     local m_Map = MapsConfig[LevelNameHelper:GetLevelName()]
 
 	if m_Map == nil or m_Map.VEPresets == nil or #m_Map.VEPresets == 0 then
@@ -41,7 +42,7 @@ function MapVEManager:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPe
     self:SetMapVEPreset(math.random(1, #m_Map.VEPresets))
 end
 
-function MapVEManager:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
+function MapVEManagerServer:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
 	p_OldFadeTime = p_OldFadeTime or 0
 	p_NewFadeTime = p_NewFadeTime or 0
 
@@ -62,7 +63,7 @@ function MapVEManager:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
 	NetEvents:BroadcastLocal("MapVEManager:SetMapVEPreset", p_VEIndex, p_OldFadeTime, p_NewFadeTime)
 end
 
-function MapVEManager:OnPlayerAuthenticated(p_Player)
+function MapVEManagerServer:OnPlayerAuthenticated(p_Player)
 	if p_Player == nil then
 		return
 	end
@@ -72,4 +73,4 @@ function MapVEManager:OnPlayerAuthenticated(p_Player)
 	NetEvents:SendToLocal("MapVEManager:SetMapVEPreset", p_Player, self.m_CurrentMapPresetIndex)
 end
 
-return MapVEManager()
+return MapVEManagerServer()

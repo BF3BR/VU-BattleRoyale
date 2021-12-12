@@ -1,6 +1,7 @@
-class "GunshipServer"
+---@class GunshipServer
+local GunshipServer = class "GunshipServer"
 
-local m_TeamManager = require "BRTeamManager"
+local m_TeamManagerServer = require "BRTeamManagerServer"
 local m_Logger = Logger("GunshipServer", true)
 
 function GunshipServer:__init()
@@ -87,11 +88,11 @@ function GunshipServer:OnJumpOutOfGunship(p_Player, p_Transform)
 		s_Transform.forward = p_Transform.forward * - 1
 	end
 
-	local s_BrPlayer = m_TeamManager:GetPlayer(p_Player)
+	local s_BrPlayer = m_TeamManagerServer:GetPlayer(p_Player)
 
 	if s_BrPlayer == nil then
 		m_Logger:Warning("BrPlayer for " .. p_Player.name .. " not found. Create it now.")
-		s_BrPlayer = m_TeamManager:CreatePlayer(p_Player)
+		s_BrPlayer = m_TeamManagerServer:CreatePlayer(p_Player)
 	end
 
 	s_BrPlayer:Spawn(s_Transform)

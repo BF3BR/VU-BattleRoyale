@@ -1,4 +1,5 @@
-class "GunSwayManager"
+---@class GunSwayManager
+local GunSwayManager = class "GunSwayManager"
 
 -- Fix ADS accurate hipfire glitch
 function GunSwayManager:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)

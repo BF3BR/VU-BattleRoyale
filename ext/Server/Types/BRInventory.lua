@@ -2,7 +2,11 @@ local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_InventoryManager = require "BRInventoryManager"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
-class ("BRInventory", TimersMixin)
+---@type ArrayHelper
+local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
+
+---@class BRInventoryServer : TimersMixin
+BRInventory = class ("BRInventory", TimersMixin)
 
 local m_Logger = Logger("BRInventory", true)
 
@@ -205,13 +209,13 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 		-- if new item was a weapon, put back the compatible attachments
 		if s_Slot.m_Type == SlotType.Weapon and #s_DroppedItems > 1 then
 			-- needs to be cloned cause some of its contents may be deleted during iteration
-			local s_DroppedItemsCloned = ArrayHelper:Clone(s_DroppedItems)
+			local s_DroppedItemsCloned = m_ArrayHelper:Clone(s_DroppedItems)
 
 			for _, l_Item in ipairs(s_DroppedItemsCloned) do
 				local s_AttachmentSlot = s_Slot:ResolveSlot(l_Item)
 				if s_AttachmentSlot ~= nil and s_AttachmentSlot.m_Type == ItemType.Attachment then
 					s_AttachmentSlot:Put(l_Item)
-					ArrayHelper:RemoveByValue(s_DroppedItems, l_Item)
+					m_ArrayHelper:RemoveByValue(s_DroppedItems, l_Item)
 				end
 			end
 		end

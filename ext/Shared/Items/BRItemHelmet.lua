@@ -1,6 +1,7 @@
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
 
-class("BRItemHelmet", BRItem)
+---@class BRItemHelmet : BRItem
+BRItemHelmet = class("BRItemHelmet", BRItem)
 
 function BRItemHelmet:__init(p_Id, p_Definition, p_CurrentDurability)
 	BRItem.__init(self, p_Id, p_Definition, 1)

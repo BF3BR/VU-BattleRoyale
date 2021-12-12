@@ -1,4 +1,5 @@
-class ("PhaseManagerShared", TimersMixin)
+---@class PhaseManagerShared : TimersMixin
+PhaseManagerShared = class("PhaseManagerShared", TimersMixin)
 
 local m_Logger = Logger("PhaseManagerShared", true)
 

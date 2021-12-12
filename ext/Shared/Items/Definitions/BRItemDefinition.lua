@@ -1,4 +1,5 @@
-class "BRItemDefinition"
+---@class BRItemDefinition
+BRItemDefinition = class "BRItemDefinition"
 
 function BRItemDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}

@@ -1,4 +1,5 @@
-class "ModificationsCommon"
+---@class ModificationsCommon
+local ModificationsCommon = class "ModificationsCommon"
 
 local m_Logger = Logger("ModificationsCommon", true)
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
@@ -7,7 +8,6 @@ local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifi
 local m_WeaponSwitchingModifier = require "__shared/Modifications/Soldiers/WeaponSwitchingModifier"
 local m_PhysicsModifier = require "__shared/Modifications/Soldiers/PhysicsModifier"
 local m_WeaponsModifier = require "__shared/Modifications/WeaponsModifier"
-local m_DropShipModifier = require "__shared/Modifications/DropShipModifier"
 local m_VanillaUIModifier = require "__shared/Modifications/VanillaUIModifier"
 local m_2dTreeRemoving = require "__shared/Modifications/2dTreeRemoving"
 local m_MapSpecificModifier = require "__shared/Modifications/MapSpecificModifier"
@@ -29,7 +29,6 @@ function ModificationsCommon:RegisterCallbacks()
 
 	m_WeaponSwitchingModifier:RegisterCallbacks()
 	m_WeaponsModifier:RegisterCallbacks()
-	m_DropShipModifier:RegisterCallbacks()
 	m_VanillaUIModifier:RegisterCallbacks()
 	m_PhysicsModifier:RegisterCallbacks()
 	m_2dTreeRemoving:RegisterCallbacks()
@@ -77,7 +76,6 @@ function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedica
 		m_SoldierBlueprint:Deregister()
 		m_WeaponSwitchingModifier:DeregisterCallbacks()
 		m_WeaponsModifier:DeregisterCallbacks()
-		m_DropShipModifier:DeregisterCallbacks()
 		m_VanillaUIModifier:DeregisterCallbacks()
 		m_MapSpecificModifier:DeregisterCallbacks()
 		m_PhysicsModifier:DeregisterCallbacks()

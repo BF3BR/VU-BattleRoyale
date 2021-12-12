@@ -1,4 +1,5 @@
-class("BRItemHelmetDefinition", BRItemProtectionDefinition)
+---@class BRItemHelmetDefinition : BRItemProtectionDefinition
+local BRItemHelmetDefinition = class("BRItemHelmetDefinition", BRItemProtectionDefinition)
 
 function BRItemHelmetDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}

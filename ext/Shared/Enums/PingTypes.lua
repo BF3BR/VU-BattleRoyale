@@ -1,3 +1,4 @@
+---@class PingType
 PingType = {
 	Default = 0,
 	Enemy = 1,
@@ -7,6 +8,7 @@ PingType = {
 	Health = 5
 }
 
+---@class PingMethod
 PingMethod = {
 	Screen = 0,
 	World = 1

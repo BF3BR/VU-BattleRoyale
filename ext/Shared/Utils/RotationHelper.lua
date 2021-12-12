@@ -1,4 +1,5 @@
-class "RotationHelper"
+---@class RotationHelper
+local RotationHelper = class "RotationHelper"
 
 local m_Logger = Logger("RotationHelper", false)
 --YPR: yaw, pitch, roll
@@ -93,7 +94,7 @@ function RotationHelper:GetYPRfromLT(linearTransform)
 		return
 	end
 
-	local yaw, pitch, roll = self:GetYPRfromRUF(
+	local yaw, pitch, roll = self:GetYPRfromLUF(
 			linearTransform.left,
 			linearTransform.up,
 			linearTransform.forward

@@ -1,4 +1,5 @@
-class "VuBattleRoyaleShared"
+---@class VuBattleRoyaleShared
+local VuBattleRoyaleShared = class "VuBattleRoyaleShared"
 
 require "__shared/Enums/AirdropEnums"
 require "__shared/Enums/Attachments"

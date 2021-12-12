@@ -1,4 +1,5 @@
-class "BRItemDatabase"
+---@class BRItemDatabase
+local BRItemDatabase = class "BRItemDatabase"
 
 local m_Logger = Logger("BRItemDatabase", true)
 

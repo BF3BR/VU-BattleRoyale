@@ -1,4 +1,5 @@
-class("BRItemConsumableDefinition", BRItemDefinition)
+---@class BRItemConsumableDefinition : BRItemDefinition
+local BRItemConsumableDefinition = class("BRItemConsumableDefinition", BRItemDefinition)
 
 function BRItemConsumableDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}

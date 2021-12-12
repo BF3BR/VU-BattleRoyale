@@ -1,4 +1,5 @@
-class("SkeletonMeshModel", MeshModel)
+---@class SkeletonMeshModel : MeshModel
+SkeletonMeshModel = class("SkeletonMeshModel", MeshModel)
 
 function SkeletonMeshModel:__init(p_MeshAsset, p_Variation, p_BoneCount, p_BoneOffsets)
 	MeshModel.__init(self, p_MeshAsset, p_Variation)

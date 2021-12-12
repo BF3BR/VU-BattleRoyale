@@ -1,4 +1,5 @@
-class("WeaponSkeletonMeshModel", MeshModel)
+---@class WeaponSkeletonMeshModel : MeshModel
+WeaponSkeletonMeshModel = class("WeaponSkeletonMeshModel", MeshModel)
 
 local m_MapHelper = require "__shared/Utils/MapHelper"
 

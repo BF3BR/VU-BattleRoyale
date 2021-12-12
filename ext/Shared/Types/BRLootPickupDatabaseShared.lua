@@ -1,4 +1,5 @@
-class "BRLootPickupDatabaseShared"
+---@class BRLootPickupDatabaseShared
+BRLootPickupDatabaseShared = class "BRLootPickupDatabaseShared"
 
 function BRLootPickupDatabaseShared:__init()
 	self:ResetVars()

@@ -1,6 +1,7 @@
 -- Credits go to NoFate for the idea and implementation xD
 
-class "WindowsCircleSpawner"
+---@class WindowsCircleSpawner
+local WindowsCircleSpawner = class "WindowsCircleSpawner"
 
 local m_RotationHelper = require "__shared/Utils/RotationHelper"
 

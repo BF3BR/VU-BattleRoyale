@@ -1,13 +1,14 @@
-class 'AntiCheat'
+---@class AntiCheatServer
+local AntiCheatServer = class 'AntiCheatServer'
 
-function AntiCheat:__init()
+function AntiCheatServer:__init()
 	self:Reset()
 
 	NetEvents:Subscribe('Cheat', self, self.OnCheat)
 	NetEvents:Subscribe('Debug', self, self.OnDebug)
 end
 
-function AntiCheat:Reset()
+function AntiCheatServer:Reset()
 	self.m_PlayerCount = {}
 	self.m_Timer = 0
 	self.m_Verify = false
@@ -18,11 +19,11 @@ end
 -- Events
 -- =============================================
 
-function AntiCheat:OnLevelLoaded()
+function AntiCheatServer:OnLevelLoaded()
 	self:Reset()
 end
 
-function AntiCheat:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+function AntiCheatServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	self.m_Timer = self.m_Timer + p_DeltaTime
 
 	if self.m_Timer >= 28 then
@@ -60,7 +61,7 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
-function AntiCheat:OnCheat(p_Player, p_Args)
+function AntiCheatServer:OnCheat(p_Player, p_Args)
 	if self.m_Verify == false and p_Args[1] ~= "Verify" then
 		if self.m_PlayerCount[p_Player.name] == nil then
 			self.m_PlayerCount[p_Player.name] = 1
@@ -89,7 +90,7 @@ function AntiCheat:OnCheat(p_Player, p_Args)
 	end
 end
 
-function AntiCheat:OnDebug(p_Player, p_Args)
+function AntiCheatServer:OnDebug(p_Player, p_Args)
 	if p_Args[1] == "404" then
 		print(p_Player.name)
 		print(p_Args)
@@ -98,4 +99,4 @@ function AntiCheat:OnDebug(p_Player, p_Args)
 	end
 end
 
-return AntiCheat()
+return AntiCheatServer()

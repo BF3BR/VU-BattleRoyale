@@ -1,5 +1,7 @@
-class 'Chat'
+---@class Chat
+local Chat = class 'Chat'
 
+---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
 
 -- =============================================
@@ -10,18 +12,22 @@ function Chat:__init()
 	self.m_IsChatOpen = false
 end
 
+---VEXT Shared Extension:Unloading Event
 function Chat:OnExtensionUnloading()
 	WebUI:ExecuteJS("OnClearChat()")
 	self.m_IsChatOpen = false
 	self:DisableWeapon(false)
 end
 
+---VEXT Shared Level:Destroy Event
 function Chat:OnLevelDestroy()
 	WebUI:ExecuteJS("OnClearChat()")
 	self.m_IsChatOpen = false
 	self:DisableWeapon(false)
 end
 
+---VEXT Shared Engine:Update Event
+---@param p_DeltaTime number
 function Chat:OnEngineUpdate(p_DeltaTime)
 	if self.m_IsChatOpen then
 		WebUI:EnableMouse()
@@ -33,6 +39,9 @@ end
 -- NetEvents
 -- =============================================
 
+---Custom Client ChatMessage:SquadReceive NetEvent
+---@param p_PlayerName string
+---@param p_Message string
 function Chat:OnChatMessageSquadReceive(p_PlayerName, p_Message)
 	local s_OtherPlayer = PlayerManager:GetPlayerByName(p_PlayerName)
 
@@ -56,6 +65,9 @@ function Chat:OnChatMessageSquadReceive(p_PlayerName, p_Message)
 	WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
 end
 
+---Custom Client ChatMessage:AllReceive NetEvent
+---@param p_PlayerName string
+---@param p_Message string
 function Chat:OnChatMessageAllReceive(p_PlayerName, p_Message)
 	local s_OtherPlayer = PlayerManager:GetPlayerByName(p_PlayerName)
 
@@ -78,6 +90,10 @@ end
 -- Hooks
 -- =============================================
 
+---VEXT Client UI:InputConceptEvent Hook
+---@param p_HookCtx HookContext
+---@param p_EventType UIInputActionEventType|integer
+---@param p_Action UIInputAction|integer
 function Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed then
 		return
@@ -115,6 +131,13 @@ function Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	end
 end
 
+---VEXT Client UI:CreateChatMessage Hook
+---@param p_HookCtx HookContext
+---@param p_Message string
+---@param p_Channel ChatChannelType|integer
+---@param p_PlayerId integer
+---@param p_RecipientMask integer
+---@param p_SenderIsDead boolean
 function Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
 	if p_Message == nil then
 		return
@@ -137,9 +160,12 @@ end
 -- WebUI Events
 -- =============================================
 
+---Custom Client WebUI:OutgoingChatMessage WebUI Event
+---@param p_JsonData string @json table
 function Chat:OnWebUIOutgoingChatMessage(p_JsonData)
 	self.m_IsChatOpen = false
 	self:DisableWeapon(false)
+	---@type string[]
 	local s_DecodedData = json.decode(p_JsonData)
 
 	-- Load params from the decoded JSON.
@@ -168,6 +194,7 @@ function Chat:OnWebUIOutgoingChatMessage(p_JsonData)
 	NetEvents:SendLocal("ChatMessage:SquadSend", s_Message)
 end
 
+---Custom Client WebUI:SetCursor WebUI Event
 function Chat:OnWebUISetCursor()
 	InputManager:SetCursorPosition(WebUI:GetScreenWidth() / 2, WebUI:GetScreenHeight() / 2)
 	WebUI:ResetKeyboard()
@@ -180,6 +207,10 @@ end
 -- Functions
 -- =============================================
 
+---Returns the relation between these 2 players
+---@param p_OtherPlayer Player
+---@param p_LocalPlayer Player
+---@return string
 function Chat:GetPlayerRelation(p_OtherPlayer, p_LocalPlayer)
 	if p_OtherPlayer.name == p_LocalPlayer.name then
 		return "localPlayer"
@@ -196,6 +227,8 @@ function Chat:GetPlayerRelation(p_OtherPlayer, p_LocalPlayer)
 	end
 end
 
+---Disables/ Enables EIAFire input
+---@param p_Disable boolean
 function Chat:DisableWeapon(p_Disable)
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 

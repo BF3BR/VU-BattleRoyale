@@ -1,4 +1,5 @@
-class 'Settings'
+---@class Settings
+local Settings = class 'Settings'
 
 function Settings:__init()
 	self.m_UserSettings = {}
@@ -8,10 +9,12 @@ end
 -- Events
 -- =============================================
 
+---VEXT Client Level:Loaded Event
 function Settings:OnLevelLoaded()
 	self:ApplySettings()
 end
 
+---VEXT Shared Extension:Unloading Event
 function Settings:OnExtensionUnloading()
 	self:ResetSettings()
 end
@@ -20,6 +23,7 @@ end
 -- Functions
 -- =============================================
 
+---Function to change Settings with ResourcManager
 function Settings:ApplySettings()
 	for l_SettingsName, l_Settings in pairs(SettingsConfig) do
 		local s_TempSettings = ResourceManager:GetSettings(l_SettingsName)
@@ -36,6 +40,7 @@ function Settings:ApplySettings()
 	end
 end
 
+---Reset all settings to default
 function Settings:ResetSettings()
 	for l_SettingsName, l_Settings in pairs(self.m_UserSettings) do
 		local s_TempSettings = ResourceManager:GetSettings(l_SettingsName)

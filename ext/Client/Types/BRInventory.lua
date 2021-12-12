@@ -1,13 +1,17 @@
-class "BRInventory"
+---@class BRInventory
+local BRInventory = class "BRInventory"
 
 function BRInventory:__init()
 	self:ResetVars()
 end
 
 function BRInventory:ResetVars()
+	---@type table<integer, BRItem>
 	self.m_Slots = {}
 end
 
+---@param p_SlotIndex integer
+---@return BRItem|nil
 function BRInventory:GetSlot(p_SlotIndex)
 	return self.m_Slots[p_SlotIndex]
 end
@@ -16,6 +20,7 @@ end
 -- Events
 -- =============================================
 
+---@param p_State table
 function BRInventory:OnReceiveInventoryState(p_State)
 	if p_State == nil then
 		return
@@ -28,6 +33,7 @@ function BRInventory:OnReceiveInventoryState(p_State)
 	self:SyncInventoryWithUI()
 end
 
+---@return table
 function BRInventory:AsTable()
 	local s_Data = {}
 
@@ -48,6 +54,8 @@ function BRInventory:SyncInventoryWithUI()
 	WebUI:ExecuteJS(string.format("SyncInventory(%s);", json.encode(self:AsTable())))
 end
 
+---Custom Client WebUI:MoveItem WebUI Event
+---@param p_JsonData string @json table
 function BRInventory:OnWebUIMoveItem(p_JsonData)
 	local s_DecodedData = json.decode(p_JsonData)
 
@@ -62,6 +70,8 @@ function BRInventory:OnWebUIMoveItem(p_JsonData)
 	NetEvents:Send(InventoryNetEvent.MoveItem, s_ItemId, s_SlotId)
 end
 
+---Custom Client WebUI:DropItem WebUI Event
+---@param p_JsonData string @json table
 function BRInventory:OnWebUIDropItem(p_JsonData)
 	local s_DecodedData = json.decode(p_JsonData)
 
@@ -76,6 +86,8 @@ function BRInventory:OnWebUIDropItem(p_JsonData)
 	NetEvents:Send(InventoryNetEvent.DropItem, s_ItemId, s_Quantity)
 end
 
+---Custom Client WebUI:UseItem WebUI Event
+---@param p_JsonData string @json table
 function BRInventory:OnWebUIUseItem(p_JsonData)
 	local s_DecodedData = json.decode(p_JsonData)
 
@@ -89,12 +101,15 @@ function BRInventory:OnWebUIUseItem(p_JsonData)
 	NetEvents:Send(InventoryNetEvent.UseItem, s_ItemId)
 end
 
+---Custom Client WebUI:PickupItem WebUI Event
+---@param p_JsonData string @json table
 function BRInventory:OnWebUIPickupItem(p_JsonData)
 	local s_DecodedData = json.decode(p_JsonData)
 
 	-- Load params from the decoded JSON.
 	local s_LootPickupId = s_DecodedData.lootPickup
 	local s_ItemId = s_DecodedData.item
+	---@type integer|nil
 	local s_SlotId = nil
 
 	if s_DecodedData.slot ~= "" then

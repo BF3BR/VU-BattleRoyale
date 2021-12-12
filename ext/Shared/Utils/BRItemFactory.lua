@@ -1,12 +1,20 @@
+---@type BRItemAmmoDefinition
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
+---@type BRItemArmorDefinition
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
+---@type BRItemAttachmentDefinition
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
+---@type BRItemConsumableDefinition
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
+---@type BRItemHelmetDefinition
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
+---@type BRItemWeaponDefinition
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
+---@type BRItemGadgetDefinition
 local m_GadgetDefinition = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
-class "BRItemFactory"
+---@class BRItemFactory
+local BRItemFactory = class "BRItemFactory"
 
 function BRItemFactory:__init()
 	self.m_Definitions = {}
@@ -59,6 +67,7 @@ function BRItemFactory:CreateFromTable(p_Table)
 end
 
 if g_BRItemFactory == nil then
+	---@type BRItemFactory
 	g_BRItemFactory = BRItemFactory()
 end
 

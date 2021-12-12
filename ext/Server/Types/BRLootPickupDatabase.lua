@@ -1,8 +1,10 @@
-class("BRLootPickupDatabase", BRLootPickupDatabaseShared)
+---@class BRLootPickupDatabaseServer : BRLootPickupDatabaseShared
+local BRLootPickupDatabase = class("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
 local m_Logger = Logger("BRLootPickupDatabase", true)
 local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_MapHelper = require "__shared/Utils/MapHelper"
+local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
 
 ---@param p_Transform Vec3|LinearTransform
 ---@param p_Items BRItem[]
@@ -17,7 +19,7 @@ end
 function BRLootPickupDatabase:CreateFromInventory(p_Position, p_Inventory)
 	local s_Items = {}
 	for _, l_Slot in pairs(p_Inventory.m_Slots) do
-		ArrayHelper:InsertMany(s_Items, l_Slot:Drop())
+		m_ArrayHelper:InsertMany(s_Items, l_Slot:Drop())
 	end
 
 	return self:CreateLootPickup(LootPickupType.Basic.Name, p_Position, s_Items)

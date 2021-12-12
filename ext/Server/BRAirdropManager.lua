@@ -1,4 +1,5 @@
-class "BRAirdropManager"
+---@class BRAirdropManager
+local BRAirdropManager = class "BRAirdropManager"
 
 local m_Logger = Logger("BRAirdropManager", true)
 
