@@ -2,8 +2,13 @@ local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsum
 local m_Logger = Logger("BRItemConsumable", true)
 
 ---@class BRItemConsumable : BRItem
+---@field m_Definition BRItemConsumableDefinition
 BRItemConsumable = class("BRItemConsumable", BRItem)
 
+---Creates a new BRItemConsumable
+---@param p_Id string @It is a tostring(Guid)
+---@param p_Definition BRItemConsumableDefinition
+---@param p_Quantity integer
 function BRItemConsumable:__init(p_Id, p_Definition, p_Quantity)
 	BRItem.__init(self, p_Id, p_Definition, p_Quantity)
 

@@ -1,6 +1,7 @@
 local m_Logger = Logger("BRInventoryGadgetSlot", true)
 
 ---@class BRInventoryGadgetSlot : BRInventorySlot
+---@field m_Item BRItemGadget
 BRInventoryGadgetSlot = class("BRInventoryGadgetSlot", BRInventorySlot)
 
 function BRInventoryGadgetSlot:__init(p_Inventory)

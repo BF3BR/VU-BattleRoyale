@@ -1,6 +1,7 @@
 local m_Logger = Logger("BRInventoryWeaponSlot", true)
 
 ---@class BRInventoryWeaponSlot : BRInventorySlot
+---@field m_Item BRItemWeapon
 BRInventoryWeaponSlot = class("BRInventoryWeaponSlot", BRInventorySlot)
 
 local m_NoOptics = DC(Guid("6D3830F2-3528-11E0-B502-B15F9292C9B8"), Guid("A1AD1762-C856-F5D7-66B5-5E485460D3DF"))

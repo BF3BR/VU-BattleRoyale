@@ -1,4 +1,5 @@
 ---@class BRInventoryAttachmentSlot : BRInventorySlot
+---@field m_Item BRItemAttachment
 BRInventoryAttachmentSlot = class("BRInventoryAttachmentSlot", BRInventorySlot)
 
 function BRInventoryAttachmentSlot:__init(p_Inventory, p_AttachmentType)
