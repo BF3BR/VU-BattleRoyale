@@ -50,21 +50,29 @@ function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 end
 
+---VEXT Shared Extension:Loaded Event
 function ModificationsCommon:OnExtensionLoaded()
 	m_RemoveVanillaLoadingScreen:OnExtensionLoaded()
 	m_DisableDebugRenderer:OnExtensionLoaded()
 end
 
+---VEXT Shared Extension:Unloading Event
 function ModificationsCommon:OnExtensionUnloading()
 	m_RemoveVanillaLoadingScreen:OnExtensionUnloading()
 	m_DisableDebugRenderer:OnExtensionUnloading()
 end
 
+---VEXT Shared Level:RegisterEntityResources Event
+---@param p_LevelData DataContainer
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_FireEffectsModifier:OnRegisterEntityResources()
 	m_Airdrop:OnRegisterEntityResources()
 end
 
+---VEXT Shared Level:LoadResources Event
+---@param p_LevelName string
+---@param p_GameMode string
+---@param p_IsDedicatedServer boolean
 function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	m_Logger:Write("OnLoadResources")
 

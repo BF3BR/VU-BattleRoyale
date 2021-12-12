@@ -27,7 +27,11 @@ function MapLoader:Reset()
 	self.m_PendingVariations = {}
 end
 
--- nº 1 in calling order
+-- nº 1 in calling order.
+---VEXT Shared Level:LoadResources Event
+---@param p_LevelName string
+---@param p_GameMode string
+---@param p_IsDedicatedServer boolean
 function MapLoader:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	m_Logger:Write("Event: Loading resources")
 	self.m_ObjectVariations = {}
@@ -48,7 +52,9 @@ function MapLoader:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	m_Logger:Write("Load savefile: " .. self.m_MapPreset.header.projectName)
 end
 
--- nº 2 in calling order
+-- nº 2 in calling order.
+---VEXT Shared Partition:Loaded Event
+---@param p_Partition DatabasePartition
 function MapLoader:OnPartitionLoaded(p_Partition)
 	if p_Partition == nil then
 		return
@@ -91,7 +97,9 @@ function MapLoader:OnPartitionLoaded(p_Partition)
 	end
 end
 
--- nº 3 in calling order
+-- nº 3 in calling order.
+---VEXT Shared Level:LoadingInfo Event
+---@param p_ScreenInfo string
 function MapLoader:OnLevelLoadingInfo(p_ScreenInfo)
 	if p_ScreenInfo == "Registering entity resources" then
 		m_Logger:Write("Event: Loading Info - Registering entity resources")
@@ -149,7 +157,8 @@ function MapLoader:OnLevelLoadingInfo(p_ScreenInfo)
 	end
 end
 
--- Remove all DataContainer references and reset vars
+-- Remove all DataContainer references and reset vars.
+---VEXT Shared Level:Destroy Event
 function MapLoader:OnLevelDestroy()
 	self.m_ObjectVariations = {}
 	self.m_PendingVariations = {}
