@@ -379,7 +379,7 @@ function BRTeam:Destroy()
 		self.m_Players[l_Name] = nil
 
 		-- move removed player to another team
-		Events:SendLocal(TeamManagerEvent.PutOnATeam, l_BrPlayer)
+		NetEvents:SendToLocal(TeamManagerEvent.PutOnATeam, l_BrPlayer)
 	end
 
 	self.m_Players = {}

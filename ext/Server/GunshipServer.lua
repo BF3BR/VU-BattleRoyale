@@ -186,6 +186,7 @@ end
 
 function GunshipServer:SetVehicleEntityTransform(p_Transform)
 	local s_VehicleEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
+	---@type SpatialEntity|nil
 	local s_VehicleEntity = s_VehicleEntityIterator:Next()
 
 	while s_VehicleEntity do
@@ -201,6 +202,7 @@ end
 
 function GunshipServer:SetLocatorEntityTransform(p_Transform)
 	local s_LocatorEntityIterator = EntityManager:GetIterator("LocatorEntity")
+	---@type SpatialEntity|nil
 	local s_LocatorEntity = s_LocatorEntityIterator:Next()
 
 	while s_LocatorEntity do
@@ -220,6 +222,7 @@ end
 
 function GunshipServer:GetVehicleEntityTransform()
 	local s_VehicleEntityIterator = EntityManager:GetIterator("ServerVehicleEntity")
+	---@type SpatialEntity|nil
 	local s_VehicleEntity = s_VehicleEntityIterator:Next()
 
 	while s_VehicleEntity do

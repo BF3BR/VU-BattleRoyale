@@ -95,6 +95,7 @@ end
 ---Returns the Armor in % (0-100)
 ---@return integer
 function BRPlayer:GetArmorPercentage()
+	---@type BRItemArmor
 	local s_Armor = self.m_Inventory:GetSlot(InventorySlot.Armor)
 	return s_Armor ~= nil and s_Armor:GetPercentage() or 0
 end
@@ -102,6 +103,7 @@ end
 ---Returns the Helmet in % (0-100)
 ---@return integer
 function BRPlayer:GetHelmetPercentage()
+	---@type BRItemHelmet
 	local s_Helmet = self.m_Inventory:GetSlot(InventorySlot.Helmet)
 	return s_Helmet ~= nil and s_Helmet:GetPercentage() or 0
 end

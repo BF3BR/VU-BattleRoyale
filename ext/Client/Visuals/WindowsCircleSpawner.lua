@@ -70,6 +70,7 @@ function WindowsCircleSpawner:GetEntityData()
 		return self.m_EntityData
 	end
 
+	---@type ObjectBlueprint|nil
 	local s_ObjectBlueprint = m_WindowBP:GetInstance()
 	if s_ObjectBlueprint ~= nil then
 		self.m_EntityData = StaticModelEntityData(s_ObjectBlueprint.object)

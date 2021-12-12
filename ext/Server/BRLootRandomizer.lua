@@ -62,13 +62,13 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 		s_RandomItemDefinition = self:Randomizer(tostring(s_RandomTier) .. "_Weapon", m_WeaponDefinitions, true, s_RandomTier)
 
 		-- Get a randomized attachment
-		s_AttachmentDefinition = self:Randomizer(tostring(s_RandomItemDefinition.m_Name) .. "_Attachment", m_AttachmentDefinitions, true, nil, s_RandomItemDefinition.m_EbxAttachments)
+		local s_AttachmentDefinition = self:Randomizer(tostring(s_RandomItemDefinition.m_Name) .. "_Attachment", m_AttachmentDefinitions, true, nil, s_RandomItemDefinition.m_EbxAttachments)
 
 		-- Get the ammo definition
-		s_AmmoDefinition = s_RandomItemDefinition.m_AmmoDefinition
+		local s_AmmoDefinition = s_RandomItemDefinition.m_AmmoDefinition
 
-		s_Patterns = m_MapHelper:Keys(RandomWeaponPatterns)
-		s_WeaponSpawnPattern = math.random(#s_Patterns)
+		local s_Patterns = m_MapHelper:Keys(RandomWeaponPatterns)
+		local s_WeaponSpawnPattern = math.random(#s_Patterns)
 
 		-- Pistols doesn't have any attachments so they should just spawn with ammo
 		if #s_RandomItemDefinition.m_EbxAttachments <= 0 then
@@ -149,8 +149,8 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 
 		s_RandomItemQuantity = s_RandomItemDefinition.m_SpawnStack
 
-		s_Patterns = m_MapHelper:Keys(RandomAmmoPatterns)
-		s_WeaponSpawnPattern = math.random(#s_Patterns)
+		local s_Patterns = m_MapHelper:Keys(RandomAmmoPatterns)
+		local s_WeaponSpawnPattern = math.random(#s_Patterns)
 
 		if s_WeaponSpawnPattern == RandomAmmoPatterns.TwoItems then
 			local s_AddedItem = m_ItemDatabase:CreateItem(s_RandomItemDefinition, s_RandomItemDefinition.m_SpawnStack)

@@ -389,7 +389,7 @@ function BRInventory:AsTable(p_ForceFullUpdate)
 		local s_Slot = self.m_Slots[l_SlotIndex]
 
 		if p_ForceFullUpdate or s_Slot.m_IsUpdated then
-			s_SlotData = s_Slot:AsTable()
+			local s_SlotData = s_Slot:AsTable()
 			s_Data[l_SlotIndex] = s_SlotData
 
 			if s_Slot.m_SendToSpectator then
@@ -421,7 +421,7 @@ function BRInventory:SendState()
 		return
 	end
 
-	s_Data, s_SpectatorData = self:AsTable()
+	local s_Data, s_SpectatorData = self:AsTable()
 
 	-- send data to player if it's not empty
 	if next(s_Data) ~= nil then
