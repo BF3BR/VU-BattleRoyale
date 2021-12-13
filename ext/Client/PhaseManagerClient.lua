@@ -7,7 +7,9 @@ local m_OOCVision = require "Visuals/OOCVision"
 function PhaseManagerClient:RegisterVars()
 	PhaseManagerShared.RegisterVars(self)
 
+	---@type RenderableCircle
 	self.m_InnerCircle = RenderableCircle()
+	---@type RenderableCircle
 	self.m_OuterCircle = RenderableCircle()
 
 	-- we want to get the state only once

@@ -258,6 +258,10 @@ function MapLoader:AddCustomObject(p_Object, p_World, p_RegistryContainer)
 	p_World.objects:add(s_Reference)
 end
 
+---Creates a new WorldPartData and puts all objects in there
+---@param p_PrimaryLevel LevelData
+---@param p_RegistryContainer RegistryContainer
+---@return WorldPartReferenceObjectData
 function MapLoader:CreateWorldPart(p_PrimaryLevel, p_RegistryContainer)
 	local s_World = WorldPartData()
 	p_RegistryContainer.blueprintRegistry:add(s_World)
@@ -271,6 +275,7 @@ function MapLoader:CreateWorldPart(p_PrimaryLevel, p_RegistryContainer)
 				local s_WorldPart = WorldPartData(s_RefObjectData.blueprint)
 
 				if #s_WorldPart.objects ~= 0 then
+					---@type ReferenceObjectData
 					local s_ROD = s_WorldPart.objects[#s_WorldPart.objects] -- last one in array
 
 					if s_ROD and s_ROD:Is('ReferenceObjectData') then

@@ -1,5 +1,5 @@
 ---@class RenderableCircle : Circle
-local RenderableCircle = class ("RenderableCircle", Circle)
+RenderableCircle = class ("RenderableCircle", Circle)
 
 local m_Logger = Logger("RenderableCircle", false)
 ---@type WindowsCircleSpawner
