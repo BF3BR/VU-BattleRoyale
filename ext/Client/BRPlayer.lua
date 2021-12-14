@@ -1,5 +1,5 @@
 ---@class BRPlayer
-local BRPlayer = class "BRPlayer"
+BRPlayer = class "BRPlayer"
 
 local m_Logger = Logger("BRPlayer", true)
 

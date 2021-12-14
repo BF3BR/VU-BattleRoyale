@@ -1,5 +1,5 @@
 ---@class OOCFiresServer
-local OOCFiresServer = class "OOCFiresServer"
+OOCFiresServer = class "OOCFiresServer"
 
 local m_Logger = Logger("OOCFiresServer", true)
 

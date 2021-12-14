@@ -1,5 +1,5 @@
 ---@class EscMenu
-local EscMenu = class 'EscMenu'
+EscMenu = class 'EscMenu'
 
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"

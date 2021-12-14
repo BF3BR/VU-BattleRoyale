@@ -1,5 +1,5 @@
 ---@class PhaseManagerClient : PhaseManagerShared
-local PhaseManagerClient = class("PhaseManagerClient", PhaseManagerShared)
+PhaseManagerClient = class("PhaseManagerClient", PhaseManagerShared)
 
 ---@type OOCVision
 local m_OOCVision = require "Visuals/OOCVision"

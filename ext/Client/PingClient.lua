@@ -1,5 +1,5 @@
 ---@class PingClient
-local PingClient = class "PingClient"
+PingClient = class "PingClient"
 
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"

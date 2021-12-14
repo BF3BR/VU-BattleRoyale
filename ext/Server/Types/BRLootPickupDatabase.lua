@@ -1,5 +1,5 @@
 ---@class BRLootPickupDatabaseServer : BRLootPickupDatabaseShared
-local BRLootPickupDatabase = class("BRLootPickupDatabase", BRLootPickupDatabaseShared)
+BRLootPickupDatabase = class("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
 local m_Logger = Logger("BRLootPickupDatabase", true)
 local m_ItemDatabase = require "Types/BRItemDatabase"

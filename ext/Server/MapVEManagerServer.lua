@@ -1,5 +1,5 @@
 ---@class MapVEManagerServer
-local MapVEManagerServer = class "MapVEManagerServer"
+MapVEManagerServer = class "MapVEManagerServer"
 
 local m_Logger = Logger("MapVEManagerServer", false)
 

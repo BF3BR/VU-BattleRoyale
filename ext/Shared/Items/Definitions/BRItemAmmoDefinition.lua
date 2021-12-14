@@ -1,5 +1,5 @@
 ---@class BRItemAmmoDefinition : BRItemDefinition
-local BRItemAmmoDefinition = class("BRItemAmmoDefinition", BRItemDefinition)
+BRItemAmmoDefinition = class("BRItemAmmoDefinition", BRItemDefinition)
 
 ---@class BRItemAmmoDefinitionOptions : BRItemDefinitionOptions
 ---@field SpawnStack integer

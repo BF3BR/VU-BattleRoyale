@@ -1,5 +1,5 @@
 ---@class BRInventoryManager
-local BRInventoryManager = class "BRInventoryManager"
+BRInventoryManager = class "BRInventoryManager"
 
 local m_Logger = Logger("BRInventoryManager", true)
 

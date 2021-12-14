@@ -1,5 +1,5 @@
 ---@class Chat
-local Chat = class 'Chat'
+Chat = class 'Chat'
 
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"

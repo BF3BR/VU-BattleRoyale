@@ -1,5 +1,5 @@
 ---@class CircleEffects
-local CircleEffects = class "CircleEffects"
+CircleEffects = class "CircleEffects"
 
 ---@type MathHelper
 local m_MathHelper = require "__shared/Utils/MathHelper"

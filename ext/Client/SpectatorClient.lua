@@ -1,5 +1,5 @@
 ---@class SpectatorClient : TimersMixin
-local SpectatorClient = class("SpectatorClient", TimersMixin)
+SpectatorClient = class("SpectatorClient", TimersMixin)
 
 ---@type MathHelper
 local m_MathHelper = require "__shared/Utils/MathHelper"

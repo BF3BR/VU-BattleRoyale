@@ -1,5 +1,5 @@
 ---@class RaycastHelper
-local RaycastHelper = class "RaycastHelper"
+RaycastHelper = class "RaycastHelper"
 
 function RaycastHelper:__init()
 	self.m_RaycastMemo = {}

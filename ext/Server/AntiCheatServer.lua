@@ -1,5 +1,5 @@
 ---@class AntiCheatServer
-local AntiCheatServer = class 'AntiCheatServer'
+AntiCheatServer = class 'AntiCheatServer'
 
 function AntiCheatServer:__init()
 	self:Reset()

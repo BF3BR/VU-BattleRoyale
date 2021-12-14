@@ -1,5 +1,5 @@
 ---@class VuBattleRoyaleClient
-local VuBattleRoyaleClient = class("VuBattleRoyaleClient")
+VuBattleRoyaleClient = class("VuBattleRoyaleClient")
 
 require "ClientCommands"
 

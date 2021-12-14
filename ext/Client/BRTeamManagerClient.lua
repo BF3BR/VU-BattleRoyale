@@ -1,5 +1,5 @@
 ---@class BRTeamManagerClient
-local BRTeamManagerClient = class 'BRTeamManagerClient'
+BRTeamManagerClient = class 'BRTeamManagerClient'
 
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"

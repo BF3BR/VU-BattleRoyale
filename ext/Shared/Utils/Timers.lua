@@ -1,5 +1,5 @@
 ---@class Timer
-local Timer = class "Timer"
+Timer = class "Timer"
 
 ---Creates a new Timer
 ---@param p_Manager TimerManager
@@ -93,7 +93,7 @@ function Timer:Reset()
 end
 
 ---@class TimerManager
-local TimerManager = class "TimerManager"
+TimerManager = class "TimerManager"
 
 function TimerManager:__init()
 	self.m_LastId = 1

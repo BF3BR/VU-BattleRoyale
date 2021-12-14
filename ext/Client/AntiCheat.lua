@@ -1,5 +1,5 @@
 ---@class AntiCheat
-local AntiCheat = class 'AntiCheat'
+AntiCheat = class 'AntiCheat'
 
 function AntiCheat:__init()
 	self.m_GunSwayTimer = 0.0

@@ -1,5 +1,5 @@
 ---@class RegistryManager
-local RegistryManager = class("RegistryManager")
+RegistryManager = class("RegistryManager")
 
 function RegistryManager:__init()
 	self:ResetVars()

@@ -1,5 +1,5 @@
 ---@class BRLootPickupDatabaseClient : BRLootPickupDatabaseShared
-local BRLootPickupDatabase = class ("BRLootPickupDatabase", BRLootPickupDatabaseShared)
+BRLootPickupDatabase = class ("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
 function BRLootPickupDatabase:ResetVars()
 	BRLootPickupDatabaseShared.ResetVars(self)

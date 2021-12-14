@@ -1,5 +1,5 @@
 ---@class BRTeamManagerServer
-local BRTeamManagerServer = class "BRTeamManagerServer"
+BRTeamManagerServer = class "BRTeamManagerServer"
 
 local m_Logger = Logger("BRTeamManagerServer", true)
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"

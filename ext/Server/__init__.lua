@@ -1,5 +1,5 @@
 ---@class VuBattleRoyaleServer
-local VuBattleRoyaleServer = class "VuBattleRoyaleServer"
+VuBattleRoyaleServer = class "VuBattleRoyaleServer"
 
 require "__shared/Slots/BRInventorySlot"
 require "__shared/Slots/BRInventoryWeaponSlot"

@@ -1,5 +1,5 @@
 ---@class GunSwayManager
-local GunSwayManager = class "GunSwayManager"
+GunSwayManager = class "GunSwayManager"
 
 -- Fix ADS accurate hipfire glitch.
 ---VEXT Shared GunSway:Update Event

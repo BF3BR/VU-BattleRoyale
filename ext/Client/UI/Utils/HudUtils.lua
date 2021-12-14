@@ -1,5 +1,5 @@
 ---@class HudUtils
-local HudUtils = class "HudUtils"
+HudUtils = class "HudUtils"
 
 ---@type ConnectionHelper
 local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"

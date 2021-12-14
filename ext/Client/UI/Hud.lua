@@ -1,5 +1,5 @@
 ---@class VuBattleRoyaleHud
-local VuBattleRoyaleHud = class "VuBattleRoyaleHud"
+VuBattleRoyaleHud = class "VuBattleRoyaleHud"
 
 ---@type EscMenu
 local m_EscMenu = require "UI/EscMenu"

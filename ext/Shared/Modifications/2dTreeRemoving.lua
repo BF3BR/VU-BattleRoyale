@@ -1,5 +1,5 @@
 ---@class TreeRemoving
-local TreeRemoving = class 'TreeRemoving'
+TreeRemoving = class 'TreeRemoving'
 
 local TreeConfig = require "__shared/Configs/2dTreeConfig"
 

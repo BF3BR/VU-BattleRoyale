@@ -1,5 +1,5 @@
 ---@class PhaseManagerServer : PhaseManagerShared
-local PhaseManagerServer = class("PhaseManagerServer", PhaseManagerShared)
+PhaseManagerServer = class("PhaseManagerServer", PhaseManagerShared)
 
 local m_MathHelper = require "__shared/Utils/MathHelper"
 local m_BRTeamManagerServer = require "BRTeamManagerServer"

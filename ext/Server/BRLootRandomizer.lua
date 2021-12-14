@@ -1,5 +1,5 @@
 ---@class BRLootRandomizer
-local BRLootRandomizer = class "BRLootRandomizer"
+BRLootRandomizer = class "BRLootRandomizer"
 
 local m_Logger = Logger("BRLootRandomizer", true)
 

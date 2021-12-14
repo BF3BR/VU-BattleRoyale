@@ -1,5 +1,5 @@
 ---@class BRLooting
-local BRLooting = class "BRLooting"
+BRLooting = class "BRLooting"
 
 local m_Logger = Logger("BRLooting", true)
 ---@type MapHelper

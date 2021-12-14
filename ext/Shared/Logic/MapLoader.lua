@@ -1,5 +1,5 @@
 ---@class MapLoader
-local MapLoader = class 'MapLoader'
+MapLoader = class 'MapLoader'
 
 local m_Logger = Logger("MapLoader", true)
 

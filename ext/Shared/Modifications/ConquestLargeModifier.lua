@@ -1,5 +1,5 @@
 ---@class ConquestModifier
-local ConquestModifier = class 'ConquestModifier'
+ConquestModifier = class 'ConquestModifier'
 
 local m_Conquest_PreRoundEntityData = DC(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("B3AF5AF0-4703-402C-A238-601E610A0B48"))
 local m_Conquest_SpatialPrefabBlueprint = DC(Guid("0C342A8C-BCDE-11E0-8467-9159D6ACA94C"), Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95"))

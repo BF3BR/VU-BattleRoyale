@@ -1,5 +1,5 @@
 ---@class DeployScreen
-local DeployScreen = class 'DeployScreen'
+DeployScreen = class 'DeployScreen'
 
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"

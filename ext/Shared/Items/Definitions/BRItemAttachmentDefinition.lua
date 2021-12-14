@@ -1,7 +1,7 @@
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
 ---@class BRItemAttachmentDefinition : BRItemDefinition
-local BRItemAttachmentDefinition = class("BRItemAttachmentDefinition", BRItemDefinition)
+BRItemAttachmentDefinition = class("BRItemAttachmentDefinition", BRItemDefinition)
 
 ---@class BRItemAmmoDefinitionOptions : BRItemDefinitionOptions
 ---@field AttachmentType AttachmentType|integer

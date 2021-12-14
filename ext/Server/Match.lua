@@ -1,5 +1,5 @@
 ---@class Match : TimersMixin
-local Match = class("Match", TimersMixin)
+Match = class("Match", TimersMixin)
 
 local m_GameStateManager = require "GameStateManager"
 local m_TeamManagerServer = require "BRTeamManagerServer"

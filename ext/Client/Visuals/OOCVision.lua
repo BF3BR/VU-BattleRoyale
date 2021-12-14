@@ -1,5 +1,5 @@
 ---@class OOCVision
-local OOCVision = class "OOCVision"
+OOCVision = class "OOCVision"
 
 local m_MapVEManager = require "Visuals/MapVEManager"
 

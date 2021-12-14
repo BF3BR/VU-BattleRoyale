@@ -1,5 +1,5 @@
 ---@class PingServer
-local PingServer = class "PingServer"
+PingServer = class "PingServer"
 
 local m_Logger = Logger("PingServer", true)
 

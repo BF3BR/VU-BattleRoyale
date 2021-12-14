@@ -1,5 +1,5 @@
 ---@class BRItemHelmetDefinition : BRItemProtectionDefinition
-local BRItemHelmetDefinition = class("BRItemHelmetDefinition", BRItemProtectionDefinition)
+BRItemHelmetDefinition = class("BRItemHelmetDefinition", BRItemProtectionDefinition)
 
 ---Creates a new BRItemHelmetDefinition
 ---@param p_UId string|'"helmet-tier-1"'|'"helmet-tier-2"'|'"helmet-tier-3"'

@@ -1,5 +1,5 @@
 ---@class GameModeSettingsModifier
-local GameModeSettingsModifier = class 'GameModeSettingsModifier'
+GameModeSettingsModifier = class 'GameModeSettingsModifier'
 
 local m_GameModeSettings = DC(Guid("C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4"), Guid("AD413546-DEAF-8115-B89C-D666E801C67A"))
 

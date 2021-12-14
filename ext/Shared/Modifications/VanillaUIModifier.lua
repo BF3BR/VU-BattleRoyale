@@ -1,5 +1,5 @@
 ---@class VanillaUIModifier
-local VanillaUIModifier = class "VanillaUIModifier"
+VanillaUIModifier = class "VanillaUIModifier"
 
 local m_Logger = Logger("VanillaUIModifier", true)
 local m_ArrayHelper = require "__shared/Utils/ArrayHelper"

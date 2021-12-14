@@ -1,5 +1,5 @@
 ---@class CommonSpatialRaycast
-local CommonSpatialRaycast = class 'CommonSpatialRaycast'
+CommonSpatialRaycast = class 'CommonSpatialRaycast'
 
 local m_Logger = Logger("CommonSpatialRaycast", true)
 local m_Hud = require "UI/Hud"

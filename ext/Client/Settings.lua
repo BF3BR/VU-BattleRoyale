@@ -1,5 +1,5 @@
 ---@class Settings
-local Settings = class 'Settings'
+Settings = class 'Settings'
 
 function Settings:__init()
 	self.m_UserSettings = {}

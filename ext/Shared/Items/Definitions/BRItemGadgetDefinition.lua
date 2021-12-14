@@ -1,5 +1,5 @@
 ---@class BRItemGadgetDefinition : BRItemDefinition
-local BRItemGadgetDefinition = class("BRItemGadgetDefinition", BRItemDefinition)
+BRItemGadgetDefinition = class("BRItemGadgetDefinition", BRItemDefinition)
 
 ---@class BRItemGadgetDefinitionOptions : BRItemDefinitionOptions
 ---@field SoldierWeaponBlueprint DC

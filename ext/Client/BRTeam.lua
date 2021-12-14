@@ -3,7 +3,7 @@
 -- =============================================
 
 ---@class Teammate
-local Teammate = class "Teammate"
+Teammate = class "Teammate"
 
 ---Creates a new Teammate
 ---@param p_Name string
@@ -129,7 +129,7 @@ end
 -- =============================================
 
 ---@class BRTeam
-local BRTeam = class "BRTeam"
+BRTeam = class "BRTeam"
 
 ---Creates a new BRTeam. Your BRTeam.
 ---@param p_Id string|nil

@@ -1,5 +1,5 @@
 ---@class GunshipCamera
-local GunshipCamera = class "GunshipCamera"
+GunshipCamera = class "GunshipCamera"
 
 ---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"

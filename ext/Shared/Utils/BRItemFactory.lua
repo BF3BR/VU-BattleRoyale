@@ -14,7 +14,7 @@ local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefi
 local m_GadgetDefinition = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
 ---@class BRItemFactory
-local BRItemFactory = class "BRItemFactory"
+BRItemFactory = class "BRItemFactory"
 
 function BRItemFactory:__init()
 	self.m_Definitions = {}

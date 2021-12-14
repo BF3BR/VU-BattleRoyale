@@ -1,5 +1,5 @@
 ---@class WeaponSwitchingModifier
-local WeaponSwitchingModifier = class "WeaponSwitchingModifier"
+WeaponSwitchingModifier = class "WeaponSwitchingModifier"
 
 local m_SoldierWeaponSwitchingData = DC(Guid("9942F328-35C1-11DF-9556-FDADABD0ADCC"), Guid("FE76DD4D-CA25-2382-1ACB-40117A0AC957"))
 

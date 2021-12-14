@@ -1,5 +1,5 @@
 ---@class GunshipClient
-local GunshipClient = class "GunshipClient"
+GunshipClient = class "GunshipClient"
 
 ---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"

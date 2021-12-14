@@ -1,5 +1,5 @@
 ---@class SpectatorServer
-local SpectatorServer = class "SpectatorServer"
+SpectatorServer = class "SpectatorServer"
 
 -- =============================================
 -- Events

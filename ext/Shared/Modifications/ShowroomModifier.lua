@@ -1,5 +1,5 @@
 ---@class ShowroomModifier
-local ShowroomModifier = class "ShowroomModifier"
+ShowroomModifier = class "ShowroomModifier"
 
 local m_ShowRoomReferenceObject = DC(Guid("51D7CE33-5181-11E0-A781-B6644A4BE024"), Guid("0EF06698-B9EA-4557-AFE0-78CA4575E726"))
 local m_MenuBlackCover = DC(Guid("36F339C4-C749-11E0-ABFA-BD1C98CDBFEF"), Guid("36F339C5-C749-11E0-ABFA-BD1C98CDBFEF"))

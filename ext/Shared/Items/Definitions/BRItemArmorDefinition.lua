@@ -1,5 +1,5 @@
 ---@class BRItemArmorDefinition : BRItemProtectionDefinition
-local BRItemArmorDefinition = class("BRItemArmorDefinition", BRItemProtectionDefinition)
+BRItemArmorDefinition = class("BRItemArmorDefinition", BRItemProtectionDefinition)
 
 ---Creates a new BRItemArmorDefinition
 ---@param p_UId string|'"armor-tier-1"'|'"armor-tier-2"'|'"armor-tier-3"'

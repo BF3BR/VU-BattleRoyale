@@ -1,5 +1,5 @@
 ---@class MapSpecificModifier
-local MapSpecificModifier = class "MapSpecificModifier"
+MapSpecificModifier = class "MapSpecificModifier"
 
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier"
 

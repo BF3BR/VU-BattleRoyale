@@ -1,5 +1,5 @@
 ---@class SoundModifier
-local SoundModifier = class "SoundModifier"
+SoundModifier = class "SoundModifier"
 
 local m_Logger = Logger("SoundModifier", false)
 

@@ -1,5 +1,5 @@
 ---@class BRInventory
-local BRInventory = class "BRInventory"
+BRInventory = class "BRInventory"
 
 function BRInventory:__init()
 	self:ResetVars()

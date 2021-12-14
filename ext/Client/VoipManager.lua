@@ -1,5 +1,5 @@
 ---@class VoipManager
-local VoipManager = class 'VoipManager'
+VoipManager = class 'VoipManager'
 
 local m_Logger = Logger("VoipManager", true)
 

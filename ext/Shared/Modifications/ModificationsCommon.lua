@@ -1,5 +1,5 @@
 ---@class ModificationsCommon
-local ModificationsCommon = class "ModificationsCommon"
+ModificationsCommon = class "ModificationsCommon"
 
 local m_Logger = Logger("ModificationsCommon", true)
 local m_RegistryManager = require "__shared/Logic/RegistryManager"

@@ -1,5 +1,5 @@
 ---@class FireEffectsModifier
-local FireEffectsModifier = class "FireEffectsModifier"
+FireEffectsModifier = class "FireEffectsModifier"
 
 local m_EmitterHelper = require "__shared/Utils/EmitterHelper"
 local m_RegistryManager = require "__shared/Logic/RegistryManager"

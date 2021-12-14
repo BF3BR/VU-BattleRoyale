@@ -2,7 +2,7 @@
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
 
 ---@class BRItemWeaponDefinition : BRItemDefinition
-local BRItemWeaponDefinition = class("BRItemWeaponDefinition", BRItemDefinition)
+BRItemWeaponDefinition = class("BRItemWeaponDefinition", BRItemDefinition)
 
 ---@class BRItemWeaponDefinitionOptions : BRItemDefinitionOptions
 ---@field SoldierWeaponBlueprint DC

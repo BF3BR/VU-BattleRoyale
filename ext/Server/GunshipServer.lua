@@ -1,5 +1,5 @@
 ---@class GunshipServer
-local GunshipServer = class "GunshipServer"
+GunshipServer = class "GunshipServer"
 
 local m_TeamManagerServer = require "BRTeamManagerServer"
 local m_Logger = Logger("GunshipServer", true)

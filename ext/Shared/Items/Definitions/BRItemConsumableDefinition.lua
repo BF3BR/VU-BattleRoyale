@@ -1,5 +1,5 @@
 ---@class BRItemConsumableDefinition : BRItemDefinition
-local BRItemConsumableDefinition = class("BRItemConsumableDefinition", BRItemDefinition)
+BRItemConsumableDefinition = class("BRItemConsumableDefinition", BRItemDefinition)
 
 ---@class BRItemConsumableDefinitionOptions : BRItemDefinitionOptions
 ---@field HealthToRegen integer

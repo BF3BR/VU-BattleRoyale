@@ -1,5 +1,5 @@
 ---@class ConnectionHelper
-local ConnectionHelper = class "ConnectionHelper"
+ConnectionHelper = class "ConnectionHelper"
 
 -- Blueprint connections
 ---@param p_Source DataContainer

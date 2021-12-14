@@ -1,5 +1,5 @@
 ---@class ManDownModifier
-local ManDownModifier = class "ManDownModifier"
+ManDownModifier = class "ManDownModifier"
 
 local m_Logger = Logger("ManDownModifier", true)
 local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"

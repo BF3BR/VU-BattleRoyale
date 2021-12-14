@@ -1,5 +1,5 @@
 ---@class MapHelper
-local MapHelper = class "MapHelper"
+MapHelper = class "MapHelper"
 
 -- Checks if the map contains a value
 function MapHelper:Contains(p_Map, p_Value)

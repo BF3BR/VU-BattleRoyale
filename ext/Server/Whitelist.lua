@@ -1,5 +1,5 @@
 ---@class Whitelist
-local Whitelist = class "Whitelist"
+Whitelist = class "Whitelist"
 
 -- =============================================
 -- Hooks

@@ -1,5 +1,5 @@
 ---@class AirdropSound
-local AirdropSound = class("AirdropSound")
+AirdropSound = class("AirdropSound")
 
 local m_Airdrop_Object_SFX = DC(Guid("CE2EF674-9C22-11E0-9F7B-CD3BC4364C43"), Guid("EBF2202A-9716-2A81-EA34-464432189CD0"))
 
