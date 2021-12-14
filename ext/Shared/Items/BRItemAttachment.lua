@@ -1,3 +1,5 @@
+---@module "Items/Definitions/BRItemAttachmentDefinition"
+---@type table<string, BRItemAttachmentDefinition>
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
 
 ---@class BRItemAttachment : BRItem

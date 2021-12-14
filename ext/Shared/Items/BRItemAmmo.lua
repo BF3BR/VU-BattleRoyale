@@ -1,3 +1,5 @@
+---@module "Items/Definitions/BRItemAmmoDefinition"
+---@type table<string, BRItemAmmoDefinition>
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
 
 ---@class BRItemAmmo : BRItem

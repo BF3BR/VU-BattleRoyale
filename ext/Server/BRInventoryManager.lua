@@ -9,17 +9,23 @@ local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 ---@type BRTeamManagerServer
 local m_BRTeamManagerServer = require "BRTeamManagerServer"
 
----@type BRItemAmmoDefinition
+---@module "Items/Definitions/BRItemAmmoDefinition"
+---@type table<string, BRItemAmmoDefinition>
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
----@type BRItemArmorDefinition
+---@module "Items/Definitions/BRItemArmorDefinition"
+---@type table<string, BRItemArmorDefinition>
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
----@type BRItemAttachmentDefinition
+---@module "Items/Definitions/BRItemAttachmentDefinition"
+---@type table<string, BRItemAttachmentDefinition>
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
----@type BRItemConsumableDefinition
+---@module "Items/Definitions/BRItemConsumableDefinition"
+---@type table<string, BRItemConsumableDefinition>
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
----@type BRItemHelmetDefinition
+---@module "Items/Definitions/BRItemHelmetDefinition"
+---@type table<string, BRItemHelmetDefinition>
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
----@type BRItemWeaponDefinition
+---@module "Items/Definitions/BRItemWeaponDefinition"
+---@type table<string, BRItemWeaponDefinition>
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
 function BRInventoryManager:__init()

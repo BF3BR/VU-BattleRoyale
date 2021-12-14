@@ -6,12 +6,26 @@ local m_Logger = Logger("BRLootRandomizer", true)
 local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
+---@module "Items/Definitions/BRItemAmmoDefinition"
+---@type table<string, BRItemAmmoDefinition>
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
+---@module "Items/Definitions/BRItemArmorDefinition"
+---@type table<string, BRItemArmorDefinition>
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
+---@module "Items/Definitions/BRItemAttachmentDefinition"
+---@type table<string, BRItemAttachmentDefinition>
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
+---@module "Items/Definitions/BRItemConsumableDefinition"
+---@type table<string, BRItemConsumableDefinition>
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
+---@module "Items/Definitions/BRItemHelmetDefinition"
+---@type table<string, BRItemHelmetDefinition>
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
+---@module "Items/Definitions/BRItemWeaponDefinition"
+---@type table<string, BRItemWeaponDefinition>
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
+---@module "Items/Definitions/BRItemGadgetDefinition"
+---@type table<string, BRItemGadgetDefinition>
 local m_GadgetDefinitions = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
 local m_MapHelper = require "__shared/Utils/MapHelper"

@@ -269,28 +269,28 @@ function GunshipServer:GetRandomGunshipPath()
 		-- Left to right
 		s_Return = {
 			StartPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x,
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
+				MapsConfig[s_LevelName].MapTopLeftPos.x,
+				MapsConfig[s_LevelName].PlaneFlyHeight,
+				MapsConfig[s_LevelName].MapTopLeftPos.z - math.random(0, MapsConfig[s_LevelName].MapWidthHeight)
 			),
 			EndPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - MapsConfig[s_LevelName]["MapWidthHeight"],
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"])
+				MapsConfig[s_LevelName].MapTopLeftPos.x - MapsConfig[s_LevelName].MapWidthHeight,
+				MapsConfig[s_LevelName].PlaneFlyHeight,
+				MapsConfig[s_LevelName].MapTopLeftPos.z - math.random(0, MapsConfig[s_LevelName].MapWidthHeight)
 			)
 		}
 	else
 		-- Top to bottom
 		s_Return = {
 			StartPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z
+				MapsConfig[s_LevelName].MapTopLeftPos.x - math.random(0, MapsConfig[s_LevelName].MapWidthHeight),
+				MapsConfig[s_LevelName].PlaneFlyHeight,
+				MapsConfig[s_LevelName].MapTopLeftPos.z
 			),
 			EndPos = Vec3(
-				MapsConfig[s_LevelName]["MapTopLeftPos"].x - math.random(0, MapsConfig[s_LevelName]["MapWidthHeight"]),
-				MapsConfig[s_LevelName]["PlaneFlyHeight"],
-				MapsConfig[s_LevelName]["MapTopLeftPos"].z - MapsConfig[s_LevelName]["MapWidthHeight"]
+				MapsConfig[s_LevelName].MapTopLeftPos.x - math.random(0, MapsConfig[s_LevelName].MapWidthHeight),
+				MapsConfig[s_LevelName].PlaneFlyHeight,
+				MapsConfig[s_LevelName].MapTopLeftPos.z - MapsConfig[s_LevelName].MapWidthHeight
 			)
 		}
 	end

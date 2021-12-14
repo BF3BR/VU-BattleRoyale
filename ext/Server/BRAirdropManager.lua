@@ -3,10 +3,20 @@ BRAirdropManager = class "BRAirdropManager"
 
 local m_Logger = Logger("BRAirdropManager", true)
 
+---@module "Items/Definitions/BRItemArmorDefinition"
+---@type table<string, BRItemArmorDefinition>
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
+---@module "Items/Definitions/BRItemAttachmentDefinition"
+---@type table<string, BRItemAttachmentDefinition>
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
+---@module "Items/Definitions/BRItemConsumableDefinition"
+---@type table<string, BRItemConsumableDefinition>
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
+---@module "Items/Definitions/BRItemHelmetDefinition"
+---@type table<string, BRItemHelmetDefinition>
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
+---@module "Items/Definitions/BRItemWeaponDefinition"
+---@type table<string, BRItemWeaponDefinition>
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
 local m_ItemDatabase = require "Types/BRItemDatabase"

@@ -42,6 +42,8 @@
 
 ---@type MapsConfigMap[]
 MapsConfig = {
+	---@module "Maps/XP5_003"
 	XP5_003 = require "__shared/Maps/XP5_003",
+	---@module "Maps/XP3_Alborz"
 	XP3_Alborz = require "__shared/Maps/XP3_Alborz",
 }

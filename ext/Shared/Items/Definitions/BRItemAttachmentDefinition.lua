@@ -1,3 +1,5 @@
+---@module "Items/Definitions/BRItemWeaponDefinition"
+---@type table<string, BRItemWeaponDefinition>
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
 ---@class BRItemAttachmentDefinition : BRItemDefinition

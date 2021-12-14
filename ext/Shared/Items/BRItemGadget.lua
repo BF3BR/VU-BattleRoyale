@@ -1,3 +1,5 @@
+---@module "Items/Definitions/BRItemGadgetDefinition"
+---@type table<string, BRItemGadgetDefinition>
 local m_GadgetDefinitions = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
 ---@class BRItemGadget : BRItem
