@@ -1,4 +1,4 @@
----@class BRLootPickupDatabaseServer : BRLootPickupDatabaseShared
+---@class BRLootPickupDatabase : BRLootPickupDatabaseShared
 BRLootPickupDatabase = class("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
 local m_Logger = Logger("BRLootPickupDatabase", true)

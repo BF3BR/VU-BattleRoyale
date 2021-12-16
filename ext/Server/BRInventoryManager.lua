@@ -4,7 +4,7 @@ BRInventoryManager = class "BRInventoryManager"
 local m_Logger = Logger("BRInventoryManager", true)
 
 local m_ItemDatabase = require "Types/BRItemDatabase"
----@type BRLootPickupDatabaseServer
+---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 ---@type BRTeamManagerServer
 local m_BRTeamManagerServer = require "BRTeamManagerServer"
