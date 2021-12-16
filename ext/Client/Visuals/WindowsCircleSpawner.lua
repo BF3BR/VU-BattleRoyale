@@ -32,7 +32,7 @@ function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength, p_CachedEn
 		Vec3(s_Left.x * s_XScaling, s_Left.y, s_Left.z),
 		Vec3(s_Up.x, s_Up.y * s_MapConfig.CircleWallHeightModifier, s_Up.z),
 		s_Forward,
-		Vec3(0, 0, 0)
+		Vec3(0.0, 0.0, 0.0)
 	)
 	s_EntityTrans = s_ScalingMatrix * s_EntityTrans
 

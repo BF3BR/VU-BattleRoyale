@@ -9,9 +9,13 @@ function AntiCheatServer:__init()
 end
 
 function AntiCheatServer:Reset()
+	---@type table<string, integer>
+	---`table<string: playerName, integer: bustedTimesCheating>`
 	self.m_PlayerCount = {}
-	self.m_Timer = 0
+	self.m_Timer = 0.0
 	self.m_Verify = false
+	---@type table<string, boolean>
+	---Used to confirm that they receive NetEvents
 	self.m_VerifiedPlayers = {}
 end
 
@@ -26,13 +30,13 @@ end
 function AntiCheatServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	self.m_Timer = self.m_Timer + p_DeltaTime
 
-	if self.m_Timer >= 28 then
+	if self.m_Timer >= 28.0 then
 		if self.m_Verify == false then
 			self.m_Verify = true
 			NetEvents:Broadcast('Verify')
 		end
 
-		if self.m_Timer >= 30 and self.m_Verify == true then
+		if self.m_Timer >= 30.0 and self.m_Verify == true then
 			for _, l_Player in pairs(PlayerManager:GetPlayers()) do
 				if self.m_VerifiedPlayers[l_Player.name] == nil and l_Player.accountGuid ~= Guid('00000000-0000-0000-0000-000000000000') then
 					if self.m_PlayerCount[l_Player.name] == nil then
@@ -51,7 +55,7 @@ function AntiCheatServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 			end
 
 			self.m_Verify = false
-			self.m_Timer = 0
+			self.m_Timer = 0.0
 			self.m_VerifiedPlayers = {}
 		end
 	end
@@ -86,7 +90,7 @@ function AntiCheatServer:OnCheat(p_Player, p_Args)
 			self.m_PlayerCount[p_Player.name] = nil
 		end
 	else
-		self.m_VerifiedPlayers[p_Player.name] = 1
+		self.m_VerifiedPlayers[p_Player.name] = true
 	end
 end
 
@@ -95,7 +99,7 @@ function AntiCheatServer:OnDebug(p_Player, p_Args)
 		print(p_Player.name)
 		print(p_Args)
 	elseif self.m_Verify == true then
-		self.m_VerifiedPlayers[p_Player.name] = 1
+		self.m_VerifiedPlayers[p_Player.name] = true
 	end
 end
 

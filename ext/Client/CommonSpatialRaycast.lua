@@ -46,7 +46,7 @@ function CommonSpatialRaycast:OnSpatialRaycast()
 
 	local s_CameraTransform = ClientUtils:GetCameraTransform()
 
-	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0.0, 0.0, 0.0) then
+	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3.zero then
 		return
 	end
 

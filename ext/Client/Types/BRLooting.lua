@@ -85,7 +85,7 @@ function BRLooting:UpdateCloseToPlayerItems()
 	-- Our prop-picking ray will start at what the camera is looking at and
 	-- extend forward by 3.0m.
 	local s_CameraTransform = ClientUtils:GetCameraTransform()
-	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3(0.0, 0.0, 0.0) then
+	if s_CameraTransform == nil or s_CameraTransform.trans == Vec3.zero then
 		return nil
 	end
 

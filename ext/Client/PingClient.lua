@@ -14,9 +14,6 @@ function PingClient:__init()
 end
 
 function PingClient:RegisterVars()
-	self.m_LastPing = Vec3(0.0, 0.0, 0.0)
-	self.m_Color = Vec3(0.0, 0.0, 0.0)
-
 	-- Pings for squadmates
 	-- This is playerName, { position, cooldownTime }
 	---@type table<string, table<integer, number>>
