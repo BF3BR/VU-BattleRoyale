@@ -4,6 +4,8 @@ local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 ---@type ArrayHelper
 local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 
 ---@class BRInventoryServer : TimersMixin
 BRInventory = class ("BRInventory", TimersMixin)
@@ -409,7 +411,7 @@ end
 -- Avoids multiple uneeded firings that may happen during some operations
 function BRInventory:DeferSendState()
 	if not self:ResetTimer("SendState") then
-		self:SetTimer("SendState", g_Timers:Timeout(0.02, self, self.SendState))
+		self:SetTimer("SendState", m_TimerManager:Timeout(0.02, self, self.SendState))
 	end
 end
 
@@ -540,7 +542,7 @@ end
 -- Avoids multiple uneeded firings that may happen during some operations
 function BRInventory:DeferUpdateSoldierCustomization(p_Timeout)
 	if not self:ResetTimer("UpdateCustomization") then
-		self:SetTimer("UpdateCustomization", g_Timers:Timeout(p_Timeout or 0.12, self, self.UpdateSoldierCustomization))
+		self:SetTimer("UpdateCustomization", m_TimerManager:Timeout(p_Timeout or 0.12, self, self.UpdateSoldierCustomization))
 	end
 end
 

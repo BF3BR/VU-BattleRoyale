@@ -3,6 +3,8 @@ BRTeamManagerClient = class 'BRTeamManagerClient'
 
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 local m_Logger = Logger("BRTeamManagerClient", true)
 
 function BRTeamManagerClient:__init()
@@ -116,7 +118,7 @@ function BRTeamManagerClient:SetTeamId(p_Player, p_TeamId)
 
 	---Change the soldier TeamId as well
 	---@param p_PlayerName string
-	g_Timers:Timeout(1, p_Player.name, function(p_PlayerName)
+	m_TimerManager:Timeout(1, p_Player.name, function(p_PlayerName)
 		local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
 
 		if s_Player and s_Player.soldier ~= nil then

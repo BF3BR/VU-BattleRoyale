@@ -1,6 +1,8 @@
 ---@class PhaseManagerServer : PhaseManagerShared
 PhaseManagerServer = class("PhaseManagerServer", PhaseManagerShared)
 
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 local m_MathHelper = require "__shared/Utils/MathHelper"
 local m_BRTeamManagerServer = require "BRTeamManagerServer"
 local m_BRAirdropManager = require "BRAirdropManager"
@@ -27,8 +29,8 @@ end
 
 -- Starts the PhaseManager logic
 function PhaseManagerServer:Start()
-	self:SetTimer("Damage", g_Timers:Interval(1, self, self.ApplyDamage))
-	self:SetTimer("ClientTimer", g_Timers:Interval(1, self, self.ClientTimer))
+	self:SetTimer("Damage", m_TimerManager:Interval(1, self, self.ApplyDamage))
+	self:SetTimer("ClientTimer", m_TimerManager:Interval(1, self, self.ClientTimer))
 	self:InitPhase()
 end
 
@@ -81,7 +83,7 @@ function PhaseManagerServer:InitPhase()
 	self:RemoveTimer("MovingCircle")
 
 	-- start the timer for the next phase
-	self:SetTimer("NextSubphase", g_Timers:Timeout(self:GetCurrentDelay(), self, self.Next))
+	self:SetTimer("NextSubphase", m_TimerManager:Timeout(self:GetCurrentDelay(), self, self.Next))
 
 	if self.m_SubphaseIndex == SubphaseType.Waiting then
 		local s_Phase = self:GetCurrentPhase()
@@ -116,7 +118,7 @@ function PhaseManagerServer:InitPhase()
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then
 		self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
 		self:SetTimer("MovingCircle",
-					g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
+					m_TimerManager:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
 	end
 
 	self:DebugMessage()

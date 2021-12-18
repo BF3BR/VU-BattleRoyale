@@ -3,6 +3,8 @@ BRAirdropManager = class "BRAirdropManager"
 
 local m_Logger = Logger("BRAirdropManager", true)
 
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 ---@module "Items/Definitions/BRItemArmorDefinition"
 ---@type table<string, BRItemArmorDefinition>
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
@@ -136,7 +138,7 @@ function BRAirdropManager:CreateAirdrop(p_Trans)
 				handle = self.m_AirdropHandles,
 			}
 
-			self.m_AirdropTimers[p_Entity.instanceId] = g_Timers:Timeout(2.5, s_Table, function(p_Table)
+			self.m_AirdropTimers[p_Entity.instanceId] = m_TimerManager:Timeout(2.5, s_Table, function(p_Table)
 				local s_RandomWeaponDefinition = m_LootRandomizer:Randomizer(tostring(Tier.Tier3) .. "_Weapon", m_WeaponDefinitions, true, Tier.Tier3)
 
 				-- Get a randomized attachment

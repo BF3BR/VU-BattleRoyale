@@ -1,7 +1,9 @@
-local m_Logger = Logger("BRItem", true)
-
 ---@class BRItem
 BRItem = class "BRItem"
+
+local m_Logger = Logger("BRItem", true)
+---@type BRItemFactory
+local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 
 ---Creates a new BRItem
 ---@param p_Id string @It is a tostring(Guid)
@@ -135,7 +137,7 @@ function BRItem:AsTable(p_Extended)
 end
 
 function BRItem:CreateFromTable(p_Table)
-	return g_BRItemFactory:CreateFromTable(p_Table)
+	return m_BRItemFactory:CreateFromTable(p_Table)
 end
 
 function BRItem:Equals(p_Item)

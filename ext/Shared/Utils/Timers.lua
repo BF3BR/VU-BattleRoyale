@@ -205,7 +205,4 @@ function TimerManager:Interval(p_Delay, p_UserData, p_Callback)
 	return self:CreateTimer(p_Delay, 0, p_UserData, p_Callback)
 end
 
--- TimerManager singleton
----@type TimerManager
----@diagnostic disable-next-line: lowercase-global
-g_Timers = TimerManager()
+return TimerManager()

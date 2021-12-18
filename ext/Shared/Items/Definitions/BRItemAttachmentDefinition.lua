@@ -7,7 +7,7 @@ BRItemAttachmentDefinition = class("BRItemAttachmentDefinition", BRItemDefinitio
 
 ---@class BRItemAmmoDefinitionOptions : BRItemDefinitionOptions
 ---@field AttachmentType AttachmentType|integer
----@field AttachmentId g_AttachmentIds|integer
+---@field AttachmentId AttachmentIds|integer
 
 ---Creates a new BRItemAttachmentDefinition
 ---@param p_UId string
@@ -47,7 +47,7 @@ return {
 				Vec3(0.0, 0.015, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.Acog
+			AttachmentId = AttachmentIds.Acog
 		}
 	),
 	["attachment-kobra"] = BRItemAttachmentDefinition(
@@ -65,7 +65,7 @@ return {
 				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.Kobra,
+			AttachmentId = AttachmentIds.Kobra,
 		}
 	),
 	["attachment-holo"] = BRItemAttachmentDefinition(
@@ -83,7 +83,7 @@ return {
 				Vec3(0.0, 0.02, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.EOTech
+			AttachmentId = AttachmentIds.EOTech
 		}
 	),
 	["attachment-pka"] = BRItemAttachmentDefinition(
@@ -101,7 +101,7 @@ return {
 				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.PKA
+			AttachmentId = AttachmentIds.PKA
 		}
 	),
 	["attachment-pka-s"] = BRItemAttachmentDefinition(
@@ -119,7 +119,7 @@ return {
 				Vec3(0.0, 0.015, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.PK_AS
+			AttachmentId = AttachmentIds.PK_AS
 		}
 	),
 	["attachment-riflescope"] = BRItemAttachmentDefinition(
@@ -137,7 +137,7 @@ return {
 				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.RifleScope
+			AttachmentId = AttachmentIds.RifleScope
 		}
 	),
 	["attachment-m145"] = BRItemAttachmentDefinition(
@@ -155,7 +155,7 @@ return {
 				Vec3(0.0, 0.05, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.M145
+			AttachmentId = AttachmentIds.M145
 		}
 	),
 
@@ -175,7 +175,7 @@ return {
 				Vec3(0.0, 0.015, 0.0)
 			),
 			AttachmentType = AttachmentType.Barrel,
-			AttachmentId = g_AttachmentIds.Silencer
+			AttachmentId = AttachmentIds.Silencer
 		}
 	),
 	["attachment-flash-suppressor"] = BRItemAttachmentDefinition(
@@ -193,7 +193,7 @@ return {
 				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Barrel,
-			AttachmentId = g_AttachmentIds.FlashSuppressor
+			AttachmentId = AttachmentIds.FlashSuppressor
 		}
 	),
 	["attachment-heavy-barrel"] = BRItemAttachmentDefinition(
@@ -211,7 +211,7 @@ return {
 				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Barrel,
-			AttachmentId = g_AttachmentIds.HeavyBarrel
+			AttachmentId = AttachmentIds.HeavyBarrel
 		}
 	),
 
@@ -231,7 +231,7 @@ return {
 				Vec3(0.0, 0.125, -1.75)
 			),
 			AttachmentType = AttachmentType.Other,
-			AttachmentId = g_AttachmentIds.Foregrip
+			AttachmentId = AttachmentIds.Foregrip
 		}
 	),
 	["attachment-bipod"] = BRItemAttachmentDefinition(
@@ -249,7 +249,7 @@ return {
 				Vec3(0.05, 0.125, -1.15)
 			),
 			AttachmentType = AttachmentType.Other,
-			AttachmentId = g_AttachmentIds.Bipod
+			AttachmentId = AttachmentIds.Bipod
 		}
 	),
 	["attachment-laser-sight"] = BRItemAttachmentDefinition(
@@ -267,7 +267,7 @@ return {
 				Vec3(0.0, 0.2, 0.0)
 			),
 			AttachmentType = AttachmentType.Other,
-			AttachmentId = g_AttachmentIds.TargetPointer
+			AttachmentId = AttachmentIds.TargetPointer
 		}
 	),
 	["attachment-flashlight"] = BRItemAttachmentDefinition(
@@ -285,7 +285,7 @@ return {
 				Vec3(0.0, 0.05, 0.0)
 			),
 			AttachmentType = AttachmentType.Other,
-			AttachmentId = g_AttachmentIds.Flashlight
+			AttachmentId = AttachmentIds.Flashlight
 		}
 	),
 }

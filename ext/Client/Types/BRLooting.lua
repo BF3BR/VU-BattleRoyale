@@ -8,9 +8,11 @@ local m_MapHelper = require "__shared/Utils/MapHelper"
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 ---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 
 function BRLooting:__init()
-	g_Timers:Interval(0.3, self, self.UpdateCloseToPlayerItems)
+	m_TimerManager:Interval(0.3, self, self.UpdateCloseToPlayerItems)
 
 	-- Read-only
 	---@type GameStates|integer

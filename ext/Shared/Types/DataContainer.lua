@@ -2,6 +2,8 @@
 ---@field WaitForInstances fun(p_Instances : DC[], p_Userdata : userdata|function, p_Callback : function|nil)
 DC = class "DC"
 
+local m_Logger = Logger("DC", true)
+
 ---Creates a new DC class
 ---@param p_PartitionGuid Guid
 ---@param p_InstanceGuid Guid
@@ -110,7 +112,7 @@ function DC.static:WaitForInstances(p_Instances, p_Userdata, p_Callback)
 					s_Instances[i] = ResourceManager:FindInstanceByGuid(p_Instances[i].m_PartitionGuid, p_Instances[i].m_InstanceGuid)
 
 					if s_Instances[i] == nil then
-						-- The instance got destroyed, register it again
+						m_Logger:Warning("Something went wrong. The instance: Guid(\'" .. tostring(p_Instance[i].m_InstanceGuid) .. "\') got destroyed, register it again.")
 						local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandlerOnce(p_Instances[i].m_PartitionGuid, p_Instances[i].m_InstanceGuid, InstanceLoaded)
 						table.insert(p_Instances[i].m_ContainerCallbacks, s_ContainerCallback)
 					end

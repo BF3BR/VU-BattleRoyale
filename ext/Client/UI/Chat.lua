@@ -3,6 +3,8 @@ Chat = class 'Chat'
 
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 
 -- =============================================
 -- Events
@@ -198,7 +200,7 @@ end
 function Chat:OnWebUISetCursor()
 	InputManager:SetCursorPosition(WebUI:GetScreenWidth() / 2, WebUI:GetScreenHeight() / 2)
 	WebUI:ResetKeyboard()
-	g_Timers:Timeout(0.035, function()
+	m_TimerManager:Timeout(0.035, function()
 		WebUI:ResetMouse()
 	end)
 end

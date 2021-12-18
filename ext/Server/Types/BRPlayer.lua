@@ -2,6 +2,8 @@
 ---@field GetPlayerName fun(p_Player : Player|BRPlayer|string)
 BRPlayer = class "BRPlayer"
 
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 local m_InventoryManager = require "BRInventoryManager"
 local m_Logger = Logger("BRPlayer", true)
 
@@ -94,7 +96,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 				end
 
 				-- start mandown damage timer
-				g_Timers:Interval(1, self, self.OnManDownDamage)
+				m_TimerManager:Interval(1, self, self.OnManDownDamage)
 			else
 				self.m_KillerName = nil -- TODO move to onRevive
 				self:Kill(true)
@@ -261,7 +263,7 @@ function BRPlayer:Spawn(p_Trans)
 		s_Entity = s_EntityIterator:Next()
 	end
 
-	g_Timers:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
+	m_TimerManager:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
 		if p_Player.soldier ~= nil then
 			-- the ApplyCustomization is needed otherwise the transform will reset to Vec3(1,0,0) Vec3(0,1,0) Vec3(0,0,1)
 			p_Player.soldier:ApplyCustomization(s_CustomizeSoldierData)

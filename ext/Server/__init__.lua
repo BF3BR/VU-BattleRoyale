@@ -47,6 +47,8 @@ local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 ---@type ManDownModifier
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 
 local m_Logger = Logger("VuBattleRoyaleServer", true)
 
@@ -685,7 +687,7 @@ function VuBattleRoyaleServer:OnHotReload()
 	end
 
 	-- Delay because client didn't finish the mod reload yet
-	g_Timers:Timeout(1, function()
+	m_TimerManager:Timeout(1, function()
 		-- OnPlayerAuthenticated
 		local s_Players = PlayerManager:GetPlayers()
 

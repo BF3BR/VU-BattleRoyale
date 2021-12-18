@@ -30,9 +30,7 @@ require "__shared/Items/Definitions/BRItemProtectionDefinition"
 
 require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
-require "__shared/Utils/Timers"
 require "__shared/Utils/PostReloadEvent"
-require "__shared/Utils/BRItemFactory"
 
 require "__shared/Configs/ServerConfig"
 require "__shared/Configs/MapsConfig"

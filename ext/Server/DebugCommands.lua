@@ -3,6 +3,8 @@ local m_BRAirdropManager = require "BRAirdropManager"
 
 local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
+---@type BRItemFactory
+local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 
 local m_Logger = Logger("DebugCommands", true)
 
@@ -21,7 +23,7 @@ local function OnPlayerGiveCommand(p_Player, p_Args)
 		return
 	end
 
-	local s_Definition = g_BRItemFactory:FindDefinitionByUId(p_Args[1])
+	local s_Definition = m_BRItemFactory:FindDefinitionByUId(p_Args[1])
 
 	if s_Definition == nil then
 		m_Logger:Error("Invalid item definition UId: " .. p_Args[1])
@@ -46,7 +48,7 @@ local function OnPlayerSpawnCommand(p_Player, p_Args)
 		return
 	end
 
-	local s_Definition = g_BRItemFactory:FindDefinitionByUId(p_Args[1])
+	local s_Definition = m_BRItemFactory:FindDefinitionByUId(p_Args[1])
 
 	if s_Definition == nil then
 		m_Logger:Error("Invalid item definition UId: " .. p_Args[1])

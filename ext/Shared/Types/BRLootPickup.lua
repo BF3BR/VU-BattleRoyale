@@ -8,6 +8,8 @@ local m_MapHelper = require "__shared/Utils/MapHelper"
 local m_PickupLight = require "__shared/Types/MeshModel/Assets/PickupLight"
 local m_AirdropSmoke = require "__shared/Types/MeshModel/Assets/AirdropSmoke"
 local m_AirdropSound = require "__shared/Types/MeshModel/Assets/AirdropSound"
+---@type BRItemFactory
+local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 
 function BRLootPickup:__init(p_Id, p_TypeName, p_Transform, p_Items)
 	-- Unique Id for each loot pickup
@@ -163,7 +165,7 @@ function BRLootPickup:CreateFromTable(p_Table)
 	local s_Items = {}
 
 	for _, l_Item in pairs(p_Table.Items) do
-		local s_Item = g_BRItemFactory:CreateFromTable(l_Item)
+		local s_Item = m_BRItemFactory:CreateFromTable(l_Item)
 		s_Items[s_Item.m_Id] = s_Item
 	end
 
@@ -183,7 +185,7 @@ function BRLootPickup:UpdateFromTable(p_Table)
 	local s_Items = {}
 
 	for _, l_Item in pairs(p_Table.Items) do
-		local s_Item = g_BRItemFactory:CreateFromTable(l_Item)
+		local s_Item = m_BRItemFactory:CreateFromTable(l_Item)
 		s_Items[s_Item.m_Id] = s_Item
 	end
 

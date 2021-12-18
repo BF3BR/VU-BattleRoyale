@@ -1,5 +1,5 @@
----@class g_AttachmentIds
-g_AttachmentIds = {
+---@class AttachmentIds
+AttachmentIds = {
 	-- Optics
 	NoOptics = 1,
 	Kobra = 2,

@@ -3,6 +3,8 @@ PhaseManagerClient = class("PhaseManagerClient", PhaseManagerShared)
 
 ---@type OOCVision
 local m_OOCVision = require "Visuals/OOCVision"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 
 function PhaseManagerClient:RegisterVars()
 	PhaseManagerShared.RegisterVars(self)
@@ -99,7 +101,7 @@ function PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
 		-- start moving the outer circle
 		self.m_PrevOuterCircle = Circle(self.m_OuterCircle.m_Center, self.m_OuterCircle.m_Radius)
 		self:SetTimer("MovingCircle",
-					g_Timers:Sequence(CircleConfig.ClientUpdateMs,
+					m_TimerManager:Sequence(CircleConfig.ClientUpdateMs,
 										math.floor(p_State.Duration / CircleConfig.ClientUpdateMs) + 1, self,
 										self.MoveOuterCircle))
 	end

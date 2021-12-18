@@ -1,6 +1,8 @@
 ---@class Match : TimersMixin
 Match = class("Match", TimersMixin)
 
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 ---@type GameStateManager
 local m_GameStateManager = require "GameStateManager"
 ---@type BRTeamManagerServer
@@ -62,13 +64,13 @@ end
 function Match:InitMatch()
 	self:OnMatchFirstTick()
 
-	self:SetTimer("WhileMatchState", g_Timers:Interval(1, self, self.OnMatchEveryTick))
+	self:SetTimer("WhileMatchState", m_TimerManager:Interval(1, self, self.OnMatchEveryTick))
 
 	-- start the timer for the next match state
 	local s_Delay = ServerConfig.MatchStateTimes[m_GameStateManager:GetGameState()]
 
 	if s_Delay ~= nil then
-		self:SetTimer("NextMatchState", g_Timers:Timeout(s_Delay, self, self.NextMatchState))
+		self:SetTimer("NextMatchState", m_TimerManager:Timeout(s_Delay, self, self.NextMatchState))
 	else
 		self:RemoveTimer("NextMatchState")
 	end
@@ -154,7 +156,7 @@ function Match:OnMatchFirstTick()
 		self.m_IsFadeOutSet = false
 	elseif s_State == GameStates.Match then
 		-- Remove gunship after a short delay
-		self:SetTimer("RemoveGunship", g_Timers:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
+		self:SetTimer("RemoveGunship", m_TimerManager:Timeout(ServerConfig.GunshipDespawn, self, self.OnRemoveGunship))
 	elseif s_State == GameStates.EndGame then
 		m_PhaseManagerServer:End()
 		m_GunshipServer:Disable()

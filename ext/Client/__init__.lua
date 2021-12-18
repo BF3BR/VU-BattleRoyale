@@ -14,6 +14,8 @@ require "BRTeam"
 require "Visuals/CircleRenderers"
 require "RenderableCircle"
 
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 ---@type PhaseManagerClient
 local m_PhaseManagerClient = require "PhaseManagerClient"
 ---@type BRPlayer
@@ -403,7 +405,7 @@ function VuBattleRoyaleClient:OnSoldierSpawn(p_Soldier)
 
 	if p_Soldier.player == nil then
 		-- it is probably always this case
-		g_Timers:Timeout(1.0, self, function()
+		m_TimerManager:Timeout(1.0, self, function()
 			self:FixParachuteSound(p_Soldier)
 		end)
 	else
@@ -977,7 +979,7 @@ function VuBattleRoyaleClient:OnHotReload()
 		self:OnPlayerRespawn(s_LocalPlayer)
 	end
 
-	g_Timers:Timeout(1, function()
+	m_TimerManager:Timeout(1, function()
 		m_HudUtils:ShowCrosshair(false)
 		m_HudUtils:OnEnableMouse()
 	end)
@@ -1043,7 +1045,7 @@ function VuBattleRoyaleClient:StartWindTurbines()
 			local s_Delay = math.random(0, 5000) / 1000
 
 			---@param p_EntityInstanceId integer
-			g_Timers:Timeout(s_Delay, s_Entity.instanceId, function(p_EntityInstanceId)
+			m_TimerManager:Timeout(s_Delay, s_Entity.instanceId, function(p_EntityInstanceId)
 				-- find the entity again
 				-- there is a possibilty that we skipped to another level in this delay
 				local s_TimerEntityIterator = EntityManager:GetIterator("SequenceEntity")

@@ -43,7 +43,7 @@ function BRInventoryAttachmentSlot:GetUnlockAsset()
 	end
 
 	-- Resolve attachment id
-	local s_AttachmentId = g_AttachmentIds.NoOptics
+	local s_AttachmentId = AttachmentIds.NoOptics
 
 	if self.m_Item ~= nil then
 		s_AttachmentId = self.m_Item.m_Definition.m_AttachmentId

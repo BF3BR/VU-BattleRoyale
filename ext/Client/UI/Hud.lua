@@ -9,6 +9,8 @@ local m_DeployScreen = require "UI/DeployScreen"
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 local m_Logger = Logger("VuBattleRoyaleHud", true)
 
 function VuBattleRoyaleHud:__init()
@@ -115,7 +117,7 @@ end
 ---VEXT Client Level:Loaded Event
 function VuBattleRoyaleHud:OnLevelLoaded()
 	m_DeployScreen:OnLevelLoaded()
-	g_Timers:Timeout(5.0, function() self:OnLevelFinalized() end)
+	m_TimerManager:Timeout(5.0, function() self:OnLevelFinalized() end)
 end
 
 ---VEXT Shared Level:Destroy Event
@@ -207,7 +209,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	WebUI:ExecuteJS("OnMapShow(true);")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
-	g_Timers:Timeout(0.75, function()
+	m_TimerManager:Timeout(0.75, function()
 		m_HudUtils:ShowCrosshair(true)
 	end)
 

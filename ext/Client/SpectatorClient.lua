@@ -5,6 +5,8 @@ SpectatorClient = class("SpectatorClient", TimersMixin)
 local m_MathHelper = require "__shared/Utils/MathHelper"
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 local m_Logger = Logger("SpectatorClient", true)
 
 function SpectatorClient:__init()
@@ -233,7 +235,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 
 	if s_Player.id == p_PlayerId then
 		m_Logger:Write("you died. enabling spec in 5 secs")
-		g_Timers:Timeout(5.0, p_InflictorId, function()
+		m_TimerManager:Timeout(5.0, p_InflictorId, function()
 			if self.m_GameState ~= GameStates.None and self.m_GameState ~= GameStates.Warmup then
 				self:Enable(p_InflictorId)
 			end
@@ -380,7 +382,7 @@ function SpectatorClient:Enable(p_InflictorId)
 		return
 	end
 
-	self:SetTimer("NoPlayerFoundTimer", g_Timers:Timeout(4, self, self.ReEnable))
+	self:SetTimer("NoPlayerFoundTimer", m_TimerManager:Timeout(4, self, self.ReEnable))
 end
 
 ---Reenable the Spectator if we found no players
@@ -819,7 +821,7 @@ function SpectatorClient:EnableFreecam()
 		---@type LinearTransform
 		local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
 		SpectatorManager:SetFreecameraTransform(s_Transform)
-		g_Timers:Interval(0.1, self, self.OnSetFreecameraTransform)
+		m_TimerManager:Interval(0.1, self, self.OnSetFreecameraTransform)
 	end
 end
 
