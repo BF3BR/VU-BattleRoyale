@@ -101,13 +101,20 @@ function DC.static:WaitForInstances(p_Instances, p_Userdata, p_Callback)
 	local s_Instances = {}
 
 	for l_Index, l_DC in ipairs(p_Instances) do
-		local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandlerOnce(l_DC.m_PartitionGuid, l_DC.m_InstanceGuid,
 		---@param p_Instance DataContainer
-		function(p_Instance)
+		local function InstanceLoaded(p_Instance)
 			s_Instances[l_Index] = p_Instance
 
 			for i = 1, #p_Instances do
-				s_Instances[i] = s_Instances[i] or ResourceManager:FindInstanceByGuid(p_Instances[i].m_PartitionGuid, p_Instances[i].m_InstanceGuid)
+				if s_Instances[i] ~= nil then
+					s_Instances[i] = ResourceManager:FindInstanceByGuid(p_Instances[i].m_PartitionGuid, p_Instances[i].m_InstanceGuid)
+
+					if s_Instances[i] == nil then
+						-- The instance got destroyed, register it again
+						local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandlerOnce(p_Instances[i].m_PartitionGuid, p_Instances[i].m_InstanceGuid, InstanceLoaded)
+						table.insert(p_Instances[i].m_ContainerCallbacks, s_ContainerCallback)
+					end
+				end
 
 				if s_Instances[i] == nil then
 					return
@@ -121,8 +128,9 @@ function DC.static:WaitForInstances(p_Instances, p_Userdata, p_Callback)
 			end
 
 			self:WaitForInstances(p_Instances, p_Userdata, p_Callback)
-		end)
+		end
 
+		local s_ContainerCallback = ResourceManager:RegisterInstanceLoadHandlerOnce(l_DC.m_PartitionGuid, l_DC.m_InstanceGuid, InstanceLoaded)
 		table.insert(l_DC.m_ContainerCallbacks, s_ContainerCallback)
 	end
 end
