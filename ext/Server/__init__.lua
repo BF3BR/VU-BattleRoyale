@@ -582,6 +582,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_HookCtx, p_Soldier, p_Info, p_Gi
 	end
 
 	local s_BrPlayer = m_TeamManagerServer:GetPlayer(p_Soldier.player)
+	---@type BRPlayer|nil
 	local s_BrGiver = nil
 
 	if p_GiverInfo.giver ~= nil then

@@ -11,10 +11,11 @@ end
 
 function BRTeamManagerServer:RegisterVars()
 	-- [id] -> [BRTeam]
+	---@type table<integer, BRTeam>
 	self.m_Teams = {}
 
 	-- [name] -> [BRPlayer]
-	---@type table<string, BRPlayerServer>
+	---@type table<string, BRPlayer>
 	self.m_Players = {}
 end
 
@@ -92,8 +93,8 @@ function BRTeamManagerServer:OnPlayerLeft(p_Player)
 end
 
 ---Returns the BRPlayer instance of a player
----@param p_Player Player|BRPlayerServer|string
----@return BRPlayerServer|nil
+---@param p_Player Player|BRPlayer|string
+---@return BRPlayer|nil
 function BRTeamManagerServer:GetPlayer(p_Player)
 	return self.m_Players[BRPlayer:GetPlayerName(p_Player)]
 end
@@ -101,7 +102,7 @@ end
 -- Returns a BRTeam by it's id
 --
 ---@param p_Id string
----@return BRTeamServer|nil
+---@return BRTeam|nil
 function BRTeamManagerServer:GetTeam(p_Id)
 	return self.m_Teams[p_Id]
 end
@@ -109,7 +110,7 @@ end
 -- Returns the BRTeam that the player is member of
 --
 -- @param p_Player Player|BRPlayer|string
--- @return BRPlayerServer|nil
+-- @return BRPlayer|nil
 function BRTeamManagerServer:GetTeamByPlayer(p_Player)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 	return (s_BrPlayer ~= nil and s_BrPlayer.m_Team) or nil
@@ -117,7 +118,9 @@ end
 
 -- Returns the team that won the match.
 -- Returns nill if more that one teams are currently alive.
+---@return BRTeam|nil
 function BRTeamManagerServer:GetWinningTeam()
+	---@type BRTeam|nil
 	local s_Winner = nil
 	local s_TeamsAlive = 0
 
@@ -215,7 +218,7 @@ function BRTeamManagerServer:AssignTeams()
 end
 
 -- Creates a BRTeam
----@return BRTeamServer
+---@return BRTeam
 function BRTeamManagerServer:CreateTeam()
 	-- create team and add it's reference
 	local s_Team = BRTeam(self:CreateId())

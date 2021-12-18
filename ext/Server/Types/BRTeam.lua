@@ -1,4 +1,4 @@
----@class BRTeamServer
+---@class BRTeam
 BRTeam = class "BRTeam"
 
 local m_Logger = Logger("BRTeam", true)

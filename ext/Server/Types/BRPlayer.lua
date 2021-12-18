@@ -1,5 +1,5 @@
----@class BRPlayerServer
----@field GetPlayerName fun(p_Player : Player|BRPlayerServer|string)
+---@class BRPlayer
+---@field GetPlayerName fun(p_Player : Player|BRPlayer|string)
 BRPlayer = class "BRPlayer"
 
 local m_InventoryManager = require "BRInventoryManager"

@@ -1,12 +1,19 @@
 ---@class Match : TimersMixin
 Match = class("Match", TimersMixin)
 
+---@type GameStateManager
 local m_GameStateManager = require "GameStateManager"
+---@type BRTeamManagerServer
 local m_TeamManagerServer = require "BRTeamManagerServer"
+---@type GunshipServer
 local m_GunshipServer = require "GunshipServer"
+---@type PhaseManagerServer
 local m_PhaseManagerServer = require "PhaseManagerServer"
+---@type BRLootManager
 local m_BRLootManager = require "BRLootManager"
+---@type BRInventoryManager
 local m_BRInventoryManager = require "BRInventoryManager"
+---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
 local m_Logger = Logger("Match", true)
 
@@ -17,6 +24,7 @@ function Match:__init()
 	-- Winner
 	self.m_WinnerTeam = nil
 
+	-- TODO: recheck these 2 vars
 	-- Airdrop
 	self.m_AirdropTimer = 0.0
 	self.m_AirdropNextDrop = nil
