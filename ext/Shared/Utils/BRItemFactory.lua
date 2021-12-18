@@ -73,9 +73,6 @@ function BRItemFactory:CreateFromTable(p_Table)
 	return nil
 end
 
-if g_BRItemFactory == nil then
-	---@type BRItemFactory
-	g_BRItemFactory = BRItemFactory()
-end
-
-return BRItemFactory()
+---@type BRItemFactory
+---@diagnostic disable-next-line: lowercase-global
+g_BRItemFactory = BRItemFactory()

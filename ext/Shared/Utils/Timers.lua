@@ -207,4 +207,5 @@ end
 
 -- TimerManager singleton
 ---@type TimerManager
+---@diagnostic disable-next-line: lowercase-global
 g_Timers = TimerManager()
