@@ -5,8 +5,8 @@ require "ClientCommands"
 
 require "__shared/Configs/SettingsConfig"
 require "__shared/Configs/CircleConfig"
-require "__shared/Utils/LootPointHelper"
-require "__shared/Utils/CachedJsExecutor"
+require "Utils/LootPointHelper"
+require "Utils/CachedJsExecutor"
 
 require "Types/BRInventory"
 require "BRTeam"
