@@ -28,6 +28,7 @@ local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefi
 ---@type table<string, BRItemGadgetDefinition>
 local m_GadgetDefinitions = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
+---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 
 function BRLootRandomizer:__init()

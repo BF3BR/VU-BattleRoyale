@@ -7,7 +7,7 @@ local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 
----@class BRInventoryServer : TimersMixin
+---@class BRInventory : TimersMixin
 BRInventory = class ("BRInventory", TimersMixin)
 
 local m_Logger = Logger("BRInventory", true)

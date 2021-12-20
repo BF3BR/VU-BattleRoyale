@@ -27,7 +27,7 @@ function BRItemAttachmentDefinition:__init(p_UId, p_Name, p_Options)
 
 	-- A list of weapon definitions from BRItemWeaponDefinition
 	self.m_AttachmentType = p_Options.AttachmentType
-	self.m_AttachmentId = p_Options.AttachmentId -- TODO: Rename this lol
+	self.m_AttachmentId = p_Options.AttachmentId
 end
 
 return {

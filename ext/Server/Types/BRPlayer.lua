@@ -192,7 +192,6 @@ function BRPlayer:Kill(p_Forced)
 		return true -- TODO maybe should return false
 	end
 
-	-- TODO removed ForceDead(), it causes crashes
 	if p_Forced then
 		s_Soldier:ForceDead()
 	else

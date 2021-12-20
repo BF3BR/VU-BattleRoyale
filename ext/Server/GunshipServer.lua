@@ -42,7 +42,7 @@ function GunshipServer:OnUpdatePassPreSim(p_DeltaTime)
 
 	local s_Transform = LinearTransform()
 	s_Transform:LookAtTransform(self.m_StartPos, self.m_EndPos)
-	s_Transform.trans = self:GetCurrentPosition(self.m_CalculatedTime)
+	s_Transform.trans = self:GetCurrentPosition()
 
 	if self.m_CalculatedTime == 0.0 then
 		self:SetVehicleEntityTransform(s_Transform)
@@ -240,11 +240,11 @@ function GunshipServer:GetVehicleEntityTransform()
 	return nil
 end
 
-function GunshipServer:GetCurrentPosition(p_Time)
+function GunshipServer:GetCurrentPosition()
 	return Vec3(
-		MathUtils:Lerp(self.m_StartPos.x, self.m_EndPos.x, p_Time),
+		MathUtils:Lerp(self.m_StartPos.x, self.m_EndPos.x, self.m_CalculatedTime),
 		self.m_StartPos.y,
-		MathUtils:Lerp(self.m_StartPos.z, self.m_EndPos.z, p_Time)
+		MathUtils:Lerp(self.m_StartPos.z, self.m_EndPos.z, self.m_CalculatedTime)
 	)
 end
 

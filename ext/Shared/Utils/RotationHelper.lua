@@ -6,16 +6,24 @@ local m_Logger = Logger("RotationHelper", false)
 --LUF: left, up, forward
 --LT: LinearTransform
 
+---@param forward Vec3
+---@return number
 function RotationHelper:GetYawfromForward(forward)
 	return math.atan(forward.x, forward.z) + math.pi
 end
 
+---@param left Vec3
+---@param up Vec3
+---@param forward Vec3
+---@return number
+---@return number
+---@return number
 function RotationHelper:GetYPRfromLUF(left, up, forward)
 	-- Reference: http://www.jldoty.com/code/DirectX/YPRfromUF/YPRfromUF.html
 
 	-- Special case, forward is (0,1,0) or (0,-1,0)
-	if forward.x == 0 and forward.z == 0 then
-		local yaw = 0
+	if forward.x == 0.0 and forward.z == 0.0 then
+		local yaw = 0.0
 		local pitch = forward.y * math.pi/2
 		local roll = math.asin(-up.x)
 
@@ -66,6 +74,12 @@ function RotationHelper:GetYPRfromLUF(left, up, forward)
 	return self:AdjustRangeRad(yaw), self:AdjustRangeRad(pitch), self:AdjustRangeRad(roll)
 end
 
+---@param yaw number
+---@param pitch number
+---@param roll number
+---@return Vec3
+---@return Vec3
+---@return Vec3
 function RotationHelper:GetLUFfromYPR(yaw, pitch, roll)
 	-- Reference: http://planning.cs.uiuc.edu/node102.html
 
@@ -87,6 +101,10 @@ function RotationHelper:GetLUFfromYPR(yaw, pitch, roll)
 end
 
 --------------Linear Transform variants-------
+---@param linearTransform LinearTransform
+---@return number
+---@return number
+---@return number
 function RotationHelper:GetYPRfromLT(linearTransform)
 	if linearTransform.typeInfo.name == nil or linearTransform.typeInfo.name ~= "LinearTransform" then
 		m_Logger:Write("Wrong argument, expected LinearTransform")
@@ -103,12 +121,18 @@ function RotationHelper:GetYPRfromLT(linearTransform)
 	return self:AdjustRangeRad(yaw), self:AdjustRangeRad(pitch), self:AdjustRangeRad(roll)
 end
 
+---@param yaw number
+---@param pitch number
+---@param roll number
+---@return LinearTransform
 function RotationHelper:GetLTfromYPR(yaw, pitch, roll)
 	local left, up, forward = self:GetLUFfromYPR(yaw, pitch, roll)
 
 	return LinearTransform(left, up, forward, Vec3(0,0,0) )
 end
 
+---@param angle number
+---@return number
 function RotationHelper:AdjustRangeRad(angle)
 	if angle > 2 * math.pi then
 		return angle - 2 * math.pi

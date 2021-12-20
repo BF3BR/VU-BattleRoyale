@@ -1,8 +1,11 @@
 ---@class AirdropSmoke
 AirdropSmoke = class("AirdropSmoke")
 
+---@type DC
 local m_Airdrop_Object_FX_Smoke = DC(Guid("25B9AFF0-6622-11DE-9DCF-A96EA7FB2539"), Guid("EB9BAF48-75CA-3413-DE82-0CF9EC98603F"))
 
+---@param p_Transform LinearTransform
+---@return table<integer, Entity>|nil
 function AirdropSmoke:Draw(p_Transform)
 	local s_Data = EntityManager:CreateEntitiesFromBlueprint(
 		m_Airdrop_Object_FX_Smoke:GetInstance(),

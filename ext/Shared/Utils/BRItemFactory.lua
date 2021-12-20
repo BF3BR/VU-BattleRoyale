@@ -24,6 +24,7 @@ local m_GadgetDefinition = require "__shared/Items/Definitions/BRItemGadgetDefin
 BRItemFactory = class "BRItemFactory"
 
 function BRItemFactory:__init()
+	---@type table<string, BRItemDefinition>
 	self.m_Definitions = {}
 
 	self:AppendDefinitions(m_AmmoDefinitions)
@@ -35,12 +36,15 @@ function BRItemFactory:__init()
 	self:AppendDefinitions(m_GadgetDefinition)
 end
 
+---@param p_Definitions table<string, BRItemDefinition> @can be all sorts of BRItemDefinition
 function BRItemFactory:AppendDefinitions(p_Definitions)
 	for l_Key, l_Definition in pairs(p_Definitions) do
 		self.m_Definitions[l_Key] = l_Definition
 	end
 end
 
+---@param p_DefinitionUId string
+---@return BRItemDefinition|nil @can be all sorts of BRItemDefinition
 function BRItemFactory:FindDefinitionByUId(p_DefinitionUId)
 	for l_DefinitionKey, l_Definition in pairs(self.m_Definitions) do
 		if l_DefinitionKey == p_DefinitionUId then
@@ -51,6 +55,8 @@ function BRItemFactory:FindDefinitionByUId(p_DefinitionUId)
 	return nil
 end
 
+---@param p_Table table
+---@return BRItem|nil @can be all sorts of BRItem
 function BRItemFactory:CreateFromTable(p_Table)
 	local s_Definition = self.m_Definitions[p_Table.UId]
 

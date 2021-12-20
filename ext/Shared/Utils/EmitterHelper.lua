@@ -2,7 +2,10 @@
 ---@class EmitterHelper
 EmitterHelper = class "EmitterHelper"
 
+---@param sourceEmitterEntityData EmitterEntityData
+---@return EmitterEntityData
 function EmitterHelper:Clone(sourceEmitterEntityData)
+	---@type EmitterEntityData
 	local s_EmitterEntityData = EmitterEntityData(sourceEmitterEntityData):Clone(MathUtils:RandomGuid())
 	s_EmitterEntityData:MakeWritable()
 
@@ -10,6 +13,7 @@ function EmitterHelper:Clone(sourceEmitterEntityData)
 		return s_EmitterEntityData
 	end
 
+	---@type EmitterDocument
 	local s_EmitterDocument = EmitterDocument(s_EmitterEntityData.emitter):Clone()
 	s_EmitterDocument:MakeWritable()
 	s_EmitterEntityData.emitter = s_EmitterDocument
@@ -18,6 +22,7 @@ function EmitterHelper:Clone(sourceEmitterEntityData)
 		return s_EmitterEntityData
 	end
 
+	---@type EmitterTemplateData
 	local s_EmitterTemplateData = EmitterTemplateData(s_EmitterDocument.templateData):Clone()
 	s_EmitterTemplateData:MakeWritable()
 	s_EmitterDocument.templateData = s_EmitterTemplateData
@@ -35,6 +40,7 @@ function EmitterHelper:Clone(sourceEmitterEntityData)
 	local s_CurrentProcessorData = s_RootProcessor.nextProcessor
 
 	while s_CurrentProcessorData ~= nil do
+		---@type ProcessorData
 		local s_ProcessorData = _G[s_CurrentProcessorData.typeInfo.name](s_CurrentProcessorData):Clone()
 		s_ProcessorData:MakeWritable()
 		s_PreviousProcessorData.nextProcessor = s_ProcessorData
@@ -46,6 +52,9 @@ function EmitterHelper:Clone(sourceEmitterEntityData)
 	return s_EmitterEntityData
 end
 
+---@param p_ProcessorData ProcessorData
+---@param p_DataType DataContainer @Seems static
+---@return DataContainer|nil @already upcasted
 function EmitterHelper:FindData(p_ProcessorData, p_DataType)
 	if p_ProcessorData:Is(p_DataType.typeInfo.name) then
 		return p_DataType(p_ProcessorData)

@@ -50,6 +50,7 @@ local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifi
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 
+---@type Logger
 local m_Logger = Logger("VuBattleRoyaleServer", true)
 
 function VuBattleRoyaleServer:__init()

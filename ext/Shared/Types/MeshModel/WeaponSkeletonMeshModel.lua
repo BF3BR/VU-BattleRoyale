@@ -1,19 +1,27 @@
 ---@class WeaponSkeletonMeshModel : MeshModel
 WeaponSkeletonMeshModel = class("WeaponSkeletonMeshModel", MeshModel)
 
+---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 
+---@param p_MeshAsset DC
+---@param p_Variation integer|nil
 function WeaponSkeletonMeshModel:__init(p_MeshAsset, p_Variation)
 	MeshModel.__init(self, p_MeshAsset, p_Variation)
 end
 
+---@param p_LootPickup BRLootPickup
+---@param p_LocalTransform LinearTransform
+---@return Entity|nil
 function WeaponSkeletonMeshModel:Draw(p_LootPickup, p_LocalTransform)
+	---@type MeshAsset|nil
 	local s_MeshAsset = self.m_Mesh:GetInstance()
 
 	if s_MeshAsset == nil then
 		return nil
 	end
 
+	---@type BRItemWeapon|nil
 	local s_SingleItem = m_MapHelper:NextItem(p_LootPickup.m_Items)
 
 	if s_SingleItem == nil then
@@ -28,6 +36,7 @@ function WeaponSkeletonMeshModel:Draw(p_LootPickup, p_LocalTransform)
 		s_Data.physicsData = p_LootPickup.m_Type.PhysicsEntityData:GetInstance()
 	end
 
+	---@type SoldierWeaponUnlockAsset
 	local s_SoldierWeaponUnlockAsset = s_SingleItem.m_Definition.m_SoldierWeaponBlueprint:GetInstance()
 	local s_SoldierWeaponData = SoldierWeaponData(s_SoldierWeaponUnlockAsset.weapon.object)
 

@@ -2,6 +2,9 @@
 ArrayHelper = class "ArrayHelper"
 
 -- Returns the first index at which a given value can be found in the array
+---@param p_Array any[]
+---@param p_Value any
+---@return integer|nil
 function ArrayHelper:IndexOf(p_Array, p_Value)
 	for l_Index, l_Value in ipairs(p_Array) do
 		if l_Value == p_Value then
@@ -13,11 +16,17 @@ function ArrayHelper:IndexOf(p_Array, p_Value)
 end
 
 -- Checks if the array contains a given value
+---@param p_Array any[]
+---@param p_Value any
+---@return boolean
 function ArrayHelper:Contains(p_Array, p_Value)
 	return ArrayHelper:IndexOf(p_Array, p_Value) ~= nil
 end
 
 -- Removes an entry of the array by its value
+---@param p_Array any[]
+---@param p_Value any
+---@return boolean
 function ArrayHelper:RemoveByValue(p_Array, p_Value)
 	local s_Index = ArrayHelper:IndexOf(p_Array, p_Value)
 
@@ -31,6 +40,9 @@ function ArrayHelper:RemoveByValue(p_Array, p_Value)
 end
 
 -- Converts an array to a map using the values as the keys
+---@param p_Array any[]
+---@param p_Value any
+---@return table
 function ArrayHelper:ToMap(p_Array, p_Value)
 	p_Value = (p_Value == nil and true) or p_Value
 
@@ -44,11 +56,15 @@ function ArrayHelper:ToMap(p_Array, p_Value)
 end
 
 -- insert many items into an array at once
+---@param p_Array any[]
+---@param p_Items any[]
 function ArrayHelper:InsertMany(p_Array, p_Items)
 	table.move(p_Items, 1, #p_Items, #p_Array + 1, p_Array)
 end
 
 -- creates a shallow copy of the array
+---@param p_Array table
+---@return table
 function ArrayHelper:Clone(p_Array)
 	return {table.unpack(p_Array)}
 end

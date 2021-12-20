@@ -2,6 +2,7 @@
 LevelNameHelper = class "LevelNameHelper"
 
 -- Returns "mp_001" from "levels/mp_001/mp_001"
+---@return string|nil
 function LevelNameHelper:GetLevelName()
 	local s_LevelName = SharedUtils:GetLevelName()
 

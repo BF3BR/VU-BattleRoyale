@@ -1,21 +1,32 @@
 ---@class BRLootPickup
 BRLootPickup = class "BRLootPickup"
 
+---@type Logger
 local m_Logger = Logger("BRLootPickup", true)
+---@type RotationHelper
 local m_RotationHelper = require "__shared/Utils/RotationHelper"
+---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 
+---@type PickupLight
 local m_PickupLight = require "__shared/Types/MeshModel/Assets/PickupLight"
+---@type AirdropSmoke
 local m_AirdropSmoke = require "__shared/Types/MeshModel/Assets/AirdropSmoke"
+---@type AirdropSound
 local m_AirdropSound = require "__shared/Types/MeshModel/Assets/AirdropSound"
 ---@type BRItemFactory
 local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 
+---@param p_Id string @Guid tostring
+---@param p_TypeName string
+---@param p_Transform LinearTransform
+---@param p_Items table<string, BRItem>
 function BRLootPickup:__init(p_Id, p_TypeName, p_Transform, p_Items)
 	-- Unique Id for each loot pickup
 	self.m_Id = p_Id ~= nil and p_Id or tostring(MathUtils:RandomGuid())
 
 	-- ItemEnums - LootPickupType
+	---@type LootPickupTypeTable
 	self.m_Type = LootPickupType[p_TypeName]
 
 	-- Transform of the pickup
@@ -24,13 +35,14 @@ function BRLootPickup:__init(p_Id, p_TypeName, p_Transform, p_Items)
 	-- A map of LootPickups {id -> LootPickup}
 	self.m_Items = p_Items
 
-	--
+	-- TODO: what is this
 	self.m_ParentCell = nil
 
 	-- [Client] Contains spawned entities {instanceId -> Entity}
 	self.m_Entities = nil
 end
 
+---@param p_Item BRItem
 function BRLootPickup:AddItem(p_Item)
 	if p_Item == nil or self:ContainsItemId(p_Item.m_Id) then
 		return
@@ -39,6 +51,7 @@ function BRLootPickup:AddItem(p_Item)
 	self.m_Items[p_Item.m_Id] = p_Item
 end
 
+---@param p_Id string @Guid tostring
 function BRLootPickup:RemoveItem(p_Id)
 	if self.m_Items[p_Id] ~= nil then
 		self.m_Items[p_Id] = nil
@@ -46,10 +59,13 @@ function BRLootPickup:RemoveItem(p_Id)
 	end
 end
 
+---@param p_Id string @Guid tostring
+---@return boolean
 function BRLootPickup:ContainsItemId(p_Id)
 	return self.m_Items[p_Id] ~= nil
 end
 
+---@return MeshModel|nil
 function BRLootPickup:GetMesh()
 	if m_MapHelper:SizeEquals(self.m_Items, 1) then
 		-- If there is only one item then use its mesh
@@ -62,6 +78,7 @@ function BRLootPickup:GetMesh()
 	return nil
 end
 
+---@return LinearTransform
 function BRLootPickup:GetLinearTransform()
 	if m_MapHelper:SizeEquals(self.m_Items, 1) then
 		-- If there is only one item then use its LT
@@ -83,6 +100,8 @@ function BRLootPickup:Spawn()
 		return false
 	end
 
+	---Could be BRItemAmmo|BRItemArmor|BRItemAttachment|BRItemConsumable|BRItemGadget|BRItemHelmet|BRItemWeapon
+	---@type BRItem
 	local s_SingleItem = m_MapHelper:NextItem(self.m_Items)
 
 	local s_Mesh = self:GetMesh()
@@ -130,6 +149,8 @@ function BRLootPickup:Spawn()
 		else
 			-- Spawn the light on the client side only if the loot has only one item
 			if m_MapHelper:SizeEquals(self.m_Items, 1) then
+				--- m_Tier can be nil that's correct
+				---@diagnostic disable-next-line
 				local s_BusLight = m_PickupLight:Draw(self.m_Transform, s_SingleItem.m_Definition.m_Tier)
 
 				if s_BusLight ~= nil then
@@ -146,6 +167,7 @@ end
 -- Serialization
 --==============================
 
+---@param p_Extended boolean
 function BRLootPickup:AsTable(p_Extended)
 	local s_Items = {}
 
@@ -161,6 +183,8 @@ function BRLootPickup:AsTable(p_Extended)
 	}
 end
 
+---@param p_Table table
+---@return BRLootPickup
 function BRLootPickup:CreateFromTable(p_Table)
 	local s_Items = {}
 
@@ -177,11 +201,13 @@ function BRLootPickup:CreateFromTable(p_Table)
 	)
 end
 
+---@param p_Table table
 function BRLootPickup:UpdateFromTable(p_Table)
 	if p_Table.Id ~= self.m_Id then
 		return
 	end
 
+	---@type table<string, BRItem>
 	local s_Items = {}
 
 	for _, l_Item in pairs(p_Table.Items) do
