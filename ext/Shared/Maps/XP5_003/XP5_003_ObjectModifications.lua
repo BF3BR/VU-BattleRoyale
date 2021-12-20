@@ -88,3 +88,14 @@ function XP5_003_ObjectModifications:OnMEHouse01GarageDestruction(p_ObjectBluepr
 end
 
 return XP5_003_ObjectModifications()
+
+
+
+-- Remove Havok Assets
+ResourceManager:RegisterInstanceLoadHandler(Guid('CB9932E2-19E0-11E2-93EC-B0D4179CEA18'), Guid('B880E9F7-53E2-F2FB-ADA2-C2E5CEF52751'), function(instance)
+    --print('Removing StaticModelGroupEntityData...')
+    local thisInstance = StaticModelGroupEntityData(instance)
+    thisInstance:MakeWritable()
+    thisInstance.enabled = false
+    thisInstance.memberDatas:clear()
+end)
