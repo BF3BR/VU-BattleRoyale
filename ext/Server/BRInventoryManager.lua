@@ -33,10 +33,13 @@ function BRInventoryManager:__init()
 end
 
 function BRInventoryManager:RegisterVars()
-	-- [Player.id] -> [BRInventory]
+	---@type table<integer, BRInventory>
+	---`[Player.id] -> [BRInventory]`
 	self.m_Inventories = {}
 end
 
+---VEXT Server Player:Left Event
+---@param p_Player Player
 function BRInventoryManager:OnPlayerLeft(p_Player)
 	m_Logger:Write(string.format("Destroying Inventory for '%s'", p_Player.name))
 
@@ -45,6 +48,8 @@ function BRInventoryManager:OnPlayerLeft(p_Player)
 	end
 end
 
+---VEXT Server Player:ChangingWeapon Event
+---@param p_Player Player
 function BRInventoryManager:OnPlayerChangingWeapon(p_Player)
 	if p_Player == nil or p_Player.soldier == nil then
 		return
@@ -58,12 +63,15 @@ function BRInventoryManager:OnPlayerChangingWeapon(p_Player)
 	end
 
 	-- destroy gadget if empty
+	---@diagnostic disable-next-line @it is a BRInventoryGadgetSlot
 	s_Inventory:GetSlot(InventorySlot.Gadget):DestroyIfEmpty()
 
 	-- Update secondary ammo count
 	s_CurrentWeapon.secondaryAmmo = s_Inventory:GetAmmoTypeCount(s_CurrentWeapon.name)
 end
 
+---@param p_Player Player
+---@return BRInventory
 function BRInventoryManager:GetOrCreateInventory(p_Player)
 	-- get existing inventory
 	local s_Inventory = self.m_Inventories[p_Player.id]
@@ -80,9 +88,9 @@ function BRInventoryManager:GetOrCreateInventory(p_Player)
 	return s_Inventory
 end
 
--- Adds a BRInventory
--- @param p_Inventory BRInventory
--- @param p_Player Player
+---Adds a BRInventory
+---@param p_Inventory BRInventory
+---@param p_Player Player
 function BRInventoryManager:AddInventory(p_Inventory, p_Player)
 	self.m_Inventories[p_Player.id] = p_Inventory
 
@@ -94,8 +102,8 @@ function BRInventoryManager:AddInventory(p_Inventory, p_Player)
 	end
 end
 
--- Removes a BRInventory
--- @param p_Player Player
+---Removes a BRInventory
+---@param p_Player Player
 function BRInventoryManager:RemoveInventory(p_Player)
 	if self.m_Inventories[p_Player.id] == nil then
 		return
@@ -116,7 +124,11 @@ end
 -- Player <-> Inventory interaction functions
 --============================================================
 
--- Responds to the request of a player to pickup an item from a specified lootpickup
+---Responds to the request of a player to pickup an item from a specified lootpickup
+---@param p_Player Player
+---@param p_LootPickupId any @TODO figure out the emmylua types
+---@param p_ItemId any
+---@param p_SlotIndex any
 function BRInventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
 	-- check if player is alive
 	if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then

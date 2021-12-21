@@ -16,6 +16,7 @@ function BRItemWeapon:__init(p_Id, p_Definition, p_CurrentPrimaryAmmo)
 	self.m_CurrentPrimaryAmmo = p_CurrentPrimaryAmmo or 0
 end
 
+---@param p_AmmoCount integer
 function BRItemWeapon:SetPrimaryAmmo(p_AmmoCount)
 	self.m_CurrentPrimaryAmmo = p_AmmoCount
 end

@@ -23,10 +23,14 @@ end
 -- Events
 -- =============================================
 
+---VEXT Server Level:Loaded Event
 function AntiCheatServer:OnLevelLoaded()
 	self:Reset()
 end
 
+---VEXT Shared Engine:Update Event
+---@param p_DeltaTime number
+---@param p_SimulationDeltaTime number
 function AntiCheatServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	self.m_Timer = self.m_Timer + p_DeltaTime
 
@@ -65,6 +69,9 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
+---Custom Server Cheat NetEvent
+---@param p_Player Player
+---@param p_Args table
 function AntiCheatServer:OnCheat(p_Player, p_Args)
 	if self.m_Verify == false and p_Args[1] ~= "Verify" then
 		if self.m_PlayerCount[p_Player.name] == nil then
@@ -94,6 +101,9 @@ function AntiCheatServer:OnCheat(p_Player, p_Args)
 	end
 end
 
+---Custom Server Debug NetEvent
+---@param p_Player Player
+---@param p_Args table
 function AntiCheatServer:OnDebug(p_Player, p_Args)
 	if p_Args[1] == "404" then
 		print(p_Player.name)

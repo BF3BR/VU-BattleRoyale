@@ -11,6 +11,8 @@ local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 ---@param p_Quantity integer
 function BRItem:__init(p_Id, p_Definition, p_Quantity)
 	-- Unique Id for each item
+	--
+	-- It is a tostring(Guid)
 	self.m_Id = p_Id ~= nil and p_Id or tostring(MathUtils:RandomGuid())
 
 	-- Item's definition

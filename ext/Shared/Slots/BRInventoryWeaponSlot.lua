@@ -141,6 +141,8 @@ function BRInventoryWeaponSlot:UpdateItemPrimaryAmmo()
 	self.m_Item:SetPrimaryAmmo(s_Weapon.primaryAmmo)
 end
 
+---@param p_WeaponName string @It is the ebx partition name
+---@return boolean
 function BRInventoryWeaponSlot:HasWeapon(p_WeaponName)
 	return self.m_Item ~= nil and self.m_Item.m_Definition.m_EbxName == p_WeaponName
 end
