@@ -1,7 +1,9 @@
 ---@class GunshipServer
 GunshipServer = class "GunshipServer"
 
+---@type BRTeamManagerServer
 local m_TeamManagerServer = require "BRTeamManagerServer"
+---@type Logger
 local m_Logger = Logger("GunshipServer", true)
 
 function GunshipServer:__init()

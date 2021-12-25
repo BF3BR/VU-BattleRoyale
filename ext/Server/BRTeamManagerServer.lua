@@ -1,7 +1,9 @@
 ---@class BRTeamManagerServer
 BRTeamManagerServer = class "BRTeamManagerServer"
 
+---@type Logger
 local m_Logger = Logger("BRTeamManagerServer", true)
+---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 function BRTeamManagerServer:__init()
@@ -37,6 +39,7 @@ end
 -- Events
 -- =============================================
 
+---VEXT Shared Level:Destroy Event
 function BRTeamManagerServer:OnLevelDestroy()
 	-- put non custom team players back to their own teams
 	for _, l_BrPlayer in pairs(self.m_Players) do
@@ -56,10 +59,14 @@ function BRTeamManagerServer:OnLevelDestroy()
 	end
 end
 
+---VEXT Server Player:Authenticated Event
+---@param p_Player Player
 function BRTeamManagerServer:OnPlayerAuthenticated(p_Player)
 	self:CreatePlayer(p_Player)
 end
 
+---VEXT Server Player:Killed Event
+---@param p_Player Player
 function BRTeamManagerServer:OnPlayerKilled(p_Player)
 	self:OnSendPlayerState(p_Player)
 
@@ -69,6 +76,8 @@ function BRTeamManagerServer:OnPlayerKilled(p_Player)
 	end
 end
 
+---VEXT Server Player:Left Event
+---@param p_Player Player
 function BRTeamManagerServer:OnPlayerLeft(p_Player)
 	m_Logger:Write(string.format("Destroying BRPlayer for '%s'", p_Player.name))
 
@@ -99,8 +108,7 @@ function BRTeamManagerServer:GetPlayer(p_Player)
 	return self.m_Players[BRPlayer:GetPlayerName(p_Player)]
 end
 
--- Returns a BRTeam by it's id
---
+---Returns a BRTeam by it's id
 ---@param p_Id string
 ---@return BRTeam|nil
 function BRTeamManagerServer:GetTeam(p_Id)
@@ -108,9 +116,8 @@ function BRTeamManagerServer:GetTeam(p_Id)
 end
 
 -- Returns the BRTeam that the player is member of
---
--- @param p_Player Player|BRPlayer|string
--- @return BRPlayer|nil
+---@param p_Player Player|BRPlayer|string
+---@return BRPlayer|nil
 function BRTeamManagerServer:GetTeamByPlayer(p_Player)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 	return (s_BrPlayer ~= nil and s_BrPlayer.m_Team) or nil
@@ -167,6 +174,7 @@ function BRTeamManagerServer:AssignTeams()
 	end
 
 	-- filter unlocked teams
+	---@type BRTeam[]
 	local s_UnlockedTeams = {}
 
 	for _, l_BrTeam in pairs(self.m_Teams) do
@@ -184,6 +192,7 @@ function BRTeamManagerServer:AssignTeams()
 	-- smaller teams are merged with the biggest as long as
 	-- there is available space otherwise the index moves forward
 	local s_Low = 1
+	---@type integer
 	local s_High = #s_UnlockedTeams
 
 	while s_Low < s_High do
@@ -217,7 +226,7 @@ function BRTeamManagerServer:AssignTeams()
 	end
 end
 
--- Creates a BRTeam
+---Creates a BRTeam
 ---@return BRTeam
 function BRTeamManagerServer:CreateTeam()
 	-- create team and add it's reference
@@ -227,17 +236,17 @@ function BRTeamManagerServer:CreateTeam()
 	return s_Team
 end
 
--- Removes a BRTeam
--- @param p_Team BRTeam
+---Removes a BRTeam
+---@param p_Team BRTeam
 function BRTeamManagerServer:RemoveTeam(p_Team)
 	-- clear reference and destroy team
 	self.m_Teams[p_Team.m_Id] = nil
 	p_Team:Destroy()
 end
 
--- Creates a BRPlayer instance for the specified player
--- @param p_Player Player
--- @return BRPlayer|nil
+---Creates a BRPlayer instance for the specified player
+---@param p_Player Player
+---@return BRPlayer|nil
 function BRTeamManagerServer:CreatePlayer(p_Player)
 	if p_Player == nil then
 		m_Logger:Error("Cannot create BRPlayer")
@@ -264,8 +273,8 @@ function BRTeamManagerServer:CreatePlayer(p_Player)
 	return s_BrPlayer
 end
 
--- Removes a BRPlayer
--- @param p_Player Player|BRPlayer|string
+---Removes a BRPlayer
+---@param p_Player Player|BRPlayer|string
 function BRTeamManagerServer:RemovePlayer(p_Player)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 
@@ -275,9 +284,9 @@ function BRTeamManagerServer:RemovePlayer(p_Player)
 	end
 end
 
--- Creates a new BRTeam and puts the player in it
--- @param p_BrPlayer BRPlayer
--- @return BRTeam
+---Creates a new BRTeam and puts the player in it
+---@param p_BrPlayer BRPlayer
+---@return BRTeam
 function BRTeamManagerServer:CreateTeamWithPlayer(p_BrPlayer)
 	local s_Team = self:CreateTeam()
 
@@ -297,14 +306,14 @@ function BRTeamManagerServer:CreateTeamWithPlayer(p_BrPlayer)
 	return s_Team
 end
 
--- Kills every player
+---Kills every player
 function BRTeamManagerServer:KillAllPlayers()
 	for _, l_BrPlayer in pairs(self.m_Players) do
 		l_BrPlayer:Kill(false)
 	end
 end
 
--- Unspawns every soldier
+---Unspawns every soldier
 function BRTeamManagerServer:UnspawnAllSoldiers()
 	local s_HumanPlayerEntityIterator = EntityManager:GetIterator("ServerHumanPlayerEntity")
 	local s_HumanPlayerEntity = s_HumanPlayerEntityIterator:Next()
@@ -316,9 +325,9 @@ function BRTeamManagerServer:UnspawnAllSoldiers()
 	end
 end
 
--- Create a unique BRTeam id
--- @param p_Len number (optional)
--- @return string
+---Create a unique BRTeam id
+---@param p_Len integer (optional)
+---@return string
 function BRTeamManagerServer:CreateId(p_Len)
 	p_Len = p_Len or 4
 
@@ -331,8 +340,8 @@ function BRTeamManagerServer:CreateId(p_Len)
 	end
 end
 
--- Checks & updates the team's placement if all of its players are dead
--- @param p_BrTeam BRTeam
+---Checks & updates the team's placement if all of its players are dead
+---@param p_BrTeam BRTeam
 function BRTeamManagerServer:UpdateTeamPlacement(p_BrTeam)
 	if p_BrTeam == nil or not p_BrTeam.m_Active or p_BrTeam:HasAlivePlayers() then
 		return
@@ -342,8 +351,8 @@ function BRTeamManagerServer:UpdateTeamPlacement(p_BrTeam)
 	p_BrTeam:SetPlacement(s_Count + 1)
 end
 
--- Returns the number of active teams with at least one player alive
--- @return number
+---Returns the number of active teams with at least one player alive
+---@return integer
 function BRTeamManagerServer:GetAliveTeamCount()
 	local s_Count = 0
 
@@ -356,16 +365,20 @@ function BRTeamManagerServer:GetAliveTeamCount()
 	return s_Count
 end
 
--- Puts the requested player to a newly created team
+---Puts the requested player to a newly created team
+---@param p_BrPlayer BRPlayer
 function BRTeamManagerServer:OnPutOnATeam(p_BrPlayer)
 	self:CreateTeamWithPlayer(p_BrPlayer)
 end
 
--- Destroys and removes the specified team
+---Destroys and removes the specified team
+---@param p_Team BRTeam
 function BRTeamManagerServer:OnDestroyTeam(p_Team)
 	self:RemoveTeam(p_Team)
 end
 
+---@param p_Victim BRPlayer
+---@param p_Giver BRPlayer
 function BRTeamManagerServer:OnRegisterKill(p_Victim, p_Giver)
 	local s_Killer = p_Giver
 
@@ -385,7 +398,8 @@ function BRTeamManagerServer:OnRegisterKill(p_Victim, p_Giver)
 		p_Victim.m_KillerName = nil
 	end
 
-	local s_KilledId
+	---@type integer|nil @Player.id
+	local s_KilledId = nil
 
 	if s_Killer ~= nil then
 		s_KilledId = s_Killer.m_Player.id
@@ -400,6 +414,8 @@ function BRTeamManagerServer:OnRegisterKill(p_Victim, p_Giver)
 	self:UpdateTeamPlacement(p_Victim.m_Team)
 end
 
+---@param p_Player Player|BRPlayer|string
+---@param p_Id string
 function BRTeamManagerServer:OnRequestTeamJoin(p_Player, p_Id)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 	local s_Team = self:GetTeam(p_Id)
@@ -419,6 +435,7 @@ function BRTeamManagerServer:OnRequestTeamJoin(p_Player, p_Id)
 	s_BrPlayer.m_JoinedByCode = true
 end
 
+---@param p_Player Player|BRPlayer|string
 function BRTeamManagerServer:OnLeaveTeam(p_Player)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 
@@ -427,6 +444,7 @@ function BRTeamManagerServer:OnLeaveTeam(p_Player)
 	end
 end
 
+---@param p_Player Player|BRPlayer|string
 function BRTeamManagerServer:OnLockToggle(p_Player)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 
@@ -435,6 +453,7 @@ function BRTeamManagerServer:OnLockToggle(p_Player)
 	end
 end
 
+---@param p_Player Player|BRPlayer|string
 function BRTeamManagerServer:OnSendPlayerState(p_Player)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 
@@ -443,6 +462,8 @@ function BRTeamManagerServer:OnSendPlayerState(p_Player)
 	end
 end
 
+---@param p_Player Player|BRPlayer|string
+---@param p_Strategy TeamJoinStrategy|integer
 function BRTeamManagerServer:OnTeamJoinStrategy(p_Player, p_Strategy)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 
@@ -451,6 +472,9 @@ function BRTeamManagerServer:OnTeamJoinStrategy(p_Player, p_Strategy)
 	end
 end
 
+---@param p_Player Player|BRPlayer|string
+---@param p_NewPlayerName string|nil
+---@param p_LastPlayerName string|nil
 function BRTeamManagerServer:OnUpdateSpectator(p_Player, p_NewPlayerName, p_LastPlayerName)
 	m_Logger:Write("OnUpdateSpectator player: " .. p_Player.name)
 	local s_BRPlayer = self:GetPlayer(p_Player)
@@ -477,6 +501,7 @@ function BRTeamManagerServer:OnUpdateSpectator(p_Player, p_NewPlayerName, p_Last
 				-- add a NetEvent with all player names of the spectated player team
 				-- if it is a teammate we don't want to do that
 				if s_BRPlayerToSpectate.m_Team ~= nil and not s_BRPlayerToSpectate:IsTeammate(s_BRPlayer) then
+					---@type string[]
 					local s_PlayerNames = {}
 
 					for l_PlayerName, _ in pairs(s_BRPlayerToSpectate.m_Team.m_Players) do

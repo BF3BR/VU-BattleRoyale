@@ -1,9 +1,12 @@
 ---@class BRLootRandomizer
 BRLootRandomizer = class "BRLootRandomizer"
 
+---@type Logger
 local m_Logger = Logger("BRLootRandomizer", true)
 
+---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"
+---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 ---@module "Items/Definitions/BRItemAmmoDefinition"

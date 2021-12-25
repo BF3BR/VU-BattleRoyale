@@ -191,7 +191,7 @@ end
 ---@param p_RoundsPerMap integer
 function VuBattleRoyaleServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
 	self:DisablePreRound()
-	m_Match:OnRestartRound()
+	m_Match:OnLevelLoaded()
 	self.m_WaitForStart = false
 	self.m_ForcedWarmup = false
 	m_PhaseManagerServer:OnLevelLoaded()

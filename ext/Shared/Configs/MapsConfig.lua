@@ -38,7 +38,7 @@
 ---@field LootSpawnPoints table
 ---@field MapPreset table
 ---@field ObjectModifications XP5_003_ObjectModifications|nil @TODO: improve
----@field VEPresets string[]
+---@field VEPresets table<integer, string>
 
 ---@type MapsConfigMap[]
 MapsConfig = {

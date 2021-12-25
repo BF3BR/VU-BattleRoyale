@@ -17,6 +17,7 @@ local m_BRLootManager = require "BRLootManager"
 local m_BRInventoryManager = require "BRInventoryManager"
 ---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
+---@type Logger
 local m_Logger = Logger("Match", true)
 
 function Match:__init()
@@ -42,6 +43,21 @@ end
 -- Events
 -- =============================================
 
+---VEXT Server Level:Loaded Event
+---Resetting the match state
+function Match:OnLevelLoaded()
+	self.m_RestartQueue = false
+	self.m_WinnerTeam = nil
+	m_GameStateManager:SetGameState(GameStates.None)
+
+	-- Spawn loot pickups for warmup
+	-- TODO: Close only code will more than likely fix this, so reenable this line
+	-- m_BRLootManager:SpawnMapSpecificLootPickups()
+end
+
+---Called from VEXT UpdateManager:Update
+---UpdatePass.UpdatePass_PreSim
+---@param p_DeltaTime number
 function Match:OnUpdatePassPreSim(p_DeltaTime)
 	if self.m_RestartQueue then
 		m_Logger:Write("INFO: Restart triggered.")
@@ -173,25 +189,17 @@ function Match:OnMatchFirstTick()
 	end
 end
 
+---Timer Timeout callback
 function Match:OnRemoveGunship()
 	m_GunshipServer:Disable()
 	self:RemoveTimer("RemoveGunship")
-end
-
-function Match:OnRestartRound()
-	self.m_RestartQueue = false
-	self.m_WinnerTeam = nil
-	m_GameStateManager:SetGameState(GameStates.None)
-
-	-- Spawn loot pickups for warmup
-	-- TODO: Close only code will more than likely fix this, so reenable this line
-	-- m_BRLootManager:SpawnMapSpecificLootPickups()
 end
 
 -- =============================================
 -- Other functions
 -- =============================================
 
+---@return Vec3|nil
 function Match:GetRandomWarmupSpawnpoint()
 	local s_LevelName = LevelNameHelper:GetLevelName()
 
@@ -199,12 +207,14 @@ function Match:GetRandomWarmupSpawnpoint()
 		return nil
 	end
 
+	---@type Vec3
 	local s_SpawnTrans = nil
-	s_SpawnTrans = MapsConfig[s_LevelName]["WarmupSpawnPoints"][ math.random( #MapsConfig[s_LevelName]["WarmupSpawnPoints"] ) ]
+	s_SpawnTrans = MapsConfig[s_LevelName].WarmupSpawnPoints[ math.random( #MapsConfig[s_LevelName]["WarmupSpawnPoints"] ) ]
 
 	return s_SpawnTrans
 end
 
+---@param p_Time number|nil
 function Match:SetClientTimer(p_Time)
 	if p_Time == nil then
 		return

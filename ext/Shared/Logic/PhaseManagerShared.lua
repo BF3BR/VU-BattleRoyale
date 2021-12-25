@@ -10,14 +10,18 @@ function PhaseManagerShared:__init()
 end
 
 function PhaseManagerShared:RegisterVars()
+	---@type Circle
 	self.m_InnerCircle = Circle()
+	---@type Circle
 	self.m_OuterCircle = Circle()
+	---@type Circle
 	self.m_PrevOuterCircle = Circle()
 
-	self.m_InitialDelay = 0
+	self.m_InitialDelay = 0.0
 	self.m_Phases = {}
 
 	self.m_PhaseIndex = 1
+	---@type SubphaseType|integer
 	self.m_SubphaseIndex = SubphaseType.InitialDelay
 	self.m_Completed = false
 
@@ -68,7 +72,7 @@ end
 
 function PhaseManagerShared:GetCurrentDelay()
 	if self.m_Completed then
-		return -1
+		return -1.0
 	elseif self.m_SubphaseIndex == SubphaseType.InitialDelay then
 		return self.m_InitialDelay
 	end

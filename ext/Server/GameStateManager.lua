@@ -1,6 +1,7 @@
 ---@class GameStateManager
 GameStateManager = class 'GameStateManager'
 
+---@type Logger
 local m_Logger = Logger("GameStateManager", true)
 
 function GameStateManager:__init()
