@@ -117,7 +117,7 @@ end
 
 -- Returns the BRTeam that the player is member of
 ---@param p_Player Player|BRPlayer|string
----@return BRPlayer|nil
+---@return BRTeam|nil
 function BRTeamManagerServer:GetTeamByPlayer(p_Player)
 	local s_BrPlayer = self:GetPlayer(p_Player)
 	return (s_BrPlayer ~= nil and s_BrPlayer.m_Team) or nil
