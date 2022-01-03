@@ -18,6 +18,8 @@ require "__shared/Libs/Queue"
 
 require "__shared/Mixins/TimersMixin"
 
+require "__shared/Utils/Logger"
+
 require "__shared/Types/Circle"
 require "__shared/Types/DataContainer"
 require "__shared/Types/MeshModel/MeshModel"
@@ -28,7 +30,6 @@ require "__shared/Types/LootPickupType"
 require "__shared/Items/Definitions/BRItemDefinition"
 require "__shared/Items/Definitions/BRItemProtectionDefinition"
 
-require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
 require "__shared/Utils/PostReloadEvent"
 
