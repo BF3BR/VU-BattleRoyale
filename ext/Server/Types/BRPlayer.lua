@@ -288,13 +288,18 @@ function BRPlayer:Spawn(p_Transform)
 		s_Entity = s_EntityIterator:Next()
 	end
 
-	---@param p_Player Player
+	---@param p_PlayerName string
 	---@param p_Timer Timer
-	m_TimerManager:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
-		if p_Player.soldier ~= nil then
+	m_TimerManager:Interval(0.01, self.m_Player.name, function(p_PlayerName, p_Timer)
+		local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
+
+		if s_Player == nil then
+			m_Logger:Error("We couldn\'t find the player " .. p_PlayerName)
+			p_Timer:Destroy()
+		elseif s_Player.soldier ~= nil then
 			-- the ApplyCustomization is needed otherwise the transform will reset to Vec3(1,0,0) Vec3(0,1,0) Vec3(0,0,1)
-			p_Player.soldier:ApplyCustomization(s_CustomizeSoldierData)
-			p_Player.soldier:SetTransform(p_Transform)
+			s_Player.soldier:ApplyCustomization(s_CustomizeSoldierData)
+			s_Player.soldier:SetTransform(p_Transform)
 			-- we are done, so we can destroy this timer
 			p_Timer:Destroy()
 		end
