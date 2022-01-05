@@ -11,17 +11,8 @@ local m_Logger = Logger("BRPlayer", true)
 
 ---@param p_Player Player
 function BRPlayer:__init(p_Player)
-	-- TODO: remove once fixed in VU. (currently bugged in 18029)
-	---Could be possible that we have a bot that was replacing a player
-	local s_Players = PlayerManager:GetPlayersByName(p_Player.name)
-
-	for _, l_Player in pairs(s_Players) do
-		if l_Player == p_Player then
-			-- the vanilla player instance of the player
-			self.m_Player = l_Player
-			break
-		end
-	end
+	-- the vanilla player instance of the player
+	self.m_Player = p_Player
 
 	-- the BRTeam that the player is part of
 	---@type BRTeam|nil
