@@ -686,7 +686,7 @@ function VuBattleRoyaleServer:OnHotReload()
 		if s_Players ~= nil and #s_Players > 0 then
 			for _, l_Player in pairs(s_Players) do
 				if l_Player ~= nil then
-					m_TeamManagerServer:OnPlayerCreated(l_Player)
+					self:OnPlayerCreated(l_Player)
 				end
 			end
 		end
