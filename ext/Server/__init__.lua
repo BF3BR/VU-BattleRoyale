@@ -90,7 +90,6 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Engine:Update", self, self.OnEngineUpdate),
 		Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate),
 
-		Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated),
 		Events:Subscribe("Player:Created", self, self.OnPlayerCreated),
 		Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput),
 		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
@@ -266,22 +265,14 @@ end
 	-- Player Events
 -- =============================================
 
----VEXT Server Player:Authenticated Event
----@param p_Player Player
-function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
-	m_TeamManagerServer:OnPlayerAuthenticated(p_Player)
-	m_MapVEManagerServer:OnPlayerAuthenticated(p_Player)
-end
-
 ---VEXT Server Player:Created Event
 ---@param p_Player Player
 function VuBattleRoyaleServer:OnPlayerCreated(p_Player)
-	if p_Player.onlineId ~= 0 then
-		return
-	end
+	m_TeamManagerServer:OnPlayerCreated(p_Player)
 
-	-- Event for bots
-	m_TeamManagerServer:OnPlayerAuthenticated(p_Player)
+	if p_Player.onlineId ~= 0 then
+		m_MapVEManagerServer:OnPlayerCreated(p_Player)
+	end
 end
 
 ---VEXT Server Player:UpdateInput Event
@@ -689,13 +680,13 @@ function VuBattleRoyaleServer:OnHotReload()
 
 	-- Delay because client didn't finish the mod reload yet
 	m_TimerManager:Timeout(1, function()
-		-- OnPlayerAuthenticated
+		-- OnPlayerCreated
 		local s_Players = PlayerManager:GetPlayers()
 
 		if s_Players ~= nil and #s_Players > 0 then
 			for _, l_Player in pairs(s_Players) do
 				if l_Player ~= nil then
-					m_TeamManagerServer:OnPlayerAuthenticated(l_Player)
+					m_TeamManagerServer:OnPlayerCreated(l_Player)
 				end
 			end
 		end
