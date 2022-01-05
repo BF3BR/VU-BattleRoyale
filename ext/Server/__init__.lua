@@ -268,10 +268,13 @@ end
 ---VEXT Server Player:Created Event
 ---@param p_Player Player
 function VuBattleRoyaleServer:OnPlayerCreated(p_Player)
-	m_TeamManagerServer:OnPlayerCreated(p_Player)
+	--TODO: remove when fixed in VU (currently broken in 18029)
+	local s_Player = PlayerManager:GetPlayerById(p_Player.id)
+
+	m_TeamManagerServer:OnPlayerCreated(s_Player)
 
 	if p_Player.onlineId ~= 0 then
-		m_MapVEManagerServer:OnPlayerCreated(p_Player)
+		m_MapVEManagerServer:OnPlayerCreated(s_Player)
 	end
 end
 
