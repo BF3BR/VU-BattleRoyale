@@ -30,7 +30,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 -- d = duration (total time)
 
 -- local pow = math.pow
-function _pow(a, b)
+local function _pow(a, b)
 	return a ^ b
 end
 
@@ -394,7 +394,8 @@ local function outInBounce(t, b, c, d)
 	end
 end
 
-return {
+---@class easing
+local easing = {
 	linear = linear,
 	inQuad = inQuad,
 	outQuad = outQuad,
@@ -437,3 +438,5 @@ return {
 	inOutBounce = inOutBounce,
 	outInBounce = outInBounce,
 }
+
+return easing

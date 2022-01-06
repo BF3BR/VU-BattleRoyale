@@ -1,10 +1,13 @@
-class "PingServer"
+---@class PingServer
+PingServer = class "PingServer"
 
+---@type Logger
 local m_Logger = Logger("PingServer", true)
 
 function PingServer:__init()
+	---@type table<integer, number>
 	-- Cooldown of each player for pinging
-	-- This is a table of playerId, cooldown
+	---[Player.id] -> cooldown
 	self.m_PlayerCooldowns = {}
 
 	-- Whenever someone pings how long before they can ping again
@@ -21,7 +24,9 @@ end
 -- Events
 -- =============================================
 
+---VEXT Server Level:Loaded Event
 function PingServer:OnLevelLoaded()
+	-- TODO: remove? unused
 	-- Clear out the player ping ids
 	self.m_Players = {}
 
@@ -29,6 +34,9 @@ function PingServer:OnLevelLoaded()
 	self.m_PlayerCooldowns = {}
 end
 
+---VEXT Shared Engine:Update Event
+---@param p_DeltaTime number
+---@param p_SimulationDeltaTime number
 function PingServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	for l_PlayerId, l_Cooldown in pairs(self.m_PlayerCooldowns) do
 		if l_Cooldown ~= nil then
@@ -48,11 +56,17 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
+---Custom Server PlayerEvents.PlayerConnected NetEvent
+---@param p_Player Player
 function PingServer:OnPlayerConnected(p_Player)
 	-- I believe this only happens once, so it should be good enough
 	NetEvents:SendToLocal(PingEvents.UpdateConfig, p_Player, self.m_PingDisplayCooldownTime)
 end
 
+---Custom Server PingEvents.ClientPing NetEvent
+---@param p_Player Player
+---@param p_Position Vec3
+---@param p_PingType PingType|integer
 function PingServer:OnPlayerPing(p_Player, p_Position, p_PingType)
 	-- Validate our player
 	if p_Player == nil then
@@ -106,12 +120,14 @@ function PingServer:OnPlayerPing(p_Player, p_Position, p_PingType)
 
 end
 
+---Custom Server PingEvents.RemoveClientPing NetEvent
+---@param p_Player Player
 function PingServer:OnRemovePlayerPing(p_Player)
 	-- Get the squad and player ids
 	local s_TeamId = p_Player.teamId
 	local s_SquadId = p_Player.squadId
 
-	self.m_PlayerCooldowns[p_Player.name] = 0
+	self.m_PlayerCooldowns[p_Player.name] = 0.0
 
 	-- send only to solo player that created the ping
 	if s_SquadId == SquadId.SquadNone then
@@ -138,6 +154,9 @@ end
 -- =============================================
 -- Functions
 -- =============================================
+
+---@param p_PlayerId integer @Player.id
+---@return number
 function PingServer:FindPlayerCooldownByPlayerId(p_PlayerId)
 	-- Get the result
 	local s_Result = self.m_PlayerCooldowns[p_PlayerId]
@@ -150,6 +169,8 @@ function PingServer:FindPlayerCooldownByPlayerId(p_PlayerId)
 	return s_Result
 end
 
+---@param p_PlayerId integer @Player.id
+---@param p_CooldownTime number
 function PingServer:AddPlayerCooldown(p_PlayerId, p_CooldownTime)
 	-- Check to see if we already have a cooldown
 	local s_Result = self.m_PlayerCooldowns[p_PlayerId]
@@ -164,6 +185,7 @@ function PingServer:AddPlayerCooldown(p_PlayerId, p_CooldownTime)
 	self.m_PlayerCooldowns[p_PlayerId] = p_CooldownTime
 end
 
+---@return number
 function PingServer:GetPingDisplayCooldownTime()
 	return self.m_PingDisplayCooldownTime
 end

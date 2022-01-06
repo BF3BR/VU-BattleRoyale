@@ -1,6 +1,8 @@
 local m_Logger = Logger("BRInventoryWeaponSlot", true)
 
-class("BRInventoryWeaponSlot", BRInventorySlot)
+---@class BRInventoryWeaponSlot : BRInventorySlot
+---@field m_Item BRItemWeapon
+BRInventoryWeaponSlot = class("BRInventoryWeaponSlot", BRInventorySlot)
 
 local m_NoOptics = DC(Guid("6D3830F2-3528-11E0-B502-B15F9292C9B8"), Guid("A1AD1762-C856-F5D7-66B5-5E485460D3DF"))
 local m_NoPrimaryAccessory = DC(Guid("57CE9FB1-3528-11E0-B502-B15F9292C9B8"), Guid("C6F8E97B-A579-263F-C9F6-38397F7706A0"))
@@ -139,6 +141,8 @@ function BRInventoryWeaponSlot:UpdateItemPrimaryAmmo()
 	self.m_Item:SetPrimaryAmmo(s_Weapon.primaryAmmo)
 end
 
+---@param p_WeaponName string @It is the ebx partition name
+---@return boolean
 function BRInventoryWeaponSlot:HasWeapon(p_WeaponName)
 	return self.m_Item ~= nil and self.m_Item.m_Definition.m_EbxName == p_WeaponName
 end

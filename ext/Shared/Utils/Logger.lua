@@ -1,7 +1,10 @@
 -- thanks to RM https://github.com/BF3RM/MapEditor/blob/development/ext/Shared/Util/Logger.lua
 
-class "Logger"
+---@class Logger
+Logger = class "Logger"
 
+---@param p_ClassName string
+---@param p_ActivateLogging boolean
 function Logger:__init(p_ClassName, p_ActivateLogging)
 	if type(p_ClassName) ~= "string" then
 		error("Logger: Wrong arguments creating object, className is not a string. ClassName: ".. tostring(p_ClassName))
@@ -19,6 +22,8 @@ function Logger:WriteF(...)
 	self:Write(string.format(table.unpack({...})))
 end
 
+---@param p_Message string|number|boolean|table
+---@param p_Highlight boolean
 function Logger:Write(p_Message, p_Highlight)
 	if not ServerConfig.Debug.Logger_Enabled then
 		return
@@ -44,6 +49,9 @@ function Logger:Write(p_Message, p_Highlight)
 	end
 end
 
+---@param p_Table table
+---@param p_Highlight boolean
+---@param p_Key any @only used within the function itself
 function Logger:WriteTable(p_Table, p_Highlight, p_Key)
 	if p_Key == nil then
 		p_Key = ""
@@ -66,15 +74,21 @@ function Logger:WarningF(...)
 	self:Warning(string.format(table.unpack({...})))
 end
 
+---@param p_Message boolean|string|number|table
 function Logger:Warning(p_Message)
 	if self.m_ClassName == nil then
 		return
 	end
 
-	if SharedUtils:IsClientModule() then
-		print("["..self.m_ClassName.."] *WARNING: " .. tostring(p_Message))
+	if type(p_Message) == "table" then
+		print("["..self.m_ClassName.."] WARNING:")
+		print(p_Message)
 	else
-		print("["..self.m_ClassName.."] WARNING: " .. tostring(p_Message))
+		if SharedUtils:IsClientModule() then
+			print("["..self.m_ClassName.."] *WARNING: " .. tostring(p_Message))
+		else
+			print("["..self.m_ClassName.."] WARNING: " .. tostring(p_Message))
+		end
 	end
 end
 
@@ -82,17 +96,22 @@ function Logger:ErrorF(...)
 	self:Error(string.format(table.unpack({...})))
 end
 
+---@param p_Message string|number|boolean|table
 function Logger:Error(p_Message)
 	if self.m_ClassName == nil then
 		return
 	end
 
-	if SharedUtils:IsClientModule() then
-		print("["..self.m_ClassName.."] *ERROR: " .. tostring(p_Message))
+	if type(p_Message) == "table" then
+		print("["..self.m_ClassName.."] ERROR:")
+		print(p_Message)
 	else
-		print("["..self.m_ClassName.."] ERROR: " .. tostring(p_Message))
+		if SharedUtils:IsClientModule() then
+			print("["..self.m_ClassName.."] *ERROR: " .. tostring(p_Message))
+		else
+			print("["..self.m_ClassName.."] ERROR: " .. tostring(p_Message))
+		end
 	end
-
 end
 
 return Logger

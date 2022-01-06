@@ -1,7 +1,15 @@
+---@module "Items/Definitions/BRItemArmorDefinition"
+---@type table<string, BRItemArmorDefinition>
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
 
-class("BRItemArmor", BRItem)
+---@class BRItemArmor : BRItem
+---@field m_Definition BRItemArmorDefinition
+BRItemArmor = class("BRItemArmor", BRItem)
 
+---Creates a new BRItemArmor
+---@param p_Id string @It is a tostring(Guid)
+---@param p_Definition BRItemArmorDefinition
+---@param p_CurrentDurability integer
 function BRItemArmor:__init(p_Id, p_Definition, p_CurrentDurability)
 	BRItem.__init(self, p_Id, p_Definition, 1)
 

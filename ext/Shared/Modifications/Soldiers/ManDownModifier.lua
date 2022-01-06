@@ -1,4 +1,5 @@
-class "ManDownModifier"
+---@class ManDownModifier
+ManDownModifier = class "ManDownModifier"
 
 local m_Logger = Logger("ManDownModifier", true)
 local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"
@@ -259,7 +260,6 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_InteractionComponentData, s_SoldierInteraction_DelayEntityData, "OnSoldierInteractionFinished", "In", 3)
 	m_ConnectionHelper:AddEventConnection(p_SoldierBlueprint, s_SoldierInteraction_DelayEntityData, s_SoldierInteraction_InputRestrictionEntityData, "Out", "Deactivate", 3)
 
-	-- TODO: Add Input Restriction with Soldier:HealthAction on client
 	local s_InputRestrictionEntityData = InputRestrictionEntityData(s_Partition:FindInstance(Guid("8B5295FF-8770-4587-B436-1F2E71F97F35")))
 	s_InputRestrictionEntityData:MakeWritable()
 	s_InputRestrictionEntityData.selectWeapon9 = true

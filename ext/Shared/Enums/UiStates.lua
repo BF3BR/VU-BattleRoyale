@@ -1,3 +1,4 @@
+---@class UiStates
 UiStates = {
 	Hidden = "hidden",
 	Loading = "loading",

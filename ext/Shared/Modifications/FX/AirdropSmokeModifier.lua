@@ -1,4 +1,5 @@
-class "AirdropSmokeModifier"
+---@class AirdropSmokeModifier
+AirdropSmokeModifier = class "AirdropSmokeModifier"
 
 local m_SmokeColorData = DC(Guid("5CE988C3-6622-11DE-9DCF-A96EA7FB2539"), Guid("0302E7F2-51CE-4089-817C-2DCDC9114BF4"))
 

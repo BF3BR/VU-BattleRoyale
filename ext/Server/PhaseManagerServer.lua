@@ -1,21 +1,31 @@
-class("PhaseManagerServer", PhaseManagerShared)
+---@class PhaseManagerServer : PhaseManagerShared
+PhaseManagerServer = class("PhaseManagerServer", PhaseManagerShared)
 
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
+---@type MathHelper
 local m_MathHelper = require "__shared/Utils/MathHelper"
-local m_BRTeamManager = require "BRTeamManager"
+---@type BRTeamManagerServer
+local m_BRTeamManagerServer = require "BRTeamManagerServer"
+---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
+---@type Logger
 local m_Logger = Logger("PhaseManagerServer", true)
 
 function PhaseManagerServer:RegisterVars()
 	PhaseManagerShared.RegisterVars(self)
 
-	self.m_InnerCircle = Circle(Vec3(0, 0, 0), 5000)
-	self.m_OuterCircle = Circle(Vec3(0, 0, 0), 5000)
+	---@type Circle
+	self.m_InnerCircle = Circle(Vec3(0.0, 0.0, 0.0), 5000.0)
+	---@type Circle
+	self.m_OuterCircle = Circle(Vec3(0.0, 0.0, 0.0), 5000.0)
 end
 
 -- =============================================
 -- Events
 -- =============================================
 
+---@param p_Player Player
 function PhaseManagerServer:OnPhaseManagerInitialState(p_Player)
 	self:BroadcastState(p_Player)
 end
@@ -26,8 +36,8 @@ end
 
 -- Starts the PhaseManager logic
 function PhaseManagerServer:Start()
-	self:SetTimer("Damage", g_Timers:Interval(1, self, self.ApplyDamage))
-	self:SetTimer("ClientTimer", g_Timers:Interval(1, self, self.ClientTimer))
+	self:SetTimer("Damage", m_TimerManager:Interval(1, self, self.ApplyDamage))
+	self:SetTimer("ClientTimer", m_TimerManager:Interval(1, self, self.ClientTimer))
 	self:InitPhase()
 end
 
@@ -37,6 +47,7 @@ function PhaseManagerServer:End()
 	self:Finalize()
 end
 
+---@return boolean
 function PhaseManagerServer:Next()
 	if not self:NextSubphase() then
 		if not self:NextPhase() then
@@ -50,6 +61,7 @@ function PhaseManagerServer:Next()
 end
 
 -- Moves to the next Phase
+---@return boolean
 function PhaseManagerServer:NextPhase()
 	-- check if it reached the end
 	if self.m_PhaseIndex >= #self.m_Phases then
@@ -57,13 +69,16 @@ function PhaseManagerServer:NextPhase()
 	end
 
 	-- increment phase
+	---@type integer
 	self.m_PhaseIndex = self.m_PhaseIndex + 1
+	---@type SubphaseType|integer
 	self.m_SubphaseIndex = SubphaseType.Waiting
 
 	return true
 end
 
 -- Moves to the next Subphase
+---@return boolean
 function PhaseManagerServer:NextSubphase()
 	-- check if it reached the end of the subphases for the current phase
 	if self.m_SubphaseIndex ~= SubphaseType.InitialDelay and self.m_SubphaseIndex >= SubphaseType.Moving then
@@ -80,11 +95,12 @@ function PhaseManagerServer:InitPhase()
 	self:RemoveTimer("MovingCircle")
 
 	-- start the timer for the next phase
-	self:SetTimer("NextSubphase", g_Timers:Timeout(self:GetCurrentDelay(), self, self.Next))
+	self:SetTimer("NextSubphase", m_TimerManager:Timeout(self:GetCurrentDelay(), self, self.Next))
 
 	if self.m_SubphaseIndex == SubphaseType.Waiting then
 		local s_Phase = self:GetCurrentPhase()
 		local s_NewRadius = s_Phase.Ratio * self.m_InnerCircle.m_Radius
+		---@type Vec3
 		local s_NewCenter = nil
 
 		-- pick a random circle center
@@ -115,7 +131,7 @@ function PhaseManagerServer:InitPhase()
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then
 		self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
 		self:SetTimer("MovingCircle",
-					g_Timers:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
+					m_TimerManager:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
 	end
 
 	self:DebugMessage()
@@ -140,8 +156,9 @@ function PhaseManagerServer:Finalize()
 end
 
 -- Broadcasts PhaseManager's state to all players
+---@param p_Player Player
 function PhaseManagerServer:BroadcastState(p_Player)
-	local s_Duration = 0
+	local s_Duration = 0.0
 	local s_Timer = self:GetTimer("NextSubphase")
 
 	-- Send remaning time to complete
@@ -173,14 +190,14 @@ function PhaseManagerServer:ApplyDamage()
 	-- get damage for current phase
 	local s_Damage = self:GetCurrentPhase().Damage
 
-	for _, l_BrPlayer in pairs(m_BRTeamManager.m_Players) do
+	for _, l_BrPlayer in pairs(m_BRTeamManagerServer.m_Players) do
 		local s_Soldier = l_BrPlayer:GetSoldier()
 
 		-- check if soldier is outside of the circle
 		if s_Soldier ~= nil and not self.m_OuterCircle:IsInnerPoint(l_BrPlayer:GetPosition()) then
 			-- update player's health if needed
 			if l_BrPlayer.m_Player.alive then
-				s_Soldier.health = math.max(0, s_Soldier.health - s_Damage)
+				s_Soldier.health = math.max(0.0, s_Soldier.health - s_Damage)
 			end
 		end
 	end
@@ -202,6 +219,7 @@ function PhaseManagerServer:ClientTimer()
 	end
 end
 
+---@return Vec3
 function PhaseManagerServer:GetRandomInitialCenter()
 	local s_LevelName = LevelNameHelper:GetLevelName()
 
@@ -219,7 +237,7 @@ function PhaseManagerServer:GetRandomInitialCenter()
 	local s_Triangle = MapsConfig[s_LevelName].InitialCircle.Triangles[s_Index]
 	local s_Center2 = m_MathHelper:RandomTrianglePoint(s_Triangle)
 
-	return Vec3(s_Center2.x, 0, s_Center2.y)
+	return Vec3(s_Center2.x, 0.0, s_Center2.y)
 end
 
 -- Prints a debug message about the current status of PhaseManager
@@ -227,7 +245,7 @@ function PhaseManagerServer:DebugMessage()
 	local s_Delay = self:GetCurrentDelay()
 
 	-- check if PhaseManager's work is completed
-	if s_Delay < 0 then
+	if s_Delay < 0.0 then
 		m_Logger:Write("Completed")
 		return
 	end

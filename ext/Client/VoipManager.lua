@@ -1,14 +1,18 @@
-class 'VoipManager'
+---@class VoipManager
+VoipManager = class 'VoipManager'
 
 local m_Logger = Logger("VoipManager", true)
 
 function VoipManager:__init()
+	---@type string|nil
 	self.m_BrTeamChannelName = nil
+	---@type string|nil
 	self.m_BrPartyChannelName = nil
 	self.m_BrTeamIsTransmitting = false
 	self.m_BrPartyIsTransmitting = false
 end
 
+---VEXT Client Client:UpdateInput Event
 function VoipManager:OnClientUpdateInput()
 	-- if this player has no microphone we can stop right here
 	if not Voip:IsAvailable() then
@@ -56,6 +60,10 @@ function VoipManager:OnClientUpdateInput()
 	end
 end
 
+---VEXT Client VoipChannel:PlayerJoined Event
+---@param p_Channel VoipChannel
+---@param p_Player Player
+---@param p_Emitter VoipEmitter
 function VoipManager:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
 	m_Logger:Write('Player ' .. p_Player.name .. ' joined voip channel ' .. p_Channel.name)
 
@@ -78,6 +86,9 @@ function VoipManager:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
 	end
 end
 
+---VEXT Client VoipChannel:PlayerLeft Event
+---@param p_Channel VoipChannel
+---@param p_Player Player
 function VoipManager:OnVoipChannelPlayerLeft(p_Channel, p_Player)
 	m_Logger:Write('Player ' .. p_Player.name .. ' left voip channel ' .. p_Channel.name)
 
@@ -92,6 +103,9 @@ function VoipManager:OnVoipChannelPlayerLeft(p_Channel, p_Player)
 	end
 end
 
+---VEXT Client VoipEmitter:Emitting Event
+---@param p_Emitter VoipEmitter
+---@param p_IsEmitting boolean
 function VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 	-- player can be nil if the client is in the loading screen
 	if p_Emitter.player == nil then
@@ -115,6 +129,9 @@ function VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 	end
 end
 
+---Custom Client WebUI:VoipMutePlayer WebUI Event
+---@param p_PlayerName string
+---@param p_Mute boolean
 function VoipManager:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
 	if self.m_BrTeamChannelName == nil then
 		m_Logger:Warning("Tried (un-)muting a player from team voip channel while not being in one.")

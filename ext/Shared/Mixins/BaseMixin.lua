@@ -1,4 +1,5 @@
-class "BaseMixin"
+---@class BaseMixin
+BaseMixin = class "BaseMixin"
 
 function BaseMixin:__init()
 	self:RegisterVars()

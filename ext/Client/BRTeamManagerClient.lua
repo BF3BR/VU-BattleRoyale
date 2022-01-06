@@ -1,13 +1,18 @@
-class 'BRTeamManager'
+---@class BRTeamManagerClient
+BRTeamManagerClient = class 'BRTeamManagerClient'
 
+---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
-local m_Logger = Logger("BRTeamManager", true)
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
+local m_Logger = Logger("BRTeamManagerClient", true)
 
-function BRTeamManager:__init()
+function BRTeamManagerClient:__init()
 	self:RegisterVars()
 end
 
-function BRTeamManager:RegisterVars()
+function BRTeamManagerClient:RegisterVars()
+	---@type string[]
 	self.m_SpectatedPlayerNames = {}
 end
 
@@ -15,7 +20,11 @@ end
 -- Events
 -- =============================================
 
-function BRTeamManager:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
+---VEXT Client Player:TeamChange Event
+---@param p_Player Player
+---@param p_TeamId TeamId|integer
+---@param p_SquadId SquadId|integer
+function BRTeamManagerClient:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
 	-- we have to ignore spectated players
 	-- otherwise we would switch them back to team2
 	for _, l_PlayerName in pairs(self.m_SpectatedPlayerNames) do
@@ -31,7 +40,9 @@ function BRTeamManager:OnPlayerTeamChange(p_Player, p_TeamId, p_SquadId)
 	self:OverrideTeamIds(p_Player)
 end
 
-function BRTeamManager:OnPlayerRespawn(p_Player)
+---VEXT Client Player:Respawn Event
+---@param p_Player Player
+function BRTeamManagerClient:OnPlayerRespawn(p_Player)
 	self:OverrideTeamIds(p_Player)
 end
 
@@ -39,7 +50,9 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
-function BRTeamManager:OnGameStateChanged(p_GameState)
+---Custom Client PlayerEvents.GameStateChanged NetEvent
+---@param p_GameState GameStates|integer
+function BRTeamManagerClient:OnGameStateChanged(p_GameState)
 	if p_GameState == GameStates.WarmupToPlane then
 		self.m_SpectatedPlayerNames = {}
 		local s_Players = PlayerManager:GetPlayers()
@@ -50,13 +63,16 @@ function BRTeamManager:OnGameStateChanged(p_GameState)
 	end
 end
 
-function BRTeamManager:OnSpectatedPlayerTeamMembers(p_PlayerNames)
+---Custom Client SpectatedPlayerTeamMembers NetEvent
+---@param p_PlayerNames string[]
+function BRTeamManagerClient:OnSpectatedPlayerTeamMembers(p_PlayerNames)
 	self.m_SpectatedPlayerNames = p_PlayerNames
 
 	m_Logger:Write("Set SpectatedPlayer TeamMembers:")
 	m_Logger:WriteTable(p_PlayerNames)
 
 	-- First we want to move all old spectated players from Team3 to Team2
+	---@type Player[]
 	local s_Team3Players = PlayerManager:GetPlayersByTeam(TeamId.Team3)
 
 	for _, l_Player in pairs(s_Team3Players) do
@@ -77,7 +93,9 @@ end
 -- Functions
 -- =============================================
 
-function BRTeamManager:OverrideTeamIds(p_Player)
+---We tell the client that this player is either in Team1 or Team2
+---@param p_Player Player
+function BRTeamManagerClient:OverrideTeamIds(p_Player)
 	if p_Player == PlayerManager:GetLocalPlayer() or self:IsTeamMate(p_Player) then
 		self:SetTeamId(p_Player, TeamId.Team1)
 	else
@@ -85,7 +103,10 @@ function BRTeamManager:OverrideTeamIds(p_Player)
 	end
 end
 
-function BRTeamManager:SetTeamId(p_Player, p_TeamId)
+---Changing the TeamId on the client
+---@param p_Player Player
+---@param p_TeamId TeamId|integer @increased to 127 IDs
+function BRTeamManagerClient:SetTeamId(p_Player, p_TeamId)
 	m_Logger:Write("OverrideTeamId of player " .. p_Player.name .. " from Team" .. p_Player.teamId .. " to Team" .. p_TeamId)
 	p_Player.teamId = p_TeamId
 
@@ -95,19 +116,24 @@ function BRTeamManager:SetTeamId(p_Player, p_TeamId)
 
 	p_Player.squadId = SquadId.Squad1
 
-	g_Timers:Timeout(1, p_Player.name, function(p_PlayerName)
+	---Change the soldier TeamId as well
+	---@param p_PlayerName string
+	m_TimerManager:Timeout(1, p_Player.name, function(p_PlayerName)
 		local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
 
 		if s_Player and s_Player.soldier ~= nil then
-			m_Logger:Write("OverrideTeamId of soldier for this player from Team" .. p_Player.soldier.teamId .. " to Team" .. p_TeamId)
-			p_Player.teamId = p_TeamId
-			p_Player.soldier.teamId = p_TeamId
-			p_Player.squadId = SquadId.Squad1
+			m_Logger:Write("OverrideTeamId of soldier for this player from Team" .. s_Player.soldier.teamId .. " to Team" .. p_TeamId)
+			s_Player.teamId = p_TeamId
+			s_Player.soldier.teamId = p_TeamId
+			s_Player.squadId = SquadId.Squad1
 		end
 	end)
 end
 
-function BRTeamManager:IsTeamMate(p_Player)
+---Check if the player is a teammate
+---@param p_Player Player
+---@return boolean
+function BRTeamManagerClient:IsTeamMate(p_Player)
 	if m_BrPlayer.m_Team == nil then
 		return false
 	end
@@ -127,4 +153,4 @@ function BRTeamManager:IsTeamMate(p_Player)
 	return false
 end
 
-return BRTeamManager()
+return BRTeamManagerClient()

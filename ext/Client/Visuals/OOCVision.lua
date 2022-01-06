@@ -1,4 +1,5 @@
-class "OOCVision"
+---@class OOCVision
+OOCVision = class "OOCVision"
 
 local m_MapVEManager = require "Visuals/MapVEManager"
 
@@ -34,10 +35,7 @@ function OOCVision:CreateSoundEntity()
 
 	-- create sound entity
 	if s_EntityData ~= nil then
-		local s_EntityPos = LinearTransform()
-		s_EntityPos.trans = Vec3(0.0, 0.0, 0.0)
-
-		local s_Entity = EntityManager:CreateEntity(s_EntityData, s_EntityPos)
+		local s_Entity = EntityManager:CreateEntity(s_EntityData, LinearTransform())
 
 		if s_Entity ~= nil then
 			s_Entity:Init(Realm.Realm_Client, true)

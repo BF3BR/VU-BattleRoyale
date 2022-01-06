@@ -1,4 +1,5 @@
-class 'XP5_003_ObjectModifications'
+---@class XP5_003_ObjectModifications
+XP5_003_ObjectModifications = class 'XP5_003_ObjectModifications'
 
 local m_Tent_01_Mesh = DC(Guid('7399C5F9-F745-522F-1A75-8C235D9DF360'), Guid('E3E4DD13-7444-549D-167B-758EF57B24BB'))
 local m_Bulkhead_01_Mesh = DC(Guid('BC838068-4D37-43D6-FCE2-D632D08459CC'), Guid('4A9E53C7-0A3B-11DE-B857-DBBDD7D66D76'))

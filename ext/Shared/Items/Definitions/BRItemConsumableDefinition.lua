@@ -1,9 +1,19 @@
-class("BRItemConsumableDefinition", BRItemDefinition)
+---@class BRItemConsumableDefinition : BRItemDefinition
+BRItemConsumableDefinition = class("BRItemConsumableDefinition", BRItemDefinition)
 
+---@class BRItemConsumableDefinitionOptions : BRItemDefinitionOptions
+---@field HealthToRegen integer
+---@field TimeToApply integer
+
+---Creates a new BRItemConsumableDefinition
+---@param p_UId string
+---@param p_Name string
+---@param p_Options BRItemConsumableDefinitionOptions
 function BRItemConsumableDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}
 
 	-- set fixed shared option values for consumables
+	---@type ItemType|integer
 	p_Options.Type = ItemType.Consumable
 	p_Options.Price = 0
 
@@ -33,10 +43,10 @@ return {
 				DC(Guid("077FFC1D-1079-0D3E-B3AF-610E461217C6"), Guid("EFC1128E-7DDB-7283-B936-FF1CD422DE53"))
 			),
 			Transform = LinearTransform(
-				Vec3(0.5, 0, 0),
-				Vec3(0, 0.5, 0),
-				Vec3(0, 0, 0.5),
-				Vec3(-0.25, 0, -0.15)
+				Vec3(0.5, 0.0, 0.0),
+				Vec3(0.0, 0.5, 0.0),
+				Vec3(0.0, 0.0, 0.5),
+				Vec3(-0.25, 0.0, -0.15)
 			),
 		}
 	),
@@ -55,10 +65,10 @@ return {
 				DC(Guid("077FFC1D-1079-0D3E-B3AF-610E461217C6"), Guid("EFC1128E-7DDB-7283-B936-FF1CD422DE53"))
 			),
 			Transform = LinearTransform(
-				Vec3(1, 0, 0),
-				Vec3(0, 1, 0),
-				Vec3(0, 0, 1),
-				Vec3(-0.25, 0, -0.25)
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 1.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(-0.25, 0.0, -0.25)
 			),
 		}
 	),

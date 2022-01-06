@@ -1,3 +1,4 @@
+---@class TeamJoinStrategy
 TeamJoinStrategy = {
 	-- Play as solo even in team-based modes
 	NoJoin = 1,

@@ -1,7 +1,12 @@
-class("SpectatorClient", TimersMixin)
+---@class SpectatorClient : TimersMixin
+SpectatorClient = class("SpectatorClient", TimersMixin)
 
+---@type MathHelper
 local m_MathHelper = require "__shared/Utils/MathHelper"
+---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 local m_Logger = Logger("SpectatorClient", true)
 
 function SpectatorClient:__init()
@@ -22,6 +27,7 @@ function SpectatorClient:RegisterVars()
 	self.m_LastPitch = 0.0
 	self.m_LastYaw = 0.0
 
+	---@type GameStates|nil
 	self.m_GameState = nil
 	self.m_IsSpectatingGunship = false
 
@@ -34,11 +40,13 @@ end
 -- Events
 -- =============================================
 
+---VEXT Shared Extension:Unloading Event
 function SpectatorClient:OnExtensionUnloading()
 	WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	self:Disable()
 end
 
+---VEXT Shared Level:Destroy Event
 function SpectatorClient:OnLevelDestroy()
 	WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	self:Disable()
@@ -46,6 +54,8 @@ function SpectatorClient:OnLevelDestroy()
 	self.m_SpectatingPlayerYaw = 0.0
 end
 
+---VEXT Shared Engine:Update Event
+---@param p_DeltaTime number
 function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	if not SpectatorManager:GetSpectating() then
 		return
@@ -84,6 +94,7 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	self.m_LookAtPos = s_Player.soldier.transform.trans:Clone()
 	self.m_LookAtPos.x = self.m_LookAtPos.x + s_Player.soldier.transform.left.x * 0.5
 	self.m_LookAtPos.z = self.m_LookAtPos.z + s_Player.soldier.transform.left.z * 0.5
+	---@type QuatTransform|LinearTransform
 	local s_HeadTransform = s_Player.soldier.ragdollComponent:GetActiveWorldTransform(46)
 
 	if s_HeadTransform ~= nil then
@@ -94,14 +105,19 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	end
 
 	-- Calculate where our camera has to be base on the angles.
+	---@type number
 	local s_Cosfi = math.cos(s_Yaw)
 	local s_Sinfi = math.sin(s_Yaw)
 
+	---@type number
 	local s_Costheta = math.cos(s_Pitch)
 	local s_Sintheta = math.sin(s_Pitch)
 
+	---@type number
 	local s_Cx = self.m_LookAtPos.x + (self.m_Distance * s_Sintheta * s_Cosfi)
+	---@type number
 	local s_Cy = self.m_LookAtPos.y + (self.m_Distance * s_Costheta)
+	---@type number
 	local s_Cz = self.m_LookAtPos.z + (self.m_Distance * s_Sintheta * s_Sinfi)
 
 	local s_CameraLocation = Vec3(s_Cx, s_Cy, s_Cz)
@@ -113,6 +129,7 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 		s_CameraLocation = s_Hit.position
 
 		-- Move it just a bit forward so we're not actually inside geometry.
+		---@type Vec3
 		local s_Heading = self.m_LookAtPos - s_CameraLocation
 		local s_Direction = s_Heading:Normalize()
 
@@ -126,6 +143,7 @@ function SpectatorClient:OnEngineUpdate(p_DeltaTime)
 	SpectatorManager:SetFreecameraTransform(s_Transform)
 end
 
+---VEXT Client Client:UpdateInput Event
 function SpectatorClient:OnClientUpdateInput()
 	if not SpectatorManager:GetSpectating() then
 		return
@@ -153,6 +171,8 @@ function SpectatorClient:OnClientUpdateInput()
 	end
 end
 
+---VEXT Client Player:Respawn Event
+---@param p_Player Player
 function SpectatorClient:OnPlayerRespawn(p_Player)
 	if not SpectatorManager:GetSpectating() then
 		return
@@ -178,6 +198,8 @@ function SpectatorClient:OnPlayerRespawn(p_Player)
 	end
 end
 
+---VEXT Client Player:Deleted Event
+---@param p_Player Player
 function SpectatorClient:OnPlayerDeleted(p_Player)
 	if not SpectatorManager:GetSpectating() then
 		return
@@ -201,14 +223,10 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
+---Custom Client ServerPlayer:Killed NetEvent
+---@param p_PlayerId integer
+---@param p_InflictorId integer|nil
 function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
-	m_Logger:Write("OnPlayerKilled")
-
-	if p_PlayerId == nil then
-		return
-	end
-
-	m_Logger:Write("p_PlayerId " .. p_PlayerId)
 	local s_Player = PlayerManager:GetLocalPlayer()
 
 	if s_Player == nil then
@@ -217,7 +235,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 
 	if s_Player.id == p_PlayerId then
 		m_Logger:Write("you died. enabling spec in 5 secs")
-		g_Timers:Timeout(5, p_InflictorId, function()
+		m_TimerManager:Timeout(5.0, p_InflictorId, function()
 			if self.m_GameState ~= GameStates.None and self.m_GameState ~= GameStates.Warmup then
 				self:Enable(p_InflictorId)
 			end
@@ -272,25 +290,23 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 	end
 end
 
+---Updates pitch & yaw
+---@param p_Pitch number
+---@param p_Yaw number
 function SpectatorClient:OnPostPitchAndYaw(p_Pitch, p_Yaw)
-	if p_Pitch == nil or p_Yaw == nil then
-		return
-	end
-
 	self.m_SpectatingPlayerPitch = p_Pitch
 	self.m_SpectatingPlayerYaw = p_Yaw
 end
 
+---Updates the amount of spectators
+---@param p_SpectatorCount integer
 function SpectatorClient:OnUpdateSpectatorCount(p_SpectatorCount)
-	m_Logger:Write(p_SpectatorCount)
 	WebUI:ExecuteJS("UpdateSpectatorCount(" .. tostring(p_SpectatorCount) .. ");")
 end
 
+---Custom Client PlayerEvents.GameStateChanged NetEvent
+---@param p_GameState GameStates|integer
 function SpectatorClient:OnGameStateChanged(p_GameState)
-	if p_GameState == nil then
-		return
-	end
-
 	if p_GameState == GameStates.None then
 		WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	end
@@ -306,6 +322,8 @@ end
 	-- (Re-)Enable / Disable Camera
 -- =============================================
 
+---Enable the Spectator
+---@param p_InflictorId integer|nil
 function SpectatorClient:Enable(p_InflictorId)
 	if SpectatorManager:GetSpectating() and SpectatorManager:GetCameraMode() == SpectatorCameraMode.ThirdPerson then
 		m_Logger:Write("Is already enabled")
@@ -342,6 +360,7 @@ function SpectatorClient:Enable(p_InflictorId)
 
 		m_Logger:Write("SpectatePlayer Enable")
 		self:SpectatePlayer(s_PlayerToSpectate)
+
 		return
 	elseif self.m_GameState == GameStates.Plane then
 		SpectatorManager:SetCameraMode(SpectatorCameraMode.Disabled)
@@ -363,13 +382,15 @@ function SpectatorClient:Enable(p_InflictorId)
 		return
 	end
 
-	self:SetTimer("NoPlayerFoundTimer", g_Timers:Timeout(4, self, self.ReEnable))
+	self:SetTimer("NoPlayerFoundTimer", m_TimerManager:Timeout(4, self, self.ReEnable))
 end
 
+---Reenable the Spectator if we found no players
 function SpectatorClient:ReEnable()
 	self:Enable(nil)
 end
 
+---Disable the Spectator
 function SpectatorClient:Disable()
 	if not SpectatorManager:GetSpectating() then
 		m_Logger:Write("Disable - GetSpectating its off already")
@@ -401,8 +422,11 @@ end
 	-- Set Freecamera transform
 -- =============================================
 
+---Update the camera transform
+---@param p_Timer Timer
 function SpectatorClient:OnSetFreecameraTransform(p_Timer)
 	local s_CameraTransform = ClientUtils:GetCameraTransform()
+	---@type LinearTransform
 	local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
 
 	if s_Transform.trans:Distance(s_CameraTransform.trans) < 15.0 then
@@ -421,11 +445,14 @@ end
 	-- Spectate Player
 -- =============================================
 
+---Spectate this player
+---@param p_Player Player
 function SpectatorClient:SpectatePlayer(p_Player)
 	if not SpectatorManager:GetSpectating() then
 		return
 	end
 
+	-- probably not needed
 	if p_Player == nil then
 		self:Disable()
 		return
@@ -446,6 +473,7 @@ function SpectatorClient:SpectatePlayer(p_Player)
 	WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(true) .. ");")
 
 	local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
+	---@type string|nil
 	local s_SpectatedPlayerName = nil
 	m_Logger:Write("New player: " .. p_Player.name)
 
@@ -475,13 +503,17 @@ function SpectatorClient:SpectatePlayer(p_Player)
 	end
 end
 
+---Find a player to spectate
+---@param p_OnlySquadMates boolean
+---@param p_InflictorId integer|nil
+---@return Player|nil
 function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_InflictorId)
 	local s_PlayerToSpectate = nil
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if s_LocalPlayer == nil then
-		return
+		return nil
 	end
 
 	if p_OnlySquadMates then
@@ -525,6 +557,8 @@ end
 	-- Spectate Gunship
 -- =============================================
 
+---If nobody spawned spectate the gunship
+---@param p_Enable boolean
 function SpectatorClient:SpectateGunship(p_Enable)
 	local s_CameraEntityIterator = EntityManager:GetIterator("ClientCameraEntity")
 	local s_CameraEntity = s_CameraEntityIterator:Next()
@@ -552,6 +586,7 @@ end
 	-- Spectate Next Player
 -- =============================================
 
+---Spectate the next available Player if possible
 function SpectatorClient:SpectateNextPlayer()
 	if not SpectatorManager:GetSpectating() then
 		return
@@ -595,14 +630,18 @@ function SpectatorClient:SpectateNextPlayer()
 	end
 end
 
+---Get the next available Player or nil
+---@param p_OnlySquadMates boolean
+---@return Player|nil
 function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	-- Find the index of the current player.
 	local s_CurrentIndex = 0
+	---@type Player[]
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if s_LocalPlayer == nil then
-		return
+		return nil
 	end
 
 	if p_OnlySquadMates then
@@ -616,7 +655,7 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	end
 
 	if s_Players == nil then
-		return
+		return nil
 	end
 
 	for i, l_Player in pairs(s_Players) do
@@ -634,9 +673,11 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 	end
 
 	-- Find the next player we can spectate.
+	---@type Player|nil
 	local s_NextPlayer = nil
 
 	for i = 1, #s_Players do
+		---@type integer
 		local s_PlayerIndex = (i - 1) + s_CurrentIndex
 
 		if s_PlayerIndex > #s_Players then
@@ -658,6 +699,7 @@ end
 	-- Spectate Previous Player
 -- =============================================
 
+---Spectate the previous available Player if possible
 function SpectatorClient:SpectatePreviousPlayer()
 	if not SpectatorManager:GetSpectating() then
 		return
@@ -701,9 +743,13 @@ function SpectatorClient:SpectatePreviousPlayer()
 	end
 end
 
+---Get the previous available Player or nil
+---@param p_OnlySquadMates boolean
+---@return Player|nil
 function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	-- Find the index of the current player.
 	local s_CurrentIndex = 0
+	---@type Player[]
 	local s_Players = nil
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
@@ -740,9 +786,11 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 	end
 
 	-- Find the previous player we can spectate.
+	---@type Player|nil
 	local s_PreviousPlayer = nil
 
 	for i = #s_Players, 1, -1 do
+		---@type integer
 		local s_PlayerIndex = (i - (#s_Players - s_CurrentIndex))
 
 		if s_PlayerIndex <= 0 then
@@ -764,14 +812,16 @@ end
 	-- Freecam
 -- =============================================
 
+---No players found, no gunship found, now enable freecam
 function SpectatorClient:EnableFreecam()
 	SpectatorManager:SetCameraMode(SpectatorCameraMode.FreeCamera)
 
 	if not self.m_IsDefaultFreeCamSet then
 		m_Logger:Write("Set freecam transform")
+		---@type LinearTransform
 		local s_Transform = MapsConfig[LevelNameHelper:GetLevelName()].DefaultFreecamTransform
 		SpectatorManager:SetFreecameraTransform(s_Transform)
-		g_Timers:Interval(0.1, self, self.OnSetFreecameraTransform)
+		m_TimerManager:Interval(0.1, self, self.OnSetFreecameraTransform)
 	end
 end
 

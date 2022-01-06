@@ -1,15 +1,24 @@
+---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
+---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
 
+---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"
+---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
+---@type BRItemFactory
+local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 
+---@type Logger
 local m_Logger = Logger("DebugCommands", true)
 
 --============================================================
 -- Custom debug commands
 --============================================================
 
+---@param p_Player Player
+---@param p_Args table
 local function OnPlayerGiveCommand(p_Player, p_Args)
 	if p_Player == nil then
 		m_Logger:Error("Invalid player.")
@@ -21,7 +30,7 @@ local function OnPlayerGiveCommand(p_Player, p_Args)
 		return
 	end
 
-	local s_Definition = g_BRItemFactory:FindDefinitionByUId(p_Args[1])
+	local s_Definition = m_BRItemFactory:FindDefinitionByUId(p_Args[1])
 
 	if s_Definition == nil then
 		m_Logger:Error("Invalid item definition UId: " .. p_Args[1])
@@ -35,6 +44,8 @@ local function OnPlayerGiveCommand(p_Player, p_Args)
 	m_Logger:Write(s_Definition.m_Name .. " - Item given to player: " .. p_Player.name)
 end
 
+---@param p_Player Player
+---@param p_Args table
 local function OnPlayerSpawnCommand(p_Player, p_Args)
 	if p_Player == nil then
 		m_Logger:Error("Invalid player.")
@@ -46,7 +57,7 @@ local function OnPlayerSpawnCommand(p_Player, p_Args)
 		return
 	end
 
-	local s_Definition = g_BRItemFactory:FindDefinitionByUId(p_Args[1])
+	local s_Definition = m_BRItemFactory:FindDefinitionByUId(p_Args[1])
 
 	if s_Definition == nil then
 		m_Logger:Error("Invalid item definition UId: " .. p_Args[1])
@@ -59,6 +70,7 @@ local function OnPlayerSpawnCommand(p_Player, p_Args)
 	m_Logger:Write(s_Definition.m_Name .. " - Item spawned for player: " .. p_Player.name)
 end
 
+---@param p_Player Player
 local function OnSpawnAirdropCommand(p_Player)
     local s_LevelName = LevelNameHelper:GetLevelName()
 

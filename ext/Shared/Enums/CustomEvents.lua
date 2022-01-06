@@ -1,7 +1,4 @@
-BRPlayerNetEvents = {
-	ArmorState = "TM:AS",
-}
-
+---@class TeamManagerNetEvent
 TeamManagerNetEvent = {
 	RequestTeamJoin = "TM:RTJ",
 	TeamJoinDenied = "TM:TJD",
@@ -13,6 +10,7 @@ TeamManagerNetEvent = {
 	PlayerTeamState = "TM:PTS"
 }
 
+---@class TeamManagerEvent
 TeamManagerEvent = {
 	DestroyTeam = "TM:DestroyTeam",
 	PutOnATeam = "TM:PutOnATeam",
@@ -20,6 +18,7 @@ TeamManagerEvent = {
 	RegisterKill = "TM:RegisterKill"
 }
 
+---@class DamageEvent
 DamageEvent = {
 	Hit = "DMG:H",
 	PlayerDown = "DMG:PD",
@@ -28,6 +27,7 @@ DamageEvent = {
 	PlayerKilled = "DMG:PKD"
 }
 
+---@class PingEvents
 PingEvents = {
 	ClientPing = "Ping:PlayerPing",
 	ServerPing = "Ping:Notify",
@@ -36,16 +36,19 @@ PingEvents = {
 	RemoveServerPing = "Ping:RemoveNotify"
 }
 
+---@class PhaseManagerNetEvent
 PhaseManagerNetEvent = {
 	InitialState = "PM:InitialState",
 	UpdateState = "PM:UpdateState"
 }
 
+---@class PhaseManagerEvent
 PhaseManagerEvent = {
 	Update = "PhaseManager:Update",
 	CircleMove = "PhaseManager:CircleMove"
 }
 
+---@class GunshipEvents
 GunshipEvents = {
 	Enable = "Gunship:Enable",
 	Disable = "Gunship:Disable",
@@ -54,6 +57,7 @@ GunshipEvents = {
 	OpenParachute = "Gunship:OpenParachute",
 }
 
+---@class PlayerEvents
 PlayerEvents = {
 	UpdateTimer = "VuBattleRoyale:UpdateTimer",
 	GameStateChanged = "VuBattleRoyale:GameStateChanged",
@@ -66,20 +70,13 @@ PlayerEvents = {
 	PlayerSetSkin = "VuBattleRoyale:PlayerSetSkin",
 }
 
+---@class SpectatorEvents
 SpectatorEvents = {
 	RequestPitchAndYaw = "SpectatorEvents:RequestPitchAndYaw",
 	PostPitchAndYaw = "SpectatorEvents:PostPitchAndYaw",
 }
 
-LMS = {
-	RLT = "LMS:RLT",
-}
-
-ManDownLootEvents = {
-	UpdateLootPosition = "ManDownLoot:UpdateLootPosition",
-	OnInteractionFinished = "ManDownLoot:OnInteractionFinished"
-}
-
+---@class InventoryNetEvent
 InventoryNetEvent = {
 	InventoryState = "IV:IS",
 	InventoryGiveCommand = "IV:GC",

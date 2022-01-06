@@ -1,3 +1,4 @@
+---@class BRPlayerState
 BRPlayerState = {
 	Alive = 1,
 	Down = 2,

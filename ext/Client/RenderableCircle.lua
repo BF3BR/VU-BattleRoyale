@@ -1,9 +1,14 @@
-class ("RenderableCircle", Circle)
+---@class RenderableCircle : Circle
+RenderableCircle = class ("RenderableCircle", Circle)
 
 local m_Logger = Logger("RenderableCircle", false)
+---@type WindowsCircleSpawner
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 local m_2PI = 2 * math.pi
 
+---Creates a new RenderableCircle
+---@param p_Center Vec3|nil
+---@param p_Radius number|nil
 function RenderableCircle:__init(p_Center, p_Radius)
 	Circle.__init(self, p_Center, p_Radius)
 
@@ -13,9 +18,11 @@ function RenderableCircle:__init(p_Center, p_Radius)
 	-- the edge points for the rectangles
 	-- they are precalculated during presim in case some
 	-- raycasts would be needed (depends on the implementation)
+	---@type Vec3[]
 	self.m_RenderPoints = {}
 
 	-- current arc theta
+	---@type number|nil
 	self.m_ThetaStep = nil
 
 	-- flag used reduce calculations and renders
@@ -23,11 +30,16 @@ function RenderableCircle:__init(p_Center, p_Radius)
 	self.m_HasRenderedPoints = false
 end
 
+---Updates the circle
+---@param p_Center Vec3
+---@param p_Radius number
 function RenderableCircle:Update(p_Center, p_Radius)
 	Circle.Update(self, p_Center, p_Radius)
 	self.m_HasCalculatedPoints = false
 end
 
+---Updates self.m_RenderPoints
+---@param p_PlayerPos Vec3
 function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
 	-- check if circle was updated since previous call
 	if self.m_HasCalculatedPoints then
@@ -51,6 +63,7 @@ function RenderableCircle:CalculateRenderPoints(p_PlayerPos)
 	self.m_HasRenderedPoints = false
 end
 
+---Updates m_RectsToRender & m_ThetaStep
 function RenderableCircle:UpdateRenderParameters()
 	local s_Circumference = m_2PI * self.m_Radius
 	local s_RectsNum = CircleConfig.RenderPoints.Max
@@ -64,10 +77,12 @@ function RenderableCircle:UpdateRenderParameters()
 	end
 
 	-- set updated values
+	---@type integer
 	self.m_RectsToRender = math.max(s_RectsNum, CircleConfig.RenderPoints.Min)
 	self.m_ThetaStep = (s_Circumference / self.m_RectsToRender) / self.m_Radius
 end
 
+---Spawning & Destroying Windows
 function RenderableCircle:Render()
 	if #self.m_RenderPoints > 1 and not self.m_HasRenderedPoints then
 		-- calculate the length between two edges
