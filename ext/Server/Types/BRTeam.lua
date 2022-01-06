@@ -1,14 +1,20 @@
-class "BRTeam"
+---@class BRTeam
+BRTeam = class "BRTeam"
 
+---@type Logger
 local m_Logger = Logger("BRTeam", true)
 
+---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 
+---@param p_Id string
 function BRTeam:__init(p_Id)
 	-- the unique id of the team
+	---@type string
 	self.m_Id = p_Id
 
-	-- contains the players as [name] -> [BRPlayer]
+	-- contains the players as `[name] -> [BRPlayer]`
+	---@type table<string, BRPlayer>
 	self.m_Players = {}
 
 	-- indicates if the team let's random players to fill the remaining positions
@@ -18,14 +24,24 @@ function BRTeam:__init(p_Id)
 	self.m_Active = false
 
 	-- the final placement of the team
+	---@type integer|nil
 	self.m_Placement = nil
 
 	-- vanilla team/squad ids
+	---@type TeamId|integer
 	self.m_TeamId = TeamId.Team1
+	---@type SquadId|integer
 	self.m_SquadId = SquadId.SquadNone
+
+	-- create a VoipChannel if the team has more then 1 member
+	---@type VoipChannel|nil
+	self.m_VoipChannel = nil
 end
 
--- Adds a player to the team
+---Adds a player to the team
+---@param p_BrPlayer BRPlayer
+---@param p_IgnoreBroadcast boolean
+---@return boolean
 function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
 	-- check if team is full or in game
 	if self:IsFull() or self.m_Active then
@@ -46,7 +62,7 @@ function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
 	-- add references
 	self.m_Players[p_BrPlayer:GetName()] = p_BrPlayer
 	p_BrPlayer.m_Team = self
-	p_BrPlayer.m_PosInSquad = m_MapHelper:Size(self.m_Players)
+	p_BrPlayer.m_PosInSquad = self:PlayerCount()
 
 	-- assign thew player as team leader if needed
 	self:AssignLeader()
@@ -56,10 +72,29 @@ function BRTeam:AddPlayer(p_BrPlayer, p_IgnoreBroadcast)
 		self:BroadcastState()
 	end
 
+	if self:PlayerCount() > 1 then
+		-- if we have no voip channel, create a voip channel (if the playercount is higher then 1)
+		if self.m_VoipChannel == nil then
+			self:CreateVoipChannel()
+
+			-- add all players to this channel
+			for _, l_BrPlayer in pairs(self.m_Players) do
+				self:AddPlayerToVoip(l_BrPlayer)
+			end
+		else
+			-- we already have a voip channel, just add this player to it
+			self:AddPlayerToVoip(p_BrPlayer)
+		end
+	end
+
 	return true
 end
 
--- Removes a player from the team
+---Removes a player from the team
+---@param p_BrPlayer BRPlayer
+---@param p_Forced boolean
+---@param p_IgnoreBroadcast boolean
+---@return boolean
 function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	-- check if player isn't a member of this team
 	if p_BrPlayer.m_Team == nil or not self:Equals(p_BrPlayer.m_Team) then
@@ -67,7 +102,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	end
 
 	-- check if team only has one player
-	if not p_Forced and m_MapHelper:Size(self.m_Players) == 1 then
+	if not p_Forced and self:PlayerCount() == 1 then
 		return false
 	end
 
@@ -83,7 +118,7 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	self:AssignLeader()
 
 	-- updates the position of the player in the squad
-	local s_Size = m_MapHelper:Size(self.m_Players)
+	local s_Size = self:PlayerCount()
 
 	for _, l_Player in pairs(self.m_Players) do
 		if l_Player.m_PosInSquad > s_Size then
@@ -97,13 +132,25 @@ function BRTeam:RemovePlayer(p_BrPlayer, p_Forced, p_IgnoreBroadcast)
 	end
 
 	-- check if team should be destroyed
-	if m_MapHelper:Size(self.m_Players) < 1 then
+	if self:PlayerCount() < 1 then
 		Events:DispatchLocal(TeamManagerEvent.DestroyTeam, self)
+	end
+
+	-- if a voip channel exists, remove the player that left the team
+	if self.m_VoipChannel ~= nil then
+		self:RemovePlayerFromVoip(p_BrPlayer)
+
+		-- we have 1 or less players in this BRTeam, we can close the voip channel
+		if self:PlayerCount() <= 1 then
+			self:CloseVoipChannel()
+		end
 	end
 
 	return true
 end
 
+---@param p_OtherTeam BRTeam
+---@return boolean
 function BRTeam:Merge(p_OtherTeam)
 	-- check if merge is possible
 	if self:PlayerCount() + p_OtherTeam:PlayerCount() > ServerConfig.PlayersPerTeam then
@@ -120,9 +167,39 @@ function BRTeam:Merge(p_OtherTeam)
 	return true
 end
 
--- Returns the members of the team that joined using the code
--- (which means that they are party members)
+-- =============================================
+-- Voip Functions
+-- =============================================
+
+function BRTeam:CreateVoipChannel()
+	self.m_VoipChannel = Voip:CreateChannel("BRTeam_" .. tostring(self.m_Id), VoipEmitterType.Local)
+end
+
+---@param p_BrPlayer BRPlayer
+function BRTeam:AddPlayerToVoip(p_BrPlayer)
+	self.m_VoipChannel:AddPlayer(p_BrPlayer:GetPlayer())
+end
+
+---@param p_BrPlayer BRPlayer
+function BRTeam:RemovePlayerFromVoip(p_BrPlayer)
+	self.m_VoipChannel:RemovePlayer(p_BrPlayer:GetPlayer())
+end
+
+function BRTeam:CloseVoipChannel()
+	-- remove all players before closing
+	for _, l_Player in pairs(self.m_VoipChannel.players) do
+		self.m_VoipChannel:RemovePlayer(l_Player)
+	end
+
+	self.m_VoipChannel:Close()
+	self.m_VoipChannel = nil
+end
+
+---Returns the members of the team that joined using the code
+---(which means that they are party members)
+---@return table<integer, BRPlayer> @len 1-4
 function BRTeam:GetPartyMembers()
+	---@type table<integer, BRPlayer> @len 1-4
 	local s_PartyMembers = {}
 
 	for _, l_BrPlayer in pairs(self.m_Players) do
@@ -134,11 +211,14 @@ function BRTeam:GetPartyMembers()
 	return s_PartyMembers
 end
 
--- Toggles the state of the lock
+---Toggles the state of the lock
+---@param p_BrPlayer BRPlayer
 function BRTeam:ToggleLock(p_BrPlayer)
 	self:SetLock(p_BrPlayer, not self.m_Locked)
 end
 
+---@param p_BrPlayer BRPlayer
+---@param p_Value boolean
 function BRTeam:SetLock(p_BrPlayer, p_Value)
 	if self:Equals(p_BrPlayer.m_Team) and p_BrPlayer.m_IsTeamLeader then
 		self.m_Locked = p_Value
@@ -146,7 +226,9 @@ function BRTeam:SetLock(p_BrPlayer, p_Value)
 	end
 end
 
--- Applies team/squad ids to each player of the team
+---Applies team/squad ids to each player of the team
+---@param p_TeamId TeamId|integer|nil
+---@param p_SquadId SquadId|integer|nil
 function BRTeam:ApplyTeamSquadIds(p_TeamId, p_SquadId)
 	self.m_TeamId = p_TeamId or self.m_TeamId
 	self.m_SquadId = p_SquadId or self.m_SquadId
@@ -157,24 +239,27 @@ function BRTeam:ApplyTeamSquadIds(p_TeamId, p_SquadId)
 	end
 end
 
--- Checks if the team is full and has no space for more players
+---Checks if the team is full and has no space for more players
+---@return boolean
 function BRTeam:IsFull()
-	return m_MapHelper:Size(self.m_Players) >= ServerConfig.PlayersPerTeam
+	return self:PlayerCount() >= ServerConfig.PlayersPerTeam
 end
 
--- Checks if the team has any players
+---Checks if the team has any players
+---@return boolean
 function BRTeam:IsEmpty()
 	return m_MapHelper:Empty(self.m_Players)
 end
 
--- Returns the number of players of the team
+---Returns the number of players of the team
+---@return integer
 function BRTeam:PlayerCount()
 	return m_MapHelper:Size(self.m_Players)
 end
 
--- Checks if the team has any alive players
--- @param p_PlayerToIgnore (optional)
--- @param p_NotManDownCheck (optional)
+---Checks if the team has any alive players
+---@param p_PlayerToIgnore BRPlayer|nil @(optional)
+---@param p_NotManDownCheck boolean|nil @(optional)
 function BRTeam:HasAlivePlayers(p_PlayerToIgnore, p_NotManDownCheck)
 	p_NotManDownCheck = not (not p_NotManDownCheck)
 
@@ -196,7 +281,8 @@ function BRTeam:HasAlivePlayers(p_PlayerToIgnore, p_NotManDownCheck)
 	return false
 end
 
--- Returns the team leader
+---Returns the team leader
+---@return BRPlayer|nil
 function BRTeam:GetTeamLeader()
 	for _, l_BrPlayer in pairs(self.m_Players) do
 		if l_BrPlayer.m_IsTeamLeader then
@@ -207,11 +293,12 @@ function BRTeam:GetTeamLeader()
 	return nil
 end
 
--- Assigns a new team leader if the team doesn't already have one
+---Assigns a new team leader if the team doesn't already have one
+---@return BRPlayer|nil
 function BRTeam:AssignLeader()
 	-- check if there's a team leader already
 	if self:GetTeamLeader() ~= nil then
-		return
+		return nil
 	end
 
 	-- pick a player to assign as team leader
@@ -225,11 +312,12 @@ function BRTeam:AssignLeader()
 	return nil
 end
 
--- Checks if the team can be joined by id
+---Checks if the team can be joined by id
+---@return boolean
 function BRTeam:CanBeJoinedById()
 	-- if the team has only one player and no Custom team join strategy selected
 	-- then it can't be joined by id
-	if m_MapHelper:Size(self.m_Players) == 1 then
+	if self:PlayerCount() == 1 then
 		local s_BrPlayer = m_MapHelper:Item(self.m_Players)
 
 		if s_BrPlayer ~= nil and s_BrPlayer.m_TeamJoinStrategy ~= TeamJoinStrategy.Custom then
@@ -240,7 +328,8 @@ function BRTeam:CanBeJoinedById()
 	return true
 end
 
--- Sets the final placement of the team
+---Sets the final placement of the team
+---@param p_Placement integer
 function BRTeam:SetPlacement(p_Placement)
 	if self.m_Placement ~= nil and not self.m_Active then
 		return
@@ -252,6 +341,7 @@ end
 
 -- Finishes every player of the team which may be in mandown state
 -- and sends the related kill messages
+---@param p_PlayerToIgnore BRPlayer
 function BRTeam:FinishPlayers(p_PlayerToIgnore)
 	if not self.m_Active then
 		return
@@ -264,6 +354,7 @@ function BRTeam:FinishPlayers(p_PlayerToIgnore)
 	end
 end
 
+---Revives ManDown players of the winning team
 function BRTeam:RevivePlayers()
 	for _, l_BrPlayer in pairs(self.m_Players) do
 		if l_BrPlayer.m_Player ~= nil and l_BrPlayer.m_Player.soldier ~= nil and l_BrPlayer.m_Player.soldier.isInteractiveManDown then
@@ -283,6 +374,13 @@ function BRTeam:BroadcastState()
 	end
 end
 
+---@class BRTeamTable
+---@field Id string
+---@field Locked boolean
+---@field Placement integer
+---@field Players BRSimplePlayerTable[]
+
+---@return BRTeamTable
 function BRTeam:AsTable()
 	local s_Players = {}
 
@@ -307,11 +405,15 @@ function BRTeam:Reset()
 	self.m_Placement = nil
 end
 
+---@param p_OtherTeam BRTeam
+---@return boolean
 function BRTeam:Equals(p_OtherTeam)
 	return p_OtherTeam ~= nil and self.m_Id == p_OtherTeam.m_Id
 end
 
--- `==` metamethod
+---`==` metamethod
+---@param p_OtherTeam BRTeam
+---@return boolean
 function BRTeam:__eq(p_OtherTeam)
 	return self:Equals(p_OtherTeam)
 end
@@ -324,10 +426,15 @@ function BRTeam:Destroy()
 		self.m_Players[l_Name] = nil
 
 		-- move removed player to another team
-		Events:SendLocal(TeamManagerEvent.PutOnATeam, l_BrPlayer)
+		NetEvents:SendToLocal(TeamManagerEvent.PutOnATeam, l_BrPlayer)
 	end
 
 	self.m_Players = {}
+
+	-- if we have a voipchannel for this team, we want to close it
+	if self.m_VoipChannel ~= nil then
+		self:CloseVoipChannel()
+	end
 end
 
 -- Garbage collector metamethod

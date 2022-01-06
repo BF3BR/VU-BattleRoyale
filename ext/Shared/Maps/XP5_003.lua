@@ -36,7 +36,7 @@ return {
 		Vec3(-0.068781, -0.106536, 0.991927),
 		Vec3(-0.007370, 0.994309, 0.106281),
 		Vec3(98.216576, 889.539246, -815.457642)),
-	MapTopLeftPos = Vec3(1334.88, 0, 286.57),
+	MapTopLeftPos = Vec3(1334.88, 0.0, 286.57),
 	MapWidthHeight = 2500.0,
 	PlaneFlyHeight = 825.0,
 	AirdropPlaneFlyHeight = 745.0,
@@ -133,7 +133,7 @@ return {
 	),
 	LootSpawnPoints = require "__shared/Maps/XP5_003/XP5_003_LootPresets",
 	MapPreset = require "__shared/Maps/XP5_003/XP5_003_MapPreset",
-	Injected_sublevels = require "__shared/Maps/XP5_003/XP5_003_Injected_Sublevels",
+	ObjectModifications = require "__shared/Maps/XP5_003/XP5_003_ObjectModifications",
 	VEPresets = {
 		"XP5_003_Default",
 		--"XP5_003_Foggy",

@@ -1,4 +1,5 @@
-class("RegistryManager")
+---@class RegistryManager
+RegistryManager = class("RegistryManager")
 
 function RegistryManager:__init()
 	self:ResetVars()
@@ -18,10 +19,16 @@ function RegistryManager:GetRegistry()
 	return self.m_Registry
 end
 
-function RegistryManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+---VEXT Shared Level:LoadResources Event
+---@param p_LevelName string
+---@param p_GameMode string
+---@param p_IsDedicatedServer boolean
+function RegistryManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	self.m_Registry = RegistryContainer()
 end
 
+---VEXT Shared Level:RegisterEntityResources Event
+---@param p_LevelData DataContainer
 function RegistryManager:OnRegisterEntityResources(p_LevelData)
 	ResourceManager:AddRegistry(self.m_Registry, ResourceCompartment.ResourceCompartment_Game)
 	self:ResetVars()

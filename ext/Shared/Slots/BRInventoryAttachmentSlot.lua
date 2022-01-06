@@ -1,4 +1,6 @@
-class("BRInventoryAttachmentSlot", BRInventorySlot)
+---@class BRInventoryAttachmentSlot : BRInventorySlot
+---@field m_Item BRItemAttachment
+BRInventoryAttachmentSlot = class("BRInventoryAttachmentSlot", BRInventorySlot)
 
 function BRInventoryAttachmentSlot:__init(p_Inventory, p_AttachmentType)
 	BRInventorySlot.__init(self, p_Inventory, { ItemType.Attachment })
@@ -41,7 +43,7 @@ function BRInventoryAttachmentSlot:GetUnlockAsset()
 	end
 
 	-- Resolve attachment id
-	local s_AttachmentId = g_AttachmentIds.NoOptics
+	local s_AttachmentId = AttachmentIds.NoOptics
 
 	if self.m_Item ~= nil then
 		s_AttachmentId = self.m_Item.m_Definition.m_AttachmentId

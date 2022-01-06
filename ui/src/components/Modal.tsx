@@ -6,7 +6,7 @@ import "./Modal.scss";
 interface Props {
     show: boolean;
     title: string;
-    text: string;
+    text: any;
     buttons: null|Array<{ text: string, handler: () => void }>;
     dismiss: () => void;
     highlightedButtonIndex: number;
@@ -22,9 +22,7 @@ const Modal: React.FC<Props> = ({ show, title, text, buttons, dismiss, highlight
                             {title??""}
                         </div>
                         <div className="modal-body">
-                            <p>
-                                {text??""}
-                            </p>
+                            {text??""}
 
                             {buttons &&
                                 <div className="buttons">

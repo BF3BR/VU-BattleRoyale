@@ -1,7 +1,9 @@
-class "BRLootGridCell"
+---@class BRLootGridCell
+BRLootGridCell = class "BRLootGridCell"
 
 function BRLootGridCell:__init()
 	-- references to LootPickups that reside in this cell
+	---@type table<string, BRLootPickup>
 	self.m_LootPickups = {}
 
 	-- a serial version number, used to check mismatches between client/server
@@ -14,11 +16,13 @@ function BRLootGridCell:__init()
 	self.m_LastUpdated = 0
 end
 
+---@param p_LootPickup BRLootPickup
 function BRLootGridCell:AddLootPickup(p_LootPickup)
 	self.m_LootPickups[p_LootPickup.m_Id] = p_LootPickup
 	p_LootPickup.m_ParentCell = self
 end
 
+---@param p_LootPickup BRLootPickup
 function BRLootGridCell:RemoveLootPickup(p_LootPickup)
 	self.m_LootPickups[p_LootPickup.m_Id] = nil
 	p_LootPickup.m_ParentCell = nil

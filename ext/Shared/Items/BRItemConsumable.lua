@@ -1,8 +1,19 @@
+---@module "Items/Definitions/BRItemConsumableDefinition"
+---@type table<string, BRItemConsumableDefinition>
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
+
 local m_Logger = Logger("BRItemConsumable", true)
 
-class("BRItemConsumable", BRItem)
+---@class BRItemConsumable : BRItem
+---@field m_Definition BRItemConsumableDefinition
+BRItemConsumable = class("BRItemConsumable", BRItem)
 
+---Creates a new BRItemConsumable
+---@param p_Id string @It is a tostring(Guid)
+---@param p_Definition BRItemConsumableDefinition
+---@param p_Quantity integer
 function BRItemConsumable:__init(p_Id, p_Definition, p_Quantity)
 	BRItem.__init(self, p_Id, p_Definition, p_Quantity)
 
@@ -25,7 +36,7 @@ function BRItemConsumable:Use()
 	end
 
 	-- start timer for the action
-	self.m_Timer = g_Timers:Timeout(self.m_Definition.m_TimeToApply, self, self.OnComplete)
+	self.m_Timer = m_TimerManager:Timeout(self.m_Definition.m_TimeToApply, self, self.OnComplete)
 
 	-- start listening to update event
 	self:SubscribeToEngineUpdates()

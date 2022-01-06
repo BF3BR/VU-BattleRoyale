@@ -1,10 +1,22 @@
+---@module "Items/Definitions/BRItemWeaponDefinition"
+---@type table<string, BRItemWeaponDefinition>
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
-class("BRItemAttachmentDefinition", BRItemDefinition)
+---@class BRItemAttachmentDefinition : BRItemDefinition
+BRItemAttachmentDefinition = class("BRItemAttachmentDefinition", BRItemDefinition)
 
+---@class BRItemAmmoDefinitionOptions : BRItemDefinitionOptions
+---@field AttachmentType AttachmentType|integer
+---@field AttachmentId AttachmentIds|integer
+
+---Creates a new BRItemAttachmentDefinition
+---@param p_UId string
+---@param p_Name string
+---@param p_Options BRItemAmmoDefinitionOptions
 function BRItemAttachmentDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}
 
+	---@type ItemType|integer
 	p_Options.Type = ItemType.Attachment
 	p_Options.Stackable = false
 	p_Options.MaxStack = nil
@@ -15,7 +27,7 @@ function BRItemAttachmentDefinition:__init(p_UId, p_Name, p_Options)
 
 	-- A list of weapon definitions from BRItemWeaponDefinition
 	self.m_AttachmentType = p_Options.AttachmentType
-	self.m_AttachmentId = p_Options.AttachmentId -- TODO: Rename this lol
+	self.m_AttachmentId = p_Options.AttachmentId
 end
 
 return {
@@ -29,13 +41,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/acog",
 			Mesh = MeshModel(DC(Guid("D01B86C8-5176-E446-85CB-DE8871DAC528"), Guid("D7875B6B-37F1-4C5D-60CD-273DDA3E553F"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0.015, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.015, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.Acog
+			AttachmentId = AttachmentIds.Acog
 		}
 	),
 	["attachment-kobra"] = BRItemAttachmentDefinition(
@@ -47,13 +59,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/kobra",
 			Mesh = MeshModel(DC(Guid("7F9582C2-34AB-784F-247C-CB482DCF8341"), Guid("67F59CFE-BFF4-1D03-0BD1-8F934C07817C"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.Kobra,
+			AttachmentId = AttachmentIds.Kobra,
 		}
 	),
 	["attachment-holo"] = BRItemAttachmentDefinition(
@@ -65,13 +77,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/eotech",
 			Mesh = MeshModel(DC(Guid("08C0F778-5BC7-910E-DFC5-B34684E9CDD4"), Guid("A4F63AF4-5325-B959-1F9C-1A9AB32A5FB7"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0.02, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.02, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.EOTech
+			AttachmentId = AttachmentIds.EOTech
 		}
 	),
 	["attachment-pka"] = BRItemAttachmentDefinition(
@@ -83,13 +95,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/pka",
 			Mesh = MeshModel(DC(Guid("46360BC0-6E46-C9EA-A066-496A15BE0C70"), Guid("62B277C3-D1BD-3315-DBDB-B4240BBC06E7"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.PKA
+			AttachmentId = AttachmentIds.PKA
 		}
 	),
 	["attachment-pka-s"] = BRItemAttachmentDefinition(
@@ -101,13 +113,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/pkas",
 			Mesh = MeshModel(DC(Guid("682809CF-A863-B0C4-0D30-99DFEBF0976A"), Guid("F7FFA7D6-B910-947A-3CA6-1F2127FAE4B1"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0.015, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.015, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.PK_AS
+			AttachmentId = AttachmentIds.PK_AS
 		}
 	),
 	["attachment-riflescope"] = BRItemAttachmentDefinition(
@@ -119,13 +131,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/riflescope",
 			Mesh = MeshModel(DC(Guid("F8FCC3C3-C08F-E042-7208-671C0C8F66CD"), Guid("B0003C9E-6A96-BAB2-32D9-BB2287FFA784"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.RifleScope
+			AttachmentId = AttachmentIds.RifleScope
 		}
 	),
 	["attachment-m145"] = BRItemAttachmentDefinition(
@@ -137,13 +149,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/m145",
 			Mesh = MeshModel(DC(Guid("3BF51470-8834-0750-5F3D-A2E6F3EEBF70"), Guid("9B58604F-12F4-4000-BC7C-7AE50AD47723"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0.05, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.05, 0.0)
 			),
 			AttachmentType = AttachmentType.Optics,
-			AttachmentId = g_AttachmentIds.M145
+			AttachmentId = AttachmentIds.M145
 		}
 	),
 
@@ -157,13 +169,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/soundsuppressor",
 			Mesh = MeshModel(DC(Guid("0B08EAEF-553D-CAD3-D7A4-CA770735FFFA"), Guid("F8FC2931-D0E1-3102-5FD0-E474B9CAAB66"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0.015, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.015, 0.0)
 			),
 			AttachmentType = AttachmentType.Barrel,
-			AttachmentId = g_AttachmentIds.Silencer
+			AttachmentId = AttachmentIds.Silencer
 		}
 	),
 	["attachment-flash-suppressor"] = BRItemAttachmentDefinition(
@@ -175,13 +187,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/flashsuppressor",
 			Mesh = MeshModel(DC(Guid("E36E22DC-F8F5-E5F0-D862-691121A05443"), Guid("5931AD6C-9A8D-60B0-7D0B-93C3AFB45796"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Barrel,
-			AttachmentId = g_AttachmentIds.FlashSuppressor
+			AttachmentId = AttachmentIds.FlashSuppressor
 		}
 	),
 	["attachment-heavy-barrel"] = BRItemAttachmentDefinition(
@@ -193,13 +205,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/heavybarrel",
 			Mesh = MeshModel(DC(Guid("0B08EAEF-553D-CAD3-D7A4-CA770735FFFA"), Guid("F8FC2931-D0E1-3102-5FD0-E474B9CAAB66"))), -- TODO FIXME
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			AttachmentType = AttachmentType.Barrel,
-			AttachmentId = g_AttachmentIds.HeavyBarrel
+			AttachmentId = AttachmentIds.HeavyBarrel
 		}
 	),
 
@@ -213,13 +225,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/foregrip",
 			Mesh = SkeletonMeshModel(DC(Guid("3B289843-61BF-474E-531F-F6455B30BBA3"), Guid("D0D95F60-F122-3EBC-2209-035C31682DD3")), 0, 25),
 			Transform = LinearTransform(
-				Vec3(2, 0, 0),
-				Vec3(0, 2, 0),
-				Vec3(0, 0, 2),
-				Vec3(0, 0.125, -1.75)
+				Vec3(2.0, 0.0, 0.0),
+				Vec3(0.0, 2.0, 0.0),
+				Vec3(0.0, 0.0, 2.0),
+				Vec3(0.0, 0.125, -1.75)
 			),
 			AttachmentType = AttachmentType.Other,
-			AttachmentId = g_AttachmentIds.Foregrip
+			AttachmentId = AttachmentIds.Foregrip
 		}
 	),
 	["attachment-bipod"] = BRItemAttachmentDefinition(
@@ -231,13 +243,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/bipod",
 			Mesh = SkeletonMeshModel(DC(Guid("2A369740-376F-F1C9-0383-E76281D0AEA0"), Guid("4188AE85-5BE0-5EF1-B60B-B280899C7495")), 0, 25),
 			Transform = LinearTransform(
-				Vec3(1.55, 0, 0),
-				Vec3(0, 1.55, 0),
-				Vec3(0, 0, 1.55),
+				Vec3(1.55, 0.0, 0.0),
+				Vec3(0.0, 1.55, 0.0),
+				Vec3(0.0, 0.0, 1.55),
 				Vec3(0.05, 0.125, -1.15)
 			),
 			AttachmentType = AttachmentType.Other,
-			AttachmentId = g_AttachmentIds.Bipod
+			AttachmentId = AttachmentIds.Bipod
 		}
 	),
 	["attachment-laser-sight"] = BRItemAttachmentDefinition(
@@ -249,13 +261,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/targetpointer",
 			Mesh = MeshModel(DC(Guid("FA265FB2-DE37-7A01-7EFB-71CBB1CE98DF"), Guid("3BB386D3-9655-556B-CBE1-773BDD3E4A9C"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0.2, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.2, 0.0)
 			),
 			AttachmentType = AttachmentType.Other,
-			AttachmentId = g_AttachmentIds.TargetPointer
+			AttachmentId = AttachmentIds.TargetPointer
 		}
 	),
 	["attachment-flashlight"] = BRItemAttachmentDefinition(
@@ -267,13 +279,13 @@ return {
 			UIIcon = "UI/Art/Persistence/WeaponAccessory/Fancy/flashlight",
 			Mesh = MeshModel(DC(Guid("D4D4A69A-A7A0-0AEC-3962-579188852BE7"), Guid("4A244D6B-31BF-4C74-8870-77170B844046"))),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0.05, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.05, 0.0)
 			),
 			AttachmentType = AttachmentType.Other,
-			AttachmentId = g_AttachmentIds.Flashlight
+			AttachmentId = AttachmentIds.Flashlight
 		}
 	),
 }

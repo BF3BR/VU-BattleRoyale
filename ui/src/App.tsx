@@ -44,6 +44,8 @@ import {
 } from "./store/circle/Actions";
 import {
     resetTeam,
+    updateMuting,
+    updateSpeaking,
     updateTeam
 } from "./store/team/Actions";
 import {
@@ -453,7 +455,7 @@ const App: React.FC<Props> = ({
                 tempTeam.push({
                     name: teamPlayer.Name,
                     state: teamPlayer.State,
-                    kill: 0,
+                    kill: teamPlayer.Kill ?? 0,
                     isTeamLeader: teamPlayer.IsTeamLeader,
                     color: teamPlayer.Color,
                     position: {
@@ -489,7 +491,7 @@ const App: React.FC<Props> = ({
             name: "Test 1",
             state: 1,
             kill: 0,
-            isTeamLeader: false,
+            isTeamLeader: Math.random() < 0.5,
             color: "rgba(255, 187, 86, 0.3)",
             position: {
                 x: 522.175720,
@@ -499,12 +501,14 @@ const App: React.FC<Props> = ({
             yaw: 60,
             health: Math.random() * 100,
             posInSquad: 4,
+            isSpeaking: Math.floor(Math.random() * 3),
+            isMuted: Math.random() < 0.5,
         });
         tempTeam.push({
             name: "Test 2",
             state: 1,
             kill: 0,
-            isTeamLeader: false,
+            isTeamLeader: Math.random() < 0.5,
             color: "rgba(158, 197, 85, 0.3)",
             position: {
                 x: 521.175720,
@@ -514,12 +518,14 @@ const App: React.FC<Props> = ({
             yaw: 110,
             health: Math.random() * 100,
             posInSquad: 3,
+            isSpeaking: Math.floor(Math.random() * 3),
+            isMuted: Math.random() < 0.5,
         });
         tempTeam.push({
             name: "Test",
             state: 2,
             kill: 0,
-            isTeamLeader: false,
+            isTeamLeader: Math.random() < 0.5,
             color: "rgba(0, 205, 243, 0.3)",
             position: {
                 x: 585.175720,
@@ -529,12 +535,14 @@ const App: React.FC<Props> = ({
             yaw: 30,
             health: Math.random() * 100,
             posInSquad: 1,
+            isSpeaking: Math.floor(Math.random() * 3),
+            isMuted: Math.random() < 0.5,
         });
         tempTeam.push({
             name: "Test 3",
             state: 2,
             kill: 0,
-            isTeamLeader: false,
+            isTeamLeader: Math.random() < 0.5,
             color: "rgba(255, 159, 128, 0.3)",
             position: {
                 x: 422.175720,
@@ -544,6 +552,8 @@ const App: React.FC<Props> = ({
             yaw: 10,
             health: Math.random() * 100,
             posInSquad: 2,
+            isSpeaking: Math.floor(Math.random() * 3),
+            isMuted: Math.random() < 0.5,
         });
         dispatch(updateTeam(tempTeam));
     }
@@ -626,8 +636,10 @@ const App: React.FC<Props> = ({
 
     const [isInventoryOpen, setIsInventoryOpen] = useState<boolean>(false);
     window.OnInventoryOpen = (p_Open: boolean) => {
-        PlaySound(Sounds.Navigate);
-        setIsInventoryOpen(p_Open);
+        if (isInventoryOpen !== p_Open) {
+            PlaySound(Sounds.Navigate);
+            setIsInventoryOpen(p_Open);
+        }
     }
 
     window.SyncInventory = (p_DataJson: any) => {
@@ -704,6 +716,14 @@ const App: React.FC<Props> = ({
         if (window.gc) {
             window.gc();
         }
+    }
+
+    window.VoipEmitterEmitting = (playerName: string, isSpeaking: boolean, isParty: boolean) => {
+        dispatch(updateSpeaking(playerName, isSpeaking, isParty));
+    }
+
+    window.VoipPlayerMuted = (playerName: string, isMuted: boolean) => {
+        dispatch(updateMuting(playerName, isMuted));
     }
 
     return (
@@ -932,5 +952,7 @@ declare global {
         ResetAllValues: () => void;
         OnAirdropDropped: () => void;
         gc: () => void;
+        VoipEmitterEmitting: (playerName: string, isSpeaking: boolean, isParty: boolean) => void;
+        VoipPlayerMuted: (playerName: string, isMuted: boolean) => void;
     }
 }

@@ -1,4 +1,5 @@
-class "VanillaUIModifier"
+---@class VanillaUIModifier
+VanillaUIModifier = class "VanillaUIModifier"
 
 local m_Logger = Logger("VanillaUIModifier", true)
 local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
@@ -6,10 +7,10 @@ local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
 local m_HudScreenAsset = DC(Guid("D05E6145-8816-11DF-AA1B-BA7094D44A63"), Guid("E63B81E3-67FA-F6C3-2980-D899055DAB0C"))
 local m_HudMpScreenAsset = DC(Guid("3343E3E3-F3C4-11DF-90D5-D8126D045289"), Guid("241F5AE9-2027-508E-98D1-506928AA1E3A"))
 local m_HudConquestScreenAsset = DC(Guid("0C14516A-02F0-4A81-B88B-6010A6A6DDC6"), Guid("2A2B8447-C938-407A-951A-C3BA099F0374"))
-local m_MPMenuScreenAsset = DC(Guid('993445AF-2476-11E0-834E-C984E80F7234'), Guid('5FE2571D-D0AD-CF75-3CB6-43A43AFC0E8B'))
+--local m_MPMenuScreenAsset = DC(Guid("993445AF-2476-11E0-834E-C984E80F7234"), Guid("5FE2571D-D0AD-CF75-3CB6-43A43AFC0E8B"))
 
-local m_UINametagCompData = DC(Guid('2E84F3D0-8DB2-11DF-9DBF-90F9B54D8E77'), Guid('1061D316-4366-BCA2-27D6-50D43543A41D '))
-local m_UISquadCompData = DC(Guid('88DECC5B-43E8-11E0-A213-8C5E94EEBB5D'), Guid('538F9596-5BED-84BC-92E6-99595A9A69E5 '))
+local m_UINametagCompData = DC(Guid("2E84F3D0-8DB2-11DF-9DBF-90F9B54D8E77"), Guid("1061D316-4366-BCA2-27D6-50D43543A41D"))
+--local m_UISquadCompData = DC(Guid("88DECC5B-43E8-11E0-A213-8C5E94EEBB5D"), Guid("538F9596-5BED-84BC-92E6-99595A9A69E5"))
 local m_UITrackingtagCompData = DC(Guid("EEA59917-3FF2-11E0-B6B0-A41634C402A3"), Guid("70998786-14D8-2E5A-CB44-F4C2DA29EE29"))
 local m_UI3dIconCompData = DC(Guid("F9331953-F3F2-11DF-BAF2-BDEFE75B56CA"), Guid("08FB6671-269A-2006-B8E1-AD901370C589"))
 local m_CapturepointtagCompData = DC(Guid("37281D8D-BB5A-11DF-B69D-B42F116347F5"), Guid("DD387B90-E2E8-1408-A934-9ADEC54F54B1"))
@@ -21,7 +22,7 @@ local m_ColorCorrectionCompData = DC(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"
 local m_DofComponentData = DC(Guid("3A3E5533-4B2A-11E0-A20D-FE03F1AD0E2F"), Guid("52FD86B6-00BA-45FC-A87A-683F72CA6916"))
 local m_ShowRoomCameraData = DC(Guid("08F255D1-499D-4090-B114-4CE8D1B3AC65"), Guid("528655FC-2653-4D5B-B55D-E6CBF997FC19"))
 
-local m_IconTextureAtlas = DC(Guid('187A8BC1-B761-11E0-B02E-AE94D7595F06'), Guid('FDD01ACB-50A9-BA73-DD3A-849BE7E30144'))
+local m_IconTextureAtlas = DC(Guid("187A8BC1-B761-11E0-B02E-AE94D7595F06"), Guid("FDD01ACB-50A9-BA73-DD3A-849BE7E30144"))
 
 local m_WidgetIndexes = {
 	itemList = 1,
@@ -84,8 +85,8 @@ function VanillaUIModifier:DeregisterCallbacks()
 
 	m_IconTextureAtlas:Deregister()
 
-	m_MPMenuScreenAsset:Deregister()
-	m_UISquadCompData:Deregister()
+	--m_MPMenuScreenAsset:Deregister()
+	--m_UISquadCompData:Deregister()
 end
 
 function VanillaUIModifier:OnHudScreen(p_ScreenAsset)

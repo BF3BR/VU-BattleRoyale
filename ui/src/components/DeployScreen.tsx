@@ -65,6 +65,7 @@ interface StateFromReducer {
     teamSize: number;
     teamOpen: boolean;
     isTeamLeader: boolean;
+    localPlayerName: string;
     teamCode: string|null;
     teamJoinError: number|null;
     selectedAppearance: number;
@@ -79,7 +80,8 @@ const DeployScreen: React.FC<Props> = ({
     team, 
     teamSize, 
     teamOpen, 
-    isTeamLeader, 
+    isTeamLeader,
+    localPlayerName,
     teamCode, 
     teamJoinError, 
     setTeamJoinError,
@@ -160,6 +162,13 @@ const DeployScreen: React.FC<Props> = ({
 
     const OnLeaveTeam = () => {
         OnChangeTeamType(1);
+    }
+
+    const OnMute = (player: Player) => {
+        sendToLua('WebUI:VoipMutePlayer', JSON.stringify({
+            playerName: player.name,
+            mute: typeof player.isMuted === "boolean" ? !player.isMuted : true,
+        }));
     }
 
     const items = []
@@ -246,10 +255,21 @@ const DeployScreen: React.FC<Props> = ({
                                         <div className={"TeamPlayer"} key={index}>
                                             <div className="TeamPlayerName">
                                                 <div className="circle" style={{ background: rgbaToRgb(player.color), boxShadow: "0 0 0.5vw " + rgbaToRgb(player.color) }}></div>
-                                                <span>{player.name??''}</span>
+                                                <span>
+                                                    {player.name??''}
+                                                    {player.isTeamLeader &&
+                                                        <span className="teamLeader">[LEADER]</span>
+                                                    }
+                                                </span>
                                             </div>
-                                            {player.isTeamLeader &&
-                                                <span className="teamLeader">[LEADER]</span>
+                                            {player.name !== localPlayerName &&                                            
+                                                <button className="btn btn-small" onClick={() => OnMute(player)}>
+                                                    {player.isMuted ?
+                                                        "Unmute"
+                                                    :
+                                                        "Mute"
+                                                    }
+                                                </button>
                                             }
                                         </div>
                                     ))}
@@ -353,7 +373,7 @@ const DeployScreen: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => {
     return {
-        // PlayerReducer
+        // TeamReducer
         team: state.TeamReducer.players,
         // GameReducer
         teamSize: state.GameReducer.deployScreen.teamSize,
@@ -366,6 +386,7 @@ const mapStateToProps = (state: RootState) => {
         isTeamLeader: state.PlayerReducer.player.isTeamLeader ?? false,
         // GameReducer
         deployScreen: state.GameReducer.deployScreen.enabled,
+        localPlayerName: state.PlayerReducer.player.name ?? "",
     };
 }
 const mapDispatchToProps = (dispatch: any) => {

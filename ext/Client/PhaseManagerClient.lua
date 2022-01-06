@@ -1,11 +1,17 @@
-class("PhaseManagerClient", PhaseManagerShared)
+---@class PhaseManagerClient : PhaseManagerShared
+PhaseManagerClient = class("PhaseManagerClient", PhaseManagerShared)
 
+---@type OOCVision
 local m_OOCVision = require "Visuals/OOCVision"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 
 function PhaseManagerClient:RegisterVars()
 	PhaseManagerShared.RegisterVars(self)
 
+	---@type RenderableCircle
 	self.m_InnerCircle = RenderableCircle()
+	---@type RenderableCircle
 	self.m_OuterCircle = RenderableCircle()
 
 	-- we want to get the state only once
@@ -16,12 +22,16 @@ end
 -- Events
 -- =============================================
 
+---VEXT Client Level:Loaded Event
 function PhaseManagerClient:OnLevelLoaded()
 	PhaseManagerShared.OnLevelLoaded(self)
 
 	self:RequestInitialState()
 end
 
+---Called from VEXT UpdateManager:Update
+---UpdatePass.UpdatePass_PreSim
+---@param p_DeltaTime number
 function PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 	if self:IsIdle() then
 		return
@@ -48,7 +58,9 @@ function PhaseManagerClient:OnUpdatePassPreSim(p_DeltaTime)
 	end
 end
 
--- Renders the two circles
+-- Renders the two circles.
+---Called from VEXT UpdateManager:Update
+---UpdatePass.UpdatePass_PreFrame
 function PhaseManagerClient:OnUIDrawHud()
 	if self:IsIdle() then
 		return
@@ -61,9 +73,9 @@ function PhaseManagerClient:OnUIDrawHud()
 	end
 
 	-- render circles
-	self.m_OuterCircle:Render(OuterCircleRenderer, s_PlayerPos)
+	self.m_OuterCircle:Render()
 	if CircleConfig.RenderInnerCircle and not self.m_Completed then
-		self.m_InnerCircle:Render(InnerCircleRenderer, s_PlayerPos)
+		self.m_InnerCircle:Render()
 	end
 end
 
@@ -71,7 +83,9 @@ end
 -- Custom (Net-) Events
 -- =============================================
 
--- Updates the state of the PhaseManager from the server
+-- Updates the state of the PhaseManager from the server.
+---Custom Client PhaseManagerNetEvent.UpdateState NetEvent
+---@param p_State table
 function PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
 	-- destroy moving circle update timer
 	self:RemoveTimer("MovingCircle")
@@ -87,7 +101,7 @@ function PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
 		-- start moving the outer circle
 		self.m_PrevOuterCircle = Circle(self.m_OuterCircle.m_Center, self.m_OuterCircle.m_Radius)
 		self:SetTimer("MovingCircle",
-					g_Timers:Sequence(CircleConfig.ClientUpdateMs,
+					m_TimerManager:Sequence(CircleConfig.ClientUpdateMs,
 										math.floor(p_State.Duration / CircleConfig.ClientUpdateMs) + 1, self,
 										self.MoveOuterCircle))
 	end
@@ -117,7 +131,8 @@ function PhaseManagerClient:RequestInitialState()
 	end
 end
 
--- Returns the position of the local or the spectated player
+---Returns the position of the local or the spectated player
+---@return Vec3|nil
 function PhaseManagerClient:GetActivePlayerPosition()
 	local s_Player = PlayerManager:GetLocalPlayer()
 

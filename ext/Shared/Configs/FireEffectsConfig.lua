@@ -1,3 +1,4 @@
+---@class FireEffectsConfig
 FireEffectsConfig = {
 	Effects = {
 		DC(Guid("9798695A-DA55-46E4-9CAF-C9E393B43EC1"), Guid("392D298D-CD2D-498F-AF2E-2C2F5B2AF137")),

@@ -1,12 +1,20 @@
-class "VuBattleRoyaleHud"
+---@class VuBattleRoyaleHud
+VuBattleRoyaleHud = class "VuBattleRoyaleHud"
 
+---@type EscMenu
 local m_EscMenu = require "UI/EscMenu"
+---@type DeployScreen
 local m_DeployScreen = require "UI/DeployScreen"
+---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
+---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 local m_Logger = Logger("VuBattleRoyaleHud", true)
 
 function VuBattleRoyaleHud:__init()
+	---@type GameStates|integer
 	self.m_GameState = GameStates.None
 	self.m_Ticks = 0.0
 	self.m_IsPlayerOnPlane = false
@@ -15,8 +23,10 @@ function VuBattleRoyaleHud:__init()
 
 	self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
 
+	---@type table<integer, table>
 	self.m_Markers = {}
 
+	---@type table<string, integer>
 	self.m_ManDownMapMarkers = {}
 
 	self.m_ShowInteractiveReviveMessage = false
@@ -90,11 +100,13 @@ end
 -- Events
 -- =============================================
 
+---VEXT Shared Extension:Loaded Event
 function VuBattleRoyaleHud:OnExtensionLoaded()
 	WebUI:Init()
 	WebUI:Show()
 end
 
+---VEXT Shared Extension:Unloading Event
 function VuBattleRoyaleHud:OnExtensionUnloading()
 	self.m_IsLevelLoaded = false
 	m_HudUtils:SetIsMapOpened(false)
@@ -102,11 +114,13 @@ function VuBattleRoyaleHud:OnExtensionUnloading()
 	self.m_HudOnSetUIState:Update(UiStates.Hidden)
 end
 
+---VEXT Client Level:Loaded Event
 function VuBattleRoyaleHud:OnLevelLoaded()
 	m_DeployScreen:OnLevelLoaded()
-	g_Timers:Timeout(5, function() self:OnLevelFinalized() end)
+	m_TimerManager:Timeout(5.0, function() self:OnLevelFinalized() end)
 end
 
+---VEXT Shared Level:Destroy Event
 function VuBattleRoyaleHud:OnLevelDestroy()
 	self.m_IsLevelLoaded = false
 	m_HudUtils:SetIsMapOpened(false)
@@ -114,6 +128,7 @@ function VuBattleRoyaleHud:OnLevelDestroy()
 	self.m_HudOnSetUIState:Update(UiStates.Loading)
 end
 
+---VEXT Shared Engine:Update Event
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 	if not self.m_IsLevelLoaded then
 		return
@@ -130,6 +145,8 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 	self.m_Ticks = self.m_Ticks + p_DeltaTime
 end
 
+---Called from VEXT UpdateManager:Update
+---UpdatePass.UpdatePass_PreFrame
 function VuBattleRoyaleHud:OnUIDrawHud()
 	if not self.m_IsLevelLoaded then
 		return
@@ -144,6 +161,8 @@ function VuBattleRoyaleHud:OnUIDrawHud()
 	self:OnUpdateTeamData()
 end
 
+
+---VEXT Client Client:UpdateInput Event
 function VuBattleRoyaleHud:OnClientUpdateInput()
 	if not self.m_IsLevelLoaded then
 		return
@@ -178,6 +197,8 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 	m_EscMenu:OnClientUpdateInput()
 end
 
+---VEXT Client Player:Respawn Event
+---@param p_Player Player
 function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
@@ -188,7 +209,7 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	WebUI:ExecuteJS("OnMapShow(true);")
 	self:PushLocalPlayerPos()
 	self:PushLocalPlayerYaw()
-	g_Timers:Timeout(0.75, function()
+	m_TimerManager:Timeout(0.75, function()
 		m_HudUtils:ShowCrosshair(true)
 	end)
 
@@ -199,6 +220,9 @@ function VuBattleRoyaleHud:OnPlayerRespawn(p_Player)
 	self:RegisterSoldierInteractionCallbacks(p_Player.soldier)
 end
 
+---VEXT Client Soldier:HealthAction Event
+---@param p_Soldier SoldierEntity
+---@param p_Action HealthStateAction|integer
 function VuBattleRoyaleHud:OnSoldierHealthAction(p_Soldier, p_Action)
 	if p_Soldier.teamId ~= TeamId.Team1 then
 		-- on the client all mates are in Team1
@@ -208,13 +232,14 @@ function VuBattleRoyaleHud:OnSoldierHealthAction(p_Soldier, p_Action)
 	if p_Action == HealthStateAction.OnInteractiveManDown and p_Soldier.player ~= nil then
 		m_Logger:Write("HealthStateAction OnInteractiveManDown for player: " .. p_Soldier.player.name)
 		local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+		---@type SpatialEntity
 		local s_Entity = s_EntityIterator:Next()
 
 		while s_Entity do
 			s_Entity = SpatialEntity(s_Entity)
 			local s_MapMarkerEntityData = MapMarkerEntityData(s_Entity.data)
 
-			if s_MapMarkerEntityData.sid == "ID_H_MAP_PREFABS_REVIVE_ME" and s_Entity.transform.trans == Vec3(-9999, -9999, -9999) then
+			if s_MapMarkerEntityData.sid == "ID_H_MAP_PREFABS_REVIVE_ME" and s_Entity.transform.trans == Vec3(-9999.0, -9999.0, -9999.0) then
 				m_Logger:Write("MapMarkerEntity found - changing transform")
 				self.m_ManDownMapMarkers[p_Soldier.player.name] = s_Entity.instanceId
 				break
@@ -233,6 +258,8 @@ end
 	-- PlayerKilled Event
 -- =============================================
 
+---Custom Client ServerPlayer:Killed NetEvent
+---@param p_PlayerName string
 function VuBattleRoyaleHud:OnPlayerKilled(p_PlayerName)
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
@@ -279,6 +306,8 @@ function VuBattleRoyaleHud:OnPlayerKilled(p_PlayerName)
 	end
 end
 
+---Custom Client Player:BrokeShield NetEvent
+---@param p_PlayerName string
 function VuBattleRoyaleHud:OnPlayerBrokeShield(p_PlayerName)
 	WebUI:ExecuteJS("OnShieldBreak();")
 end
@@ -287,11 +316,9 @@ end
 	-- GameState Events
 -- =============================================
 
+---Custom Client PlayerEvents.GameStateChanged NetEvent
+---@param p_GameState GameStates|integer
 function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
-	if p_GameState == nil then
-		return
-	end
-
 	if self.m_GameState == p_GameState then
 		return
 	end
@@ -325,6 +352,9 @@ function VuBattleRoyaleHud:OnGameStateChanged(p_GameState)
 	self.m_HudOnGameState:Update(GameStatesStrings[p_GameState])
 end
 
+---Custom Client PlayerEvents.WinnerTeamUpdate NetEvent
+---@param p_IsWin boolean
+---@param p_Team table
 function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin, p_Team)
 	self.m_HudOnGameOverScreen:ForceUpdate(json.encode({
 		["isWin"] = p_IsWin,
@@ -332,31 +362,18 @@ function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin, p_Team)
 	}))
 end
 
-function VuBattleRoyaleHud:OnUpdatePlacement()
-	if m_BrPlayer.m_Team.m_Placement == nil then
-		return
-	end
-
-	self.m_HudOnUpdatePlacement:Update(m_BrPlayer.m_Team.m_Placement)
-end
-
-function VuBattleRoyaleHud:OnUpdateTeamData()
-	if m_BrPlayer.m_Team == nil then
-		return
-	end
-
-	self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
-	self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
-end
-
 -- =============================================
 	-- PhaseManager Events
 -- =============================================
 
+---Custom Client PhaseManagerEvent.Update Event
+---@param p_Data table
 function VuBattleRoyaleHud:OnPhaseManagerUpdate(p_Data)
 	self.m_HudOnUpdateCircles:Update(json.encode(p_Data))
 end
 
+---Custom Client PhaseManagerEvent.CircleMove Event
+---@param p_OuterCircle table
 function VuBattleRoyaleHud:OnOuterCircleMove(p_OuterCircle)
 	self.m_HudOnUpdateCircles:Update(json.encode({OuterCircle = p_OuterCircle}))
 end
@@ -365,23 +382,28 @@ end
 	-- Gunship Events
 -- =============================================
 
+---Custom Client GunshipEvents.Enable NetEvent
 function VuBattleRoyaleHud:OnGunshipEnable()
 	WebUI:ExecuteJS("OnMapShow(true);") -- Just to be sure
 	self.m_HudOnPlayerIsOnPlane:Update(true)
 	self.m_IsPlayerOnPlane = true
 end
 
+---Custom Client GunshipEvents.Disable NetEvent
 function VuBattleRoyaleHud:OnGunshipDisable()
 	self.m_HudOnPlanePos:Update(nil)
 	self.m_HudOnPlaneYaw:Update(nil)
 end
 
+---Custom Client GunshipEvents.JumpOut NetEvent
 function VuBattleRoyaleHud:OnJumpOutOfGunship()
 	WebUI:ExecuteJS("OnMapShow(true);") -- Just to be sure
 	self.m_HudOnPlayerIsOnPlane:Update(false)
 	self.m_IsPlayerOnPlane = false
 end
 
+---Called from GunshipClient
+---@param p_Trans LinearTransform|nil
 function VuBattleRoyaleHud:OnGunshipPosition(p_Trans)
 	if p_Trans == nil then
 		self.m_HudOnPlanePos:Update(nil)
@@ -401,16 +423,20 @@ function VuBattleRoyaleHud:OnGunshipPosition(p_Trans)
 	self.m_HudOnPlanePos:Update(json.encode(s_Table))
 end
 
+---Called from GunshipClient
+---@param p_Trans LinearTransform|nil
 function VuBattleRoyaleHud:OnGunshipYaw(p_Trans)
 	if p_Trans == nil then
 		self.m_HudOnPlaneYaw:Update(nil)
 		return
 	end
 
+	---@type number
 	local s_YawRad = (math.atan(p_Trans.forward.z, p_Trans.forward.x) - (math.pi / 2)) % (2 * math.pi)
 	self.m_HudOnPlaneYaw:Update(math.floor((180 / math.pi) * s_YawRad))
 end
 
+---@param p_YawRad number
 function VuBattleRoyaleHud:OnGunshipPlayerYaw(p_YawRad)
 	local s_YawRad = p_YawRad % (2 * math.pi)
 	self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad) + 90)
@@ -420,10 +446,15 @@ end
 	-- Some more Events
 -- =============================================
 
+---Custom Client PlayerEvents.UpdateTimer NetEvent
+---@param p_Time number|nil
 function VuBattleRoyaleHud:OnUpdateTimer(p_Time)
 	self.m_HudOnUpdateTimer:Update(math.floor(p_Time))
 end
 
+---Called from OnDamageConfirmPlayerDown or OnDamageConfirmPlayerKill in client init
+---@param p_VictimName string
+---@param p_IsKill boolean
 function VuBattleRoyaleHud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
 	if p_VictimName == nil or p_IsKill == nil then
 		return
@@ -436,6 +467,8 @@ function VuBattleRoyaleHud:OnDamageConfirmPlayerKill(p_VictimName, p_IsKill)
 	}))
 end
 
+---Custom Client TeamManagerNetEvent.TeamJoinDenied NetEvent
+---@param p_Error TeamManagerErrors|integer
 function VuBattleRoyaleHud:OnTeamJoinDenied(p_Error)
 	if p_Error == nil then
 		return
@@ -448,6 +481,10 @@ end
 -- Hooks
 -- =============================================
 
+---VEXT Client UI:InputConceptEvent Hook
+---@param p_HookCtx HookContext
+---@param p_EventType UIInputActionEventType|integer
+---@param p_Action UIInputAction|integer
 function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_EventType ~= UIInputActionEventType.UIInputActionEventType_Pressed then
 		return
@@ -522,9 +559,10 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	end
 end
 
-function VuBattleRoyaleHud:OnUIPushScreen(p_HookCtx, p_Screen, p_GraphPriority, p_ParentGraph)
-	p_Screen = Asset(p_Screen)
-
+---VEXT Client UI:PushScreen Hook
+---@param p_HookCtx HookContext
+---@param p_Screen Asset
+function VuBattleRoyaleHud:OnUIPushScreen(p_HookCtx, p_Screen)
 	if p_Screen.name == "UI/Flow/Screen/SpawnScreenPC"
 	or p_Screen.name == "UI/Flow/Screen/SpawnScreenTicketCounterConquestScreen"
 	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen"
@@ -540,6 +578,8 @@ end
 -- WebUI Events
 -- =============================================
 
+---Custom Client WebUI:Deploy WebUI Event
+---@param p_AppearanceName string
 function VuBattleRoyaleHud:OnWebUIDeploy(p_AppearanceName)
 	m_DeployScreen:CloseDeployScreen()
 
@@ -556,6 +596,9 @@ function VuBattleRoyaleHud:OnWebUIDeploy(p_AppearanceName)
 	NetEvents:Send(PlayerEvents.PlayerDeploy, p_AppearanceName)
 end
 
+-- TODO: switch to enum
+---Custom Client WebUI:TriggerMenuFunction WebUI Event
+---@param p_Function string
 function VuBattleRoyaleHud:OnWebUITriggerMenuFunction(p_Function)
 	m_EscMenu:OnWebUITriggerMenuFunction(p_Function)
 end
@@ -564,10 +607,31 @@ end
 -- Functions
 -- =============================================
 
+---Update Placement every frame
+function VuBattleRoyaleHud:OnUpdatePlacement()
+	if m_BrPlayer.m_Team.m_Placement == nil then
+		return
+	end
+
+	self.m_HudOnUpdatePlacement:Update(m_BrPlayer.m_Team.m_Placement)
+end
+
+---Update TeamData every frame
+function VuBattleRoyaleHud:OnUpdateTeamData()
+	if m_BrPlayer.m_Team == nil then
+		return
+	end
+
+	self.m_HudOnUpdateTeamLocked:Update(m_BrPlayer.m_Team.m_Locked)
+	self.m_HudOnUpdateTeamPlayers:Update(json.encode(m_BrPlayer.m_Team:PlayersTable()))
+end
+
 -- =============================================
 	-- Being Interacted Callbacks
 -- =============================================
 
+---If we revive a mate or get revived we need this for it to work
+---@param p_Soldier SoldierEntity
 function VuBattleRoyaleHud:RegisterSoldierInteractionCallbacks(p_Soldier)
 	for i, l_Entity in pairs(p_Soldier.bus.entities) do
 		if l_Entity.data ~= nil then
@@ -580,13 +644,19 @@ function VuBattleRoyaleHud:RegisterSoldierInteractionCallbacks(p_Soldier)
 	end
 end
 
+---The soldier interaction started
+---@param p_Entity Entity
+---@param p_Event EntityEvent
 function VuBattleRoyaleHud:OnSoldierInteractionStarted(p_Entity, p_Event)
 	m_Logger:Write("The soldier interaction started")
 	WebUI:ExecuteJS("OnInteractStart(5);")
 end
 
+---The soldier interaction finished
+---@param p_Entity Entity
+---@param p_Event EntityEvent
 function VuBattleRoyaleHud:OnSoldierInteractionFinished(p_Entity, p_Event)
-	m_Logger:Write("The soldier interaction started")
+	m_Logger:Write("The soldier interaction finished")
 	WebUI:ExecuteJS("OnInteractEnd();")
 end
 
@@ -594,6 +664,7 @@ end
 	-- Custom Level Finalized 'Event'
 -- =============================================
 
+---When we are done with loading we have to do this
 function VuBattleRoyaleHud:OnLevelFinalized()
 	if self.m_IsLevelLoaded then
 		return
@@ -623,6 +694,8 @@ end
 	-- Custom OnSpatialRaycast "event" (called from CommonSpatialRaycast)
 -- =============================================
 
+---Gets called every UpdatePass_PreSim
+---@param p_Entities SoldierEntity[]
 function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
 	-- loop all entities
 	for _, l_Entity in pairs(p_Entities) do
@@ -680,8 +753,8 @@ end
 -- =============================================
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
+	---@type Player|nil
 	local s_Player = nil
-	local s_Position = nil
 
 	if SpectatorManager:GetSpectating() then
 		s_Player = SpectatorManager:GetSpectatedPlayer()
@@ -692,6 +765,9 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
 	if s_Player == nil then
 		return
 	end
+
+	---@type Vec3
+	local s_Position = nil
 
 	if s_Player.alive then
 		local s_Soldier = s_Player.soldier
@@ -710,12 +786,12 @@ function VuBattleRoyaleHud:PushLocalPlayerPos()
 	}
 
 	self.m_HudOnPlayerPos:Update(json.encode(s_Table))
-	return
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerYaw()
 	if SpectatorManager:GetSpectating() then
 		local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
+		---@type Vec3
 		local s_Forward = nil
 
 		if s_SpectatedPlayer == nil or s_SpectatedPlayer.soldier == nil then
@@ -724,6 +800,7 @@ function VuBattleRoyaleHud:PushLocalPlayerYaw()
 			s_Forward = s_SpectatedPlayer.soldier.worldTransform.forward
 		end
 
+		---@type number
 		local s_YawRad = (math.atan(s_Forward.z, s_Forward.x) - (math.pi / 2)) % (2 * math.pi)
 		self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
 	else
@@ -736,20 +813,23 @@ function VuBattleRoyaleHud:PushLocalPlayerYaw()
 		local s_Camera = ClientUtils:GetCameraTransform()
 
 		-- TODO: Put this in utils
+		---@type number
 		local s_YawRad = (math.atan(s_Camera.forward.z, s_Camera.forward.x) + (math.pi / 2)) % (2 * math.pi)
 		self.m_HudOnPlayerYaw:Update(math.floor((180 / math.pi) * s_YawRad))
 	end
 end
 
 function VuBattleRoyaleHud:PushUpdatePlayersInfo()
+	---@type Player[]
 	local s_Players = PlayerManager:GetPlayers()
 	local s_PlayersObject = {}
 
 	for _, l_Player in pairs(s_Players) do
-		local s_State = 3
+		---@type BRPlayerState|integer
+		local s_State = BRPlayerState.Dead
 
 		if l_Player.alive then
-			s_State = 1
+			s_State = BRPlayerState.Alive
 		end
 
 		table.insert(s_PlayersObject, {
@@ -847,6 +927,7 @@ function VuBattleRoyaleHud:PushManDownMapMarkers()
 
 		if s_Player ~= nil and s_Player.soldier ~= nil and s_Player.soldier.isInteractiveManDown then
 			local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+			---@type SpatialEntity|nil
 			local s_Entity = s_EntityIterator:Next()
 
 			while s_Entity do
@@ -861,13 +942,14 @@ function VuBattleRoyaleHud:PushManDownMapMarkers()
 			end
 		else
 			local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+			---@type SpatialEntity|nil
 			local s_Entity = s_EntityIterator:Next()
 
 			while s_Entity do
 				s_Entity = SpatialEntity(s_Entity)
 
 				if s_Entity.instanceId == l_EntityInstanceId then
-					s_Entity.transform = LinearTransform(Vec3(), Vec3(), Vec3(), Vec3(-9999, -9999, -9999))
+					s_Entity.transform = LinearTransform(Vec3(), Vec3(), Vec3(), Vec3(-9999.0, -9999.0, -9999.0))
 					self.m_ManDownMapMarkers[l_PlayerName] = nil
 					break
 				end
@@ -903,14 +985,21 @@ end
 	-- Create / Remove Marker
 -- =============================================
 
-function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_PositionZ, p_Color, p_PingType)
+---comment
+---@param p_PlayerName string
+---@param p_PositionX number
+---@param p_PositionY number
+---@param p_PositionZ number
+---@param p_Color string @rgba css format
+---@param p_PingType PingType|integer
+function VuBattleRoyaleHud:CreateMarker(p_PlayerName, p_PositionX, p_PositionY, p_PositionZ, p_Color, p_PingType)
 	--[[local s_WorldToScreen = ClientUtils:WorldToScreen(Vec3(p_PositionX, p_PositionY, p_PositionZ))
 	if s_WorldToScreen == nil then
 		return
 	end]]
 
 	local s_Marker = {
-		Key = p_Key,
+		Key = p_PlayerName,
 		PositionX = p_PositionX,
 		PositionY = p_PositionY,
 		PositionZ = p_PositionZ,
@@ -920,7 +1009,7 @@ function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_Posit
 		Type = p_PingType,
 	}
 
-	self.m_Markers[p_Key] = s_Marker
+	self.m_Markers[p_PlayerName] = s_Marker
 	WebUI:ExecuteJS(
 		string.format(
 			'OnCreateMarker("%s", "%s", %s, %s, %s, %s, %s)',
@@ -935,13 +1024,14 @@ function VuBattleRoyaleHud:CreateMarker(p_Key, p_PositionX, p_PositionY, p_Posit
 	)
 end
 
-function VuBattleRoyaleHud:RemoveMarker(p_Key)
-	if self.m_Markers[p_Key] == nil then
+---@param p_PlayerName string
+function VuBattleRoyaleHud:RemoveMarker(p_PlayerName)
+	if self.m_Markers[p_PlayerName] == nil then
 		return
 	end
 
-	self.m_Markers[p_Key] = nil
-	WebUI:ExecuteJS(string.format('OnRemoveMarker("%s")', p_Key))
+	self.m_Markers[p_PlayerName] = nil
+	WebUI:ExecuteJS(string.format('OnRemoveMarker("%s")', p_PlayerName))
 end
 
 function VuBattleRoyaleHud:ShowCommoRose()

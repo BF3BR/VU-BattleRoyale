@@ -63,15 +63,147 @@
 
     .card {
         max-width: 25vw;
+
+        .card-content {
+            min-height: 8vw;
+        }
+
+        &.TeamBox {
+            position: absolute;
+            top: 3vw;
+            right: 3vw;
+            width: 41vw;
+            max-width: none;
+
+            #TeamOpenClose {
+                margin: 0 1vw 0 0;
+                float: right;
+                color: #ff9f80;
+                text-shadow: 0 0 .5vw rgba(255, 159, 128, 0.4);
+
+                &.isOpen {
+                    color: rgb(158, 197, 85);
+                    text-shadow: 0 0 .5vw rgba(158, 197, 85, 0.4);
+                }
+
+                input {
+                    visibility: hidden;
+                    margin: 0;
+                    padding: 0;
+                    height: 1px;
+                    width: 1px;
+                    opacity: 0;
+                }
+
+                img {
+                    width: .65vw;
+                    margin: 0 0.15vw 0 0;
+                }
+            }
+
+            .card-content {
+                background: transparent;
+                padding: 0;
+
+                .TeamPlayers {
+                    .TeamPlayer {
+                        width: auto;
+                        height: 3vw;
+                        padding: 0 1.25vw;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        font-size: 1.1vw;
+                        margin-bottom: .1vw;
+                        line-height: 1;
+                        text-shadow: 0 0 .3vw rgba(0, 0, 0, .4);
+                        background-color: rgba(7, 7, 7, 0.6);
+
+                        .TeamPlayerName {
+                            display: inline-flex;
+                            display: flex;
+                            align-items: center;
+                            justify-content: flex-start;
+                        }
+
+                        .circle {
+                            width: .5vw;
+                            height: .5vw;
+                            background: #fff;
+                            border-radius: 50%;
+                            margin-right: 1vw;
+                            box-shadow:  0 0 .6vw rgba(255, 255, 255, 0.4);
+                        }
+
+                        span {
+                            text-shadow: 0 0 .5vw rgba(255, 255, 255, 0.4);
+                            font-size: 1vw;
+                            color:#fff;
+                            padding-bottom: .125vw;
+
+                            &.teamLeader {
+                                color: #ff9900;
+                                text-shadow: 0 0 0.5vw rgba(255, 153, 0, 0.4);
+                                font-weight: 600;
+                                font-size: .8vw;
+                                margin-left: .5vw;
+                            }
+                        }
+        
+                        &.empty {
+                            background-color: rgba(7, 7, 7, 0.4);
+                            color: #a8a8a8;
+                            font-size: .75vw;
+                            justify-content: center;
+                        }
+
+                        &.red {
+                            .circle {
+                                background: rgb(255, 159, 128);
+                                box-shadow:  0 0 .6vw rgba(255, 159, 128, 0.4);
+                            }
+                            
+                            span {
+                                color: #ff9f80;
+                                text-shadow: 0 0 .5vw rgba(255, 159, 128, 0.4);
+                            }
+                        }
+
+                        &.blue {
+                            .circle {
+                                background: rgb(148, 205, 243);
+                                box-shadow:  0 0 .6vw rgba(148, 205, 243, 0.4);
+                            }
+                            
+                            span {
+                                color: #94cdf3;
+                                text-shadow: 0 0 .5vw rgba(148, 205, 243, 0.4);
+                            }
+                        }
+
+                        &.green {
+                            .circle {
+                                background: rgb(158, 197, 85);
+                                box-shadow:  0 0 .6vw rgba(158, 197, 85, 0.4);
+                            }
+                            
+                            span {
+                                color: #9EC555;
+                                text-shadow: 0 0 .5vw rgba(158, 197, 85, 0.4);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         
         &.AssociatesBox,
         &.CommunityBox,
         &.CreditsBox {
             position: absolute;
-            bottom: 5vw;
-            right: 6vw;
-            max-width: 30vw;
-            width: 30vw;
+            bottom: 3vw;
+            right: 3vw;
+            width: 20vw;
 
             ul {
                 margin: 0;
@@ -98,22 +230,22 @@
             }
         }
 
-        &.CommunityBox {
-            bottom: 24.25vw;
+        /*&.CommunityBox {
+            right: 24vw;
         }
 
         &.AssociatesBox,
         &.CreditsBox {
-            bottom: 15vw;
+            bottom: 17vw;
 
             .card-content ul {
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         &.AssociatesBox {
-            bottom: 5vw;
-        }
+            bottom: 3vw;
+        }*/
     }
 }

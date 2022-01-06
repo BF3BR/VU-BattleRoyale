@@ -1,4 +1,5 @@
-class "ModificationsCommon"
+---@class ModificationsCommon
+ModificationsCommon = class "ModificationsCommon"
 
 local m_Logger = Logger("ModificationsCommon", true)
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
@@ -7,7 +8,6 @@ local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifi
 local m_WeaponSwitchingModifier = require "__shared/Modifications/Soldiers/WeaponSwitchingModifier"
 local m_PhysicsModifier = require "__shared/Modifications/Soldiers/PhysicsModifier"
 local m_WeaponsModifier = require "__shared/Modifications/WeaponsModifier"
-local m_DropShipModifier = require "__shared/Modifications/DropShipModifier"
 local m_VanillaUIModifier = require "__shared/Modifications/VanillaUIModifier"
 local m_2dTreeRemoving = require "__shared/Modifications/2dTreeRemoving"
 local m_MapSpecificModifier = require "__shared/Modifications/MapSpecificModifier"
@@ -29,7 +29,6 @@ function ModificationsCommon:RegisterCallbacks()
 
 	m_WeaponSwitchingModifier:RegisterCallbacks()
 	m_WeaponsModifier:RegisterCallbacks()
-	m_DropShipModifier:RegisterCallbacks()
 	m_VanillaUIModifier:RegisterCallbacks()
 	m_PhysicsModifier:RegisterCallbacks()
 	m_2dTreeRemoving:RegisterCallbacks()
@@ -51,21 +50,29 @@ function ModificationsCommon:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	m_ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 end
 
+---VEXT Shared Extension:Loaded Event
 function ModificationsCommon:OnExtensionLoaded()
 	m_RemoveVanillaLoadingScreen:OnExtensionLoaded()
 	m_DisableDebugRenderer:OnExtensionLoaded()
 end
 
+---VEXT Shared Extension:Unloading Event
 function ModificationsCommon:OnExtensionUnloading()
 	m_RemoveVanillaLoadingScreen:OnExtensionUnloading()
 	m_DisableDebugRenderer:OnExtensionUnloading()
 end
 
+---VEXT Shared Level:RegisterEntityResources Event
+---@param p_LevelData DataContainer
 function ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_FireEffectsModifier:OnRegisterEntityResources()
 	m_Airdrop:OnRegisterEntityResources()
 end
 
+---VEXT Shared Level:LoadResources Event
+---@param p_LevelName string
+---@param p_GameMode string
+---@param p_IsDedicatedServer boolean
 function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	m_Logger:Write("OnLoadResources")
 
@@ -77,7 +84,6 @@ function ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedica
 		m_SoldierBlueprint:Deregister()
 		m_WeaponSwitchingModifier:DeregisterCallbacks()
 		m_WeaponsModifier:DeregisterCallbacks()
-		m_DropShipModifier:DeregisterCallbacks()
 		m_VanillaUIModifier:DeregisterCallbacks()
 		m_MapSpecificModifier:DeregisterCallbacks()
 		m_PhysicsModifier:DeregisterCallbacks()

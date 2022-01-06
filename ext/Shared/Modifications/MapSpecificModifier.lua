@@ -1,4 +1,5 @@
-class "MapSpecificModifier"
+---@class MapSpecificModifier
+MapSpecificModifier = class "MapSpecificModifier"
 
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier"
 
@@ -6,6 +7,8 @@ local m_Logger = Logger("MapSpecificModifier", true)
 
 local m_LastMapConfig = nil
 
+-- This function gets called every round in Level:LoadResources in ModificationsCommon
+-- Thats why we use RegisterLoadHandlerOnce
 function MapSpecificModifier:RegisterCallbacks(p_MapConfig)
 	m_LastMapConfig = p_MapConfig
 
@@ -13,6 +16,10 @@ function MapSpecificModifier:RegisterCallbacks(p_MapConfig)
 	p_MapConfig.CQL_Gameplay_WorldPartData:RegisterLoadHandlerOnce(self, self.OnVehiclesWorldPartData)
 	p_MapConfig.OOB:RegisterLoadHandlerOnce(self, self.OnOOBLoaded)
 	p_MapConfig.OOB2:RegisterLoadHandlerOnce(self, self.OnOOBLoaded)
+
+	if p_MapConfig.ObjectModifications ~= nil then
+		p_MapConfig.ObjectModifications:RegisterCallbacks()
+	end
 end
 
 function MapSpecificModifier:DeregisterCallbacks()
@@ -22,6 +29,11 @@ function MapSpecificModifier:DeregisterCallbacks()
 
 	m_LastMapConfig.Conquest_WorldPartReferenceObjectData:Deregister()
 	m_LastMapConfig.CQL_Gameplay_WorldPartData:Deregister()
+
+	if m_LastMapConfig.ObjectModifications ~= nil then
+		m_LastMapConfig.ObjectModifications:DeregisterCallbacks()
+	end
+
 	m_LastMapConfig = nil
 end
 

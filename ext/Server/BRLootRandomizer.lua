@@ -1,18 +1,37 @@
-class "BRLootRandomizer"
+---@class BRLootRandomizer
+BRLootRandomizer = class "BRLootRandomizer"
 
+---@type Logger
 local m_Logger = Logger("BRLootRandomizer", true)
 
+---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"
+---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
+---@module "Items/Definitions/BRItemAmmoDefinition"
+---@type table<string, BRItemAmmoDefinition>
 local m_AmmoDefinitions = require "__shared/Items/Definitions/BRItemAmmoDefinition"
+---@module "Items/Definitions/BRItemArmorDefinition"
+---@type table<string, BRItemArmorDefinition>
 local m_ArmorDefinitions = require "__shared/Items/Definitions/BRItemArmorDefinition"
+---@module "Items/Definitions/BRItemAttachmentDefinition"
+---@type table<string, BRItemAttachmentDefinition>
 local m_AttachmentDefinitions = require "__shared/Items/Definitions/BRItemAttachmentDefinition"
+---@module "Items/Definitions/BRItemConsumableDefinition"
+---@type table<string, BRItemConsumableDefinition>
 local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsumableDefinition"
+---@module "Items/Definitions/BRItemHelmetDefinition"
+---@type table<string, BRItemHelmetDefinition>
 local m_HelmetDefinitions = require "__shared/Items/Definitions/BRItemHelmetDefinition"
+---@module "Items/Definitions/BRItemWeaponDefinition"
+---@type table<string, BRItemWeaponDefinition>
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
+---@module "Items/Definitions/BRItemGadgetDefinition"
+---@type table<string, BRItemGadgetDefinition>
 local m_GadgetDefinitions = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
+---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 
 function BRLootRandomizer:__init()
@@ -61,13 +80,13 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 		s_RandomItemDefinition = self:Randomizer(tostring(s_RandomTier) .. "_Weapon", m_WeaponDefinitions, true, s_RandomTier)
 
 		-- Get a randomized attachment
-		s_AttachmentDefinition = self:Randomizer(tostring(s_RandomItemDefinition.m_Name) .. "_Attachment", m_AttachmentDefinitions, true, nil, s_RandomItemDefinition.m_EbxAttachments)
+		local s_AttachmentDefinition = self:Randomizer(tostring(s_RandomItemDefinition.m_Name) .. "_Attachment", m_AttachmentDefinitions, true, nil, s_RandomItemDefinition.m_EbxAttachments)
 
 		-- Get the ammo definition
-		s_AmmoDefinition = s_RandomItemDefinition.m_AmmoDefinition
+		local s_AmmoDefinition = s_RandomItemDefinition.m_AmmoDefinition
 
-		s_Patterns = m_MapHelper:Keys(RandomWeaponPatterns)
-		s_WeaponSpawnPattern = math.random(#s_Patterns)
+		local s_Patterns = m_MapHelper:Keys(RandomWeaponPatterns)
+		local s_WeaponSpawnPattern = math.random(#s_Patterns)
 
 		-- Pistols doesn't have any attachments so they should just spawn with ammo
 		if #s_RandomItemDefinition.m_EbxAttachments <= 0 then
@@ -148,8 +167,8 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 
 		s_RandomItemQuantity = s_RandomItemDefinition.m_SpawnStack
 
-		s_Patterns = m_MapHelper:Keys(RandomAmmoPatterns)
-		s_WeaponSpawnPattern = math.random(#s_Patterns)
+		local s_Patterns = m_MapHelper:Keys(RandomAmmoPatterns)
+		local s_WeaponSpawnPattern = math.random(#s_Patterns)
 
 		if s_WeaponSpawnPattern == RandomAmmoPatterns.TwoItems then
 			local s_AddedItem = m_ItemDatabase:CreateItem(s_RandomItemDefinition, s_RandomItemDefinition.m_SpawnStack)
