@@ -35,7 +35,7 @@ function BRLootPickup:__init(p_Id, p_TypeName, p_Transform, p_Items)
 	-- A map of LootPickups {id -> LootPickup}
 	self.m_Items = p_Items
 
-	-- TODO: what is this
+	---@type BRLootGridCell|nil
 	self.m_ParentCell = nil
 
 	-- [Client] Contains spawned entities {instanceId -> Entity}
