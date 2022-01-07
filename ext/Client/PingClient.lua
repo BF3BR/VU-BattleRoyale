@@ -458,7 +458,7 @@ function PingClient:ShouldRemovePing()
 					end
 
 					-- check if the ping is close to the center (relative to the screenheight)
-					if s_PingScreenPosition:Distance(ClientUtils:GetWindowSize()) < (WebUI:GetScreenHeight() / 15) then
+					if s_PingScreenPosition:Distance(ClientUtils:GetWindowSize() / 2) < (WebUI:GetScreenHeight() / 15) then
 						m_Logger:Write("Removing ping instead of creating a new one.")
 						return true
 					end
