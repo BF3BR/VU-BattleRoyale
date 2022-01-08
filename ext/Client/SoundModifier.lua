@@ -1,4 +1,5 @@
-class "SoundModifier"
+---@class SoundModifier
+SoundModifier = class "SoundModifier"
 
 local m_Logger = Logger("SoundModifier", false)
 
@@ -56,6 +57,8 @@ function SoundModifier:__init()
 	}
 end
 
+---VEXT Shared Partition:Loaded Event
+---@param p_Partition DatabasePartition
 function SoundModifier:OnPartitionLoaded(p_Partition)
 	if p_Partition == nil then
 		return
@@ -99,6 +102,7 @@ function SoundModifier:IsSoundPatchAssetForBulletImpact(p_SoundPatchAsset)
 	return string.find(s_Name, "bullet_impact")
 end
 
+---@param p_SoundPatchAsset SoundPatchAsset
 function SoundModifier:ModifyAirVehicleSounds(p_SoundPatchAsset)
 	if self:IsSoundPatchAssetForAirVehicles(p_SoundPatchAsset) then
 		m_Logger:Write("Found sound for air vehicles")
@@ -106,6 +110,7 @@ function SoundModifier:ModifyAirVehicleSounds(p_SoundPatchAsset)
 	end
 end
 
+---@param p_SoundPatchAsset SoundPatchAsset
 function SoundModifier:ModifyWeaponSounds(p_SoundPatchAsset)
 	if self:IsSoundPatchAssetForGun(p_SoundPatchAsset) then
 		m_Logger:Write("Found sound for gun")
@@ -113,6 +118,7 @@ function SoundModifier:ModifyWeaponSounds(p_SoundPatchAsset)
 	end
 end
 
+---@param p_SoundPatchAsset SoundPatchAsset
 function SoundModifier:ModifyBulletImpactSounds(p_SoundPatchAsset)
 	if self:IsSoundPatchAssetForBulletImpact(p_SoundPatchAsset) then
 		m_Logger:Write("Found sound for bullet impact")
@@ -120,11 +126,21 @@ function SoundModifier:ModifyBulletImpactSounds(p_SoundPatchAsset)
 	end
 end
 
+---Modify the SoundPatchAsset
+---@param p_SoundPatchAsset SoundPatchAsset
+---@param p_AttenuationMultipliers table|nil
+---@param p_MinDistanceMultiplier integer
+---@param p_MaxDistanceMultiplier integer
+---@param p_NodesToIgnore string[]|nil
 function SoundModifier:ModifySoundPatchAsset(p_SoundPatchAsset, p_AttenuationMultipliers, p_MinDistanceMultiplier, p_MaxDistanceMultiplier, p_NodesToIgnore)
 	-- Seems like the instance itself doesn't get modified at all, so no need to make it writable
 	--p_SoundPatchAsset:MakeWritable()
 
+	---@type OutputNodeData|vector
 	for _, l_Node in pairs(p_SoundPatchAsset.outputNodes) do
+		-- TODO: weird way to verify that it is an OutputNodeData
+		-- if it is not an OutputNodeData then p_NodesToIgnore will be nil and this is a weird way to handle it imo
+		-- or maybe they are all OutputNodeDatas, whatever this needs to be checked
 		l_Node = _G[l_Node.typeInfo.name](l_Node)
 		l_Node:MakeWritable()
 
@@ -133,6 +149,7 @@ function SoundModifier:ModifySoundPatchAsset(p_SoundPatchAsset, p_AttenuationMul
 
 			--Unsure if all audio output nodes contain an attenuationCurve, so better safe than sorry
 			if l_Node['attenuationCurve'] and p_AttenuationMultipliers ~= nil then
+				---@type AudioCurvePoint|vector
 				for l_CurveKey, l_Curve in pairs(l_Node.attenuationCurve.points) do
 					local s_Multiplier = p_AttenuationMultipliers[l_CurveKey]
 
@@ -156,11 +173,13 @@ function SoundModifier:ModifySoundPatchAsset(p_SoundPatchAsset, p_AttenuationMul
 	s_AudioGraph:MakeWritable()
 
 	--Increase maximum audibility distance
+	---@type MultiCrossfaderNodeData|vector
 	for _, l_Node in pairs(s_AudioGraph.nodes) do
 		if l_Node:Is("MultiCrossfaderNodeData") then
 			l_Node = MultiCrossfaderNodeData(l_Node)
 			l_Node:MakeWritable()
 
+			---@type MultiCrossfaderGroup|vector
 			for _, l_Group in pairs(l_Node.crossfaderGroups) do
 				l_Group = MultiCrossfaderGroup(l_Group)
 				l_Group:MakeWritable()
@@ -171,8 +190,12 @@ function SoundModifier:ModifySoundPatchAsset(p_SoundPatchAsset, p_AttenuationMul
 	end
 end
 
+---Returns if we should ignore this node or not
+---@param p_NodeName string
+---@param p_IgnoreList string[]
+---@return boolean
 function SoundModifier:ShouldNodeBeIgnored(p_NodeName, p_IgnoreList)
-	for l_Index, l_Value in ipairs(p_IgnoreList) do
+	for _, l_Value in ipairs(p_IgnoreList) do
 		if p_NodeName == l_Value then
 			return true
 		end

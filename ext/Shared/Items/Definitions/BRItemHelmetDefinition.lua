@@ -1,16 +1,22 @@
-class("BRItemHelmetDefinition", BRItemProtectionDefinition)
+---@class BRItemHelmetDefinition : BRItemProtectionDefinition
+BRItemHelmetDefinition = class("BRItemHelmetDefinition", BRItemProtectionDefinition)
 
+---Creates a new BRItemHelmetDefinition
+---@param p_UId string|'"helmet-tier-1"'|'"helmet-tier-2"'|'"helmet-tier-3"'
+---@param p_Name string|'"Helmet"'
+---@param p_Options BRItemProtectionDefinitionOptions
 function BRItemHelmetDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}
 
 	-- set fixed shared option values for helmets
+	---@type ItemType|integer
 	p_Options.Type = ItemType.Helmet
 	p_Options.Mesh = SkeletonMeshModel(DC(Guid("0202751D-1ACE-3542-43E4-9BFFA6EF7F98"), Guid("9558CB54-0238-B2BD-643B-403FEE4A613D")), 0, 213)
 	p_Options.Transform = LinearTransform(
-		Vec3(1.2, 0, 0),
-		Vec3(0, 1.2, 0),
-		Vec3(0, 0, 1.2),
-		Vec3(0, -2, 0)
+		Vec3(1.2, 0.0, 0.0),
+		Vec3(0.0, 1.2, 0.0),
+		Vec3(0.0, 0.0, 1.2),
+		Vec3(0.0, -2.0, 0.0)
 	)
 
 	-- call super's constructor and set shared options

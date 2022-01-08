@@ -1,3 +1,4 @@
+---@class CircleConfig
 CircleConfig = {
 	-- Render the inner circle too, using a more subtle rendering style
 	RenderInnerCircle = false,

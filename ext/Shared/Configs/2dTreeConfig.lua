@@ -1,3 +1,4 @@
+---@class EMPTY_SHADER_CONFIG
 local EMPTY_SHADER_CONFIG = {
 	MATERIALS = {
 		[1] = {

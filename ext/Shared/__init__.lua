@@ -1,4 +1,5 @@
-class "VuBattleRoyaleShared"
+---@class VuBattleRoyaleShared
+VuBattleRoyaleShared = class "VuBattleRoyaleShared"
 
 require "__shared/Enums/AirdropEnums"
 require "__shared/Enums/Attachments"
@@ -17,6 +18,8 @@ require "__shared/Libs/Queue"
 
 require "__shared/Mixins/TimersMixin"
 
+require "__shared/Utils/Logger"
+
 require "__shared/Types/Circle"
 require "__shared/Types/DataContainer"
 require "__shared/Types/MeshModel/MeshModel"
@@ -27,11 +30,8 @@ require "__shared/Types/LootPickupType"
 require "__shared/Items/Definitions/BRItemDefinition"
 require "__shared/Items/Definitions/BRItemProtectionDefinition"
 
-require "__shared/Utils/Logger"
 require "__shared/Utils/LevelNameHelper"
-require "__shared/Utils/Timers"
 require "__shared/Utils/PostReloadEvent"
-require "__shared/Utils/BRItemFactory"
 
 require "__shared/Configs/ServerConfig"
 require "__shared/Configs/MapsConfig"
@@ -55,10 +55,15 @@ require "__shared/Items/BRItemGadget"
 
 require "__shared/Logic/PhaseManagerShared"
 
+---@type BundleManager
 local m_BundleManager = require "__shared/Logic/BundleManager"
+---@type GunSwayManager
 local m_GunSwayManager = require "__shared/Logic/GunSwayManager"
+---@type MapLoader
 local m_MapLoader = require "__shared/Logic/MapLoader"
+---@type RegistryManager
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
+---@type ModificationsCommon
 local m_ModificationsCommon = require "__shared/Modifications/ModificationsCommon"
 local m_Logger = Logger("VuBattleRoyaleShared", true)
 
@@ -66,6 +71,7 @@ function VuBattleRoyaleShared:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
 end
 
+---VEXT Shared Extension:Loaded Event
 function VuBattleRoyaleShared:OnExtensionLoaded()
 	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
 
@@ -102,13 +108,18 @@ end
 -- Events
 -- =============================================
 
+---VEXT Shared Extension:Unloading Event
 function VuBattleRoyaleShared:OnExtensionUnloading()
 	m_ModificationsCommon:OnExtensionUnloading()
 end
 
-function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_ModificationsCommon:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_BundleManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+---VEXT Shared Level:LoadResources Event
+---@param p_LevelName string
+---@param p_GameMode string
+---@param p_IsDedicatedServer boolean
+function VuBattleRoyaleShared:OnLevelLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
+	m_ModificationsCommon:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
+	m_BundleManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 
 	if MapsConfig[LevelNameHelper:GetLevelName()] == nil then
 		m_Logger:Write("Wrong map. Unsubscribe, uninstall & deregister everything.")
@@ -132,28 +143,40 @@ function VuBattleRoyaleShared:OnLevelLoadResources(p_MapName, p_GameModeName, p_
 		self:RegisterCallbacks()
 	end
 
-	m_RegistryManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_MapLoader:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+	m_RegistryManager:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
+	m_MapLoader:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 end
 
+---VEXT Shared Level:RegisterEntityResources Event
+---@param p_LevelData DataContainer
 function VuBattleRoyaleShared:OnRegisterEntityResources(p_LevelData)
 	m_BundleManager:OnRegisterEntityResources(p_LevelData)
 	m_ModificationsCommon:OnRegisterEntityResources(p_LevelData)
 	m_RegistryManager:OnRegisterEntityResources(p_LevelData)
 end
 
+---VEXT Shared GunSway:Update Event
+---@param p_GunSway GunSway
+---@param p_Weapon Entity|nil
+---@param p_WeaponFiring WeaponFiring|nil
+---@param p_DeltaTime number
 function VuBattleRoyaleShared:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
 	m_GunSwayManager:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
 end
 
+---VEXT Shared Partition:Loaded Event
+---@param p_Partition DatabasePartition
 function VuBattleRoyaleShared:OnPartitionLoaded(p_Partition)
 	m_MapLoader:OnPartitionLoaded(p_Partition)
 end
 
+---VEXT Shared Level:LoadingInfo Event
+---@param p_ScreenInfo string
 function VuBattleRoyaleShared:OnLevelLoadingInfo(p_ScreenInfo)
 	m_MapLoader:OnLevelLoadingInfo(p_ScreenInfo)
 end
 
+---VEXT Shared Level:Destroy Event
 function VuBattleRoyaleShared:OnLevelDestroy()
 	m_MapLoader:OnLevelDestroy()
 end
@@ -162,12 +185,20 @@ end
 -- Hooks
 -- =============================================
 
+---VEXT Shared ResourceManager:LoadBundles Hook
+---@param p_HookCtx HookContext
+---@param p_Bundles string[]
+---@param p_Compartment ResourceCompartment|integer
 function VuBattleRoyaleShared:OnLoadBundles(p_HookCtx, p_Bundles, p_Compartment)
 	m_BundleManager:OnLoadBundles(p_HookCtx, p_Bundles, p_Compartment)
 end
 
-function VuBattleRoyaleShared:OnTerrainLoad(p_Hook, p_TerrainName)
-	m_BundleManager:OnTerrainLoad(p_Hook, p_TerrainName)
+---VEXT Shared VisualTerrain:Load Hook
+---VEXT Shared Terrain:Load Hook
+---@param p_HookCtx HookContext
+---@param p_TerrainAssetName string
+function VuBattleRoyaleShared:OnTerrainLoad(p_HookCtx, p_TerrainAssetName)
+	m_BundleManager:OnTerrainLoad(p_HookCtx, p_TerrainAssetName)
 end
 
 return VuBattleRoyaleShared()

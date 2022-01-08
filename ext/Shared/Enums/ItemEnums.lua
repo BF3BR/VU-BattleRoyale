@@ -1,3 +1,4 @@
+---@class ItemType
 ItemType = {
 	Default = 1,
 	Weapon = 2,
@@ -9,6 +10,7 @@ ItemType = {
 	Gadget = 8,
 }
 
+---@class SlotType
 SlotType = {
 	Default = 1,
 	Weapon = 2,
@@ -19,12 +21,15 @@ SlotType = {
 	Backpack = 7,
 }
 
+
+---@class Tier
 Tier = {
 	Tier1 = 1,
 	Tier2 = 2,
 	Tier3 = 3,
 }
 
+---@class RandomWeightsTable
 RandomWeightsTable = {
 	["Nothing"] = {
 		RandomWeight = 35,
@@ -85,6 +90,7 @@ RandomWeightsTable = {
 	},
 }
 
+---@class RandomWeaponPatterns
 RandomWeaponPatterns = {
 	OnlyWeapon = 1,
 	WeaponWithAmmo = 2,
@@ -92,18 +98,21 @@ RandomWeaponPatterns = {
 	WeaponWithTwoAmmo = 4,
 }
 
+---@class RandomAmmoPatterns
 RandomAmmoPatterns = {
 	OneItem = 1,
 	TwoItems = 2,
 	-- ThreeItems = 3,
 }
 
+---@class AttachmentType
 AttachmentType = {
 	Optics = 1,
 	Barrel = 2,
 	Other = 3
 }
 
+---@class InventorySlot
 InventorySlot = {
 	-- PrimaryWeapon slots
 	PrimaryWeapon = 1,

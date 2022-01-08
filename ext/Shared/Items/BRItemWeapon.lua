@@ -1,13 +1,22 @@
+---@module "Items/Definitions/BRItemWeaponDefinition"
+---@type table<string, BRItemWeaponDefinition>
 local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefinition"
 
-class("BRItemWeapon", BRItem)
+---@class BRItemWeapon : BRItem
+---@field m_Definition BRItemWeaponDefinition
+BRItemWeapon = class("BRItemWeapon", BRItem)
 
+---Creates a new BRItemWeapon
+---@param p_Id string @It is a tostring(Guid)
+---@param p_Definition BRItemWeaponDefinition
+---@param p_CurrentPrimaryAmmo integer|nil
 function BRItemWeapon:__init(p_Id, p_Definition, p_CurrentPrimaryAmmo)
 	BRItem.__init(self, p_Id, p_Definition, 1)
 
 	self.m_CurrentPrimaryAmmo = p_CurrentPrimaryAmmo or 0
 end
 
+---@param p_AmmoCount integer
 function BRItemWeapon:SetPrimaryAmmo(p_AmmoCount)
 	self.m_CurrentPrimaryAmmo = p_AmmoCount
 end

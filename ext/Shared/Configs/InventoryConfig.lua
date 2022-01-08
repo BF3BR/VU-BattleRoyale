@@ -1,3 +1,4 @@
+---@class InventoryConfig
 InventoryConfig = {
 	-- how frequently the close item cache should be updated (seconds)
 	CloseItemCacheFrequency = 5.0,

@@ -1,9 +1,20 @@
-class("BRItemGadgetDefinition", BRItemDefinition)
+---@class BRItemGadgetDefinition : BRItemDefinition
+BRItemGadgetDefinition = class("BRItemGadgetDefinition", BRItemDefinition)
 
+---@class BRItemGadgetDefinitionOptions : BRItemDefinitionOptions
+---@field SoldierWeaponBlueprint DC
+---@field EbxName string
+---@field IsMinusAmmo boolean|nil
+
+---Creates a new BRItemGadgetDefinition
+---@param p_UId string
+---@param p_Name string
+---@param p_Options BRItemGadgetDefinitionOptions
 function BRItemGadgetDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}
 
 	-- set fixed shared option values for gadgets
+	---@type ItemType|integer
 	p_Options.Type = ItemType.Gadget
 	p_Options.Stackable = true
 	p_Options.Price = 0
@@ -14,6 +25,7 @@ function BRItemGadgetDefinition:__init(p_UId, p_Name, p_Options)
 	-- set gadget only options
 	self.m_SoldierWeaponBlueprint = p_Options.SoldierWeaponBlueprint
 	self.m_EbxName = p_Options.EbxName
+	-- TODO: is this needed? seems unused
 	self.m_IsMinusAmmo = p_Options.IsMinusAmmo
 end
 
@@ -30,10 +42,10 @@ return {
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("C1C59CFB-D2DD-5C43-CF76-4A465CB9007A"), Guid("579D4CB4-1937-D2CA-C7EA-23193B0B0B7B"))),
 			SoldierWeaponBlueprint = DC(Guid("5407475F-7E82-44A8-99D2-8009B925A528"), Guid("2F200B5C-4958-467C-9E12-B99DDADE2332")),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			)
 		}
 	),
@@ -49,10 +61,10 @@ return {
 			Mesh = WeaponSkeletonMeshModel(DC(Guid("58C89ADC-1A6A-5110-34C6-4CCE674F3F74"), Guid("6B9C428D-0E7F-EB04-8691-686085200903"))),
 			SoldierWeaponBlueprint = DC(Guid("8B6957EA-8AF3-4827-9DA7-F411F74E1076"), Guid("08F58ECD-BC99-48AA-A9B3-47D412E99A4E")),
 			Transform = LinearTransform(
-				Vec3(0, -1, 0),
-				Vec3(1, 0, 0),
-				Vec3(0, 0, 1),
-				Vec3(0, 0.04, -0.5)
+				Vec3(0.0, -1.0, 0.0),
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				Vec3(0.0, 0.04, -0.5)
 			)
 		}
 	),
@@ -70,10 +82,10 @@ return {
 			),
 			SoldierWeaponBlueprint = DC(Guid("31EBAC8C-F32E-11DF-8153-F8368A2EF9E0"), Guid("9F789F05-CE7B-DADC-87D7-16E847DBDD09")),
 			Transform = LinearTransform(
-				Vec3(1.35, 0, 0),
-				Vec3(0, 1.35, 0),
-				Vec3(0, 0, 1.35),
-				Vec3(0, 0.04, 0)
+				Vec3(1.35, 0.0, 0.0),
+				Vec3(0.0, 1.35, 0.0),
+				Vec3(0.0, 0.0, 1.35),
+				Vec3(0.0, 0.04, 0.0)
 			)
 		}
 	),]]

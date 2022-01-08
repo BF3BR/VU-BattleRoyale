@@ -1,9 +1,18 @@
-class("BRItemAmmoDefinition", BRItemDefinition)
+---@class BRItemAmmoDefinition : BRItemDefinition
+BRItemAmmoDefinition = class("BRItemAmmoDefinition", BRItemDefinition)
 
+---@class BRItemAmmoDefinitionOptions : BRItemDefinitionOptions
+---@field SpawnStack integer
+
+---Creates a new BRItemAmmoDefinition
+---@param p_UId string|'"ammo-556mm"'|'"ammo-9mm"'|'"ammo-762mm"'|'"ammo-12-gauge"'
+---@param p_Name string|'"5.56mm"'|'"9mm"'|'"7.62mm"'|'"12 Gauge"'
+---@param p_Options BRItemAmmoDefinitionOptions
 function BRItemAmmoDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}
 
 	-- set fixed shared option values for ammo
+	---@type ItemType|integer
 	p_Options.Type = ItemType.Ammo
 	p_Options.Stackable = true
 	p_Options.Price = 0
@@ -27,10 +36,10 @@ return {
 			UIIcon = "__ammo_556mm",
 			MaxStack = 60,
 			Transform = LinearTransform(
-				Vec3(0.25, 0, 0),
-				Vec3(0, 0.25, 0),
-				Vec3(0, 0, 0.25),
-				Vec3(0, 0, 0)
+				Vec3(0.25, 0.0, 0.0),
+				Vec3(0.0, 0.25, 0.0),
+				Vec3(0.0, 0.0, 0.25),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			SpawnStack = 30,
 		}
@@ -47,10 +56,10 @@ return {
 			UIIcon = "__ammo_9mm",
 			MaxStack = 90,
 			Transform = LinearTransform(
-				Vec3(0.15, 0, 0),
-				Vec3(0, 0.15, 0),
-				Vec3(0, 0, 0.225),
-				Vec3(0, 0, 0)
+				Vec3(0.15, 0.0, 0.0),
+				Vec3(0.0, 0.15, 0.0),
+				Vec3(0.0, 0.0, 0.225),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			SpawnStack = 30,
 		}
@@ -67,10 +76,10 @@ return {
 			UIIcon = "__ammo_762mm",
 			MaxStack = 15,
 			Transform = LinearTransform(
-				Vec3(0.25, 0, 0),
-				Vec3(0, 0.25, 0),
-				Vec3(0, 0, 0.25),
-				Vec3(0, 0, 0)
+				Vec3(0.25, 0.0, 0.0),
+				Vec3(0.0, 0.25, 0.0),
+				Vec3(0.0, 0.0, 0.25),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			SpawnStack = 15,
 		}
@@ -87,10 +96,10 @@ return {
 			UIIcon = "__ammo_12-gauge",
 			MaxStack = 30,
 			Transform = LinearTransform(
-				Vec3(0.15, 0, 0),
-				Vec3(0, 0.15, 0),
-				Vec3(0, 0, 0.225),
-				Vec3(0, 0, 0)
+				Vec3(0.15, 0.0, 0.0),
+				Vec3(0.0, 0.15, 0.0),
+				Vec3(0.0, 0.0, 0.225),
+				Vec3(0.0, 0.0, 0.0)
 			),
 			SpawnStack = 10,
 		}

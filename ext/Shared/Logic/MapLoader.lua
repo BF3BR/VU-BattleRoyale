@@ -1,4 +1,5 @@
-class 'MapLoader'
+---@class MapLoader
+MapLoader = class 'MapLoader'
 
 local m_Logger = Logger("MapLoader", true)
 
@@ -26,7 +27,11 @@ function MapLoader:Reset()
 	self.m_PendingVariations = {}
 end
 
--- nº 1 in calling order
+-- nº 1 in calling order.
+---VEXT Shared Level:LoadResources Event
+---@param p_LevelName string
+---@param p_GameMode string
+---@param p_IsDedicatedServer boolean
 function MapLoader:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	m_Logger:Write("Event: Loading resources")
 	self.m_ObjectVariations = {}
@@ -47,7 +52,9 @@ function MapLoader:OnLoadResources(p_LevelName, p_GameMode, p_IsDedicatedServer)
 	m_Logger:Write("Load savefile: " .. self.m_MapPreset.header.projectName)
 end
 
--- nº 2 in calling order
+-- nº 2 in calling order.
+---VEXT Shared Partition:Loaded Event
+---@param p_Partition DatabasePartition
 function MapLoader:OnPartitionLoaded(p_Partition)
 	if p_Partition == nil then
 		return
@@ -90,7 +97,9 @@ function MapLoader:OnPartitionLoaded(p_Partition)
 	end
 end
 
--- nº 3 in calling order
+-- nº 3 in calling order.
+---VEXT Shared Level:LoadingInfo Event
+---@param p_ScreenInfo string
 function MapLoader:OnLevelLoadingInfo(p_ScreenInfo)
 	if p_ScreenInfo == "Registering entity resources" then
 		m_Logger:Write("Event: Loading Info - Registering entity resources")
@@ -105,6 +114,7 @@ function MapLoader:OnLevelLoadingInfo(p_ScreenInfo)
 			return
 		end
 
+		---@type LevelData|nil
 		local s_PrimaryLevel = ResourceManager:FindInstanceByGuid(self.m_CustomLevelData.partitionGuid, self.m_CustomLevelData.instanceGuid)
 
 		if s_PrimaryLevel == nil then
@@ -147,7 +157,8 @@ function MapLoader:OnLevelLoadingInfo(p_ScreenInfo)
 	end
 end
 
--- Remove all DataContainer references and reset vars
+-- Remove all DataContainer references and reset vars.
+---VEXT Shared Level:Destroy Event
 function MapLoader:OnLevelDestroy()
 	self.m_ObjectVariations = {}
 	self.m_PendingVariations = {}
@@ -247,6 +258,10 @@ function MapLoader:AddCustomObject(p_Object, p_World, p_RegistryContainer)
 	p_World.objects:add(s_Reference)
 end
 
+---Creates a new WorldPartData and puts all objects in there
+---@param p_PrimaryLevel LevelData
+---@param p_RegistryContainer RegistryContainer
+---@return WorldPartReferenceObjectData
 function MapLoader:CreateWorldPart(p_PrimaryLevel, p_RegistryContainer)
 	local s_World = WorldPartData()
 	p_RegistryContainer.blueprintRegistry:add(s_World)
@@ -260,6 +275,7 @@ function MapLoader:CreateWorldPart(p_PrimaryLevel, p_RegistryContainer)
 				local s_WorldPart = WorldPartData(s_RefObjectData.blueprint)
 
 				if #s_WorldPart.objects ~= 0 then
+					---@type ReferenceObjectData
 					local s_ROD = s_WorldPart.objects[#s_WorldPart.objects] -- last one in array
 
 					if s_ROD and s_ROD:Is('ReferenceObjectData') then

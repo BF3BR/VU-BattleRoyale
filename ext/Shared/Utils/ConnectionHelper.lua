@@ -1,6 +1,13 @@
-class "ConnectionHelper"
+---@class ConnectionHelper
+ConnectionHelper = class "ConnectionHelper"
 
 -- Blueprint connections
+---@param p_Source DataContainer
+---@param p_Target DataContainer
+---@param p_SourceEvent integer|string
+---@param p_TargetEvent integer|string
+---@param p_Type EventConnectionTargetType|integer
+---@return EventConnection
 function ConnectionHelper:CreateEventConnection(p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type)
 	local s_SourceEventSpec = EventSpec()
 	s_SourceEventSpec.id = tonumber(p_SourceEvent) or MathUtils:FNVHash(p_SourceEvent)
@@ -18,6 +25,11 @@ function ConnectionHelper:CreateEventConnection(p_Source, p_Target, p_SourceEven
 	return s_EventConnection
 end
 
+---@param p_Source DataContainer
+---@param p_Target DataContainer
+---@param p_SourceFieldId integer|string
+---@param p_TargetFieldId integer|string
+---@return PropertyConnection
 function ConnectionHelper:CreatePropertyConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
 	local s_PropertyConnection = PropertyConnection()
 	s_PropertyConnection.source = p_Source
@@ -28,6 +40,11 @@ function ConnectionHelper:CreatePropertyConnection(p_Source, p_Target, p_SourceF
 	return s_PropertyConnection
 end
 
+---@param p_Source DataContainer
+---@param p_Target DataContainer
+---@param p_SourceFieldId integer|string
+---@param p_TargetFieldId integer|string
+---@return function|LinkConnection
 function ConnectionHelper:CreateLinkConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
 	local s_LinkConnection = LinkConnection()
 	s_LinkConnection.source = p_Source
@@ -39,6 +56,12 @@ function ConnectionHelper:CreateLinkConnection(p_Source, p_Target, p_SourceField
 end
 
 -- Temporary struct crash fix
+---@param p_Blueprint Blueprint
+---@param p_Source DataContainer
+---@param p_Target DataContainer
+---@param p_SourceEvent integer|string
+---@param p_TargetEvent integer|string
+---@param p_Type EventConnectionTargetType
 function ConnectionHelper:AddEventConnection(p_Blueprint, p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type)
 	-- Normal implementation:
 	-- p_Blueprint.eventConnections:add(self:CreateEventConnection(p_Source, p_Target, p_SourceEvent, p_TargetEvent, p_Type))
@@ -52,6 +75,11 @@ function ConnectionHelper:AddEventConnection(p_Blueprint, p_Source, p_Target, p_
 	p_Blueprint.eventConnections[#p_Blueprint.eventConnections].targetType = p_Type
 end
 
+---@param p_Blueprint Blueprint
+---@param p_Source DataContainer
+---@param p_Target DataContainer
+---@param p_SourceFieldId integer|string
+---@param p_TargetFieldId integer|string
 function ConnectionHelper:AddPropertyConnection(p_Blueprint, p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
 	-- Normal implementation:
 	-- p_Blueprint.propertyConnections:add(self:CreatePropertyConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
@@ -64,6 +92,11 @@ function ConnectionHelper:AddPropertyConnection(p_Blueprint, p_Source, p_Target,
 	p_Blueprint.propertyConnections[#p_Blueprint.propertyConnections].targetFieldId = tonumber(p_TargetFieldId) or MathUtils:FNVHash(p_TargetFieldId)
 end
 
+---@param p_Blueprint Blueprint
+---@param p_Source DataContainer
+---@param p_Target DataContainer
+---@param p_SourceFieldId integer|string
+---@param p_TargetFieldId integer|string
 function ConnectionHelper:AddLinkConnection(p_Blueprint, p_Source, p_Target, p_SourceFieldId, p_TargetFieldId)
 	-- Normal implementation:
 	-- p_Blueprint.linkConnections:add(self:CreateLinkConnection(p_Source, p_Target, p_SourceFieldId, p_TargetFieldId))
@@ -77,6 +110,12 @@ function ConnectionHelper:AddLinkConnection(p_Blueprint, p_Source, p_Target, p_S
 end
 
 -- UI node connections
+---@param p_Source UINodeData
+---@param p_Target UINodeData
+---@param p_SourcePort UINodePort
+---@param p_TargetPort UINodePort
+---@param p_ScreensToPop integer|nil
+---@return UINodeConnection
 function ConnectionHelper:CreateNodeConnection(p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop)
 	local s_UINodeConnection = UINodeConnection()
 	s_UINodeConnection.sourceNode = p_Source
@@ -88,14 +127,25 @@ function ConnectionHelper:CreateNodeConnection(p_Source, p_Target, p_SourcePort,
 	return s_UINodeConnection
 end
 
+---@param p_GraphAsset UIGraphAsset
+---@param p_Source UINodeData
+---@param p_Target UINodeData
+---@param p_SourcePort UINodePort
+---@param p_TargetPort UINodePort
+---@param p_ScreensToPop integer|nil
 function ConnectionHelper:AddNodeConnection(p_GraphAsset, p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop)
 	p_GraphAsset.connections:add(self:CreateNodeConnection(p_Source, p_Target, p_SourcePort, p_TargetPort, p_ScreensToPop))
 end
 
+---@param p_TypeName string
+---@param p_ParentGraphAsset UIGraphAsset
+---@param p_FieldsToPopulate string[]
+---@return UINodeData #UINodeData this is just the base type
 function ConnectionHelper:GetNode(p_TypeName, p_ParentGraphAsset, p_FieldsToPopulate)
 	local s_Node = _G[p_TypeName]()
 	s_Node.parentGraph = p_ParentGraphAsset
 
+	---@type string
 	for _, l_Field in ipairs(p_FieldsToPopulate or {}) do
 		s_Node[l_Field] = UINodePort()
 	end
@@ -111,6 +161,9 @@ local m_FieldAndType = {
 	linkConnections = "LinkConnection",
 }
 
+---@param p_Blueprint Blueprint
+---@param p_OriginalData DataContainer
+---@param p_CustomData DataContainer
 function ConnectionHelper:CloneConnections(p_Blueprint, p_OriginalData, p_CustomData)
 	for l_Field, l_Type in pairs(m_FieldAndType) do
 		for _, l_Connection in pairs(p_Blueprint[l_Field]) do

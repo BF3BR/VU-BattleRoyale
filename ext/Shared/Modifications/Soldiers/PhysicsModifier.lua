@@ -1,4 +1,5 @@
-class "PhysicsModifier"
+---@class PhysicsModifier
+PhysicsModifier = class "PhysicsModifier"
 
 local m_InAirStateData = DC(Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"), Guid("584D7B54-FBFE-4755-8AD4-89065EEB45C3"))
 local m_StandPoseInfo = DC(Guid("235CD1DA-8B06-4A7F-94BE-D50DA2D077CE"), Guid("6F1DD196-9B9C-4538-B128-71BC14835652"))

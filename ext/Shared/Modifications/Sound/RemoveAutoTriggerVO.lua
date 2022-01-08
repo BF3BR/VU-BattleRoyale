@@ -1,7 +1,8 @@
 -- Big thanks to the RealityMod dev team!
 -- https://github.com/BF3RM/RealityMod/blob/development/ext/Client/Sound/General/RemoveAutoTriggerVO.lua
 
-class "RemoveAutoTriggerVO"
+---@class RemoveAutoTriggerVO
+RemoveAutoTriggerVO = class "RemoveAutoTriggerVO"
 
 local m_Logger = Logger("RemoveAutoTriggerVO", false)
 

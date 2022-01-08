@@ -1,7 +1,11 @@
-class "PingClient"
+---@class PingClient
+PingClient = class "PingClient"
 
+---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
+---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
+---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
 local m_Logger = Logger("PingClient", true)
 
@@ -10,19 +14,17 @@ function PingClient:__init()
 end
 
 function PingClient:RegisterVars()
-	self.m_LastPing = Vec3(0, 0, 0)
-	self.m_Color = Vec3(0, 0, 0)
-
 	-- Pings for squadmates
-	-- This is playerName, { position, cooldownTime }
+	-- This is playerName, { positionInSquad, cooldownTime }
+	---@type table<string, table<integer, number>>
 	self.m_SquadPings = {}
 
 	self.m_Opacity = 0.4
 
 	self.m_PingColors = {
-		Vec4(1, 0, 0, self.m_Opacity),
-		Vec4(0, 1, 0, self.m_Opacity),
-		Vec4(0, 0, 1, self.m_Opacity),
+		Vec4(1.0, 0.0, 0.0, self.m_Opacity),
+		Vec4(0.0, 1.0, 0.0, self.m_Opacity),
+		Vec4(0.0, 0.0, 1.0, self.m_Opacity),
 		Vec4(0.5, 0.5, 0.5, self.m_Opacity)
 	}
 
@@ -34,14 +36,16 @@ function PingClient:RegisterVars()
 	self.m_RaycastLength = 2000.0
 
 	-- Minimap Pinging related
+	---@type PingMethod|integer
 	self.m_PingMethod = PingMethod.World
-	self.m_Position_X = 0
-	self.m_Position_Z = 0
+	self.m_Position_X = 0.0
+	self.m_Position_Z = 0.0
 
 	-- Should we send a ping (used for sync across UpdateState's)
 	self.m_ShouldPing = false
 	self.m_PingCooldownTime = 0.60
 
+	---@type PingType|integer
 	self.m_PingType = PingType.Default
 
 	-- Time to hold key to display CommoRose
@@ -49,6 +53,7 @@ function PingClient:RegisterVars()
 	self.m_DisplayCommoRoseTimer = 0.0
 	self.m_IsCommoRoseOpened = false
 
+	---@type PingType|integer
 	self.m_CurrentTypeIndex = PingType.Default
 end
 
@@ -56,11 +61,15 @@ end
 -- Events
 -- =============================================
 
+---VEXT Client Level:Loaded Event
 function PingClient:OnLevelLoaded()
 	self.m_SquadPings = {}
 	self.m_ShouldPing = false
 end
 
+---Called from VEXT UpdateManager:Update
+---UpdatePass.UpdatePass_PreFrame
+---@param p_DeltaTime number
 function PingClient:OnUIDrawHud(p_DeltaTime)
 	self.m_PingCooldownTime = self.m_PingCooldownTime - p_DeltaTime
 
@@ -72,7 +81,9 @@ function PingClient:OnUIDrawHud(p_DeltaTime)
 
 		l_PingInfo[2] = l_PingInfo[2] - p_DeltaTime
 
+		---@type integer
 		local s_PingId = l_PingInfo[1]
+		---@type number
 		local s_Cooldown = l_PingInfo[2]
 
 		if s_Cooldown < 0.001 then
@@ -99,6 +110,8 @@ function PingClient:OnUIDrawHud(p_DeltaTime)
 	end
 end
 
+---VEXT Client Client:UpdateInput Event
+---@param p_DeltaTime number
 function PingClient:OnClientUpdateInput(p_DeltaTime)
 	if SpectatorManager:GetSpectating() then
 		return
@@ -144,6 +157,9 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 	end
 end
 
+---Called from VEXT UpdateManager:Update
+---UpdatePass.UpdatePass_PreSim
+---@param p_DeltaTime number
 function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 	-- If we do not need to ping dont worry about anything
 	if not self.m_ShouldPing then
@@ -151,9 +167,17 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 	end
 
 	m_Logger:Write("raycasting...")
+	---@type RayCastHit|nil
 	local s_RaycastHit = nil
 
 	if self.m_PingMethod == PingMethod.World then
+		-- before raycasting we check if we should remove the last player ping instead
+		if self:ShouldRemovePing() then
+			self.m_ShouldPing = false
+			NetEvents:SendLocal(PingEvents.RemoveClientPing)
+			return
+		end
+
 		s_RaycastHit = self:RaycastWorld()
 	else
 		s_RaycastHit = self:RaycastScreen()
@@ -179,6 +203,10 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
+---Custom Client PingEvents.ServerPing NetEvent
+---@param p_PlayerName string
+---@param p_Position Vec3
+---@param p_PingType PingType|integer
 function PingClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
 	m_Logger:Write("playerName: " .. tostring(p_PlayerName) .. " position: " .. p_Position.x .. ", " .. p_Position.y .. ", " .. p_Position.z)
 
@@ -207,6 +235,7 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
 	end
 
 	-- Update the structure
+	---@type number
 	local s_UpdatedCooldown = s_PingInfo[2] + self.m_CooldownTime
 
 	if s_UpdatedCooldown > 3 * self.m_CooldownTime then
@@ -219,6 +248,8 @@ function PingClient:OnPingNotify(p_PlayerName, p_Position, p_PingType)
 	}
 end
 
+---Custom Client PingEvents.RemoveServerPing NetEvent
+---@param p_PlayerName string
 function PingClient:OnPingRemoveNotify(p_PlayerName)
 	m_Logger:Write("removing ping for player: " .. tostring(p_PlayerName))
 
@@ -234,6 +265,8 @@ function PingClient:OnPingRemoveNotify(p_PlayerName)
 	self.m_SquadPings[p_PlayerName] = nil
 end
 
+---Custom Client PingEvents.UpdateConfig NetEvent
+---@param p_CooldownTime number
 function PingClient:OnPingUpdateConfig(p_CooldownTime)
 	m_Logger:Write("cooldownTime: " .. p_CooldownTime)
 
@@ -244,12 +277,15 @@ end
 -- WebUI Events
 -- =============================================
 
+---Custom Client WebUI:PingFromMap WebUI Event
+---@param p_Coordinates string @json table
 function PingClient:OnWebUIPingFromMap(p_Coordinates)
 	if p_Coordinates == nil then
 		m_Logger:Error("No Coordinates received")
 		return
 	end
 
+	---@type table<string, number>
 	local s_Coordinates = json.decode(p_Coordinates)
 	self.m_Position_X = s_Coordinates.x
 	self.m_Position_Z = s_Coordinates.y
@@ -258,15 +294,14 @@ function PingClient:OnWebUIPingFromMap(p_Coordinates)
 	self.m_PingType = PingType.Default
 end
 
+---Custom Client WebUI:PingRemoveFromMap WebUI Event
 function PingClient:OnWebUIPingRemoveFromMap()
 	NetEvents:SendLocal(PingEvents.RemoveClientPing)
 end
 
+---Custom Client WebUI:HoverCommoRose WebUI Event
+---@param p_TypeIndex PingType|integer
 function PingClient:OnWebUIHoverCommoRose(p_TypeIndex)
-	if p_TypeIndex == nil then
-		return
-	end
-
 	self.m_CurrentTypeIndex = p_TypeIndex
 end
 
@@ -274,6 +309,8 @@ end
 -- Functions
 -- =============================================
 
+---Raycast when we press Q
+---@return RayCastHit|nil
 function PingClient:RaycastWorld()
 	local s_Transform = ClientUtils:GetCameraTransform()
 
@@ -284,7 +321,7 @@ function PingClient:RaycastWorld()
 
 	local s_Direction = Vec3(-s_Transform.forward.x, -s_Transform.forward.y, -s_Transform.forward.z)
 
-	local s_RayStart = s_Transform.trans
+	local s_RayStart = s_Transform.trans + s_Direction
 	local s_RayEnd = Vec3(s_Transform.trans.x + (s_Direction.x * self.m_RaycastLength),
 						s_Transform.trans.y + (s_Direction.y * self.m_RaycastLength),
 						s_Transform.trans.z + (s_Direction.z * self.m_RaycastLength))
@@ -294,15 +331,17 @@ function PingClient:RaycastWorld()
 	return s_RaycastHit
 end
 
+---Raycast when we click on the minimap
+---@return RayCastHit|nil
 function PingClient:RaycastScreen()
-	local s_Position = Vec3(self.m_Position_X, 2000 ,self.m_Position_Z)
+	local s_Position = Vec3(self.m_Position_X, 2000.0 ,self.m_Position_Z)
 
 	if s_Position == nil then
 		m_Logger:Write("invalid transform")
 		return
 	end
 
-	local s_Direction = Vec3(0, -1, 0)
+	local s_Direction = Vec3(0.0, -1.0, 0.0)
 
 	local s_RayStart = s_Position
 	local s_RayEnd = Vec3(s_Position.x + (s_Direction.x * self.m_RaycastLength),
@@ -312,12 +351,16 @@ function PingClient:RaycastScreen()
 	local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater |
 													RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
 
-	self.m_Position_X = 0
-	self.m_Position_Z = 0
+	self.m_Position_X = 0.0
+	self.m_Position_Z = 0.0
 
 	return s_RaycastHit
 end
 
+---Returns the PingId that's needed to find the MapMarkerEntity in the EntityManager
+---@param p_PlayerName string
+---@param p_PingType PingType|integer
+---@return integer
 function PingClient:GetPingId(p_PlayerName, p_PingType)
 	local s_IndexOffset
 
@@ -356,8 +399,12 @@ function PingClient:GetPingId(p_PlayerName, p_PingType)
 	return nil
 end
 
+---Updates the position of the ping
+---@param p_IndexInBlueprint integer
+---@param p_Position Vec3
 function PingClient:SetPingPosition(p_IndexInBlueprint, p_Position)
 	local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+	---@type SpatialEntity|nil
 	local s_Entity = s_EntityIterator:Next()
 
 	while s_Entity do
@@ -366,7 +413,7 @@ function PingClient:SetPingPosition(p_IndexInBlueprint, p_Position)
 		if s_Entity.data ~= nil then
 			local s_Data = MapMarkerEntityData(s_Entity.data)
 
-			if s_Data.indexInBlueprint == p_IndexInBlueprint and s_Data.transform.trans == Vec3(-9999, -9999, -9999) then
+			if s_Data.indexInBlueprint == p_IndexInBlueprint and s_Data.transform.trans == Vec3(-9999.0, -9999.0, -9999.0) then
 				local s_Transform = LinearTransform()
 				s_Transform.trans = p_Position
 				s_Entity.transform = s_Transform
@@ -374,12 +421,68 @@ function PingClient:SetPingPosition(p_IndexInBlueprint, p_Position)
 				return
 			end
 		end
+
 		s_Entity = s_EntityIterator:Next()
 	end
 end
 
+
+---@return boolean
+function PingClient:ShouldRemovePing()
+	if self.m_PingType ~= PingType.Default then
+		return false
+	end
+
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil then
+		-- shouldn't happen
+		return false
+	end
+
+	-- check if we actually have a ping
+	if self.m_SquadPings[s_LocalPlayer.name] ~= nil then
+		-- loop all ClientMapMarkerEntities and search the local player ones
+		local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+		---@type SpatialEntity|nil
+		local s_Entity = s_EntityIterator:Next()
+
+		while s_Entity do
+			s_Entity = SpatialEntity(s_Entity)
+
+			if s_Entity.data ~= nil then
+				local s_Data = MapMarkerEntityData(s_Entity.data)
+
+				-- check if this is the local player ping
+				if s_Data.indexInBlueprint == self.m_SquadPings[s_LocalPlayer.name][1] then
+					local s_PingScreenPosition = ClientUtils:WorldToScreen(s_Entity.transform.trans)
+
+					if s_PingScreenPosition == nil then
+						return false
+					end
+
+					-- check if the ping is close to the center (relative to the screenheight)
+					if s_PingScreenPosition:Distance(ClientUtils:GetWindowSize() / 2) < (WebUI:GetScreenHeight() / 15) then
+						m_Logger:Write("Removing ping instead of creating a new one.")
+						return true
+					end
+
+					return false
+				end
+			end
+
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+
+	return false
+end
+
+---Removes the ping by moving it to the default position
+---@param p_IndexInBlueprint integer
 function PingClient:RemovePing(p_IndexInBlueprint)
 	local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+	---@type SpatialEntity|nil
 	local s_Entity = s_EntityIterator:Next()
 
 	while s_Entity do
@@ -388,24 +491,24 @@ function PingClient:RemovePing(p_IndexInBlueprint)
 		if s_Entity.data ~= nil then
 			local s_Data = MapMarkerEntityData(s_Entity.data)
 
-			if s_Data.indexInBlueprint == p_IndexInBlueprint and s_Data.transform.trans == Vec3(-9999, -9999, -9999) then
+			if s_Data.indexInBlueprint == p_IndexInBlueprint and s_Data.transform.trans == Vec3(-9999.0, -9999.0, -9999.0) then
 				local s_Transform = LinearTransform()
-				s_Transform.trans = Vec3(-9999, -9999, -9999)
+				s_Transform.trans = Vec3(-9999.0, -9999.0, -9999.0)
 				s_Entity.transform = s_Transform
 				return
 			end
 		end
+
 		s_Entity = s_EntityIterator:Next()
 	end
 end
 
+---Returns a color as Vec4
+---@param p_PlayerName string
+---@return Vec4
 function PingClient:GetColorByPlayerName(p_PlayerName)
-	-- Validate player name
-	if p_PlayerName == nil then
-		return
-	end
-
 	local s_Teammates = m_BrPlayer.m_Team:PlayersTable()
+	---@type Vec4|nil
 	local s_Color = nil
 
 	for _, l_Teammate in pairs(s_Teammates) do
@@ -417,18 +520,16 @@ function PingClient:GetColorByPlayerName(p_PlayerName)
 
 	if s_Color == nil then
 		m_Logger:Write("Color not found!")
-		return Vec4(0, 0, 0, 1)
+		return Vec4(0.0, 0.0, 0.0, 1.0)
 	end
 
 	return s_Color
 end
 
+---Returns a css rgba color as string
+---@param p_PlayerName string
+---@return string
 function PingClient:GetRgbaColorByPlayerName(p_PlayerName)
-	-- Validate player name
-	if p_PlayerName == nil then
-		return
-	end
-
 	-- Get original color
 	local s_Color = self:GetColorByPlayerName(p_PlayerName)
 

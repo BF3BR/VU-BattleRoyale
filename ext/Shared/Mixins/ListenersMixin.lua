@@ -1,4 +1,5 @@
-class "ListenersMixin"
+---@class ListenersMixin
+ListenersMixin = class "ListenersMixin"
 
 local ListenerType = {Event = 1, NetEvent = 2, Hook = 3}
 
@@ -10,7 +11,7 @@ function ListenersMixin:MakeListenerKey(p_Type, p_Listener)
 	return string.format("%s:%d", p_Listener, p_Type)
 end
 
-function ListenersMixin:AddListener(p_Type, p_EventName, p_Listener)
+function ListenersMixin:AddListener(p_Type, p_EventName, p_Listener, p_Key)
 	p_Key = p_Key or self:MakeListenerKey(p_Type, p_EventName)
 
 	self:RemoveListener(p_Key)
@@ -27,7 +28,7 @@ function ListenersMixin:AddNetEventListener(p_EventName, p_Context, p_Callback)
 end
 
 function ListenersMixin:AddHookListener(p_HookName, p_Priority, p_Context, p_Callback)
-	self:AddListener(ListenerType.Hook, eventName, Hooks:Install(p_HookName, p_Priority, p_Context, p_Callback))
+	self:AddListener(ListenerType.Hook, p_HookName, Hooks:Install(p_HookName, p_Priority, p_Context, p_Callback))
 end
 
 function ListenersMixin:GetListener(p_Type, p_EventName)
@@ -52,10 +53,10 @@ function ListenersMixin:RemoveListener(p_Type, p_EventName)
 	local s_Listener = self:GetListener(s_Key)
 
 	if s_Listener ~= nil then
-		if s_Listener.type == ListenerType.Hook then
-			item:Uninstall()
+		if s_Listener.Type == ListenerType.Hook then
+			s_Listener.Listener:Uninstall()
 		else
-			item:Unsubscribe()
+			s_Listener.Listener:Unsubscribe()
 		end
 
 		self.m__Listeners[s_Key] = nil

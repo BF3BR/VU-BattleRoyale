@@ -1,3 +1,4 @@
+---@class SettingsConfig
 SettingsConfig = {
 	WorldRenderSettings = {
 		shadowmapViewDistance = 2500,

@@ -1,9 +1,13 @@
-class "SpectatorServer"
+---@class SpectatorServer
+SpectatorServer = class "SpectatorServer"
 
 -- =============================================
 -- Events
 -- =============================================
 
+---Custom Server SpectatorEvents.RequestPitchAndYaw NetEvent
+---@param p_Player Player
+---@param p_SpectatingId integer @Player.id
 function SpectatorServer:OnSpectatorRequestPitchAndYaw(p_Player, p_SpectatingId)
 	if p_Player == nil or p_SpectatingId == nil then
 		return

@@ -1,13 +1,21 @@
-class "BRPlayer"
+---@class BRPlayer
+---@field GetPlayerName fun(p_Player : Player|BRPlayer|string)
+BRPlayer = class "BRPlayer"
 
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
+---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
+---@type Logger
 local m_Logger = Logger("BRPlayer", true)
 
+---@param p_Player Player
 function BRPlayer:__init(p_Player)
 	-- the vanilla player instance of the player
 	self.m_Player = p_Player
 
 	-- the BRTeam that the player is part of
+	---@type BRTeam|nil
 	self.m_Team = nil
 
 	-- indicates if the player is the leader of the team
@@ -17,19 +25,25 @@ function BRPlayer:__init(p_Player)
 	self.m_JoinedByCode = false
 
 	-- the name of the player who killed this BRPlayer
+	---@type string|nil
 	self.m_KillerName = nil
 
-	-- the names of players who spectate this BRPlayer
+	-- the name of player who this BRPlayer is spectating
+	---@type string|nil
 	self.m_SpectatedPlayerName = nil
+	-- the names of players who spectate this BRPlayer
+	---@type string[]
 	self.m_SpectatorNames = {}
 
 	-- the position of the player in the squad
 	self.m_PosInSquad = 1
 
 	-- the user selected strategy that is used when the teams are formed
+	---@type TeamJoinStrategy|integer
 	self.m_TeamJoinStrategy = TeamJoinStrategy.AutoJoin
 
 	-- the player's inventory
+	---@type BRInventory
 	self.m_Inventory = nil
 
 	-- The kill count of the player
@@ -64,10 +78,15 @@ end
 -- Hooks
 -- =============================================
 
+---Calculate the new damage
+---@param p_Damage number
+---@param p_Giver BRPlayer|nil
+---@param p_IsHeadShot boolean
+---@return number
 function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 	-- check if giver isnt a teammate or the player himself
 	if p_Giver ~= nil and self:IsTeammate(p_Giver) and not self:Equals(p_Giver) then
-		return 0
+		return 0.0
 	end
 
 	local s_Soldier = self:GetSoldier()
@@ -110,7 +129,7 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 				end
 
 				-- start mandown damage timer
-				g_Timers:Interval(1, self, self.OnManDownDamage)
+				m_TimerManager:Interval(1, self, self.OnManDownDamage)
 			else
 				self.m_KillerName = nil -- TODO move to onRevive
 				self:Kill(true)
@@ -128,12 +147,17 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 	return math.max(0.001, p_Damage)
 end
 
+---@param p_Item BRItemArmor|BRItemHelmet|nil
+---@param p_Damage number
+---@param p_Giver BRPlayer
+---@return number
 function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage, p_Giver)
 	if not p_Item then
 		return p_Damage
 	end
 
-	local s_WasDestroyed
+	---@type boolean
+	local s_WasDestroyed = nil
 	p_Damage, s_WasDestroyed = p_Item:ApplyDamage(p_Damage)
 
 	-- if item was destroyed, remove it from inventory
@@ -157,7 +181,8 @@ end
 	-- Player Damage/ Kill Functions
 -- =============================================
 
--- Increments the kill counter of the player
+---Increments the kill counter of the player
+---@param p_Victim BRPlayer
 function BRPlayer:IncrementKills(p_Victim)
 	if p_Victim == nil or not self:Equals(p_Victim) then
 		self.m_Kills = self.m_Kills + 1
@@ -169,6 +194,8 @@ function BRPlayer:IncrementKills(p_Victim)
 	NetEvents:SendToLocal(DamageEvent.PlayerKilled, p_Victim.m_Player, self:GetName())
 end
 
+---Gets called every second if mandown
+---@param p_Timer Timer
 function BRPlayer:OnManDownDamage(p_Timer)
 	local s_Soldier = self:GetSoldier()
 
@@ -189,8 +216,8 @@ function BRPlayer:OnManDownDamage(p_Timer)
 	s_Soldier.health = math.max(0, s_Soldier.health - 1)
 end
 
--- Kills the player
--- @param p_Forced (optional) calls :ForceDead() instead of :Kill()
+---Kills the player
+---@param p_Forced boolean (optional) calls :ForceDead() instead of :Kill()
 function BRPlayer:Kill(p_Forced)
 	-- check if alive
 	if not self.m_Player.alive then
@@ -206,7 +233,6 @@ function BRPlayer:Kill(p_Forced)
 		return true -- TODO maybe should return false
 	end
 
-	-- TODO removed ForceDead(), it causes crashes
 	if p_Forced then
 		s_Soldier:ForceDead()
 	else
@@ -216,6 +242,8 @@ function BRPlayer:Kill(p_Forced)
 	return true
 end
 
+---Finish all teammates.
+---Doesn't really return something
 function BRPlayer:FinishTeammates()
 	return self.m_Team ~= nil and self.m_Team:FinishPlayers(self)
 end
@@ -224,13 +252,14 @@ end
 	-- Player Spawn Functions
 -- =============================================
 
-function BRPlayer:Spawn(p_Trans)
+---@param p_Transform LinearTransform
+function BRPlayer:Spawn(p_Transform)
 	-- check if alive
 	if self:IsAlive() then
 		return
 	end
 
-	if p_Trans == nil then
+	if p_Transform == nil then
 		m_Logger:Write("Spawn transform is invalid.")
 		return
 	end
@@ -265,7 +294,7 @@ function BRPlayer:Spawn(p_Trans)
 		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1") then
 			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
 			s_CharacterSpawnReferenceObjectData:MakeWritable()
-			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Trans
+			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Transform
 
 			-- spawn the player
 			s_Entity:FireEvent(s_Event)
@@ -277,66 +306,46 @@ function BRPlayer:Spawn(p_Trans)
 		s_Entity = s_EntityIterator:Next()
 	end
 
-	g_Timers:Interval(0.01, self.m_Player, function(p_Player, p_Timer)
-		if p_Player.soldier ~= nil then
+	---@param p_PlayerName string
+	---@param p_Timer Timer
+	m_TimerManager:Interval(0.01, self.m_Player.name, function(p_PlayerName, p_Timer)
+		local s_Player = PlayerManager:GetPlayerByName(p_PlayerName)
+
+		if s_Player == nil then
+			m_Logger:Error("We couldn\'t find the player " .. p_PlayerName)
+			p_Timer:Destroy()
+		elseif s_Player.soldier ~= nil then
 			-- the ApplyCustomization is needed otherwise the transform will reset to Vec3(1,0,0) Vec3(0,1,0) Vec3(0,0,1)
-			p_Player.soldier:ApplyCustomization(s_CustomizeSoldierData)
-			p_Player.soldier:SetTransform(p_Trans)
+			s_Player.soldier:ApplyCustomization(s_CustomizeSoldierData)
+			s_Player.soldier:SetTransform(p_Transform)
 			-- we are done, so we can destroy this timer
 			p_Timer:Destroy()
 		end
 	end)
 end
 
--- TODO move to a util
-function BRPlayer:CreateCustomizeSoldierData()
-	local s_CustomizeSoldierData = CustomizeSoldierData()
-	s_CustomizeSoldierData.restoreToOriginalVisualState = false
-	s_CustomizeSoldierData.clearVisualState = true
-	s_CustomizeSoldierData.overrideMaxHealth = -1.0
-	s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
-
-	local s_UnlockWeaponAndSlot7 = UnlockWeaponAndSlot()
-	s_UnlockWeaponAndSlot7.weapon = SoldierWeaponUnlockAsset(
-		ResourceManager:FindInstanceByGuid(Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73"))
-	)
-	s_UnlockWeaponAndSlot7.slot = WeaponSlot.WeaponSlot_7
-	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot7)
-
-	local s_UnlockWeaponAndSlot9 = UnlockWeaponAndSlot()
-	s_UnlockWeaponAndSlot9.weapon = SoldierWeaponUnlockAsset(
-		ResourceManager:FindInstanceByGuid(Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B"))
-	)
-	s_UnlockWeaponAndSlot9.slot = WeaponSlot.WeaponSlot_9
-	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot9)
-
-	s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
-	s_CustomizeSoldierData.removeAllExistingWeapons = true
-	s_CustomizeSoldierData.disableDeathPickup = false
-
-	return s_CustomizeSoldierData
-end
-
 -- =============================================
 	-- Spectator Functions
 -- =============================================
 
-function BRPlayer:SpectatePlayer(p_BrPlayer)
-	if p_BrPlayer == nil then
+---@param p_BRPlayer BRPlayer|nil
+function BRPlayer:SpectatePlayer(p_BRPlayer)
+	if p_BRPlayer == nil then
 		self.m_SpectatedPlayerName = nil
 		return
 	end
 
-	self.m_SpectatedPlayerName = p_BrPlayer:GetName()
+	self.m_SpectatedPlayerName = p_BRPlayer:GetName()
 
 	-- send inventory data of the spectated player
-	if p_BrPlayer.m_Inventory ~= nil then
-		local _, s_SpectatorData = p_BrPlayer.m_Inventory:AsTable(true)
+	if p_BRPlayer.m_Inventory ~= nil then
+		local _, s_SpectatorData = p_BRPlayer.m_Inventory:AsTable(true)
 		m_Logger:Write(json.encode(s_SpectatorData))
 		NetEvents:SendToLocal(InventoryNetEvent.InventoryState, self:GetPlayer(), s_SpectatorData)
 	end
 end
 
+---@param p_PlayerName string|nil
 function BRPlayer:AddSpectator(p_PlayerName)
 	if self.m_SpectatorNames[p_PlayerName] == nil then
 		table.insert(self.m_SpectatorNames, p_PlayerName)
@@ -345,6 +354,7 @@ function BRPlayer:AddSpectator(p_PlayerName)
 	NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
 end
 
+---@param p_PlayerName string
 function BRPlayer:RemoveSpectator(p_PlayerName)
 	for i, l_PlayerName in pairs(self.m_SpectatorNames) do
 		if l_PlayerName == p_PlayerName then
@@ -359,7 +369,7 @@ end
 	-- Other Functions
 -- =============================================
 
--- Updates the vanilla player team/squad Ids
+---Updates the vanilla player team/squad Ids
 function BRPlayer:ApplyTeamSquadIds()
 	-- ensure that the player is dead
 	if self.m_Player ~= nil and not self.m_Player.alive then
@@ -368,6 +378,8 @@ function BRPlayer:ApplyTeamSquadIds()
 	end
 end
 
+---@param p_EventName string
+---@vararg any
 function BRPlayer:SendEventToSpectators(p_EventName, ...)
 	for i, l_SpectatorName in pairs(self.m_SpectatorNames) do
 		local s_Spectator = PlayerManager:GetPlayerByName(l_SpectatorName)
@@ -414,6 +426,9 @@ function BRPlayer:Destroy()
 end
 
 -- Alias for `BRTeam:RemovePlayer()`
+---@param p_Forced boolean
+---@param p_IgnoreBroadcast boolean
+---@return boolean
 function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
 	if self.m_Team ~= nil then
 		return self.m_Team:RemovePlayer(self, p_Forced, p_IgnoreBroadcast)
@@ -450,6 +465,7 @@ end
 	-- Set Functions
 -- =============================================
 
+---@param p_Strategy TeamJoinStrategy|integer
 function BRPlayer:SetTeamJoinStrategy(p_Strategy)
 	if self.m_TeamJoinStrategy == p_Strategy then
 		return
@@ -470,6 +486,8 @@ function BRPlayer:SetTeamJoinStrategy(p_Strategy)
 	self:SendState()
 end
 
+---@param p_AppearanceName string|nil
+---@param p_RefreshPlayer boolean
 function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
 	if p_AppearanceName ~= nil then
 		self.m_Appearance = p_AppearanceName
@@ -491,7 +509,8 @@ end
 	-- Get Functions
 -- =============================================
 
--- Returns the username of the player
+---Returns the username of the player
+---@return string|nil
 function BRPlayer:GetName()
 	local s_Player = self:GetPlayer()
 	return (s_Player ~= nil and s_Player.name) or nil
@@ -499,19 +518,21 @@ end
 
 -- TODO
 -- This should be used instead of keeping player reference
+---@return Player
 function BRPlayer:GetPlayer()
 	-- return PlayerManager:GetPlayerByName(self.m_PlayerName)
 	return self.m_Player
 end
 
--- Returns the soldier object, if exists, or nil
+---Returns the soldier object, if exists, or nil
+---@return SoldierEntity|nil
 function BRPlayer:GetSoldier()
 	local s_Player = self:GetPlayer()
 	return (s_Player ~= nil and s_Player.soldier) or nil
 end
 
--- Returns the position of the player if alive
--- @return Vec3|nil
+---Returns the position of the player if alive
+---@return Vec3|nil
 function BRPlayer:GetPosition()
 	local s_Soldier = self:GetSoldier()
 
@@ -522,42 +543,72 @@ function BRPlayer:GetPosition()
 	return s_Soldier.transform.trans
 end
 
--- Returns the current armor item equipped by the player
+---Returns the current armor item equipped by the player
+---@return BRItemArmor|nil
 function BRPlayer:GetArmor()
 	return (self.m_Inventory ~= nil and self.m_Inventory:GetSlot(InventorySlot.Armor).m_Item) or nil
 end
 
--- Returns the current helmet item equipped by the player
+---Returns the current helmet item equipped by the player
+---@return BRItemHelmet|nil
 function BRPlayer:GetHelmet()
 	return (self.m_Inventory ~= nil and self.m_Inventory:GetSlot(InventorySlot.Helmet).m_Item) or nil
 end
 
--- Checks if the player is alive
+---Checks if the player is alive
+---@return boolean
 function BRPlayer:IsAlive()
 	local s_Player = self:GetPlayer()
 	return s_Player ~= nil and s_Player.alive
 end
 
--- Checks if the player and `p_OtherBrPlayer` are on the same team
-function BRPlayer:IsTeammate(p_OtherBrPlayer)
-	return self.m_Team ~= nil and self.m_Team:Equals(p_OtherBrPlayer.m_Team)
+---Checks if the player and `p_OtherBRPlayer` are on the same team
+---@param p_OtherBRPlayer BRPlayer
+---@return boolean
+function BRPlayer:IsTeammate(p_OtherBRPlayer)
+	return self.m_Team ~= nil and self.m_Team:Equals(p_OtherBRPlayer.m_Team)
 end
 
--- Checks if the player has any alive teammates
+---Checks if the player has any alive teammates
+---@return boolean
 function BRPlayer:HasAliveTeammates()
 	return self.m_Team ~= nil and self.m_Team:HasAlivePlayers(self, true)
 end
 
--- Compare two BRPlayer instances for equality
-function BRPlayer:Equals(p_OtherBrPlayer)
-	return p_OtherBrPlayer ~= nil and self:GetName() == p_OtherBrPlayer:GetName()
+---Compare two BRPlayer instances for equality
+---@param p_OtherBRPlayer BRPlayer
+---@return boolean
+function BRPlayer:Equals(p_OtherBRPlayer)
+	return p_OtherBRPlayer ~= nil and self:GetName() == p_OtherBRPlayer:GetName()
 end
 
--- `==` metamethod
-function BRPlayer:__eq(p_OtherBrPlayer)
-	return self:Equals(p_OtherBrPlayer)
+---`==` metamethod
+---@param p_OtherBRPlayer BRPlayer
+---@return boolean
+function BRPlayer:__eq(p_OtherBRPlayer)
+	return self:Equals(p_OtherBRPlayer)
 end
 
+---@class BRSimplePlayerTable
+---@field Name string
+---@field IsTeamLeader boolean
+---@field State BRPlayerState|integer
+---@field PosInSquad integer
+
+---@class BRPlayerDataTable
+---@field TeamJoinStrategy integer|TeamJoinStrategy
+---@field IsTeamLeader boolean
+---@field Kills integer
+---@field Score integer
+---@field PosInSquad integer
+
+---@class BRPlayerTable
+---@field Data BRPlayerDataTable
+---@field Team BRTeamTable
+
+---@param p_Simple boolean|nil
+---@param p_TeamData BRTeamTable|nil
+---@return BRSimplePlayerTable|BRPlayerTable
 function BRPlayer:AsTable(p_Simple, p_TeamData)
 	-- state used for squad members
 	if p_Simple then
@@ -601,10 +652,12 @@ function BRPlayer:AsTable(p_Simple, p_TeamData)
 end
 
 -- A helper function to get the name of the player
--- * p_Player is string			--> p_Player
--- * p_Player is vanilla player --> p_Player.name
--- * p_Player is BRPlayer		--> p_Player.m_Player.name
--- * else						--> nil
+-- * `p_Player` is string			--> `p_Player`
+-- * `p_Player` is vanilla player --> `p_Player.name`
+-- * `p_Player` is BRPlayer		--> `p_Player.m_Player.name`
+-- * `else`						--> `nil`
+---@param p_Player string|Player|BRPlayer|nil
+---@return string
 function BRPlayer.static:GetPlayerName(p_Player)
 	return (type(p_Player) == "string" and p_Player) or (type(p_Player) == "userdata" and p_Player.name) or
 				(type(p_Player) == "table" and p_Player:GetName()) or nil

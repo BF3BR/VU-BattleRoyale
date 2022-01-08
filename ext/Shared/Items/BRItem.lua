@@ -1,22 +1,36 @@
+---@class BRItem
+BRItem = class "BRItem"
+
 local m_Logger = Logger("BRItem", true)
+---@type BRItemFactory
+local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 
-class "BRItem"
-
+---Creates a new BRItem
+---@param p_Id string @It is a tostring(Guid)
+---@param p_Definition BRItemDefinition @BRItemDefinition or something upcasted
+---@param p_Quantity integer
 function BRItem:__init(p_Id, p_Definition, p_Quantity)
 	-- Unique Id for each item
+	--
+	-- It is a tostring(Guid)
 	self.m_Id = p_Id ~= nil and p_Id or tostring(MathUtils:RandomGuid())
 
 	-- Item's definition
+	---manually upcasted in the other BRItem classes
 	self.m_Definition = p_Definition
 
 	-- Item's quantity
 	self.m_Quantity = p_Quantity ~= nil and p_Quantity or 1
 
 	-- The LootPickup or Slot that contains the item
+	---@see done in: BRInventorySlot:Put(p_Item)
+	---@type BRInventorySlot|nil
 	self.m_Owner = nil
 end
 
+-- TODO: Recheck this m_Items & ContainsId seems wrong, also this function is unused
 -- Returns the LootPickup instance that this item belongs to
+--[[
 function BRItem:GetParentLootPickup()
 	if self.m_Owner == nil or self.m_Owner.m_Items == nil then
 		return nil
@@ -25,6 +39,7 @@ function BRItem:GetParentLootPickup()
 	-- make sure the loot pickup contains this item
 	return self.m_Owner:ContainsId(self.m_Id) and self.m_Owner or nil
 end
+]]
 
 -- Returns the BRInventorySlot instance that this item belongs to
 function BRItem:GetParentSlot()
@@ -124,7 +139,7 @@ function BRItem:AsTable(p_Extended)
 end
 
 function BRItem:CreateFromTable(p_Table)
-	return g_BRItemFactory:CreateFromTable(p_Table)
+	return m_BRItemFactory:CreateFromTable(p_Table)
 end
 
 function BRItem:Equals(p_Item)

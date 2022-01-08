@@ -1,16 +1,22 @@
-class("BRItemArmorDefinition", BRItemProtectionDefinition)
+---@class BRItemArmorDefinition : BRItemProtectionDefinition
+BRItemArmorDefinition = class("BRItemArmorDefinition", BRItemProtectionDefinition)
 
+---Creates a new BRItemArmorDefinition
+---@param p_UId string|'"armor-tier-1"'|'"armor-tier-2"'|'"armor-tier-3"'
+---@param p_Name string|'"Armor"'
+---@param p_Options BRItemProtectionDefinitionOptions
 function BRItemArmorDefinition:__init(p_UId, p_Name, p_Options)
 	p_Options = p_Options or {}
 
 	-- set fixed shared option values for vests
+	---@type ItemType|integer
 	p_Options.Type = ItemType.Armor
 	p_Options.Mesh = SkeletonMeshModel(DC(Guid("577909B4-EA3A-BF50-2B09-67278E0B0D7A"), Guid("163CAD89-E917-4B51-ED38-814A5F961C1C")), 0, 213)
 	p_Options.Transform = LinearTransform(
-		Vec3(1.2, 0, 0),
-		Vec3(0, 1.2, 0),
-		Vec3(0, 0, 1.2),
-		Vec3(0, -1.25, 0)
+		Vec3(1.2, 0.0, 0.0),
+		Vec3(0, 1.2, 0.0),
+		Vec3(0.0, 0.0, 1.2),
+		Vec3(0.0, -1.25, 0.0)
 	)
 
 	-- call super's constructor and set shared options
