@@ -429,6 +429,10 @@ end
 
 ---@return boolean
 function PingClient:ShouldRemovePing()
+	if self.m_PingType ~= PingType.Default then
+		return false
+	end
+
 	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
 
 	if s_LocalPlayer == nil then
