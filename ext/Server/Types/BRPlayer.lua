@@ -156,9 +156,9 @@ function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage, p_Giver)
 		return p_Damage
 	end
 
-	---@type boolean
-	local s_WasDestroyed = nil
-	p_Damage, s_WasDestroyed = p_Item:ApplyDamage(p_Damage)
+	local s_Damage, s_WasDestroyed = p_Item:ApplyDamage(p_Damage)
+
+	p_Giver:IncreaseDamageDealt(p_Damage - s_Damage)
 
 	-- if item was destroyed, remove it from inventory
 	if s_WasDestroyed then
@@ -170,7 +170,7 @@ function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage, p_Giver)
 		self.m_Inventory:DestroyItem(p_Item.m_Id)
 	end
 
-	return p_Damage
+	return s_Damage
 end
 
 -- =============================================

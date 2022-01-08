@@ -600,11 +600,12 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_HookCtx, p_Soldier, p_Info, p_Gi
 		s_BrGiver = m_TeamManagerServer:GetPlayer(p_GiverInfo.giver)
 	end
 
-	if s_BrGiver ~= nil then
+	p_Info.damage = s_BrPlayer:OnDamaged(p_Info.damage, s_BrGiver, p_Info.boneIndex == 1)
+
+	if s_BrGiver ~= nil and not s_BrPlayer:Equals(s_BrGiver) then
 		s_BrGiver:IncreaseDamageDealt(p_Info.damage)
 	end
 
-	p_Info.damage = s_BrPlayer:OnDamaged(p_Info.damage, s_BrGiver, p_Info.boneIndex == 1)
 	p_HookCtx:Pass(p_Soldier, p_Info, p_GiverInfo)
 end
 
