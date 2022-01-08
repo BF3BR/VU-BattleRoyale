@@ -95,52 +95,10 @@ function ManDownModifier:OnM9FiringFunctionData(p_FiringFunctionData)
 	p_FiringFunctionData.ammo.numberOfMagazines = 0
 end
 
-
+---@param p_SoldierBlueprint SoldierBlueprint
 function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 	local s_Partition = p_SoldierBlueprint.partition
 	local s_Registry = m_RegistryManager:GetRegistry()
-
-	-- Might be better to hardcode this with an index map
-	for i = #p_SoldierBlueprint.eventConnections, 1, -1 do
-		if p_SoldierBlueprint.eventConnections[i].source:Is("SoldierEntityData") then
-			if p_SoldierBlueprint.eventConnections[i].target:Is("PlayerFilterEntityData") then
-				-- Remove revive sound connection
-				-- Should be looked over again, some PlayerFilterEntityData connections might be useful
-				p_SoldierBlueprint.eventConnections:erase(i)
-			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("9DF212F6-73C1-4218-9110-2090EE95F730") then
-				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnRevived") then
-					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnManDown")
-				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnManDown") then
-					p_SoldierBlueprint.eventConnections:erase(i)
-				end
-			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("48117724-9949-43B4-BFE8-5F7D9492D1EF") then
-				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnRevived") then
-					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnManDown")
-				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnReviveAccepted") then
-					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnRevived")
-				end
-			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("AD9FBC60-3ADE-42C4-80FB-647F3DD251C6")
-			and p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnRevived") then
-				p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnManDown")
-			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("8B5295FF-8770-4587-B436-1F2E71F97F35") then
-				-- Adjust inputrestriction
-				if p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnRevived") then
-					p_SoldierBlueprint.eventConnections[i].targetEvent.id = MathUtils:FNVHash("Deactivate")
-				elseif p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnReviveAccepted") then
-					p_SoldierBlueprint.eventConnections[i].sourceEvent.id = MathUtils:FNVHash("OnManDown")
-					p_SoldierBlueprint.eventConnections[i].targetEvent.id = MathUtils:FNVHash("Activate")
-				else
-					p_SoldierBlueprint.eventConnections:erase(i)
-				end
-			elseif p_SoldierBlueprint.eventConnections[i].target.instanceGuid == Guid("7D3F4B44-9E51-444C-A5D7-9D33928A35C5")
-			and p_SoldierBlueprint.eventConnections[i].sourceEvent.id == MathUtils:FNVHash("OnManDown") then
-				-- Leave the damage screen when going mandown
-				p_SoldierBlueprint.eventConnections:erase(i)
-			end
-		end
-	end
-
-	p_SoldierBlueprint.eventConnections[3].targetEvent.id = MathUtils:FNVHash("OnKilled")
 
 	-- M9 kit for ManDownModifier
 	local s_CustomizeSoldierData = self:CreateManDownCustomizeSoldierData()
@@ -301,6 +259,39 @@ function ManDownModifier:OnSoldierBlueprintLoaded(p_SoldierBlueprint)
 			l_Instance.excluded = true
 		end
 	end
+
+	-- instead of OnReviveAccepted reset the Soldier_PainDamage_Crit_Fullscreen_Prefab directly OnRevived
+	p_SoldierBlueprint.eventConnections[244].sourceEvent.id = MathUtils:FNVHash("OnRevived")
+	-- instead of OnRevived increment the Soldier_PainDamage_Crit_Fullscreen_Prefab in OnManDown
+	p_SoldierBlueprint.eventConnections[243].sourceEvent.id = MathUtils:FNVHash("OnManDown")
+	p_SoldierBlueprint.eventConnections[242].sourceEvent.id = MathUtils:FNVHash("OnManDown")
+	-- remove OnManDown IRNV stuff
+	p_SoldierBlueprint.eventConnections:erase(241)
+	-- remove OnManDown Soldier_PainDamage_Fullscreen_Prefab
+	p_SoldierBlueprint.eventConnections:erase(202)
+	-- remove OnManDown Soldier_PainDamage_Crit_Fullscreen_Prefab
+	p_SoldierBlueprint.eventConnections:erase(201)
+	-- remove OnManDown IRNV stuff
+	p_SoldierBlueprint.eventConnections:erase(193)
+	-- remove OnRevived Sound Revived_1p
+	p_SoldierBlueprint.eventConnections:erase(140)
+	-- instead of activating the InputRestriction on OnRevive, we deactivate it
+	p_SoldierBlueprint.eventConnections[128].targetEvent.id = MathUtils:FNVHash("Deactivate")
+	-- remove OnRevivedRefused connection
+	p_SoldierBlueprint.eventConnections:erase(124)
+	-- remove OnReviveAccepted connection
+	p_SoldierBlueprint.eventConnections:erase(122)
+	-- remove OnReviveAccepted connection
+	p_SoldierBlueprint.eventConnections:erase(120)
+	-- instead of OnRevived we use OnManDown for Soldier_PainDamage_Crit_Fullscreen_Prefab
+	p_SoldierBlueprint.eventConnections[119].sourceEvent.id = MathUtils:FNVHash("OnManDown")
+	-- remove OnRevivedRefused InputRestriction connection
+	p_SoldierBlueprint.eventConnections:erase(118)
+	-- instead of deactivating the InputRestriction on OnReviveAccepted, we activate it OnManDown
+	p_SoldierBlueprint.eventConnections[117].sourceEvent.id = MathUtils:FNVHash("OnManDown")
+	p_SoldierBlueprint.eventConnections[117].targetEvent.id = MathUtils:FNVHash("Activate")
+	-- source SoldierEntityData OnManDown -> target InterfaceDescriptor OnKilled
+	p_SoldierBlueprint.eventConnections[3].targetEvent.id = MathUtils:FNVHash("OnKilled")
 
 	m_Logger:Write("ManDown state modified")
 end

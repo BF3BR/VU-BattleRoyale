@@ -15,7 +15,7 @@ end
 
 function PingClient:RegisterVars()
 	-- Pings for squadmates
-	-- This is playerName, { position, cooldownTime }
+	-- This is playerName, { positionInSquad, cooldownTime }
 	---@type table<string, table<integer, number>>
 	self.m_SquadPings = {}
 
@@ -171,6 +171,13 @@ function PingClient:OnUpdatePassPreSim(p_DeltaTime)
 	local s_RaycastHit = nil
 
 	if self.m_PingMethod == PingMethod.World then
+		-- before raycasting we check if we should remove the last player ping instead
+		if self:ShouldRemovePing() then
+			self.m_ShouldPing = false
+			NetEvents:SendLocal(PingEvents.RemoveClientPing)
+			return
+		end
+
 		s_RaycastHit = self:RaycastWorld()
 	else
 		s_RaycastHit = self:RaycastScreen()
@@ -314,7 +321,7 @@ function PingClient:RaycastWorld()
 
 	local s_Direction = Vec3(-s_Transform.forward.x, -s_Transform.forward.y, -s_Transform.forward.z)
 
-	local s_RayStart = s_Transform.trans
+	local s_RayStart = s_Transform.trans + s_Direction
 	local s_RayEnd = Vec3(s_Transform.trans.x + (s_Direction.x * self.m_RaycastLength),
 						s_Transform.trans.y + (s_Direction.y * self.m_RaycastLength),
 						s_Transform.trans.z + (s_Direction.z * self.m_RaycastLength))
@@ -417,6 +424,58 @@ function PingClient:SetPingPosition(p_IndexInBlueprint, p_Position)
 
 		s_Entity = s_EntityIterator:Next()
 	end
+end
+
+
+---@return boolean
+function PingClient:ShouldRemovePing()
+	if self.m_PingType ~= PingType.Default then
+		return false
+	end
+
+	local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+	if s_LocalPlayer == nil then
+		-- shouldn't happen
+		return false
+	end
+
+	-- check if we actually have a ping
+	if self.m_SquadPings[s_LocalPlayer.name] ~= nil then
+		-- loop all ClientMapMarkerEntities and search the local player ones
+		local s_EntityIterator = EntityManager:GetIterator('ClientMapMarkerEntity')
+		---@type SpatialEntity|nil
+		local s_Entity = s_EntityIterator:Next()
+
+		while s_Entity do
+			s_Entity = SpatialEntity(s_Entity)
+
+			if s_Entity.data ~= nil then
+				local s_Data = MapMarkerEntityData(s_Entity.data)
+
+				-- check if this is the local player ping
+				if s_Data.indexInBlueprint == self.m_SquadPings[s_LocalPlayer.name][1] then
+					local s_PingScreenPosition = ClientUtils:WorldToScreen(s_Entity.transform.trans)
+
+					if s_PingScreenPosition == nil then
+						return false
+					end
+
+					-- check if the ping is close to the center (relative to the screenheight)
+					if s_PingScreenPosition:Distance(ClientUtils:GetWindowSize() / 2) < (WebUI:GetScreenHeight() / 15) then
+						m_Logger:Write("Removing ping instead of creating a new one.")
+						return true
+					end
+
+					return false
+				end
+			end
+
+			s_Entity = s_EntityIterator:Next()
+		end
+	end
+
+	return false
 end
 
 ---Removes the ping by moving it to the default position
