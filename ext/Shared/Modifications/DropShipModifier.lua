@@ -1,6 +1,6 @@
 class "DropShipModifier"
 
-local m_Something = DC(Guid(""), Guid(""))
+--local m_Something = DC(Guid(""), Guid(""))
 
 function DropShipModifier:RegisterCallbacks()
 	--m_Something:RegisterLoadHandler(self, self.Something)
