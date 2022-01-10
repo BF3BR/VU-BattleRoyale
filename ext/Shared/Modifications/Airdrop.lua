@@ -42,8 +42,8 @@ function Airdrop:ModifyAirdropObject(p_OriginalBlueprint)
 	s_CustomPhysicsEntityData.scaledAssets:clear()
 	s_CustomPhysicsEntityData.scaledAssets:add(m_HavokAsset:GetInstance())
 
-	s_CustomRigidBodyData.mass = 800
-	s_CustomRigidBodyData.linearVelocityDamping = 0.125
+	s_CustomRigidBodyData.mass = 1000
+	s_CustomRigidBodyData.linearVelocityDamping = 0.27
 
 	-- Add our new airdrop blueprint to the partition.
 	-- This will make it so we can later look it up by its GUID.
