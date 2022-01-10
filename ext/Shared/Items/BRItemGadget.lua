@@ -1,13 +1,23 @@
+---@module "Items/Definitions/BRItemGadgetDefinition"
+---@type table<string, BRItemGadgetDefinition>
 local m_GadgetDefinitions = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
-class("BRItemGadget", BRItem)
+---@class BRItemGadget : BRItem
+---@field m_Definition BRItemGadgetDefinition
+BRItemGadget = class("BRItemGadget", BRItem)
 
+---Creates a new BRItemGadget
+---@param p_Id string @It is a tostring(Guid)
+---@param p_Definition BRItemGadgetDefinition
+---@param p_Quantity integer
+---@param p_CurrentPrimaryAmmo integer|nil
 function BRItemGadget:__init(p_Id, p_Definition, p_Quantity, p_CurrentPrimaryAmmo)
 	BRItem.__init(self, p_Id, p_Definition, p_Quantity)
 
 	self.m_CurrentPrimaryAmmo = p_CurrentPrimaryAmmo or 0
 end
 
+---@param p_AmmoCount integer
 function BRItemGadget:SetPrimaryAmmo(p_AmmoCount)
 	self.m_CurrentPrimaryAmmo = p_AmmoCount
 end

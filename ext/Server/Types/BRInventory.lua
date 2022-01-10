@@ -2,10 +2,18 @@ local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_InventoryManager = require "BRInventoryManager"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
-class ("BRInventory", TimersMixin)
+---@type ArrayHelper
+local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
+---@type TimerManager
+local m_TimerManager = require "__shared/Utils/Timers"
 
+---@class BRInventory : TimersMixin
+BRInventory = class ("BRInventory", TimersMixin)
+
+---@type Logger
 local m_Logger = Logger("BRInventory", true)
 
+---@param p_Owner BRPlayer
 function BRInventory:__init(p_Owner)
 	TimersMixin.__init(self)
 
@@ -13,30 +21,49 @@ function BRInventory:__init(p_Owner)
 	self.m_Owner = p_Owner
 
 	-- A table of slots
+	---@type BRInventorySlot[]
 	self.m_Slots = {
 		-- PrimaryWeapon slots
+		---@type BRInventoryWeaponSlot
 		[InventorySlot.PrimaryWeapon] = BRInventoryWeaponSlot(self, WeaponSlot.WeaponSlot_0),
+		---@type BRInventoryAttachmentSlot
 		[InventorySlot.PrimaryWeaponAttachmentOptics] = BRInventoryAttachmentSlot(self, AttachmentType.Optics),
 		[InventorySlot.PrimaryWeaponAttachmentBarrel] = BRInventoryAttachmentSlot(self, AttachmentType.Barrel),
 		[InventorySlot.PrimaryWeaponAttachmentOther] = BRInventoryAttachmentSlot(self, AttachmentType.Other),
 		-- SecondaryWeapon slots
+		---@type BRInventoryWeaponSlot
 		[InventorySlot.SecondaryWeapon] = BRInventoryWeaponSlot(self, WeaponSlot.WeaponSlot_1),
+		---@type BRInventoryWeaponSlot
 		[InventorySlot.SecondaryWeaponAttachmentOptics] = BRInventoryAttachmentSlot(self, AttachmentType.Optics),
+		---@type BRInventoryWeaponSlot
 		[InventorySlot.SecondaryWeaponAttachmentBarrel] = BRInventoryAttachmentSlot(self, AttachmentType.Barrel),
+		---@type BRInventoryWeaponSlot
 		[InventorySlot.SecondaryWeaponAttachmentOther] = BRInventoryAttachmentSlot(self, AttachmentType.Other),
 		-- Gadget slots
+		---@type BRInventoryArmorSlot
 		[InventorySlot.Armor] = BRInventoryArmorSlot(self),
+		---@type BRInventoryHelmetSlot
 		[InventorySlot.Helmet] = BRInventoryHelmetSlot(self),
+		---@type BRInventoryGadgetSlot
 		[InventorySlot.Gadget] = BRInventoryGadgetSlot(self),
 		-- Backpack slots
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack1] = BRInventoryBackpackSlot(self),
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack2] = BRInventoryBackpackSlot(self),
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack3] = BRInventoryBackpackSlot(self),
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack4] = BRInventoryBackpackSlot(self),
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack5] = BRInventoryBackpackSlot(self),
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack6] = BRInventoryBackpackSlot(self),
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack7] = BRInventoryBackpackSlot(self),
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack8] = BRInventoryBackpackSlot(self),
+		---@type BRInventoryBackpackSlot
 		[InventorySlot.Backpack9] = BRInventoryBackpackSlot(self),
 	}
 
@@ -61,32 +88,41 @@ function BRInventory:__init(p_Owner)
 	)
 end
 
--- Returns the player instance of the owner of this inventory
+---Returns the player instance of the owner of this inventory
+---@return Player|nil
 function BRInventory:GetOwnerPlayer()
 	return (self.m_Owner ~= nil and self.m_Owner:GetPlayer()) or nil
 end
 
--- Returns the soldier instance of the owner of this inventory
+---Returns the soldier instance of the owner of this inventory
+---@return SoldierEntity|nil
 function BRInventory:GetOwnerSoldier()
 	return (self.m_Owner ~= nil and self.m_Owner:GetSoldier()) or nil
 end
 
+---Returns a BRInventorySlot type
+---@param p_SlotIndex InventorySlot|integer
+---@return BRInventorySlot
 function BRInventory:GetSlot(p_SlotIndex)
 	return self.m_Slots[p_SlotIndex]
 end
 
--- Returns the slot of an item or nil if item was not found
--- in this inventory
+---Returns the slot of an item or nil if item was not found
+---in this inventory
+---@param p_ItemId string @It is a tostring(Guid)
+---@return BRInventorySlot|nil
 function BRInventory:GetItemSlot(p_ItemId)
 	for l_Index, l_Slot in pairs(self.m_Slots) do
 		if l_Slot.m_Item ~= nil and l_Slot.m_Item.m_Id == p_ItemId then
 			return l_Slot
 		end
 	end
+
 	return nil
 end
 
--- Returns the inventory slot of the currently equipped weapon
+---Returns the inventory slot of the currently equipped weapon
+---@return BRInventoryWeaponSlot
 function BRInventory:GetCurrentWeaponSlot()
 	local s_Soldier = self:GetOwnerSoldier()
 	if s_Soldier == nil then
@@ -108,6 +144,10 @@ end
 -- will have a link to it's owner. Then we will only need to check if it's owner is
 -- a LootPickup or not
 
+---@param p_ItemId any
+---@param p_SlotIndex any
+---@param p_CreateLootPickup any
+---@return boolean
 function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 	-- Check if item exists
 	local s_Item = m_ItemDatabase:GetItem(p_ItemId)
@@ -134,6 +174,7 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 	-- replace helmet or armor if the item you try to pickup has higher tier
 	if s_Slot == nil and (s_Item:IsOfType(ItemType.Armor) or s_Item:IsOfType(ItemType.Helmet)) then
         local s_ItemSlotIndex = (s_Item:IsOfType(ItemType.Armor) and InventorySlot.Armor) or InventorySlot.Helmet
+		---@type BRInventoryArmorSlot|BRInventoryHelmetSlot
         local s_ItemSlot = self:GetSlot(s_ItemSlotIndex)
 
         -- compare tier levels
@@ -205,13 +246,13 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 		-- if new item was a weapon, put back the compatible attachments
 		if s_Slot.m_Type == SlotType.Weapon and #s_DroppedItems > 1 then
 			-- needs to be cloned cause some of its contents may be deleted during iteration
-			local s_DroppedItemsCloned = ArrayHelper:Clone(s_DroppedItems)
+			local s_DroppedItemsCloned = m_ArrayHelper:Clone(s_DroppedItems)
 
 			for _, l_Item in ipairs(s_DroppedItemsCloned) do
 				local s_AttachmentSlot = s_Slot:ResolveSlot(l_Item)
 				if s_AttachmentSlot ~= nil and s_AttachmentSlot.m_Type == ItemType.Attachment then
 					s_AttachmentSlot:Put(l_Item)
-					ArrayHelper:RemoveByValue(s_DroppedItems, l_Item)
+					m_ArrayHelper:RemoveByValue(s_DroppedItems, l_Item)
 				end
 			end
 		end
@@ -226,6 +267,8 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 	return true
 end
 
+---@param p_ItemId string @It is a tostring(Guid)
+---@param p_SlotId InventorySlot|integer
 function BRInventory:SwapItems(p_ItemId, p_SlotId)
 	local s_NewSlot = self.m_Slots[p_SlotId]
 	local s_OldSlot = self:GetItemSlot(p_ItemId)
@@ -259,6 +302,8 @@ function BRInventory:SwapItems(p_ItemId, p_SlotId)
 	self:SendState()
 end
 
+---@param p_ItemId string @It is a tostring(Guid)
+---@param p_Quantity integer|nil
 function BRInventory:DropItem(p_ItemId, p_Quantity)
 	local s_Soldier = self:GetOwnerSoldier()
 	if s_Soldier == nil or s_Soldier.worldTransform == nil then
@@ -277,6 +322,7 @@ function BRInventory:DropItem(p_ItemId, p_Quantity)
 	end
 end
 
+---@param p_ItemId string @It is a tostring(Guid)
 function BRInventory:DestroyItem(p_ItemId)
 	-- Check if item exists
 	local s_Item = m_ItemDatabase:GetItem(p_ItemId)
@@ -301,6 +347,8 @@ function BRInventory:DestroyItem(p_ItemId)
 	return false
 end
 
+---@param p_Item BRItem
+----@return BRInventorySlot|nil
 function BRInventory:GetFirstAvailableSlot(p_Item)
 	if p_Item == nil then
 		return nil
@@ -315,6 +363,8 @@ function BRInventory:GetFirstAvailableSlot(p_Item)
 	return nil
 end
 
+---@param p_Definition BRItemDefinition
+---@return BRItem[]
 function BRInventory:GetItemsByDefinition(p_Definition)
 	local s_Items = {}
 
@@ -327,6 +377,7 @@ function BRInventory:GetItemsByDefinition(p_Definition)
 	return s_Items
 end
 
+---@return integer
 function BRInventory:GetEquippedWeaponsNumber()
 	local s_WeaponSlot1 = self:GetSlot(InventorySlot.PrimaryWeapon)
 	local s_WeaponSlot2 = self:GetSlot(InventorySlot.SecondaryWeapon)
@@ -336,6 +387,8 @@ end
 
 -- Returns the first weapon slot item with the specified weapon name
 -- if it exists in the inventory
+---@param p_WeaponName string @It is the ebx partition name
+----@return BRInventorySlot|nil
 function BRInventory:GetWeaponItemByName(p_WeaponName)
 	for _, l_SlotIndex in pairs({InventorySlot.PrimaryWeapon, InventorySlot.SecondaryWeapon, InventorySlot.Gadget}) do
 		local s_Slot = self.m_Slots[l_SlotIndex]
@@ -348,6 +401,8 @@ function BRInventory:GetWeaponItemByName(p_WeaponName)
 	return nil
 end
 
+---@param p_WeaponSlot InventorySlot|integer
+---@return BRItemWeapon|BRItemGadget|nil
 function BRInventory:GetWeaponItemByWeaponSlot(p_WeaponSlot)
 	if p_WeaponSlot == WeaponSlot.WeaponSlot_0 then
 		return self:GetSlot(InventorySlot.PrimaryWeapon).m_Item
@@ -360,21 +415,31 @@ function BRInventory:GetWeaponItemByWeaponSlot(p_WeaponSlot)
 	return nil
 end
 
+---@param p_WeaponName string @It is the ebx partition name
+---@return BRItemAmmoDefinition|nil
 function BRInventory:GetAmmoDefinition(p_WeaponName)
 	local s_Item = self:GetWeaponItemByName(p_WeaponName)
 	return (s_Item ~= nil and s_Item.m_Definition.m_AmmoDefinition) or nil
 end
 
+---@param p_WeaponSlot InventorySlot|integer
+---@return integer @current primary ammo
 function BRInventory:GetSavedPrimaryAmmo(p_WeaponSlot)
 	local s_Item = self:GetWeaponItemByWeaponSlot(p_WeaponSlot)
 	return (s_Item ~= nil and s_Item.m_CurrentPrimaryAmmo) or 0
 end
 
+---@param p_WeaponSlot InventorySlot|integer
+---@param p_AmmoCount integer
+---@see not really returning anything
 function BRInventory:SavePrimaryAmmo(p_WeaponSlot, p_AmmoCount)
 	local s_Item = self:GetWeaponItemByWeaponSlot(p_WeaponSlot)
 	return s_Item ~= nil and s_Item:SetPrimaryAmmo(p_AmmoCount)
 end
 
+---@param p_ForceFullUpdate boolean
+---@return table
+---@return table
 function BRInventory:AsTable(p_ForceFullUpdate)
 	local s_Data = {}
 	local s_SpectatorData = {}
@@ -385,7 +450,7 @@ function BRInventory:AsTable(p_ForceFullUpdate)
 		local s_Slot = self.m_Slots[l_SlotIndex]
 
 		if p_ForceFullUpdate or s_Slot.m_IsUpdated then
-			s_SlotData = s_Slot:AsTable()
+			local s_SlotData = s_Slot:AsTable()
 			s_Data[l_SlotIndex] = s_SlotData
 
 			if s_Slot.m_SendToSpectator then
@@ -405,7 +470,7 @@ end
 -- Avoids multiple uneeded firings that may happen during some operations
 function BRInventory:DeferSendState()
 	if not self:ResetTimer("SendState") then
-		self:SetTimer("SendState", g_Timers:Timeout(0.02, self, self.SendState))
+		self:SetTimer("SendState", m_TimerManager:Timeout(0.02, self, self.SendState))
 	end
 end
 
@@ -417,7 +482,7 @@ function BRInventory:SendState()
 		return
 	end
 
-	s_Data, s_SpectatorData = self:AsTable()
+	local s_Data, s_SpectatorData = self:AsTable()
 
 	-- send data to player if it's not empty
 	if next(s_Data) ~= nil then
@@ -450,7 +515,11 @@ end
 --==============================
 -- Player / Soldier related functions
 --==============================
+
+---@param p_WeaponName string @It is the ebx partition name
+---@return integer
 function BRInventory:GetAmmoTypeCount(p_WeaponName)
+	---@type BRInventoryGadgetSlot
 	local s_GadgetSlot = self:GetSlot(InventorySlot.Gadget)
 
 	if s_GadgetSlot.m_Item ~= nil and s_GadgetSlot:HasWeapon(p_WeaponName) then
@@ -476,6 +545,9 @@ function BRInventory:GetAmmoTypeCount(p_WeaponName)
 end
 
 -- @return The number of ammo that was successfully removed
+---@param p_WeaponName string @It is the ebx partition name
+---@param p_Quantity integer
+---@return integer
 function BRInventory:RemoveAmmo(p_WeaponName, p_Quantity)
 	-- Handle all the Gadget related code here
 	local s_GadgetSlot = self.m_Slots[InventorySlot.Gadget]
@@ -534,9 +606,10 @@ end
 
 -- Calls `UpdateSoldierCustomization` with a delay.
 -- Avoids multiple uneeded firings that may happen during some operations
+---@param p_Timeout number|nil
 function BRInventory:DeferUpdateSoldierCustomization(p_Timeout)
 	if not self:ResetTimer("UpdateCustomization") then
-		self:SetTimer("UpdateCustomization", g_Timers:Timeout(p_Timeout or 0.12, self, self.UpdateSoldierCustomization))
+		self:SetTimer("UpdateCustomization", m_TimerManager:Timeout(p_Timeout or 0.12, self, self.UpdateSoldierCustomization))
 	end
 end
 

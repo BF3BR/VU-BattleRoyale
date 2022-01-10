@@ -1,11 +1,15 @@
-class 'GameStateManager'
+---@class GameStateManager
+GameStateManager = class 'GameStateManager'
 
+---@type Logger
 local m_Logger = Logger("GameStateManager", true)
 
 function GameStateManager:__init()
+	---@type GameStates|integer
 	self.m_GameState = GameStates.None
 end
 
+---@param p_GameState GameStates|integer
 function GameStateManager:SetGameState(p_GameState)
 	if p_GameState < GameStates.None or p_GameState > GameStates.EndGame then
 		m_Logger:Error("Attempted to switch to an invalid gamestate.")
@@ -40,6 +44,7 @@ function GameStateManager:GetGameState()
 	return self.m_GameState
 end
 
+---@param p_GameState GameStates|integer
 function GameStateManager:IsGameState(p_GameState)
 	return self.m_GameState == p_GameState
 end

@@ -1,16 +1,21 @@
-class 'AntiCheat'
+---@class AntiCheatServer
+AntiCheatServer = class 'AntiCheatServer'
 
-function AntiCheat:__init()
+function AntiCheatServer:__init()
 	self:Reset()
 
 	NetEvents:Subscribe('Cheat', self, self.OnCheat)
 	NetEvents:Subscribe('Debug', self, self.OnDebug)
 end
 
-function AntiCheat:Reset()
+function AntiCheatServer:Reset()
+	---@type table<string, integer>
+	---`table<string: playerName, integer: bustedTimesCheating>`
 	self.m_PlayerCount = {}
-	self.m_Timer = 0
+	self.m_Timer = 0.0
 	self.m_Verify = false
+	---@type table<string, boolean>
+	---Used to confirm that they receive NetEvents
 	self.m_VerifiedPlayers = {}
 end
 
@@ -18,20 +23,24 @@ end
 -- Events
 -- =============================================
 
-function AntiCheat:OnLevelLoaded()
+---VEXT Server Level:Loaded Event
+function AntiCheatServer:OnLevelLoaded()
 	self:Reset()
 end
 
-function AntiCheat:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+---VEXT Shared Engine:Update Event
+---@param p_DeltaTime number
+---@param p_SimulationDeltaTime number
+function AntiCheatServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 	self.m_Timer = self.m_Timer + p_DeltaTime
 
-	if self.m_Timer >= 28 then
+	if self.m_Timer >= 28.0 then
 		if self.m_Verify == false then
 			self.m_Verify = true
 			NetEvents:Broadcast('Verify')
 		end
 
-		if self.m_Timer >= 30 and self.m_Verify == true then
+		if self.m_Timer >= 30.0 and self.m_Verify == true then
 			for _, l_Player in pairs(PlayerManager:GetPlayers()) do
 				if self.m_VerifiedPlayers[l_Player.name] == nil and l_Player.accountGuid ~= Guid('00000000-0000-0000-0000-000000000000') then
 					if self.m_PlayerCount[l_Player.name] == nil then
@@ -50,7 +59,7 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 			end
 
 			self.m_Verify = false
-			self.m_Timer = 0
+			self.m_Timer = 0.0
 			self.m_VerifiedPlayers = {}
 		end
 	end
@@ -60,7 +69,10 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
-function AntiCheat:OnCheat(p_Player, p_Args)
+---Custom Server Cheat NetEvent
+---@param p_Player Player
+---@param p_Args table
+function AntiCheatServer:OnCheat(p_Player, p_Args)
 	if self.m_Verify == false and p_Args[1] ~= "Verify" then
 		if self.m_PlayerCount[p_Player.name] == nil then
 			self.m_PlayerCount[p_Player.name] = 1
@@ -85,17 +97,20 @@ function AntiCheat:OnCheat(p_Player, p_Args)
 			self.m_PlayerCount[p_Player.name] = nil
 		end
 	else
-		self.m_VerifiedPlayers[p_Player.name] = 1
+		self.m_VerifiedPlayers[p_Player.name] = true
 	end
 end
 
-function AntiCheat:OnDebug(p_Player, p_Args)
+---Custom Server Debug NetEvent
+---@param p_Player Player
+---@param p_Args table
+function AntiCheatServer:OnDebug(p_Player, p_Args)
 	if p_Args[1] == "404" then
 		print(p_Player.name)
 		print(p_Args)
 	elseif self.m_Verify == true then
-		self.m_VerifiedPlayers[p_Player.name] = 1
+		self.m_VerifiedPlayers[p_Player.name] = true
 	end
 end
 
-return AntiCheat()
+return AntiCheatServer()

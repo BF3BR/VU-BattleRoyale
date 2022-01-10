@@ -1,4 +1,5 @@
-class "FireEffectsModifier"
+---@class FireEffectsModifier
+FireEffectsModifier = class "FireEffectsModifier"
 
 local m_EmitterHelper = require "__shared/Utils/EmitterHelper"
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
@@ -37,6 +38,7 @@ function FireEffectsModifier:DisableLightComponent(p_EffectBlueprint)
 	self.m_NumberOfAddedFireEffects = self.m_NumberOfAddedFireEffects + 1
 
 	local s_OriginalEffectBlueprint = EffectBlueprint(p_EffectBlueprint)
+	---@type EffectBlueprint
 	local s_EffectBlueprint = s_OriginalEffectBlueprint:Clone(s_Guid)
 	local s_EffectEntityData = EffectEntityData(s_EffectBlueprint.object)
 	s_EffectEntityData:MakeWritable()

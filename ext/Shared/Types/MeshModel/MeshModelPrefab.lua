@@ -1,4 +1,6 @@
-class("MeshModelPrefab")
+---Currently unused?
+---@class MeshModelPrefab
+MeshModelPrefab = class("MeshModelPrefab")
 
 function MeshModelPrefab:__init(p_Items)
 	self.m_Items = p_Items

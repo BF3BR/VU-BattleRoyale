@@ -1,4 +1,5 @@
-class "PostReloadEvent"
+---@class PostReloadEvent
+PostReloadEvent = class "PostReloadEvent"
 
 local m_Logger = Logger("PostReloadEvent", true)
 

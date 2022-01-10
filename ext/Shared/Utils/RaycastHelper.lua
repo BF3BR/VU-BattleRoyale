@@ -1,6 +1,9 @@
-class "RaycastHelper"
+---@class RaycastHelper
+RaycastHelper = class "RaycastHelper"
 
 function RaycastHelper:__init()
+	---`[tostring(x .. y)] -> height`
+	---@type table<string, number>
 	self.m_RaycastMemo = {}
 
 	Events:Subscribe("Level:Destroy", self, self.Clear)
@@ -11,8 +14,11 @@ function RaycastHelper:__init()
 end
 
 -- Returns the ground height (Y) value of a certain position
+---@param p_Pos Vec3
+---@param p_Height number
+---@return number
 function RaycastHelper:GetY(p_Pos, p_Height)
-	p_Height = p_Height or 100
+	p_Height = p_Height or 100.0
 
 	-- used math.floor to reduce raycasts number
 	-- local s_X = math.floor(p_Pos.x)

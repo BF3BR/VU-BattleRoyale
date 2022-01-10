@@ -1,14 +1,20 @@
-class 'AntiCheat'
+---@class AntiCheat
+AntiCheat = class 'AntiCheat'
 
 function AntiCheat:__init()
-	self.m_GunSwayTimer = 0
-	self.m_EngineTimer = 0
+	self.m_GunSwayTimer = 0.0
+	self.m_EngineTimer = 0.0
 end
 
 -- =============================================
 -- Events
 -- =============================================
 
+---VEXT Shared GunSway:Update Event
+---@param p_GunSway GunSway
+---@param p_Weapon Entity|nil
+---@param p_WeaponFiring WeaponFiring|nil
+---@param p_DeltaTime number
 function AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaTime)
 	if p_WeaponFiring == nil then
 		return
@@ -16,18 +22,20 @@ function AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaT
 
 	self.m_GunSwayTimer = self.m_GunSwayTimer + p_DeltaTime
 
-	if self.m_GunSwayTimer < 15 then
+	if self.m_GunSwayTimer < 15.0 then
 		return
 	end
 
-	self.m_GunSwayTimer = 0
+	self.m_GunSwayTimer = 0.0
 
 	if p_GunSway.currentGameplayDeviationScaleFactor < 1.0 or p_GunSway.currentVisualDeviationScaleFactor < 1.0 then
 		NetEvents:SendLocal('Cheat', {"No Spread/ No Recoil 1", p_GunSway.currentGameplayDeviationScaleFactor, p_GunSway.currentVisualDeviationScaleFactor, p_GunSway.data.instanceGuid})
 	end
 
-	if GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorNoZoom < 1.0 or GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorZoom < 1.0 or GunSwayData(p_GunSway.data).deviationScaleFactorNoZoom < 1.0 or GunSwayData(p_GunSway.data).deviationScaleFactorZoom < 1.0 then
-		NetEvents:SendLocal('Cheat', {"No Spread/ No Recoil 2", GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorNoZoom, GunSwayData(p_GunSway.data).gameplayDeviationScaleFactorZoom, GunSwayData(p_GunSway.data).deviationScaleFactorNoZoom, GunSwayData(p_GunSway.data).deviationScaleFactorZoom, p_GunSway.data.instanceGuid})
+	local s_GunSwayData = GunSwayData(p_GunSway.data)
+
+	if s_GunSwayData.gameplayDeviationScaleFactorNoZoom < 1.0 or s_GunSwayData.gameplayDeviationScaleFactorZoom < 1.0 or s_GunSwayData.deviationScaleFactorNoZoom < 1.0 or s_GunSwayData.deviationScaleFactorZoom < 1.0 then
+		NetEvents:SendLocal('Cheat', {"No Spread/ No Recoil 2", s_GunSwayData.gameplayDeviationScaleFactorNoZoom, s_GunSwayData.gameplayDeviationScaleFactorZoom, s_GunSwayData.deviationScaleFactorNoZoom, s_GunSwayData.deviationScaleFactorZoom, p_GunSway.data.instanceGuid})
 	end
 
 	local s_WeaponFiringData = WeaponFiringData(p_WeaponFiring.data)
@@ -40,15 +48,15 @@ function AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaT
 		return
 	end
 
-	p_Weapon = SoldierWeapon(p_Weapon)
+	local s_Weapon = SoldierWeapon(p_Weapon)
 
-	if ShotConfigData(FiringFunctionData(s_WeaponFiringData.primaryFire).shot).projectileData:Is('BulletEntityData') then
-		local s_BulletEntityData = BulletEntityData(ShotConfigData(FiringFunctionData(s_WeaponFiringData.primaryFire).shot).projectileData)
+	if s_WeaponFiringData.primaryFire.shot.projectileData:Is('BulletEntityData') then
+		local s_BulletEntityData = BulletEntityData(s_WeaponFiringData.primaryFire.shot.projectileData)
 
-		if p_Weapon.weaponModifier.weaponProjectileModifier ~= nil and p_Weapon.weaponModifier.weaponProjectileModifier.projectileData ~= nil then
-			s_BulletEntityData = BulletEntityData(p_Weapon.weaponModifier.weaponProjectileModifier.projectileData)
-		elseif p_Weapon.weaponModifier.weaponFiringDataModifier ~= nil and p_Weapon.weaponModifier.weaponFiringDataModifier.weaponFiring ~= nil then
-			s_BulletEntityData = BulletEntityData(WeaponFiringData(p_Weapon.weaponModifier.weaponFiringDataModifier.weaponFiring).primaryFire.shot.projectileData)
+		if s_Weapon.weaponModifier.weaponProjectileModifier ~= nil and s_Weapon.weaponModifier.weaponProjectileModifier.projectileData ~= nil then
+			s_BulletEntityData = BulletEntityData(s_Weapon.weaponModifier.weaponProjectileModifier.projectileData)
+		elseif s_Weapon.weaponModifier.weaponFiringDataModifier ~= nil and s_Weapon.weaponModifier.weaponFiringDataModifier.weaponFiring ~= nil then
+			s_BulletEntityData = BulletEntityData(s_Weapon.weaponModifier.weaponFiringDataModifier.weaponFiring.primaryFire.shot.projectileData)
 		end
 
 		if s_BulletEntityData.instantHit == true and s_BulletEntityData.instanceGuid ~= Guid('61D16421-B5B1-4FD7-81E5-2AE21FA0BAEE') and s_BulletEntityData.instanceGuid ~= Guid('BDBFA354-1B1E-4AD3-8826-D7BA1C0C3287') and s_BulletEntityData.instanceGuid ~= Guid('DDE585ED-C043-48E3-A023-C73D549D8F6E') and s_BulletEntityData.instanceGuid ~= Guid('1861554A-8C81-4944-96D1-7347494F7688') and s_BulletEntityData.instanceGuid ~= Guid('71CB722D-BF79-4B6F-858F-95D107C49B36') and s_BulletEntityData.instanceGuid ~= Guid('A075A428-1D08-40C2-A985-2DA85A80B20B') then
@@ -62,6 +70,7 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 
 	if self.m_EngineTimer >= 15 then
 		self.m_EngineTimer = 0
+		---@type VeniceFPSCameraData|nil
 		local s_VeniceFPSCameraData = ResourceManager:FindInstanceByGuid(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('A988B874-7307-49F8-8D18-30A68DDBC3F3'))
 
 		if s_VeniceFPSCameraData == nil then
@@ -75,6 +84,7 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 		end
 
 		::continue::
+		---@type SoldierSuppressionComponentData|nil
 		local s_SoldierSuppressionComponentData = ResourceManager:FindInstanceByGuid(Guid('F256E142-C9D8-4BFE-985B-3960B9E9D189'), Guid('5ECC8031-8DF7-4A38-ACC7-9EFC730B3528'))
 
 		if s_SoldierSuppressionComponentData == nil then
@@ -88,6 +98,7 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 		end
 
 		::continue2::
+		---@type DebugRenderSettings|nil
 		local s_DebugRenderSettings = ResourceManager:GetSettings('DebugRenderSettings')
 
 		if s_DebugRenderSettings == nil or ServerConfig.Debug.EnableLootPointSpheres then
@@ -102,6 +113,13 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 	end
 end
 
+---VEXT Client UI:CreateChatMessage Hook
+---@param p_HookCtx HookContext
+---@param p_Message string
+---@param p_Channel ChatChannelType|integer
+---@param p_PlayerId integer
+---@param p_RecipientMask integer
+---@param p_SenderIsDead boolean
 function AntiCheat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
 	if p_Channel == ChatChannelType.CctAdmin and p_PlayerId ~= 0 then
 		if PlayerManager:GetLocalPlayer() == PlayerManager:GetPlayerById(p_PlayerId) then
@@ -116,6 +134,8 @@ end
 -- Custom (Net-)Events
 -- =============================================
 
+---Custom Client Verify NetEvent
+---Used to verify that NetEvents are working
 NetEvents:Subscribe('Verify', function()
 	NetEvents:SendLocal('Cheat', {"Verify"})
 	-- NetEvents:SendLocal('Debug', {"Verify"})

@@ -1,4 +1,5 @@
-class 'DisableDebugRenderer'
+---@class DisableDebugRenderer
+DisableDebugRenderer = class 'DisableDebugRenderer'
 
 local m_Logger = Logger("DisableDebugRenderer", true)
 

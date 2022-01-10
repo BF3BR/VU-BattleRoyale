@@ -1,11 +1,18 @@
-class("MeshModel")
+---@class MeshModel
+MeshModel = class("MeshModel")
 
+---@param p_MeshAsset DC
+---@param p_Variation integer|nil
 function MeshModel:__init(p_MeshAsset, p_Variation)
 	self.m_Mesh = p_MeshAsset
 	self.m_Variation = p_Variation or 0
 end
 
+---@param p_LootPickup BRLootPickup
+---@param p_LocalTransform LinearTransform
+---@return Entity|nil
 function MeshModel:Draw(p_LootPickup, p_LocalTransform)
+	---@type MeshAsset|nil
 	local s_MeshAsset = self.m_Mesh:GetInstance()
 
 	if s_MeshAsset == nil then

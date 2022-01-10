@@ -1,4 +1,5 @@
-class "BRLootManager"
+---@class BRLootManager
+BRLootManager = class "BRLootManager"
 
 local m_Logger = Logger("BRLootManager", true)
 
