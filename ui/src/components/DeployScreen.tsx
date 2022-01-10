@@ -336,6 +336,9 @@ const DeployScreen: React.FC<Props> = ({
                     <div className="card-content">
                         <button 
                             onClick={OnAppearanceLeft}
+                            onMouseEnter={() => {
+                                PlaySound(Sounds.Navigate);
+                            }}
                         >
                             <img src={arrow} className="left" alt="Left" />
                         </button>
