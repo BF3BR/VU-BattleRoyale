@@ -77,8 +77,8 @@ function Match:NextMatchState()
 		-- Clear out all inventories
 		m_BRInventoryManager:Clear()
 
-		-- Clear out all dropped / non-dropped items
-		m_BRLootManager:Clear()
+		-- Remove all loot pickups
+		m_BRLootManager:RemoveAllLootPickups()
 
 		self.m_RestartQueue = true
 	end
@@ -122,8 +122,8 @@ function Match:OnMatchFirstTick()
 		-- Clear out all inventories
 		m_BRInventoryManager:Clear()
 
-		-- Clear out all dropped / non-dropped items
-		m_BRLootManager:Clear()
+		-- Remove all loot pickups
+		m_BRLootManager:RemoveAllLootPickups()
 
 		-- Spawn new loot pickups
 		m_BRLootManager:SpawnMapSpecificLootPickups()
@@ -149,7 +149,6 @@ function Match:OnMatchFirstTick()
 	elseif s_State == GameStates.EndGame then
 		m_PhaseManagerServer:End()
 		m_GunshipServer:Disable()
-		-- self.m_Airdrop:Spawn(nil, false)
 
 		if self.m_WinnerTeam ~= nil then
 			m_Logger:Write("INFO: We have a winner team: " .. self.m_WinnerTeam.m_Id)

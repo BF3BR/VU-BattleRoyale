@@ -95,6 +95,16 @@ function BRLootPickupDatabase:RemoveItemFromLootPickup(p_LootPickupId, p_ItemId)
 	end
 end
 
+function BRLootPickupDatabase:RemoveAllLootPickups()
+	if self.m_LootPickups == nil then
+		return
+	end
+
+	for _, l_LootPickup in pairs(self.m_LootPickups) do
+		self:Remove(l_LootPickup)
+	end
+end
+
 function BRLootPickupDatabase:UpdateState(p_LootPickupId)
 	local s_LootPickup = self.m_LootPickups[p_LootPickupId]
 
