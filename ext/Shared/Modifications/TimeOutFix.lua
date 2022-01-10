@@ -10,18 +10,18 @@ end
 function TimeOutFix:OnClientSettings(p_Instance)
 	p_Instance = ClientSettings(p_Instance)
 	p_Instance:MakeWritable()
-	p_Instance.loadedTimeout = 25
-	p_Instance.loadingTimeout = 25
-	p_Instance.ingameTimeout = 25
+	p_Instance.loadedTimeout = 500
+	p_Instance.loadingTimeout = 500
+	p_Instance.ingameTimeout = 500
 	m_Logger:Write("Changed ClientSettings")
 end
 
 function TimeOutFix:OnServerSettings(p_Instance)
 	p_Instance = ServerSettings(p_Instance)
 	p_Instance:MakeWritable()
-	p_Instance.loadingTimeout = 25
-	p_Instance.ingameTimeout = 25
-	p_Instance.timeoutTime = 25
+	p_Instance.loadingTimeout = 500
+	p_Instance.ingameTimeout = 500
+	p_Instance.timeoutTime = 500
 	m_Logger:Write("Changed ServerSettings")
 end
 
