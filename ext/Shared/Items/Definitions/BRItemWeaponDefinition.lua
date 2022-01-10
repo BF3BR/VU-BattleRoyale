@@ -509,7 +509,7 @@ return {
 				Vec3(0, 0.04, -0.5)
 			),
 			SoldierWeaponBlueprint = DC(Guid("52A8131B-751E-429B-84F5-17A73D38ECA3"), Guid("A4F108EB-1FA2-4C94-93FE-357B1D7EBF4A")),
-			AmmoDefinition = m_AmmoDefinitions["ammo-9mm"],
+			AmmoDefinition = m_AmmoDefinitions["ammo-556mm"],
 			Tier = Tier.Tier1,
 			EbxName = "Weapons/AKS74u/AKS74u",
 			EbxAttachments = {
