@@ -92,17 +92,17 @@ RandomWeightsTable = {
 
 ---@class RandomWeaponPatterns
 RandomWeaponPatterns = {
-	OnlyWeapon = 1,
-	WeaponWithAmmo = 2,
-	WeaponWithAttachmentAndAmmo = 3,
-	WeaponWithTwoAmmo = 4,
+	-- OnlyWeapon = 1,
+	WeaponWithAmmo = 1,
+	WeaponWithAttachmentAndAmmo = 2,
+	WeaponWithTwoAmmo = 3,
 }
 
 ---@class RandomAmmoPatterns
 RandomAmmoPatterns = {
 	OneItem = 1,
 	TwoItems = 2,
-	-- ThreeItems = 3,
+	ThreeItems = 3,
 }
 
 ---@class AttachmentType
