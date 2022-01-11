@@ -17,8 +17,10 @@
 			"path": "WebUI"
 		}
 	],
-    "settings": {
-        "Lua.workspace.maxPreload": 10000,
-        "Lua.diagnostics.libraryFiles": "Disable"
-    }
+	"settings": {
+		"Lua.workspace.maxPreload": 10000,
+		"Lua.diagnostics.libraryFiles": "Disable",
+		"editor.insertSpaces": false,
+		"editor.tabSize": 4
+	}
 }
