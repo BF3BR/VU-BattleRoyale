@@ -14,7 +14,7 @@
 		},
 		{
 			"name": "Web UI",
-			"path": "WebUI"
+			"path": "ui"
 		}
 	],
 	"settings": {
