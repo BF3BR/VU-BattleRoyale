@@ -21,7 +21,6 @@ function XP5_003_ObjectModifications:RegisterCallbacks()
 	m_FX_DLC3_XP3_Shield_Pollen_CamProx_03:RegisterLoadHandlerOnce(self, self.OnFXDLC3XP3ShieldPollenCamProx03)
 	m_MEC_House_Low_02_V2:RegisterLoadHandlerOnce(self, self.OnMECHouseLow02V2)
 	m_ME_House01_Garage_Destruction:RegisterLoadHandlerOnce(self, self.OnMEHouse01GarageDestruction)
-	m_XP5_003_30_StaticModelEntityData:RegisterLoadHandlerOnce(self, self.OnRemoveHavokAssets)
 end
 
 function XP5_003_ObjectModifications:DeregisterCallbacks()
@@ -90,11 +89,6 @@ function XP5_003_ObjectModifications:OnMEHouse01GarageDestruction(p_ObjectBluepr
 			l_Instance.healthPercentage = 10000000
 		end
 	end
-end
-
-function XP5_003_ObjectModifications:OnRemoveHavokAssets(p_StaticModelGroupEntityData)
-	p_StaticModelGroupEntityData.enabled = false
-	p_StaticModelGroupEntityData.memberDatas:clear()
 end
 
 return XP5_003_ObjectModifications()
