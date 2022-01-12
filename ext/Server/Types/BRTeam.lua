@@ -2,7 +2,7 @@
 BRTeam = class "BRTeam"
 
 ---@type Logger
-local m_Logger = Logger("BRTeam", true)
+local m_Logger = Logger("BRTeam", false)
 
 ---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"

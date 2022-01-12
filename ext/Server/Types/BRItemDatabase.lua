@@ -1,7 +1,7 @@
 ---@class BRItemDatabase
 BRItemDatabase = class "BRItemDatabase"
 
-local m_Logger = Logger("BRItemDatabase", true)
+local m_Logger = Logger("BRItemDatabase", false)
 
 function BRItemDatabase:__init()
 	-- A table of items (id -> BRItem)

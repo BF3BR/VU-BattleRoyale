@@ -2,7 +2,7 @@
 BRTeamManagerServer = class "BRTeamManagerServer"
 
 ---@type Logger
-local m_Logger = Logger("BRTeamManagerServer", true)
+local m_Logger = Logger("BRTeamManagerServer", false)
 ---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 

@@ -1,7 +1,7 @@
 ---@class OOCFires
 OOCFires = class "OOCFires"
 
-local m_Logger = Logger("OOCFires", true)
+local m_Logger = Logger("OOCFires", false)
 
 function OOCFires:__init()
 	self.m_Queue = Queue()

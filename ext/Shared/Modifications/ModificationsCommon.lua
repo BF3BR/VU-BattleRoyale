@@ -1,7 +1,7 @@
 ---@class ModificationsCommon
 ModificationsCommon = class "ModificationsCommon"
 
-local m_Logger = Logger("ModificationsCommon", true)
+local m_Logger = Logger("ModificationsCommon", false)
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
 local m_WeaponDropModifier = require "__shared/Modifications/Soldiers/WeaponDropModifier"
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier"

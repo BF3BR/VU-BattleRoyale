@@ -11,7 +11,7 @@ local m_HudUtils = require "UI/Utils/HudUtils"
 local m_BrPlayer = require "BRPlayer"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("VuBattleRoyaleHud", true)
+local m_Logger = Logger("VuBattleRoyaleHud", false)
 
 function VuBattleRoyaleHud:__init()
 	---@type GameStates|integer

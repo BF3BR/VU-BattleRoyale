@@ -5,7 +5,7 @@ DeployScreen = class 'DeployScreen'
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("DeployScreen", true)
+local m_Logger = Logger("DeployScreen", false)
 
 ---VEXT Client Level:Loaded Event
 function DeployScreen:OnLevelLoaded()

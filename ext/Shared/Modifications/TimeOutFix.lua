@@ -1,7 +1,7 @@
 ---@class TimeOutFix
 TimeOutFix = class 'TimeOutFix'
 
-local m_Logger = Logger("TimeOutFix", true)
+local m_Logger = Logger("TimeOutFix", false)
 
 function TimeOutFix:RegisterCallbacks()
 	ResourceManager:RegisterInstanceLoadHandler(Guid('C4DCACFF-ED8F-BC87-F647-0BC8ACE0D9B4'), Guid('B479A8FA-67FF-8825-9421-B31DE95B551A'), self, self.OnClientSettings)

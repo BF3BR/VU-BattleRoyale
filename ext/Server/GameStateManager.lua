@@ -2,7 +2,7 @@
 GameStateManager = class 'GameStateManager'
 
 ---@type Logger
-local m_Logger = Logger("GameStateManager", true)
+local m_Logger = Logger("GameStateManager", false)
 
 function GameStateManager:__init()
 	---@type GameStates|integer

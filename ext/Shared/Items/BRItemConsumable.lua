@@ -4,7 +4,7 @@ local m_ConsumableDefinitions = require "__shared/Items/Definitions/BRItemConsum
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 
-local m_Logger = Logger("BRItemConsumable", true)
+local m_Logger = Logger("BRItemConsumable", false)
 
 ---@class BRItemConsumable : BRItem
 ---@field m_Definition BRItemConsumableDefinition

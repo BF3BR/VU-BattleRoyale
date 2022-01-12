@@ -1,7 +1,7 @@
 ---@class CommonSpatialRaycast
 CommonSpatialRaycast = class 'CommonSpatialRaycast'
 
-local m_Logger = Logger("CommonSpatialRaycast", true)
+local m_Logger = Logger("CommonSpatialRaycast", false)
 local m_Hud = require "UI/Hud"
 local m_BRLooting = require "Types/BRLooting"
 

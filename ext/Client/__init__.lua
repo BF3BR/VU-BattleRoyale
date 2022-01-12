@@ -59,7 +59,7 @@ local m_SoundModifier = require "SoundModifier"
 ---@type VoipManager
 local m_VoipManager = require "VoipManager"
 
-local m_Logger = Logger("VuBattleRoyaleClient", true)
+local m_Logger = Logger("VuBattleRoyaleClient", false)
 
 function VuBattleRoyaleClient:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)

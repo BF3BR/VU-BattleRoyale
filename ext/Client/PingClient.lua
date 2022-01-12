@@ -7,7 +7,7 @@ local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Hud = require "UI/Hud"
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
-local m_Logger = Logger("PingClient", true)
+local m_Logger = Logger("PingClient", false)
 
 function PingClient:__init()
 	self:RegisterVars()

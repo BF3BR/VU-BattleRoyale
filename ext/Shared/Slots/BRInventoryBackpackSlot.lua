@@ -1,4 +1,4 @@
-local m_Logger = Logger("BRInventoryBackpackSlot", true)
+local m_Logger = Logger("BRInventoryBackpackSlot", false)
 
 ---@class BRInventoryBackpackSlot : BRInventorySlot
 BRInventoryBackpackSlot = class("BRInventoryBackpackSlot", BRInventorySlot)

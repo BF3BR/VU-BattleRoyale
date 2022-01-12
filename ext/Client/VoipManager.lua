@@ -1,7 +1,7 @@
 ---@class VoipManager
 VoipManager = class 'VoipManager'
 
-local m_Logger = Logger("VoipManager", true)
+local m_Logger = Logger("VoipManager", false)
 
 function VoipManager:__init()
 	---@type string|nil

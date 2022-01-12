@@ -1,7 +1,7 @@
 ---@class BRAirdropManager
 BRAirdropManager = class "BRAirdropManager"
 
-local m_Logger = Logger("BRAirdropManager", true)
+local m_Logger = Logger("BRAirdropManager", false)
 
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"

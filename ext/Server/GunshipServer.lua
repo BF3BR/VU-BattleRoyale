@@ -4,7 +4,7 @@ GunshipServer = class "GunshipServer"
 ---@type BRTeamManagerServer
 local m_TeamManagerServer = require "BRTeamManagerServer"
 ---@type Logger
-local m_Logger = Logger("GunshipServer", true)
+local m_Logger = Logger("GunshipServer", false)
 
 function GunshipServer:__init()
 	self:RegisterVars()

@@ -51,7 +51,7 @@ local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifi
 local m_TimerManager = require "__shared/Utils/Timers"
 
 ---@type Logger
-local m_Logger = Logger("VuBattleRoyaleServer", true)
+local m_Logger = Logger("VuBattleRoyaleServer", false)
 
 function VuBattleRoyaleServer:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -352,6 +352,8 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	m_PingServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
 	NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, m_GameStateManager:GetGameState())
+	NetEvents:SendTo(PlayerEvents.MinPlayersToStartChanged, p_Player, self.m_MinPlayersToStart)
+	NetEvents:SendTo(PlayerEvents.PlayersPerTeamChanged, p_Player, self.m_PlayersPerTeam)
 
 	m_LootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
 
