@@ -7,7 +7,7 @@ local m_MathHelper = require "__shared/Utils/MathHelper"
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("SpectatorClient", true)
+local m_Logger = Logger("SpectatorClient", false)
 
 function SpectatorClient:__init()
 	-- call TimersMixin's constructor
@@ -307,7 +307,7 @@ end
 ---Custom Client PlayerEvents.GameStateChanged NetEvent
 ---@param p_GameState GameStates|integer
 function SpectatorClient:OnGameStateChanged(p_GameState)
-	if p_GameState == GameStates.None then
+	if p_GameState == GameStates.None or p_GameState == GameStates.Warmup or p_GameState == GameStates.EndGame then
 		WebUI:ExecuteJS("UpdateSpectatorCount(null);")
 	end
 
