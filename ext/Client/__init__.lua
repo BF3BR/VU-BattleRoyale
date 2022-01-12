@@ -78,6 +78,7 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
 
 	m_Hud:OnExtensionLoaded()
 	m_VoipManager:OnExtensionLoaded()
+	m_Ping:OnExtensionLoaded()
 	self:OnHotReload()
 end
 

@@ -7,9 +7,70 @@ local m_HudUtils = require "UI/Utils/HudUtils"
 local m_Hud = require "UI/Hud"
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
+---@type Logger
 local m_Logger = Logger("PingClient", true)
 
-function PingClient:__init()
+---@return InputDeviceKeys|integer
+local function GetPingKeySetting()
+	local s_PingKeySetting = SettingsManager:GetSetting("PingKey")
+
+	if s_PingKeySetting == nil then
+		s_PingKeySetting = SettingsManager:DeclareKeybind("PingKey", InputDeviceKeys.IDK_Q, { displayName = "Ping Key", showInUi = true})
+		s_PingKeySetting.value = InputDeviceKeys.IDK_Q
+
+		m_Logger:Write("GetPingKeySetting created.")
+	end
+
+	return s_PingKeySetting.value
+end
+
+---@return '"Define MouseButton"'|'"Define Key"'|'"Press Ping-Key twice"'
+local function GetEnemyPingOptionSetting()
+	local s_EnemyPingOptionSetting = SettingsManager:GetSetting("PingEnemyOption")
+
+	if s_EnemyPingOptionSetting == nil then
+		---@type SettingOptions
+		local s_SettingOptions = SettingOptions()
+		s_SettingOptions.displayName = "Ping Enemy"
+		s_SettingOptions.showInUi = true
+		s_EnemyPingOptionSetting = SettingsManager:DeclareOption("PingEnemyOption", "Define MouseButton", { "Define MouseButton", "Define Key", "Press Ping-Key twice"}, false, s_SettingOptions)
+		s_EnemyPingOptionSetting.value = "Define MouseButton"
+
+		m_Logger:Write("GetEnemyPingOptionSetting created.")
+	end
+
+	return s_EnemyPingOptionSetting.value
+end
+
+---@return InputDeviceKeys|integer
+local function GetEnemyPingKeySetting()
+	local s_EnemyPingKeySetting = SettingsManager:GetSetting("PingEnemyKey")
+
+	if s_EnemyPingKeySetting == nil then
+		s_EnemyPingKeySetting = SettingsManager:DeclareKeybind("PingEnemyKey", InputDeviceKeys.IDK_2, { displayName = "Ping Enemy Key", showInUi = true})
+		s_EnemyPingKeySetting.value = InputDeviceKeys.IDK_2
+
+		m_Logger:Write("GetEnemyPingKeySetting created.")
+	end
+
+	return s_EnemyPingKeySetting.value
+end
+
+---@return InputDeviceMouseButtons|integer
+local function GetEnemyPingMouseButtonSetting()
+	local s_EnemyPingButtonSetting = SettingsManager:GetSetting("PingEnemyMouseButton")
+
+	if s_EnemyPingButtonSetting == nil then
+		s_EnemyPingButtonSetting = SettingsManager:DeclareNumber("PingEnemyMouseButton", InputDeviceMouseButtons.IDB_Button_2, InputDeviceMouseButtons.IDB_Button_0, InputDeviceMouseButtons.IDB_Button_Undefined, { displayName = "Ping Enemy MouseButton", showInUi = true})
+		s_EnemyPingButtonSetting.value = InputDeviceMouseButtons.IDB_Button_2
+
+		m_Logger:Write("GetEnemyPingMouseButtonSetting created.")
+	end
+
+	return s_EnemyPingButtonSetting.value
+end
+
+function PingClient:OnExtensionLoaded()
 	self:RegisterVars()
 end
 
@@ -55,6 +116,15 @@ function PingClient:RegisterVars()
 
 	---@type PingType|integer
 	self.m_CurrentTypeIndex = PingType.Default
+
+	-- for the "Press Ping-Key twice" option
+	self.m_ShouldPingSoon = false
+	self.m_PingTimer = 0.0
+
+	self.m_PingKey = GetPingKeySetting()
+	self.m_EnemyPingOption = GetEnemyPingOptionSetting()
+	self.m_EnemyPingKey = GetEnemyPingKeySetting()
+	self.m_EnemyPingMouseButton = GetEnemyPingMouseButtonSetting()
 end
 
 -- =============================================
@@ -121,11 +191,22 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 		return
 	end
 
+	-- player pressed the ping key quick once, we delay it for 100ms so he can press it twice to change the type from Default to Enemy
+	if self.m_ShouldPingSoon then
+		self.m_PingTimer = self.m_PingTimer + p_DeltaTime
+
+		if self.m_PingTimer > 0.2 then
+			self.m_PingTimer = 0.0
+			self.m_ShouldPingSoon = false
+			self.m_ShouldPing = true
+		end
+	end
+
 	if m_HudUtils:GetIsMapOpened() then
 		return
 	end
 
-	if InputManager:GetLevel(InputConceptIdentifiers.ConceptCommMenu1) == 1.0 then
+	if InputManager:IsKeyDown(self.m_PingKey) then
 		self.m_DisplayCommoRoseTimer = self.m_DisplayCommoRoseTimer + p_DeltaTime
 
 		if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
@@ -134,13 +215,28 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 			m_Logger:Write("ShowCommoRose")
 			WebUI:EnableMouse()
 		end
-	elseif InputManager:WentUp(InputConceptIdentifiers.ConceptCommMenu1) and self.m_DisplayCommoRoseTimer ~= 0.0 then
-		self.m_ShouldPing = true
+	elseif InputManager:WentKeyUp(self.m_PingKey) and self.m_DisplayCommoRoseTimer ~= 0.0 then
 		self.m_PingMethod = PingMethod.World
 
+		-- didn't hold the ping key (Q) long enough
 		if self.m_DisplayCommoRoseTimer < self.m_TimeToDisplayCommoRose then
+			-- key went up a second time within 100ms so we do an enemy ping
+			if self.m_ShouldPingSoon then
+				self.m_ShouldPingSoon = false
+				self.m_ShouldPing = true
+				self.m_PingType = PingType.Enemy
+				return
+			end
+
 			self.m_PingType = PingType.Default
+
+			if self.m_EnemyPingOption == "Press Ping-Key twice" then
+				self.m_ShouldPingSoon = true
+			else
+				self.m_ShouldPing = true
+			end
 		else
+			self.m_ShouldPing = true
 			self.m_PingType = self.m_CurrentTypeIndex
 			self.m_CurrentTypeIndex = PingType.Default
 		end
@@ -150,7 +246,11 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 		m_Hud:HideCommoRose()
 		self.m_IsCommoRoseOpened = false
 		self.m_DisplayCommoRoseTimer = 0.0
-	elseif InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_2) then
+	elseif InputManager:WentKeyDown(self.m_EnemyPingKey) and self.m_EnemyPingOption == "Define Key" then
+		self.m_ShouldPing = true
+		self.m_PingMethod = PingMethod.World
+		self.m_PingType = PingType.Enemy
+	elseif InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_2) and self.m_EnemyPingOption == "Define MouseButton" then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
 		self.m_PingType = PingType.Enemy
