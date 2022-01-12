@@ -54,8 +54,6 @@ local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_CommonSpatialRaycast = require "CommonSpatialRaycast"
 ---@type BRLooting
 local m_BRLooting = require "Types/BRLooting"
----@type SoundModifier
-local m_SoundModifier = require "SoundModifier"
 ---@type VoipManager
 local m_VoipManager = require "VoipManager"
 
@@ -154,8 +152,6 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe(InventoryNetEvent.UnregisterLootPickup, self, self.OnUnregisterLootPickup),
 		NetEvents:Subscribe(InventoryNetEvent.UpdateLootPickup, self, self.OnUpdateLootPickup),
 		NetEvents:Subscribe(InventoryNetEvent.ItemActionCanceled, self, self.OnItemActionCanceled),
-
-		Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded),
 
 		NetEvents:Subscribe("Airdrop:Dropped", self, self.OnAirdropDropped),
 	}
@@ -453,17 +449,6 @@ end
 ---@param p_IsEmitting boolean
 function VuBattleRoyaleClient:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 	m_VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
-end
-
--- =============================================
-	-- Partiton Event
--- =============================================
-
--- TODO: Move it to shared __init__
----VEXT Shared Partition:Loaded Event
----@param p_Partition DatabasePartition
-function VuBattleRoyaleClient:OnPartitionLoaded(p_Partition)
-	m_SoundModifier:OnPartitionLoaded(p_Partition)
 end
 
 -- =============================================

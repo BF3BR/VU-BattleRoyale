@@ -168,6 +168,7 @@ end
 ---@param p_Partition DatabasePartition
 function VuBattleRoyaleShared:OnPartitionLoaded(p_Partition)
 	m_MapLoader:OnPartitionLoaded(p_Partition)
+	m_ModificationsCommon:OnPartitionLoaded(p_Partition)
 end
 
 ---VEXT Shared Level:LoadingInfo Event
