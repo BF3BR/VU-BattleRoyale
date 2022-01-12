@@ -136,6 +136,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
 		NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer),
 		NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged),
+		NetEvents:Subscribe(PlayerEvents.PlayersPerTeamChanged, self, self.OnPlayersPerTeamChanged),
 		NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate),
 		NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate),
 		NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw),
@@ -741,6 +742,12 @@ end
 ---@param p_MinPlayersToStart integer
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
 	m_Hud.m_MinPlayersToStart = p_MinPlayersToStart
+end
+
+---Custom Client PlayerEvents.PlayersPerTeamChanged NetEvent
+---@param p_PlayerPerTeam integer
+function VuBattleRoyaleClient:OnPlayersPerTeamChanged(p_PlayerPerTeam)
+	m_Hud.m_PlayersPerTeam = p_PlayerPerTeam
 end
 
 ---Custom Client PlayerEvents.WinnerTeamUpdate NetEvent
