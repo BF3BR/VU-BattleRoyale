@@ -2,7 +2,7 @@
 PingServer = class "PingServer"
 
 ---@type Logger
-local m_Logger = Logger("PingServer", true)
+local m_Logger = Logger("PingServer", false)
 
 function PingServer:__init()
 	---@type table<integer, number>

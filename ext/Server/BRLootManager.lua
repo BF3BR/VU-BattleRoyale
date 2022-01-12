@@ -1,7 +1,7 @@
 ---@class BRLootManager
 BRLootManager = class "BRLootManager"
 
-local m_Logger = Logger("BRLootManager", true)
+local m_Logger = Logger("BRLootManager", false)
 
 local m_LootRandomizer = require "BRLootRandomizer"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"

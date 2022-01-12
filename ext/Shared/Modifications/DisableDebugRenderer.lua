@@ -1,7 +1,7 @@
 ---@class DisableDebugRenderer
 DisableDebugRenderer = class 'DisableDebugRenderer'
 
-local m_Logger = Logger("DisableDebugRenderer", true)
+local m_Logger = Logger("DisableDebugRenderer", false)
 
 function DisableDebugRenderer:OnExtensionLoaded()
 	local s_DebugRenderSettings = ResourceManager:GetSettings('DebugRenderSettings')

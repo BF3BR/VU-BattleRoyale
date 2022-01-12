@@ -51,7 +51,7 @@ local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifi
 local m_TimerManager = require "__shared/Utils/Timers"
 
 ---@type Logger
-local m_Logger = Logger("VuBattleRoyaleServer", true)
+local m_Logger = Logger("VuBattleRoyaleServer", false)
 
 function VuBattleRoyaleServer:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -75,6 +75,7 @@ function VuBattleRoyaleServer:RegisterVars()
 	self.m_ForcedWarmup = false
 
 	self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
+	self.m_PlayersPerTeam = ServerConfig.PlayersPerTeam
 
 	-- Sets the custom gamemode name
 	ServerUtils:SetCustomGameModeName("Battle Royale - " .. self:CurrentTeamSize())
@@ -134,6 +135,7 @@ function VuBattleRoyaleServer:RegisterRconCommands()
 	RCON:RegisterCommand("br.forceWarmup", RemoteCommandFlag.RequiresLogin, self, self.OnForceWarmupCommand)
 	RCON:RegisterCommand("br.forceEnd", RemoteCommandFlag.RequiresLogin, self, self.OnForceEndgameCommand)
 	RCON:RegisterCommand("br.setMinPlayers", RemoteCommandFlag.RequiresLogin, self, self.OnMinPlayersCommand)
+	RCON:RegisterCommand("br.setPlayersPerTeam", RemoteCommandFlag.RequiresLogin, self, self.OnPlayerPerTeamCommand)
 end
 
 -- =============================================
@@ -350,6 +352,8 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	m_PingServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
 	NetEvents:SendTo(PlayerEvents.GameStateChanged, p_Player, GameStates.None, m_GameStateManager:GetGameState())
+	NetEvents:SendTo(PlayerEvents.MinPlayersToStartChanged, p_Player, self.m_MinPlayersToStart)
+	NetEvents:SendTo(PlayerEvents.PlayersPerTeamChanged, p_Player, self.m_PlayersPerTeam)
 
 	m_LootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
 
@@ -658,6 +662,46 @@ function VuBattleRoyaleServer:OnMinPlayersCommand(p_Command, p_Args, p_LoggedIn)
 	}
 end
 
+---Custom br.setPlayersPerTeam RCON Command
+---@param p_Command string
+---@param p_Args string[]
+---@param p_LoggedIn boolean
+---@return string[]
+function VuBattleRoyaleServer:OnPlayerPerTeamCommand(p_Command, p_Args, p_LoggedIn)
+	if p_Args[1] == nil then
+		return {
+			"ERROR",
+			"You need to specify the player count per time!"
+		}
+	end
+
+	local s_MinNum = tonumber(p_Args[1])
+
+	if s_MinNum < 1 or s_MinNum > 4 then
+		return {
+			"ERROR",
+			"You can only set player count per team between 1 and 4!"
+		}
+	end
+
+	if s_MinNum == self.m_PlayersPerTeam then
+		return {
+			"ERROR",
+			"Player count per team already set!"
+		}
+	end
+
+	self.m_PlayersPerTeam = s_MinNum
+	NetEvents:BroadcastLocal(PlayerEvents.PlayersPerTeamChanged, s_MinNum)
+	m_TeamManagerServer:UpdatePlayerPerTeam(s_MinNum)
+	ServerUtils:SetCustomGameModeName("Battle Royale - " .. self:CurrentTeamSize())
+
+	return {
+		"OK",
+		"Player count per team set!"
+	}
+end
+
 -- =============================================
 -- Functions
 -- =============================================
@@ -713,9 +757,9 @@ end
 ---Returns the current team size
 ---@return '"Solo"'|'"Duo"'|'"Squad"'
 function VuBattleRoyaleServer:CurrentTeamSize()
-	if ServerConfig.PlayersPerTeam == 1 then
+	if self.m_PlayersPerTeam == 1 then
 		return "Solo"
-	elseif ServerConfig.PlayersPerTeam == 2 then
+	elseif self.m_PlayersPerTeam == 2 then
 		return "Duo"
 	else
 		return "Squad"

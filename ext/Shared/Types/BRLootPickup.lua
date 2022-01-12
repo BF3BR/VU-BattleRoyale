@@ -2,9 +2,7 @@
 BRLootPickup = class "BRLootPickup"
 
 ---@type Logger
-local m_Logger = Logger("BRLootPickup", true)
----@type RotationHelper
-local m_RotationHelper = require "__shared/Utils/RotationHelper"
+local m_Logger = Logger("BRLootPickup", false)
 ---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 

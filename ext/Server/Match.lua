@@ -18,7 +18,7 @@ local m_BRInventoryManager = require "BRInventoryManager"
 ---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
 ---@type Logger
-local m_Logger = Logger("Match", true)
+local m_Logger = Logger("Match", false)
 
 function Match:__init()
 	-- call TimersMixin's constructor

@@ -1,10 +1,9 @@
 ---@class FireEffectsModifier
 FireEffectsModifier = class "FireEffectsModifier"
 
-local m_EmitterHelper = require "__shared/Utils/EmitterHelper"
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
 
-local m_Logger = Logger("FireEffectsModifier", true)
+local m_Logger = Logger("FireEffectsModifier", false)
 
 function FireEffectsModifier:__init()
 	self:RegisterVars()

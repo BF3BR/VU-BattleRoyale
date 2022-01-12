@@ -10,7 +10,7 @@ local m_BRTeamManagerServer = require "BRTeamManagerServer"
 ---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
 ---@type Logger
-local m_Logger = Logger("PhaseManagerServer", true)
+local m_Logger = Logger("PhaseManagerServer", false)
 
 function PhaseManagerServer:RegisterVars()
 	PhaseManagerShared.RegisterVars(self)

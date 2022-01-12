@@ -2,7 +2,7 @@
 BRLootRandomizer = class "BRLootRandomizer"
 
 ---@type Logger
-local m_Logger = Logger("BRLootRandomizer", true)
+local m_Logger = Logger("BRLootRandomizer", false)
 
 ---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"

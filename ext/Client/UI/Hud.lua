@@ -11,7 +11,7 @@ local m_HudUtils = require "UI/Utils/HudUtils"
 local m_BrPlayer = require "BRPlayer"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("VuBattleRoyaleHud", true)
+local m_Logger = Logger("VuBattleRoyaleHud", false)
 
 function VuBattleRoyaleHud:__init()
 	---@type GameStates|integer
@@ -22,6 +22,7 @@ function VuBattleRoyaleHud:__init()
 	self.m_IsLevelLoaded = false
 
 	self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
+	self.m_PlayersPerTeam = ServerConfig.PlayersPerTeam
 
 	---@type table<integer, table>
 	self.m_Markers = {}
@@ -136,6 +137,7 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 
 	if self.m_Ticks >= ServerConfig.HudUpdateRate then
 		self.m_HudOnMinPlayersToStart:Update(self.m_MinPlayersToStart)
+		self.m_HudOnUpdateTeamSize:Update(self.m_PlayersPerTeam)
 
 		self:PushUpdatePlayersInfo()
 		self:PushLocalPlayerTeam()
@@ -886,7 +888,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerTeam()
-	self.m_HudOnUpdateTeamSize:Update(ServerConfig.PlayersPerTeam)
+	self.m_HudOnUpdateTeamSize:Update(self.m_PlayersPerTeam)
 
 	if m_BrPlayer.m_Team ~= nil then
 		self.m_HudOnUpdateTeamId:Update(m_BrPlayer.m_Team.m_Id)

@@ -1,7 +1,7 @@
 ---@class BRLooting
 BRLooting = class "BRLooting"
 
-local m_Logger = Logger("BRLooting", true)
+local m_Logger = Logger("BRLooting", false)
 ---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 ---@type BRLootPickupDatabaseClient

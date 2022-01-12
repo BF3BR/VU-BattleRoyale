@@ -8,7 +8,7 @@ local m_Hud = require "UI/Hud"
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
 ---@type Logger
-local m_Logger = Logger("PingClient", true)
+local m_Logger = Logger("PingClient", false)
 
 ---@return InputDeviceKeys|integer
 local function GetPingKeySetting()

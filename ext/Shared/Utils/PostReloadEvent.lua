@@ -1,7 +1,7 @@
 ---@class PostReloadEvent
 PostReloadEvent = class "PostReloadEvent"
 
-local m_Logger = Logger("PostReloadEvent", true)
+local m_Logger = Logger("PostReloadEvent", false)
 
 function PostReloadEvent:__init()
 	self:ResetVars()

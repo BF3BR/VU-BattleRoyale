@@ -2,7 +2,7 @@
 VoipManager = class 'VoipManager'
 
 ---@type Logger
-local m_Logger = Logger("VoipManager", true)
+local m_Logger = Logger("VoipManager", false)
 
 ---@param p_String '"Party"'|'"Team"'
 ---@return InputDeviceKeys|integer

@@ -1,7 +1,7 @@
 ---@class PhaseManagerShared : TimersMixin
 PhaseManagerShared = class("PhaseManagerShared", TimersMixin)
 
-local m_Logger = Logger("PhaseManagerShared", true)
+local m_Logger = Logger("PhaseManagerShared", false)
 
 function PhaseManagerShared:__init()
 	TimersMixin.__init(self)
