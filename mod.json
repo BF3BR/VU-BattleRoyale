@@ -6,7 +6,7 @@
 	"HasVeniceEXT": true,
 	"HasWebUI": true,
 	"Dependencies": {
-		"veniceext": "^1.3.2",
+		"veniceext": "^1.4.0",
 		"VU-BattleRoyale-Compass": "^1.0.0",
 		"VEManager": "^0.2.0-rc.1"
 	},
