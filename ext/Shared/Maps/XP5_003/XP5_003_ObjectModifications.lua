@@ -90,3 +90,33 @@ function XP5_003_ObjectModifications:OnMEHouse01GarageDestruction(p_ObjectBluepr
 end
 
 return XP5_003_ObjectModifications()
+
+-- ==================
+-- Pre Destruction
+-- ==================
+
+ResourceManager:RegisterInstanceLoadHandler(Guid('4D111FC3-988F-4C3D-B7F4-312029A5E921'), Guid('67491DC1-A8F5-441F-93C2-7FF000F05788'), function(instance)
+
+local worldPart = WorldPartData(instance)
+worldPart:MakeWritable()
+
+local customDestr = PredestructionEntityData()
+customDestr.transform = LinearTransform(
+        Vec3(0.572055, 0.000000, 0.820215),
+Vec3(0.000000, 1.000000, 0.000000),
+Vec3(-0.820215, 0.000000, 0.572055),
+Vec3(962.125000, 198.775192, -622.037109)
+    )
+customDestr.radius = 1
+worldPart.objects:add(customDestr)
+
+local customDestr2 = PredestructionEntityData()
+customDestr2.transform = LinearTransform(
+        Vec3(-0.967689, 0.000000, 0.252147),
+Vec3(0.000000, 1.000000, 0.000000),
+Vec3(-0.252147, 0.000000, -0.967689),
+Vec3(715.993164, 194.293747, -1141.727539)
+    )
+customDestr2.radius = 5
+worldPart.objects:add(customDestr2)
+end)
