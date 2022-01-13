@@ -5,7 +5,7 @@ VoipManager = class 'VoipManager'
 local m_Logger = Logger("VoipManager", false)
 
 ---@param p_String '"Party"'|'"Team"'
----@return InputDeviceKeys|integer
+---@return ModSetting
 local function GetPushToTalkSetting(p_String)
 	local s_PushToTalkSetting = SettingsManager:GetSetting("Voip_" .. p_String .. "_PushToTalk_Key")
 
@@ -25,11 +25,11 @@ local function GetPushToTalkSetting(p_String)
 		m_Logger:Write("GetPushToTalkSetting created setting for " .. p_String)
 	end
 
-	return s_PushToTalkSetting.value
+	return s_PushToTalkSetting
 end
 
 ---@param p_String '"Party"'|'"Team"'
----@return VoipTransmissionMode|integer
+---@return ModSetting
 local function GetTransmissionModeSetting(p_String)
 	local s_TransmissionModeSetting = SettingsManager:GetSetting("Voip_" .. p_String .. "_TransmissionMode")
 
@@ -49,7 +49,7 @@ local function GetTransmissionModeSetting(p_String)
 		s_TransmissionModeSetting.value = "PushToTalk"
 	end
 
-	return VoipTransmissionMode[s_TransmissionModeSetting.value]
+	return s_TransmissionModeSetting
 end
 
 function VoipManager:OnExtensionLoaded()
@@ -60,10 +60,10 @@ function VoipManager:OnExtensionLoaded()
 	self.m_BrTeamIsTransmitting = false
 	self.m_BrPartyIsTransmitting = false
 
-	self.m_BrTeam_TransitionMode = GetTransmissionModeSetting("Team")
-	self.m_BrTeam_PushToTalk_Key = GetPushToTalkSetting("Team")
-	self.m_BrParty_TransitionMode = GetTransmissionModeSetting("Party")
-	self.m_BrParty_PushToTalk_Key = GetPushToTalkSetting("Party")
+	self.m_BrTeam_TransitionModeSetting = GetTransmissionModeSetting("Team")
+	self.m_BrTeam_PushToTalk_KeySetting = GetPushToTalkSetting("Team")
+	self.m_BrParty_TransitionModeSetting = GetTransmissionModeSetting("Party")
+	self.m_BrParty_PushToTalk_KeySetting = GetPushToTalkSetting("Party")
 end
 
 ---VEXT Client Client:UpdateInput Event
@@ -73,8 +73,8 @@ function VoipManager:OnClientUpdateInput()
 		return
 	end
 
-	if self.m_BrTeamChannelName ~= nil and self.m_BrTeam_TransitionMode == VoipTransmissionMode.PushToTalk then
-		if InputManager:WentKeyDown(self.m_BrTeam_PushToTalk_Key) and not self.m_BrTeamIsTransmitting then
+	if self.m_BrTeamChannelName ~= nil and VoipTransmissionMode[self.m_BrTeam_TransitionModeSetting.value] == VoipTransmissionMode.PushToTalk then
+		if InputManager:WentKeyDown(self.m_BrTeam_PushToTalk_KeySetting.value) and not self.m_BrTeamIsTransmitting then
 			local s_Channel = Voip:GetChannel(self.m_BrTeamChannelName)
 
 			if s_Channel ~= nil then
@@ -82,7 +82,7 @@ function VoipManager:OnClientUpdateInput()
 				self.m_BrTeamIsTransmitting = true
 				s_Channel:StartTransmitting()
 			end
-		elseif InputManager:WentKeyUp(self.m_BrTeam_PushToTalk_Key) and self.m_BrTeamIsTransmitting then
+		elseif InputManager:WentKeyUp(self.m_BrTeam_PushToTalk_KeySetting.value) and self.m_BrTeamIsTransmitting then
 			local s_Channel = Voip:GetChannel(self.m_BrTeamChannelName)
 
 			if s_Channel ~= nil then
@@ -93,8 +93,8 @@ function VoipManager:OnClientUpdateInput()
 		end
 	end
 
-	if self.m_BrPartyChannelName ~= nil and self.m_BrParty_TransitionMode == VoipTransmissionMode.PushToTalk then
-		if InputManager:WentKeyDown(self.m_BrParty_PushToTalk_Key) and not self.m_BrPartyIsTransmitting then
+	if self.m_BrPartyChannelName ~= nil and VoipTransmissionMode[self.m_BrParty_TransitionModeSetting.value] == VoipTransmissionMode.PushToTalk then
+		if InputManager:WentKeyDown(self.m_BrParty_PushToTalk_KeySetting.value) and not self.m_BrPartyIsTransmitting then
 			local s_Channel = Voip:GetChannel(self.m_BrPartyChannelName)
 
 			if s_Channel ~= nil then
@@ -102,7 +102,7 @@ function VoipManager:OnClientUpdateInput()
 				self.m_BrPartyIsTransmitting = true
 				s_Channel:StartTransmitting()
 			end
-		elseif InputManager:WentKeyUp(self.m_BrParty_PushToTalk_Key) and self.m_BrPartyIsTransmitting then
+		elseif InputManager:WentKeyUp(self.m_BrParty_PushToTalk_KeySetting.value) and self.m_BrPartyIsTransmitting then
 			local s_Channel = Voip:GetChannel(self.m_BrPartyChannelName)
 
 			if s_Channel ~= nil then
@@ -128,10 +128,10 @@ function VoipManager:OnVoipChannelPlayerJoined(p_Channel, p_Player, p_Emitter)
 
 		if p_Channel.name:match("BRTeam") then
 			self.m_BrTeamChannelName = p_Channel.name
-			p_Channel.transmissionMode = self.m_BrTeam_TransitionMode
+			p_Channel.transmissionMode = VoipTransmissionMode[self.m_BrTeam_TransitionModeSetting.value]
 		else
 			self.m_BrPartyChannelName = p_Channel.name
-			p_Channel.transmissionMode = self.m_BrParty_TransitionMode
+			p_Channel.transmissionMode = VoipTransmissionMode[self.m_BrParty_TransitionModeSetting.value]
 		end
 	else
 		p_Emitter.volume = 5.0
