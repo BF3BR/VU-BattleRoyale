@@ -10,7 +10,7 @@ local m_BrPlayer = require "BRPlayer"
 ---@type Logger
 local m_Logger = Logger("PingClient", false)
 
----@return InputDeviceKeys|integer
+---@return ModSetting
 local function GetPingKeySetting()
 	local s_PingKeySetting = SettingsManager:GetSetting("PingKey")
 
@@ -21,10 +21,10 @@ local function GetPingKeySetting()
 		m_Logger:Write("GetPingKeySetting created.")
 	end
 
-	return s_PingKeySetting.value
+	return s_PingKeySetting
 end
 
----@return '"Define MouseButton"'|'"Define Key"'|'"Press Ping-Key twice"'
+---@return ModSetting
 local function GetEnemyPingOptionSetting()
 	local s_EnemyPingOptionSetting = SettingsManager:GetSetting("PingEnemyOption")
 
@@ -39,24 +39,24 @@ local function GetEnemyPingOptionSetting()
 		m_Logger:Write("GetEnemyPingOptionSetting created.")
 	end
 
-	return s_EnemyPingOptionSetting.value
+	return s_EnemyPingOptionSetting
 end
 
----@return InputDeviceKeys|integer
+---@return ModSetting
 local function GetEnemyPingKeySetting()
 	local s_EnemyPingKeySetting = SettingsManager:GetSetting("PingEnemyKey")
 
 	if s_EnemyPingKeySetting == nil then
 		s_EnemyPingKeySetting = SettingsManager:DeclareKeybind("PingEnemyKey", InputDeviceKeys.IDK_2, { displayName = "Ping Enemy Key", showInUi = true})
-		s_EnemyPingKeySetting.value = InputDeviceKeys.IDK_2
+		s_EnemyPingKeySetting.value = InputDeviceKeys.IDK_Undefined
 
 		m_Logger:Write("GetEnemyPingKeySetting created.")
 	end
 
-	return s_EnemyPingKeySetting.value
+	return s_EnemyPingKeySetting
 end
 
----@return InputDeviceMouseButtons|integer
+---@return ModSetting
 local function GetEnemyPingMouseButtonSetting()
 	local s_EnemyPingButtonSetting = SettingsManager:GetSetting("PingEnemyMouseButton")
 
@@ -67,7 +67,7 @@ local function GetEnemyPingMouseButtonSetting()
 		m_Logger:Write("GetEnemyPingMouseButtonSetting created.")
 	end
 
-	return s_EnemyPingButtonSetting.value
+	return s_EnemyPingButtonSetting
 end
 
 function PingClient:OnExtensionLoaded()
@@ -121,10 +121,10 @@ function PingClient:RegisterVars()
 	self.m_ShouldPingSoon = false
 	self.m_PingTimer = 0.0
 
-	self.m_PingKey = GetPingKeySetting()
-	self.m_EnemyPingOption = GetEnemyPingOptionSetting()
-	self.m_EnemyPingKey = GetEnemyPingKeySetting()
-	self.m_EnemyPingMouseButton = GetEnemyPingMouseButtonSetting()
+	self.m_PingKeySetting = GetPingKeySetting()
+	self.m_EnemyPingOptionSetting = GetEnemyPingOptionSetting()
+	self.m_EnemyPingKeySetting = GetEnemyPingKeySetting()
+	self.m_EnemyPingMouseButtonSetting = GetEnemyPingMouseButtonSetting()
 end
 
 -- =============================================
@@ -206,7 +206,7 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 		return
 	end
 
-	if InputManager:IsKeyDown(self.m_PingKey) then
+	if InputManager:IsKeyDown(self.m_PingKeySetting.value) then
 		self.m_DisplayCommoRoseTimer = self.m_DisplayCommoRoseTimer + p_DeltaTime
 
 		if self.m_DisplayCommoRoseTimer > self.m_TimeToDisplayCommoRose and not self.m_IsCommoRoseOpened then
@@ -215,7 +215,7 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 			m_Logger:Write("ShowCommoRose")
 			WebUI:EnableMouse()
 		end
-	elseif InputManager:WentKeyUp(self.m_PingKey) and self.m_DisplayCommoRoseTimer ~= 0.0 then
+	elseif InputManager:WentKeyUp(self.m_PingKeySetting.value) and self.m_DisplayCommoRoseTimer ~= 0.0 then
 		self.m_PingMethod = PingMethod.World
 
 		-- didn't hold the ping key (Q) long enough
@@ -230,7 +230,7 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 
 			self.m_PingType = PingType.Default
 
-			if self.m_EnemyPingOption == "Press Ping-Key twice" then
+			if self.m_EnemyPingOptionSetting.value == "Press Ping-Key twice" then
 				self.m_ShouldPingSoon = true
 			else
 				self.m_ShouldPing = true
@@ -246,11 +246,11 @@ function PingClient:OnClientUpdateInput(p_DeltaTime)
 		m_Hud:HideCommoRose()
 		self.m_IsCommoRoseOpened = false
 		self.m_DisplayCommoRoseTimer = 0.0
-	elseif InputManager:WentKeyDown(self.m_EnemyPingKey) and self.m_EnemyPingOption == "Define Key" then
+	elseif InputManager:WentKeyDown(self.m_EnemyPingKeySetting.value) and self.m_EnemyPingOptionSetting.value == "Define Key" then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
 		self.m_PingType = PingType.Enemy
-	elseif InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_2) and self.m_EnemyPingOption == "Define MouseButton" then
+	elseif InputManager:WentMouseButtonDown(self.m_EnemyPingMouseButtonSetting.value) and self.m_EnemyPingOptionSetting.value == "Define MouseButton" then
 		self.m_ShouldPing = true
 		self.m_PingMethod = PingMethod.World
 		self.m_PingType = PingType.Enemy
