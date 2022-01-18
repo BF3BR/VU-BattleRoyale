@@ -13,6 +13,24 @@ local m_BrPlayer = require "BRPlayer"
 local m_TimerManager = require "__shared/Utils/Timers"
 local m_Logger = Logger("VuBattleRoyaleHud", false)
 
+---@return ModSetting
+local function GetShowFPSSetting()
+	local s_ShowFPSSetting = SettingsManager:GetSetting("ShowFPS")
+
+	if s_ShowFPSSetting == nil then
+		---@type SettingOptions
+		local s_SettingOptions = SettingOptions()
+		s_SettingOptions.displayName = "Show FPS"
+		s_SettingOptions.showInUi = true
+		s_ShowFPSSetting = SettingsManager:DeclareBool("ShowFPS", false, s_SettingOptions)
+		s_ShowFPSSetting.value = false
+
+		m_Logger:Write("GetShowFPSSetting created.")
+	end
+
+	return s_ShowFPSSetting
+end
+
 function VuBattleRoyaleHud:__init()
 	---@type GameStates|integer
 	self.m_GameState = GameStates.None
@@ -31,6 +49,9 @@ function VuBattleRoyaleHud:__init()
 	self.m_ManDownMapMarkers = {}
 
 	self.m_ShowInteractiveReviveMessage = false
+	self.m_ShowFPSSetting = GetShowFPSSetting()
+	self.m_FPSTimer = 0.0
+	self.m_FPSCount = 0
 
 	self:RegisterVars()
 end
@@ -131,6 +152,17 @@ end
 
 ---VEXT Shared Engine:Update Event
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
+	if self.m_ShowFPSSetting.value then
+		if self.m_FPSTimer < 1.0 then
+			self.m_FPSCount = self.m_FPSCount + 1
+			self.m_FPSTimer = self.m_FPSTimer + p_DeltaTime
+		else
+			--TODO: send FPS to WebUI
+			self.m_FPSTimer = 0.0
+			self.m_FPSCount = 0
+		end
+	end
+
 	if not self.m_IsLevelLoaded then
 		return
 	end
