@@ -14,9 +14,9 @@ local function GetPushToTalkSetting(p_String)
 		local s_DefaultInputDeviceKey = nil
 
 		if p_String == "Party" then
-			s_DefaultInputDeviceKey = InputDeviceKeys.IDK_1
+			s_DefaultInputDeviceKey = InputDeviceKeys.IDK_Undefined
 		else
-			s_DefaultInputDeviceKey = InputDeviceKeys.IDK_0
+			s_DefaultInputDeviceKey = InputDeviceKeys.IDK_C
 		end
 
 		s_PushToTalkSetting = SettingsManager:DeclareKeybind("Voip_" .. p_String .. "_PushToTalk_Key", s_DefaultInputDeviceKey, { displayName = p_String .. " Voip Push-To-Talk Key", showInUi = true})
