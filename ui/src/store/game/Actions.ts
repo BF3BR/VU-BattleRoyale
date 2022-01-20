@@ -7,6 +7,7 @@ import {
     UPDATE_DEPLOY_TEAM,
     UPDATE_GAMEOVER,
     UPDATE_GAME_STATE,
+    UPDATE_LEVEL_NAME,
     UPDATE_MIN_PLAYERS,
     UPDATE_PLAYERS,
     UPDATE_TIME,
@@ -106,5 +107,12 @@ export function resetGame(): GameActionTypes {
     return {
         type: RESET_GAME,
         payload: {},
+    };
+}
+
+export function updateLevelName(levelName: string): GameActionTypes {
+    return {
+        type: UPDATE_LEVEL_NAME,
+        payload: { levelName },
     };
 }

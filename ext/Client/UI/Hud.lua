@@ -85,6 +85,7 @@ function VuBattleRoyaleHud:RegisterVars()
 	self.m_HudOnGameOverScreen = CachedJsExecutor("OnGameOverScreen(%s)", nil)
 	self.m_HudOnUpdatePlacement = CachedJsExecutor("OnUpdatePlacement(%s)", 99)
 	self.m_HudOnSetUIState = CachedJsExecutor("OnSetUIState('%s')", UiStates.Loading)
+	self.m_HudOnUpdateLevelName = CachedJsExecutor("OnUpdateLevelName('%s')", "")
 end
 
 function VuBattleRoyaleHud:ResetVars()
@@ -164,6 +165,7 @@ function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
 	end
 
 	if not self.m_IsLevelLoaded then
+		self.m_HudOnUpdateLevelName:Update(SharedUtils:GetLevelName())
 		return
 	end
 

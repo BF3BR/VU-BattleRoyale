@@ -10,6 +10,7 @@ import {
     UPDATE_DEPLOY_TEAM_TYPE,
     UPDATE_GAMEOVER,
     UPDATE_GAME_STATE,
+    UPDATE_LEVEL_NAME,
     UPDATE_MIN_PLAYERS,
     UPDATE_PLAYERS,
     UPDATE_TIME,
@@ -42,6 +43,7 @@ const initialState: GameState = {
         teamJoinError: null,
     },
     showCommoRose: false,
+    levelName: "",
 };
 
 const GameReducer = (
@@ -140,6 +142,11 @@ const GameReducer = (
             return {
                 ...state,
                 showCommoRose: action.payload.show,
+            };
+        case UPDATE_LEVEL_NAME:
+            return {
+                ...state,
+                levelName: action.payload.levelName,
             };
         case RESET_GAME:
             return {
