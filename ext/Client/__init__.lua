@@ -5,7 +5,6 @@ require "ClientCommands"
 
 require "__shared/Configs/SettingsConfig"
 require "__shared/Configs/CircleConfig"
-require "Utils/LootPointHelper"
 require "Utils/CachedJsExecutor"
 
 require "Types/BRInventory"

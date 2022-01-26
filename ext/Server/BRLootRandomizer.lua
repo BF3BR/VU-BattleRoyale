@@ -67,7 +67,9 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 		s_RandomTier = p_Tier
 	end
 
-	local s_Point = p_Point
+	local s_Point = LinearTransform()
+	s_Point.trans = p_Point
+	
 	local s_RandomItemDefinition = nil
 	local s_RandomItemQuantity = 1
 
