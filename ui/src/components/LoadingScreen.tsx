@@ -1,17 +1,74 @@
 import React from "react";
-import { Oval } from 'svg-loaders-react';
+import { connect } from "react-redux";
+import { Oval } from "svg-loaders-react";
+import { Fade } from "react-slideshow-image";
 
-import XP5_003 from "../assets/img/loading/XP5_003.jpg";
+import { RootState } from "../store/RootReducer";
 
 import "./LoadingScreen.scss";
 
-const LoadingScreen: React.FC = () => {
+interface StateFromReducer {
+    levelName: string;
+}
+
+type Props = StateFromReducer;
+
+const host = "https://cdn.jsdelivr.net/gh/BF3BR/VU-BattleRoyale-Loading-Images@main/";
+const list = ["01", "02", "03", "04"];
+
+const LoadingScreen: React.FC<Props> = ({ levelName }) => {
+    const getName = () => {
+        switch (levelName) {
+            case "Levels/XP5_003/XP5_003":
+            default:
+                return "Kiasar Railroad";
+        }
+    }
+
+    const getShortName = () => {
+        if (levelName === "") {
+            return "XP5_003";
+        }
+
+        const words = levelName.split("/");
+        return words[words.length - 1];
+    }
+
     return (
         <div id="LoadingScreen">
+            <div className="bgWrapper">
+                <Fade 
+                    arrows={false}
+                    pauseOnHover={false}
+                    canSwipe={false}
+                    autoplay={true}
+                    defaultIndex={(Math.floor(Math.random() * 3))}
+                >
+                    {list.sort(() => Math.random() - 0.5).map((pic: string, index: number) => (
+                        <div className="slideItem" key={index}>
+                            <img 
+                                src={host + getShortName() + "/" + pic + ".jpg"} 
+                                alt="" 
+                                onError={(e: any) => {e.target.onerror = null; e.target.src = "img/default.jpg"}} 
+                                onLoad={(e: any) => {e.target.style = {opacity: 1}}} 
+                                style={{opacity: 0}} 
+                            />
+                        </div>
+                    ))}
+                </Fade>
+            </div>
+            <div className="loader">
+                <Oval />
+            </div>
+            <div className="bgOverlay" />
             <div className="LoadingBox">
-                <h1 className="PageTitle">Kiasar Railroad</h1>
+                <h1 className="PageTitle">
+                    Battle Royale
+                </h1>
                 <br/>
-                <h3 className="ModeType">Battle Royale</h3>
+                <h3 className="ModeType">
+                    {getName()}
+                </h3>
 
                 <div className="card ObjectiveBox">
                     <div className="card-header">
@@ -40,15 +97,17 @@ const LoadingScreen: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <div className="bgOverlay" />
-            <div className="bgWrapper">
-                <img src={XP5_003} alt="" />
-            </div>
-            <div className="loader">
-                <Oval />
-            </div>
         </div>
     );
 };
 
-export default LoadingScreen;
+const mapStateToProps = (state: RootState) => {
+    return {
+        // GameReducer
+        levelName: state.GameReducer.levelName,
+    };
+}
+const mapDispatchToProps = (dispatch: any) => {
+    return {};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(LoadingScreen);

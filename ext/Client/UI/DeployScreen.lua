@@ -45,7 +45,10 @@ function DeployScreen:CloseDeployScreen()
 	m_HudUtils:ShowroomCamera(false)
 	m_HudUtils:EnableShowroomSoldier(false)
 	m_HudUtils:ExitSoundState()
-	m_HudUtils:HUDEnterUIGraph()
+	-- this delay is to fix a crash when respawning
+	m_TimerManager:Timeout(0.2, function()
+		m_HudUtils:HUDEnterUIGraph()
+	end)
 end
 
 return DeployScreen()

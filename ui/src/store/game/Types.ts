@@ -24,4 +24,5 @@ export interface GameState {
         teamJoinError: number|null;
     };
     showCommoRose: boolean;
+    levelName: string;
 }

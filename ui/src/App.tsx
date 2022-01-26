@@ -62,6 +62,7 @@ import {
     updateDeployTeam,
     updateGameover,
     updateGameState,
+    updateLevelName,
     updateMinPlayers,
     updatePlayers,
     updateTime,
@@ -196,6 +197,10 @@ const App: React.FC<Props> = ({
 
     window.OnUpdatePlacement = (placement: number | null) => {
         dispatch(updateGameover(undefined, undefined, placement ?? 99, undefined));
+    }
+
+    window.OnUpdateLevelName = (levelName: string) => {
+        dispatch(updateLevelName(levelName));
     }
 
     /*
@@ -950,5 +955,6 @@ declare global {
         gc: () => void;
         VoipEmitterEmitting: (playerName: string, isSpeaking: boolean, isParty: boolean) => void;
         VoipPlayerMuted: (playerName: string, isMuted: boolean) => void;
+        OnUpdateLevelName: (levelName: string) => void;
     }
 }
