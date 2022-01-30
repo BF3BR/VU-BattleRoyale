@@ -258,6 +258,13 @@ function HudUtils:OnEnableMouse()
 	if self.m_EnableMouseInstanceId == nil then
 		local s_DataMouse = self:GetEnableMouseEntityData()
 		local s_EnableMouseGraphEntity = EntityManager:CreateEntity(s_DataMouse, LinearTransform())
+
+		if s_EnableMouseGraphEntity == nil then
+			m_Logger:Warning("Failed to create EnableMouseGraphEntity. Enabling mouse with WebUI instead.")
+			WebUI:EnableMouse()
+			return
+		end
+
 		s_EnableMouseGraphEntity:FireEvent('EnableMouseInput')
 		self.m_EnableMouseInstanceId = s_EnableMouseGraphEntity.instanceId
 	else
@@ -348,6 +355,12 @@ function HudUtils:OnDisableGameInput()
 	if self.m_DisableGameInputInstanceId == nil then
 		local s_DataGameInput = self:GetDisableGameInputEntityData()
 		local s_DisableGameInputGraphEntity = EntityManager:CreateEntity(s_DataGameInput, LinearTransform())
+
+		if s_DisableGameInputGraphEntity == nil then
+			m_Logger:Warning("Failed to create Entity to disable GameInput.")
+			return
+		end
+
 		s_DisableGameInputGraphEntity:FireEvent('DisableGameInput')
 		self.m_DisableGameInputInstanceId = s_DisableGameInputGraphEntity.instanceId
 	else
@@ -505,7 +518,7 @@ function HudUtils:EnableShowroomSoldier(p_Enable)
 		local s_ShowSoldierGraphEntity = EntityManager:CreateEntity(s_ShowSoldierGraphEntityData, LinearTransform())
 
 		if s_ShowSoldierGraphEntity == nil then
-			m_Logger:Write("EnableShowroomSoldier: Creating Entity failed.")
+			m_Logger:Warning("EnableShowroomSoldier: Creating Entity failed.")
 			return
 		end
 
