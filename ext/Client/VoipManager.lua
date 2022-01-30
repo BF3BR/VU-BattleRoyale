@@ -14,7 +14,7 @@ local function GetPushToTalkSetting(p_String)
 		local s_DefaultInputDeviceKey = nil
 
 		if p_String == "Party" then
-			s_DefaultInputDeviceKey = InputDeviceKeys.IDK_Undefined
+			s_DefaultInputDeviceKey = InputDeviceKeys.IDK_None
 		else
 			s_DefaultInputDeviceKey = InputDeviceKeys.IDK_C
 		end

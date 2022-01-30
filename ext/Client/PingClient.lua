@@ -47,8 +47,8 @@ local function GetEnemyPingKeySetting()
 	local s_EnemyPingKeySetting = SettingsManager:GetSetting("PingEnemyKey")
 
 	if s_EnemyPingKeySetting == nil then
-		s_EnemyPingKeySetting = SettingsManager:DeclareKeybind("PingEnemyKey", InputDeviceKeys.IDK_Undefined, { displayName = "Ping Enemy Key", showInUi = true})
-		s_EnemyPingKeySetting.value = InputDeviceKeys.IDK_Undefined
+		s_EnemyPingKeySetting = SettingsManager:DeclareKeybind("PingEnemyKey", InputDeviceKeys.IDK_None, { displayName = "Ping Enemy Key", showInUi = true})
+		s_EnemyPingKeySetting.value = InputDeviceKeys.IDK_None
 
 		m_Logger:Write("GetEnemyPingKeySetting created.")
 	end
