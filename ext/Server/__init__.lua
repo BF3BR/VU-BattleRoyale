@@ -92,7 +92,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate),
 
 		Events:Subscribe("Player:Created", self, self.OnPlayerCreated),
-		Events:Subscribe("Player:UpdateInput", self, self.OnPlayerUpdateInput),
+		Events:Subscribe("Player:UpdateInteract", self, self.OnPlayerUpdateInteract),
 		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
 		Events:Subscribe("Player:Killed", self, self.OnPlayerKilled),
 		Events:Subscribe("Player:Left", self, self.OnPlayerLeft),
@@ -277,10 +277,10 @@ function VuBattleRoyaleServer:OnPlayerCreated(p_Player)
 	end
 end
 
----VEXT Server Player:UpdateInput Event
+---VEXT Server Player:UpdateInteract Event
 ---@param p_Player Player
-function VuBattleRoyaleServer:OnPlayerUpdateInput(p_Player)
-	m_GunshipServer:OnPlayerUpdateInput(p_Player)
+function VuBattleRoyaleServer:OnPlayerUpdateInteract(p_Player)
+	m_GunshipServer:OnPlayerUpdateInteract(p_Player)
 end
 
 ---VEXT Server Player:ChangingWeapon Event

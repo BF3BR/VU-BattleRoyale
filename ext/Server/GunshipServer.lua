@@ -66,9 +66,9 @@ function GunshipServer:OnUpdatePassPreSim(p_DeltaTime)
 	end
 end
 
----VEXT Server Player:UpdateInput Event
+---VEXT Server Player:UpdateInteract Event
 ---@param p_Player Player
-function GunshipServer:OnPlayerUpdateInput(p_Player)
+function GunshipServer:OnPlayerUpdateInteract(p_Player)
 	-- if disabled or wrong type
 	if not self.m_Enabled or self.m_Type ~= "Paradrop" then
 		return
