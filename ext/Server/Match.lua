@@ -96,7 +96,9 @@ function Match:NextMatchState()
 	-- before switching state
 	local s_State = m_GameStateManager:GetGameState()
 
-	if s_State == GameStates.Plane then
+	if s_State == GameStates.Warmup then
+		m_PhaseManagerServer:UpdatePhasesBasedOnPlayers()
+	elseif s_State == GameStates.Plane then
 		NetEvents:BroadcastLocal(GunshipEvents.ForceJumpOut)
 	elseif s_State == GameStates.PlaneToFirstCircle then
 		m_PhaseManagerServer:Start()

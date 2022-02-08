@@ -36,7 +36,6 @@ end
 
 -- Starts the PhaseManager logic
 function PhaseManagerServer:Start()
-	self:UpdatePhasesBasedOnPlayers()
 	self:SetTimer("Damage", m_TimerManager:Interval(1, self, self.ApplyDamage))
 	self:SetTimer("ClientTimer", m_TimerManager:Interval(1, self, self.ClientTimer))
 	self:InitPhase()
@@ -181,9 +180,9 @@ function PhaseManagerServer:UpdatePhasesBasedOnPlayers()
 		if l_Index == 1 or l_Index > s_ReduceCount + 1 then
 			table.insert(s_Phases, l_Phase)
 		else
-			-- update move timer & ration of first phase
+			-- update move timer & ratio of first phase
 			local s_FirstPhase = s_Phases[1]
-			s_FirstPhase.MoveDuration = s_FirstPhase.MoveDuration * 1.15
+			s_FirstPhase.MoveDuration = math.floor(s_FirstPhase.MoveDuration * 1.15)
 			s_FirstPhase.Ratio = s_FirstPhase.Ratio * l_Phase.Ratio
 		end
 	end
