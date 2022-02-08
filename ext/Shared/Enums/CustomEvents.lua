@@ -39,7 +39,8 @@ PingEvents = {
 ---@class PhaseManagerNetEvent
 PhaseManagerNetEvent = {
 	InitialState = "PM:InitialState",
-	UpdateState = "PM:UpdateState"
+	UpdateState = "PM:UpdateState",
+	UpdatePhases = "PM:UpdatePhases"
 }
 
 ---@class PhaseManagerEvent

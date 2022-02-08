@@ -128,6 +128,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 		Events:Subscribe(PhaseManagerEvent.Update, self, self.OnPhaseManagerUpdate),
 		Events:Subscribe(PhaseManagerEvent.CircleMove, self, self.OnOuterCircleMove),
 		NetEvents:Subscribe(PhaseManagerNetEvent.UpdateState, self, self.OnPhaseManagerUpdateState),
+		NetEvents:Subscribe(PhaseManagerNetEvent.UpdatePhases, self, self.OnPhaseManagerUpdatePhases),
 
 		NetEvents:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers),
 
@@ -585,6 +586,11 @@ end
 ---@param p_State table
 function VuBattleRoyaleClient:OnPhaseManagerUpdateState(p_State)
 	m_PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
+end
+
+---@param p_Phases PhaseTable[]
+function VuBattleRoyaleClient:OnPhaseManagerUpdatePhases(p_Phases)
+	m_PhaseManagerClient:OnPhaseManagerUpdatePhases(p_Phases)
 end
 
 -- =============================================

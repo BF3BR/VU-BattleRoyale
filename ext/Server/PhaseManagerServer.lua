@@ -36,6 +36,7 @@ end
 
 -- Starts the PhaseManager logic
 function PhaseManagerServer:Start()
+	self:UpdatePhasesBasedOnPlayers()
 	self:SetTimer("Damage", m_TimerManager:Interval(1, self, self.ApplyDamage))
 	self:SetTimer("ClientTimer", m_TimerManager:Interval(1, self, self.ClientTimer))
 	self:InitPhase()
@@ -153,6 +154,42 @@ function PhaseManagerServer:Finalize()
 	-- display debug message and update clients
 	self:DebugMessage()
 	self:BroadcastState()
+end
+
+function PhaseManagerServer:UpdatePhasesBasedOnPlayers()
+	---@type integer
+	local s_AliveCount = PlayerManager:GetPlayerCount()
+
+	-- some simple logic for phase reduction for now
+	-- can be improved
+	local s_ReduceCount = 0
+	if s_AliveCount < 24 then
+		s_ReduceCount = 2
+	elseif s_AliveCount < 48 then
+		s_ReduceCount = 1
+	end
+
+	-- no changes to phases are needed
+	if s_ReduceCount == 0 then
+		return
+	end
+
+	-- construct new phases array
+	---@type PhaseTable[]
+	local s_Phases = {}
+	for l_Index, l_Phase in ipairs(self.m_Phases) do
+		if l_Index == 1 or l_Index > s_ReduceCount + 1 then
+			table.insert(s_Phases, l_Phase)
+		else
+			-- update move timer & ration of first phase
+			local s_FirstPhase = s_Phases[1]
+			s_FirstPhase.MoveDuration = s_FirstPhase.MoveDuration * 1.15
+			s_FirstPhase.Ratio = s_FirstPhase.Ratio * l_Phase.Ratio
+		end
+	end
+
+	self.m_Phases = s_Phases
+	NetEvents:BroadcastLocal(PhaseManagerNetEvent.UpdatePhases, s_Phases)
 end
 
 -- Broadcasts PhaseManager's state to all players

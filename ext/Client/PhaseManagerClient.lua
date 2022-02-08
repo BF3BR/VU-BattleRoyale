@@ -119,6 +119,11 @@ function PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
 	Events:DispatchLocal(PhaseManagerEvent.Update, p_State)
 end
 
+---@param p_Phases PhaseTable[]
+function PhaseManagerClient:OnPhaseManagerUpdatePhases(p_Phases)
+	self.m_Phases = p_Phases
+end
+
 -- =============================================
 -- Functions
 -- =============================================
