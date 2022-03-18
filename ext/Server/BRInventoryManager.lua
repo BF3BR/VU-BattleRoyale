@@ -1,8 +1,10 @@
 ---@class BRInventoryManager
 BRInventoryManager = class "BRInventoryManager"
 
+---@type Logger
 local m_Logger = Logger("BRInventoryManager", false)
 
+---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"
 ---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
@@ -126,9 +128,9 @@ end
 
 ---Responds to the request of a player to pickup an item from a specified lootpickup
 ---@param p_Player Player
----@param p_LootPickupId any @TODO figure out the emmylua types
----@param p_ItemId any
----@param p_SlotIndex any
+---@param p_LootPickupId string @it is a tostring(Guid)
+---@param p_ItemId string @it is a tostring(Guid)
+---@param p_SlotIndex InventorySlot|integer
 function BRInventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
 	-- check if player is alive
 	if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
@@ -166,6 +168,9 @@ function BRInventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_It
 end
 
 -- Responds to the request of a player to move an item between slots of his inventory
+---@param p_Player Player
+---@param p_ItemId string @it is a tostring(Guid)
+---@param p_SlotId InventorySlot|integer
 function BRInventoryManager:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
 	-- check if player is alive
 	if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
@@ -182,6 +187,9 @@ function BRInventoryManager:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
 end
 
 -- Responds to the request of a player to drop an item from his inventory
+---@param p_Player Player
+---@param p_ItemId string @it is a tostring(Guid)
+---@param p_Quantity integer|nil
 function BRInventoryManager:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
 	-- check if player is alive
 	if p_Player == nil or p_Player.soldier == nil or not p_Player.soldier.isAlive then
@@ -198,6 +206,8 @@ function BRInventoryManager:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
 end
 
 -- Responds to the request of a player to use an item from his inventory
+---@param p_Player Player
+---@param p_ItemId string @it is a tostring(Guid)
 function BRInventoryManager:OnInventoryUseItem(p_Player, p_ItemId)
 	---@type BRItemConsumable
 	local s_Item = m_ItemDatabase:GetItem(p_ItemId)
@@ -209,13 +219,16 @@ function BRInventoryManager:OnInventoryUseItem(p_Player, p_ItemId)
 	end
 end
 
+---@param p_Player Player|nil
+---@param p_AmmoAdded integer
+---@param p_Weapon SoldierWeapon|nil
 function BRInventoryManager:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
 	if p_Player == nil or p_Player.soldier == nil then
 		return
 	end
 
 	local s_Inventory = self.m_Inventories[p_Player.id]
-	local p_Weapon = p_Weapon or p_Player.soldier.weaponsComponent.currentWeapon
+	p_Weapon = p_Weapon or p_Player.soldier.weaponsComponent.currentWeapon
 
 	if s_Inventory == nil or p_Weapon == nil then
 		return
@@ -232,6 +245,7 @@ end
 -- ugly solution for now
 -- BRItemDatabase should know where each item resides and
 -- destroy it and remove any references when needed
+---@param p_ItemId string @it is a tostring(Guid)
 function BRInventoryManager:DestroyItem(p_ItemId)
 	-- search for the item
 	for _, l_Inventory in pairs(self.m_Inventories) do
@@ -249,6 +263,7 @@ function BRInventoryManager:DestroyItem(p_ItemId)
 	m_ItemDatabase:UnregisterItem(p_ItemId)
 end
 
+---@param p_ItemId string @it is a tostring(Guid)
 function BRInventoryManager:OnItemDestroy(p_ItemId)
 	return self:DestroyItem(p_ItemId)
 end

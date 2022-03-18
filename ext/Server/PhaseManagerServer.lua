@@ -1,6 +1,9 @@
 ---@class PhaseManagerServer : PhaseManagerShared
 PhaseManagerServer = class("PhaseManagerServer", PhaseManagerShared)
 
+---@type Logger
+local m_Logger = Logger("PhaseManagerServer", false)
+
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 ---@type MathHelper
@@ -9,8 +12,6 @@ local m_MathHelper = require "__shared/Utils/MathHelper"
 local m_BRTeamManagerServer = require "BRTeamManagerServer"
 ---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
----@type Logger
-local m_Logger = Logger("PhaseManagerServer", false)
 
 function PhaseManagerServer:RegisterVars()
 	PhaseManagerShared.RegisterVars(self)

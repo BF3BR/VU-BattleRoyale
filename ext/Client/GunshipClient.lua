@@ -1,9 +1,11 @@
 ---@class GunshipClient
 GunshipClient = class "GunshipClient"
 
+---@type Logger
+local m_Logger = Logger("GunshipClient", false)
+
 ---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
-local m_Logger = Logger("GunshipClient", false)
 ---@type GunshipCamera
 local m_GunshipCamera = require "GunshipCamera"
 

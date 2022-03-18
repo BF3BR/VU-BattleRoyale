@@ -1,6 +1,9 @@
 ---@class VuBattleRoyaleClient
 VuBattleRoyaleClient = class("VuBattleRoyaleClient")
 
+---@type Logger
+local m_Logger = Logger("VuBattleRoyaleClient", false)
+
 require "ClientCommands"
 
 require "__shared/Configs/SettingsConfig"
@@ -45,8 +48,8 @@ local m_CircleEffects = require "Visuals/CircleEffects"
 local m_OOCVision = require "Visuals/OOCVision"
 ---@type WindowsCircleSpawner
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
----@type MapVEManager
-local m_MapVEManager = require "Visuals/MapVEManager"
+---@type MapVEManagerClient
+local m_MapVEManager = require "Visuals/MapVEManagerClient"
 ---@type BRLootPickupDatabaseClient
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 ---@type CommonSpatialRaycast
@@ -56,15 +59,13 @@ local m_BRLooting = require "Types/BRLooting"
 ---@type VoipManager
 local m_VoipManager = require "VoipManager"
 
-local m_Logger = Logger("VuBattleRoyaleClient", false)
-
 function VuBattleRoyaleClient:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
 end
 
 ---VEXT Shared Extension:Loaded Event
 function VuBattleRoyaleClient:OnExtensionLoaded()
-	Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
+	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
 	---@type boolean
 	self.m_IsHotReload = self:GetIsHotReload()
 	self:RegisterVars()
@@ -255,10 +256,10 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 end
 
 ---VEXT Shared Level:LoadResources Event
----@param p_MapName string
+---@param p_LevelName string
 ---@param p_GameModeName string
----@param p_DedicatedServer boolean
-function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+---@param p_IsDedicatedServer boolean
+function VuBattleRoyaleClient:OnLevelLoadResources(p_LevelName, p_GameModeName, p_IsDedicatedServer)
 	if MapsConfig[LevelNameHelper:GetLevelName()] == nil then
 		for _, l_Event in pairs(self.m_Events) do
 			l_Event:Unsubscribe()
@@ -292,9 +293,9 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 		m_Hud:OnLevelDestroy()
 	end
 
-	m_OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_PhaseManagerClient:OnLoadResources()
+	m_OOCVision:OnLevelLoadResources(p_LevelName, p_GameModeName, p_IsDedicatedServer)
+	m_MapVEManager:OnLevelLoadResources(p_LevelName, p_GameModeName, p_IsDedicatedServer)
+	m_PhaseManagerClient:OnLevelLoadResources()
 end
 
 -- =============================================

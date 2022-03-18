@@ -93,6 +93,7 @@ end
 -- Spawn / Destroy functions
 --==============================
 
+---@return boolean
 function BRLootPickup:Spawn()
 	if self.m_Entities ~= nil then
 		return false
@@ -205,7 +206,7 @@ function BRLootPickup:UpdateFromTable(p_Table)
 		return
 	end
 
-	---@type table<string, BRItem>
+	---@type table<string, BRItem|BRItemAmmo|BRItemArmor|BRItemAttachment|BRItemConsumable|BRItemGadget|BRItemHelmet|BRItemWeapon>
 	local s_Items = {}
 
 	for _, l_Item in pairs(p_Table.Items) do

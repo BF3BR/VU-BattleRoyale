@@ -1,9 +1,11 @@
 ---@class OOCFires
 OOCFires = class "OOCFires"
 
+---@type Logger
 local m_Logger = Logger("OOCFires", false)
 
 function OOCFires:__init()
+	---@type Queue
 	self.m_Queue = Queue()
 
 	self:ResetVars()
@@ -115,11 +117,13 @@ function OOCFires:OnReceiveItems(p_Items)
 	end
 end
 
+---VEXT Shared Level:Destroy Event
 function OOCFires:OnLevelDestroy()
 	self:UnspawnAll()
 	self:ResetVars()
 end
 
+---VEXT Shared Extension:Unloading Event
 function OOCFires:OnExtensionUnloading()
 	self:UnspawnAll()
 end

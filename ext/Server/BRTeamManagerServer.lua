@@ -3,6 +3,7 @@ BRTeamManagerServer = class "BRTeamManagerServer"
 
 ---@type Logger
 local m_Logger = Logger("BRTeamManagerServer", false)
+
 ---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
@@ -38,6 +39,7 @@ function BRTeamManagerServer:RegisterEvents()
 	NetEvents:Subscribe("UpdateSpectator", self, self.OnUpdateSpectator)
 end
 
+---@param p_PlayerPerTeam integer
 function BRTeamManagerServer:UpdatePlayerPerTeam(p_PlayerPerTeam)
 	self.m_PlayersPerTeam = p_PlayerPerTeam
 

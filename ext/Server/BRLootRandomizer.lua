@@ -39,6 +39,9 @@ function BRLootRandomizer:__init()
 	self.m_AccumulatedWeight = {}
 end
 
+---@param p_Point Vec3|nil
+---@param p_TypeIndex string|nil
+---@param p_Tier Tier|nil
 function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 	if p_Point == nil then
 		return
@@ -217,12 +220,18 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 	m_LootPickupDatabase:CreateBasicLootPickup(s_Point, { s_Item })
 end
 
+---@param p_Name string
+---@param p_LevelOrDefinitions BRItemDefinition|RandomWeightsTable
+---@param p_IsItem boolean|nil
+---@param p_Tier Tier|integer|nil
+---@param p_Attachments any|nil
+---@return table|string|nil
 function BRLootRandomizer:Randomizer(p_Name, p_LevelOrDefinitions, p_IsItem, p_Tier, p_Attachments)
 	local s_WeightTable = {}
 	local s_AccumulatedWeight = 0
 
 	if p_LevelOrDefinitions == nil then
-		return
+		return nil
 	end
 
 	if self.m_WeightTable[p_Name] ~= nil and self.m_AccumulatedWeight[p_Name] ~= nil then

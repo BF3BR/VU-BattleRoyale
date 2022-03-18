@@ -1,6 +1,7 @@
 ---@class BRAirdropManager
 BRAirdropManager = class "BRAirdropManager"
 
+---@type Logger
 local m_Logger = Logger("BRAirdropManager", false)
 
 ---@type TimerManager

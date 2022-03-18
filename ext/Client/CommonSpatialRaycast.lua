@@ -1,8 +1,9 @@
 ---@class CommonSpatialRaycast
 CommonSpatialRaycast = class 'CommonSpatialRaycast'
 
-local m_Logger = Logger("CommonSpatialRaycast", false)
+---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
+---@type BRLooting
 local m_BRLooting = require "Types/BRLooting"
 
 function CommonSpatialRaycast:__init()

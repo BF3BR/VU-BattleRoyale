@@ -1,5 +1,14 @@
+---@class BRInventory : TimersMixin
+BRInventory = class("BRInventory", TimersMixin)
+
+---@type Logger
+local m_Logger = Logger("BRInventory", false)
+
+---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"
+---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
+---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 ---@type ArrayHelper
@@ -7,11 +16,6 @@ local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 
----@class BRInventory : TimersMixin
-BRInventory = class("BRInventory", TimersMixin)
-
----@type Logger
-local m_Logger = Logger("BRInventory", false)
 
 ---@param p_Owner BRPlayer
 function BRInventory:__init(p_Owner)
@@ -144,9 +148,9 @@ end
 -- will have a link to it's owner. Then we will only need to check if it's owner is
 -- a LootPickup or not
 
----@param p_ItemId any
----@param p_SlotIndex any
----@param p_CreateLootPickup any
+---@param p_ItemId string @it is a tostring(Guid)
+---@param p_SlotIndex InventorySlot|integer
+---@param p_CreateLootPickup boolean
 ---@return boolean
 function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 	-- Check if item exists

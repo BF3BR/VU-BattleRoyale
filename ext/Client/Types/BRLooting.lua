@@ -1,7 +1,6 @@
 ---@class BRLooting
 BRLooting = class "BRLooting"
 
-local m_Logger = Logger("BRLooting", false)
 ---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 ---@type BRLootPickupDatabaseClient
@@ -153,6 +152,8 @@ end
 -- UI related functions
 --==============================
 
+---@param p_ItemOrLootPickup BRLootPickup|BRItem
+---@param p_MultiItem boolean
 function BRLooting:OnSendOverlayLoot(p_ItemOrLootPickup, p_MultiItem)
 	if p_ItemOrLootPickup == nil then
 		WebUI:ExecuteJS(string.format("SyncOverlayLoot(%s);", nil))
@@ -184,6 +185,7 @@ function BRLooting:OnSendOverlayLoot(p_ItemOrLootPickup, p_MultiItem)
 	WebUI:ExecuteJS(string.format("SyncOverlayLoot(%s);", json.encode(s_ReturnVal)))
 end
 
+---@param p_LootPickups table<string, BRLootPickup>|nil
 function BRLooting:SendCloseLootPickupData(p_LootPickups)
 	if p_LootPickups == nil then
 		return
@@ -202,6 +204,8 @@ function BRLooting:SendCloseLootPickupData(p_LootPickups)
 	WebUI:ExecuteJS(string.format("SyncCloseLootPickupData(%s);", json.encode(s_LootPickupData)))
 end
 
+---Custom Client InventoryNetEvent.UnregisterLootPickup NetEvent
+---@param p_LootPickupId string @Guid as string
 function BRLooting:OnUnregisterLootPickup(p_LootPickupId)
 	-- update LootPickup in WebUI if needed
 	if self.m_LastSelectedLootPickup ~= nil and self.m_LastSelectedLootPickup.m_Id == p_LootPickupId then

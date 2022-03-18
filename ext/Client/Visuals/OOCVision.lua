@@ -1,9 +1,11 @@
 ---@class OOCVision
 OOCVision = class "OOCVision"
 
-local m_MapVEManager = require "Visuals/MapVEManager"
-
+---@type Logger
 local m_Logger = Logger("OOCVision", false)
+
+---@type MapVEManagerClient
+local m_MapVEManager = require "Visuals/MapVEManager"
 
 local m_OutOfCirclePreset = require "Visuals/Presets/Common/OutOfCirclePreset"
 local m_OutOfCircleNightPreset = require "Visuals/Presets/Common/OutOfCircleNightPreset"
@@ -11,13 +13,19 @@ local m_OutOfCircleNightPreset = require "Visuals/Presets/Common/OutOfCircleNigh
 local m_OutOfCirclePresetName = "OutOfCircle"
 local m_OutOfCircleNightPresetName = "OutOfCircleNight"
 
+---@type DC
 local m_OOBSoundEntityData = DC(Guid("9C1F7ED0-61F0-4987-82FA-469AD965DCAB"), Guid("0047C675-053C-4D84-860E-661555D20D27"))
 
 function OOCVision:__init()
+	---@type SoundEntity|nil
 	self.m_SoundEntity = nil
 end
 
-function OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+---VEXT Shared Level:LoadResources Event
+---@param p_LevelName string
+---@param p_GameModeName string
+---@param p_IsDedicatedServer boolean
+function OOCVision:OnLevelLoadResources(p_LevelName, p_GameModeName, p_IsDedicatedServer)
 	m_Logger:Write("Dispatching event to load preset " .. m_OutOfCirclePresetName .. "!")
 	Events:Dispatch("VEManager:RegisterPreset", m_OutOfCirclePresetName, m_OutOfCirclePreset)
 
@@ -44,6 +52,7 @@ function OOCVision:CreateSoundEntity()
 	end
 end
 
+---@return SoundEntity|nil
 function OOCVision:GetSoundEntity()
 	if self.m_SoundEntity == nil then
 		self:CreateSoundEntity()
@@ -70,6 +79,7 @@ function OOCVision:Enable()
 	else
 		Events:Dispatch("VEManager:FadeIn", m_OutOfCirclePresetName, 400)
 	end
+
 	self.m_IsEnabled = true
 end
 
@@ -92,9 +102,11 @@ function OOCVision:Disable()
 	else
 		Events:Dispatch("VEManager:FadeOut", m_OutOfCirclePresetName, 400)
 	end
+
 	self.m_IsEnabled = false
 end
 
+---VEXT Shared Level:Destroy Event
 function OOCVision:OnLevelDestroy()
 	self:Disable()
 

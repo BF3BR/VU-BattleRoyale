@@ -5,7 +5,6 @@ DeployScreen = class 'DeployScreen'
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("DeployScreen", false)
 
 ---VEXT Client Level:Loaded Event
 function DeployScreen:OnLevelLoaded()
@@ -13,9 +12,11 @@ function DeployScreen:OnLevelLoaded()
 	m_HudUtils:ShowroomCamera(true)
 	m_HudUtils:ShowCrosshair(false)
 	m_HudUtils:SetIsInDeployScreen(true)
+
 	m_TimerManager:Timeout(7.0, function()
 		if m_HudUtils:GetIsInDeployScreen() then
 			m_HudUtils:EnableShowroomSoldier(true)
+
 			m_TimerManager:Timeout(1.15, function()
 				NetEvents:Send(PlayerEvents.PlayerSetSkin)
 			end)

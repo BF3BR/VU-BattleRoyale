@@ -1,9 +1,12 @@
 ---@class BRLootManager
 BRLootManager = class "BRLootManager"
 
+---@type Logger
 local m_Logger = Logger("BRLootManager", false)
 
+---@type BRLootRandomizer
 local m_LootRandomizer = require "BRLootRandomizer"
+---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 function BRLootManager:SpawnMapSpecificLootPickups()

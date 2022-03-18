@@ -1,6 +1,9 @@
 ---@class VuBattleRoyaleHud
 VuBattleRoyaleHud = class "VuBattleRoyaleHud"
 
+---@type Logger
+local m_Logger = Logger("VuBattleRoyaleHud", false)
+
 ---@type EscMenu
 local m_EscMenu = require "UI/EscMenu"
 ---@type DeployScreen
@@ -11,7 +14,6 @@ local m_HudUtils = require "UI/Utils/HudUtils"
 local m_BrPlayer = require "BRPlayer"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("VuBattleRoyaleHud", false)
 
 ---@return ModSetting
 local function GetShowFPSSetting()

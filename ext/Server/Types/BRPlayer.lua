@@ -2,12 +2,13 @@
 ---@field GetPlayerName fun(p_Player : Player|BRPlayer|string)
 BRPlayer = class "BRPlayer"
 
+---@type Logger
+local m_Logger = Logger("BRPlayer", false)
+
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 ---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
----@type Logger
-local m_Logger = Logger("BRPlayer", false)
 
 ---@param p_Player Player
 function BRPlayer:__init(p_Player)
@@ -327,7 +328,7 @@ function BRPlayer:SpectatePlayer(p_BRPlayer)
 	end
 end
 
----@param p_PlayerName string|nil
+---@param p_PlayerName string
 function BRPlayer:AddSpectator(p_PlayerName)
 	if self.m_SpectatorNames[p_PlayerName] == nil then
 		table.insert(self.m_SpectatorNames, p_PlayerName)
@@ -376,6 +377,8 @@ function BRPlayer:SendEventToSpectators(p_EventName, ...)
 	end
 end
 
+---@param p_Simple boolean|nil
+---@param p_TeamData BRTeamTable|nil
 function BRPlayer:SendState(p_Simple, p_TeamData)
 	local s_Data = self:AsTable(p_Simple, p_TeamData)
 	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerState, self.m_Player, s_Data)

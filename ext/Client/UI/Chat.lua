@@ -179,7 +179,7 @@ function Chat:OnWebUIOutgoingChatMessage(p_JsonData)
 	end
 
 	-- Trim the message.
-	local s_From = s_Message:match "^%s*()"
+	local s_From = s_Message:match("^%s*()")
 	s_Message = s_From > #s_Message and "" or s_Message:match(".*%S", s_From)
 
 	-- Ignore if the message is empty.

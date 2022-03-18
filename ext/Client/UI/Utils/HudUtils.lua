@@ -1,9 +1,11 @@
 ---@class HudUtils
 HudUtils = class "HudUtils"
 
+---@type Logger
+local m_Logger = Logger("HudUtils", false)
+
 ---@type ConnectionHelper
 local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"
-local m_Logger = Logger("HudUtils", false)
 
 function HudUtils:__init()
 	self:RegisterVars()

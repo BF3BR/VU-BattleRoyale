@@ -4,9 +4,12 @@ CircleEffects = class "CircleEffects"
 ---@type MathHelper
 local m_MathHelper = require "__shared/Utils/MathHelper"
 
-local m_Logger = Logger("CircleEffects", false)
--- local m_SoundPatchAsset = DC(Guid("5145EFCF-3AC5-11E0-865E-E2CC2A8011A4"), Guid("DB3F3E26-BE08-D88B-32AE-27E70F5D4A56")) -- radar
-local m_SoundPatchAsset = DC(Guid("65D41786-02F6-11E0-9C91-BF94ADC99AAE"), Guid("7B7F76E6-2648-62AE-608B-9A81CBF8CAB4")) -- fire medium
+-- radar
+-- local m_SoundPatchAsset = DC(Guid("5145EFCF-3AC5-11E0-865E-E2CC2A8011A4"), Guid("DB3F3E26-BE08-D88B-32AE-27E70F5D4A56"))
+
+---fire medium
+---@type DC
+local m_SoundPatchAsset = DC(Guid("65D41786-02F6-11E0-9C91-BF94ADC99AAE"), Guid("7B7F76E6-2648-62AE-608B-9A81CBF8CAB4"))
 
 function CircleEffects:__init()
 	self:ResetVars()

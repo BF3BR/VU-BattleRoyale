@@ -1,14 +1,15 @@
 ---@class PingClient
 PingClient = class "PingClient"
 
+---@type Logger
+local m_Logger = Logger("PingClient", false)
+
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
----@type Logger
-local m_Logger = Logger("PingClient", false)
 
 ---@return ModSetting
 local function GetPingKeySetting()

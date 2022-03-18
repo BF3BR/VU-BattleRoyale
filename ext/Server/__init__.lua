@@ -1,6 +1,9 @@
 ---@class VuBattleRoyaleServer
 VuBattleRoyaleServer = class "VuBattleRoyaleServer"
 
+---@type Logger
+local m_Logger = Logger("VuBattleRoyaleServer", false)
+
 require "__shared/Slots/BRInventorySlot"
 require "__shared/Slots/BRInventoryWeaponSlot"
 require "__shared/Slots/BRInventoryAttachmentSlot"
@@ -49,9 +52,6 @@ local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier" -- weird
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-
----@type Logger
-local m_Logger = Logger("VuBattleRoyaleServer", false)
 
 function VuBattleRoyaleServer:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -507,32 +507,43 @@ function VuBattleRoyaleServer:OnGameStateChanged(p_OldGameState, p_GameState)
 	m_Match:InitMatch()
 end
 
--- TODO: figure out the types
 ---Custom Server InventoryNetEvent.PickupItem NetEvent
 ---@param p_Player Player
----@param p_LootPickupId any
----@param p_ItemId any
----@param p_SlotIndex any
+---@param p_LootPickupId string @it is a tostring(Guid)
+---@param p_ItemId string @it is a tostring(Guid)
+---@param p_SlotIndex InventorySlot|integer
 function VuBattleRoyaleServer:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
 	m_InventoryManager:OnInventoryPickupItem(p_Player, p_LootPickupId, p_ItemId, p_SlotIndex)
 end
 
+---@param p_Player Player
+---@param p_ItemId string @it is a tostring(Guid)
+---@param p_SlotId InventorySlot|integer
 function VuBattleRoyaleServer:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
 	m_InventoryManager:OnInventoryMoveItem(p_Player, p_ItemId, p_SlotId)
 end
 
+---@param p_Player Player
+---@param p_ItemId string @it is a tostring(Guid)
 function VuBattleRoyaleServer:OnInventoryUseItem(p_Player, p_ItemId)
 	m_InventoryManager:OnInventoryUseItem(p_Player, p_ItemId)
 end
 
+---@param p_Player Player
+---@param p_ItemId string @it is a tostring(Guid)
+---@param p_Quantity integer|nil
 function VuBattleRoyaleServer:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
 	m_InventoryManager:OnInventoryDropItem(p_Player, p_ItemId, p_Quantity)
 end
 
+---@param p_Player Player
+---@param p_AmmoAdded integer
+---@param p_Weapon SoldierWeapon|nil
 function VuBattleRoyaleServer:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
 	m_InventoryManager:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
 end
 
+---@param p_ItemId string @it is a tostring(Guid)
 function VuBattleRoyaleServer:OnItemDestroy(p_ItemId)
 	m_InventoryManager:OnItemDestroy(p_ItemId)
 end

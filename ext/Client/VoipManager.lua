@@ -52,6 +52,7 @@ local function GetTransmissionModeSetting(p_String)
 	return s_TransmissionModeSetting
 end
 
+---VEXT Shared Extension:Loaded Event
 function VoipManager:OnExtensionLoaded()
 	---@type string|nil
 	self.m_BrTeamChannelName = nil

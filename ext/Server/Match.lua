@@ -1,6 +1,9 @@
 ---@class Match : TimersMixin
 Match = class("Match", TimersMixin)
 
+---@type Logger
+local m_Logger = Logger("Match", false)
+
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 ---@type GameStateManager
@@ -17,8 +20,6 @@ local m_BRLootManager = require "BRLootManager"
 local m_BRInventoryManager = require "BRInventoryManager"
 ---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
----@type Logger
-local m_Logger = Logger("Match", false)
 
 function Match:__init()
 	-- call TimersMixin's constructor

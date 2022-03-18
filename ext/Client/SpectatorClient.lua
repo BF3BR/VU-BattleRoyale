@@ -1,13 +1,15 @@
 ---@class SpectatorClient : TimersMixin
 SpectatorClient = class("SpectatorClient", TimersMixin)
 
+---@type Logger
+local m_Logger = Logger("SpectatorClient", false)
+
 ---@type MathHelper
 local m_MathHelper = require "__shared/Utils/MathHelper"
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("SpectatorClient", false)
 
 function SpectatorClient:__init()
 	-- call TimersMixin's constructor
@@ -27,7 +29,7 @@ function SpectatorClient:RegisterVars()
 	self.m_LastPitch = 0.0
 	self.m_LastYaw = 0.0
 
-	---@type GameStates|nil
+	---@type GameStates|integer|nil
 	self.m_GameState = nil
 	self.m_IsSpectatingGunship = false
 

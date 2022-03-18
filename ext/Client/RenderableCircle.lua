@@ -1,7 +1,6 @@
 ---@class RenderableCircle : Circle
 RenderableCircle = class("RenderableCircle", Circle)
 
-local m_Logger = Logger("RenderableCircle", false)
 ---@type WindowsCircleSpawner
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
 local m_2PI = 2 * math.pi

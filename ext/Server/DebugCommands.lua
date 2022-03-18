@@ -1,3 +1,6 @@
+---@type Logger
+local m_Logger = Logger("DebugCommands", false)
+
 ---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
 ---@type BRAirdropManager
@@ -9,9 +12,6 @@ local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 ---@type BRItemFactory
 local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
-
----@type Logger
-local m_Logger = Logger("DebugCommands", false)
 
 --============================================================
 -- Custom debug commands
