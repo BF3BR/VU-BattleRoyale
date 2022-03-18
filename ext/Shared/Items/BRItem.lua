@@ -1,7 +1,7 @@
 ---@class BRItem
 BRItem = class "BRItem"
 
-local m_Logger = Logger("BRItem", true)
+local m_Logger = Logger("BRItem", false)
 ---@type BRItemFactory
 local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 

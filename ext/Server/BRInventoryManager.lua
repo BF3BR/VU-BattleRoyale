@@ -1,7 +1,7 @@
 ---@class BRInventoryManager
 BRInventoryManager = class "BRInventoryManager"
 
-local m_Logger = Logger("BRInventoryManager", true)
+local m_Logger = Logger("BRInventoryManager", false)
 
 local m_ItemDatabase = require "Types/BRItemDatabase"
 ---@type BRLootPickupDatabase

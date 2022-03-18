@@ -1,4 +1,4 @@
-local m_Logger = Logger("BRInventoryGadgetSlot", true)
+local m_Logger = Logger("BRInventoryGadgetSlot", false)
 
 ---@class BRInventoryGadgetSlot : BRInventorySlot
 ---@field m_Item BRItemGadget

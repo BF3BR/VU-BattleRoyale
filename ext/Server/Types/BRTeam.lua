@@ -2,13 +2,13 @@
 BRTeam = class "BRTeam"
 
 ---@type Logger
-local m_Logger = Logger("BRTeam", true)
+local m_Logger = Logger("BRTeam", false)
 
 ---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 
 ---@param p_Id string
-function BRTeam:__init(p_Id)
+function BRTeam:__init(p_Id, p_PlayersPerTeam)
 	-- the unique id of the team
 	---@type string
 	self.m_Id = p_Id
@@ -36,6 +36,16 @@ function BRTeam:__init(p_Id)
 	-- create a VoipChannel if the team has more then 1 member
 	---@type VoipChannel|nil
 	self.m_VoipChannel = nil
+
+	-- player count per team
+	---@type integer
+	self.m_PlayersPerTeam = p_PlayersPerTeam
+end
+
+---Updates the player count per team
+---@param p_PlayerPerTeam integer
+function BRTeam:UpdatePlayerPerTeam(p_PlayerPerTeam)
+	self.m_PlayersPerTeam = p_PlayerPerTeam
 end
 
 ---Adds a player to the team
@@ -153,7 +163,7 @@ end
 ---@return boolean
 function BRTeam:Merge(p_OtherTeam)
 	-- check if merge is possible
-	if self:PlayerCount() + p_OtherTeam:PlayerCount() > ServerConfig.PlayersPerTeam then
+	if self:PlayerCount() + p_OtherTeam:PlayerCount() > self.m_PlayersPerTeam then
 		return false
 	end
 
@@ -242,7 +252,7 @@ end
 ---Checks if the team is full and has no space for more players
 ---@return boolean
 function BRTeam:IsFull()
-	return self:PlayerCount() >= ServerConfig.PlayersPerTeam
+	return self:PlayerCount() >= self.m_PlayersPerTeam
 end
 
 ---Checks if the team has any players

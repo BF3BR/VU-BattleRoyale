@@ -2,7 +2,7 @@
 BRLootRandomizer = class "BRLootRandomizer"
 
 ---@type Logger
-local m_Logger = Logger("BRLootRandomizer", true)
+local m_Logger = Logger("BRLootRandomizer", false)
 
 ---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"
@@ -67,7 +67,9 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 		s_RandomTier = p_Tier
 	end
 
-	local s_Point = p_Point
+	local s_Point = LinearTransform()
+	s_Point.trans = p_Point
+	
 	local s_RandomItemDefinition = nil
 	local s_RandomItemQuantity = 1
 
@@ -183,7 +185,7 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 				s_Point.trans.y,
 				s_Point.trans.z
 			)
-		--[[elseif s_WeaponSpawnPattern == RandomAmmoPatterns.ThreeItems then
+		elseif s_WeaponSpawnPattern == RandomAmmoPatterns.ThreeItems then
 			local s_AddedItem = m_ItemDatabase:CreateItem(s_RandomItemDefinition, s_RandomItemDefinition.m_SpawnStack)
 			m_LootPickupDatabase:CreateBasicLootPickup(Vec3(
 				s_Point.trans.x - 0.35,
@@ -202,7 +204,7 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 				s_Point.trans.x + 0.5,
 				s_Point.trans.y,
 				s_Point.trans.z
-			)]]
+			)
 		end
 	end
 

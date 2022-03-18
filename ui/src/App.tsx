@@ -62,6 +62,7 @@ import {
     updateDeployTeam,
     updateGameover,
     updateGameState,
+    updateLevelName,
     updateMinPlayers,
     updatePlayers,
     updateTime,
@@ -191,15 +192,15 @@ const App: React.FC<Props> = ({
             return;
         }
 
-        dispatch(updateGameover(true, data.isWin, 1, data.team));
+        dispatch(updateGameover(true, data.isWin, undefined, data.team));
     }
 
     window.OnUpdatePlacement = (placement: number | null) => {
-        if (placement !== null) {
-            dispatch(updateGameover(undefined, undefined, placement, undefined));
-        } else {
-            dispatch(updateGameover(undefined, undefined, 99, undefined));
-        }
+        dispatch(updateGameover(undefined, undefined, placement ?? 99, undefined));
+    }
+
+    window.OnUpdateLevelName = (levelName: string) => {
+        dispatch(updateLevelName(levelName));
     }
 
     /*
@@ -954,5 +955,6 @@ declare global {
         gc: () => void;
         VoipEmitterEmitting: (playerName: string, isSpeaking: boolean, isParty: boolean) => void;
         VoipPlayerMuted: (playerName: string, isMuted: boolean) => void;
+        OnUpdateLevelName: (levelName: string) => void;
     }
 }

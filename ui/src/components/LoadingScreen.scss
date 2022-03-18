@@ -11,23 +11,25 @@
 
     .LoadingBox {
         position: absolute;
-        top: 50%;
-        left: 6vw;
+        top: 8vh;
+        left: 8vh;
         width: 75vw;
-        transform: translateY(-50%);
+        z-index: 50;
+        //transform: translateY(-50%);
 
         .PageTitle {
             position: relative;
             display: inline-block;
             line-height: 0.8;
-            margin: 0 0 0.15vw 0;
-            padding: 0.8vw 0.75vw 1.25vw;
+            margin: 0 0 0.2vw 0;
+            padding: 0.6vw 0.75vw 1.15vw;
             color: #d5dde5;
             background-color: rgba(7, 7, 7, 0.6);
             text-transform: uppercase;
-            font-size: 3.2vw;
+            font-size: 4vw;
             text-shadow: 0 0 0.5vw rgba(255, 255, 255, 0.35);
             font-weight: 600;
+            backdrop-filter: blur(2px);
         }
 
         .ModeType {
@@ -42,10 +44,16 @@
             color: var(--warning);
             text-shadow: 0 0 0.65vw rgba(196, 117, 50, 0.9);
             font-weight: 600;
+            backdrop-filter: blur(2px);
         }
 
         .card {
             max-width: 25vw;
+
+            .card-header,
+            .card-content {
+                backdrop-filter: blur(2px);
+            }
 
             &.ObjectiveBox {
                 margin-bottom: 0.5vw;
@@ -91,10 +99,10 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            animation: move 10s infinite alternate;
-            -webkit-animation: move 10s infinite alternate;
+            animation: move 30s infinite alternate;
+            -webkit-animation: move 30s infinite alternate;
             position: absolute;
-            filter: grayscale(1);
+            //filter: grayscale(1);
             z-index: -1000;
         }
     }
@@ -106,9 +114,9 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background: rgba(35, 74, 101, 0.8);
-        z-index: -50;
-        mix-blend-mode: multiply;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+        mix-blend-mode: darken;
     }
 
     .loader {
@@ -117,6 +125,11 @@
         bottom: 6vw;
         z-index: 999;
         color: #fff;
+
+        svg {
+            height: auto;
+            width: 2vw;  
+        }
 
         img {
             height: auto;

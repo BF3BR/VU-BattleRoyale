@@ -11,7 +11,25 @@ local m_HudUtils = require "UI/Utils/HudUtils"
 local m_BrPlayer = require "BRPlayer"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("VuBattleRoyaleHud", true)
+local m_Logger = Logger("VuBattleRoyaleHud", false)
+
+---@return ModSetting
+local function GetShowFPSSetting()
+	local s_ShowFPSSetting = SettingsManager:GetSetting("ShowFPS")
+
+	if s_ShowFPSSetting == nil then
+		---@type SettingOptions
+		local s_SettingOptions = SettingOptions()
+		s_SettingOptions.displayName = "Show FPS"
+		s_SettingOptions.showInUi = true
+		s_ShowFPSSetting = SettingsManager:DeclareBool("ShowFPS", false, s_SettingOptions)
+		s_ShowFPSSetting.value = false
+
+		m_Logger:Write("GetShowFPSSetting created.")
+	end
+
+	return s_ShowFPSSetting
+end
 
 function VuBattleRoyaleHud:__init()
 	---@type GameStates|integer
@@ -22,6 +40,7 @@ function VuBattleRoyaleHud:__init()
 	self.m_IsLevelLoaded = false
 
 	self.m_MinPlayersToStart = ServerConfig.MinPlayersToStart
+	self.m_PlayersPerTeam = ServerConfig.PlayersPerTeam
 
 	---@type table<integer, table>
 	self.m_Markers = {}
@@ -30,6 +49,9 @@ function VuBattleRoyaleHud:__init()
 	self.m_ManDownMapMarkers = {}
 
 	self.m_ShowInteractiveReviveMessage = false
+	self.m_ShowFPSSetting = GetShowFPSSetting()
+	self.m_FPSTimer = 0.0
+	self.m_FPSCount = 0
 
 	self:RegisterVars()
 end
@@ -63,6 +85,7 @@ function VuBattleRoyaleHud:RegisterVars()
 	self.m_HudOnGameOverScreen = CachedJsExecutor("OnGameOverScreen(%s)", nil)
 	self.m_HudOnUpdatePlacement = CachedJsExecutor("OnUpdatePlacement(%s)", 99)
 	self.m_HudOnSetUIState = CachedJsExecutor("OnSetUIState('%s')", UiStates.Loading)
+	self.m_HudOnUpdateLevelName = CachedJsExecutor("OnUpdateLevelName('%s')", "")
 end
 
 function VuBattleRoyaleHud:ResetVars()
@@ -130,12 +153,25 @@ end
 
 ---VEXT Shared Engine:Update Event
 function VuBattleRoyaleHud:OnEngineUpdate(p_DeltaTime)
+	if self.m_ShowFPSSetting.value then
+		if self.m_FPSTimer < 1.0 then
+			self.m_FPSCount = self.m_FPSCount + 1
+			self.m_FPSTimer = self.m_FPSTimer + p_DeltaTime
+		else
+			--TODO: send FPS to WebUI
+			self.m_FPSTimer = 0.0
+			self.m_FPSCount = 0
+		end
+	end
+
 	if not self.m_IsLevelLoaded then
+		self.m_HudOnUpdateLevelName:Update(SharedUtils:GetLevelName())
 		return
 	end
 
 	if self.m_Ticks >= ServerConfig.HudUpdateRate then
 		self.m_HudOnMinPlayersToStart:Update(self.m_MinPlayersToStart)
+		self.m_HudOnUpdateTeamSize:Update(self.m_PlayersPerTeam)
 
 		self:PushUpdatePlayersInfo()
 		self:PushLocalPlayerTeam()
@@ -898,7 +934,7 @@ function VuBattleRoyaleHud:PushLocalPlayerAmmoArmorAndHealth()
 end
 
 function VuBattleRoyaleHud:PushLocalPlayerTeam()
-	self.m_HudOnUpdateTeamSize:Update(ServerConfig.PlayersPerTeam)
+	self.m_HudOnUpdateTeamSize:Update(self.m_PlayersPerTeam)
 
 	if m_BrPlayer.m_Team ~= nil then
 		self.m_HudOnUpdateTeamId:Update(m_BrPlayer.m_Team.m_Id)

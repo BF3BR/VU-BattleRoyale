@@ -2,7 +2,7 @@
 OOCFiresServer = class "OOCFiresServer"
 
 ---@type Logger
-local m_Logger = Logger("OOCFiresServer", true)
+local m_Logger = Logger("OOCFiresServer", false)
 
 local m_MaxEffectsNumber = 256
 local m_GridSize = 16

@@ -10,7 +10,7 @@ local m_CapturePointPrefab_HQ_RU_XP_CameraEntityData = DC(Guid("5D4B1096-3089-45
 local m_RU_Large_TeamEntityData = DC(Guid("19631E31-2E3A-432B-8929-FB57BAA7D28E"), Guid("B4BB6CFA-0E53-45F9-B190-1287DCC093A9"))
 local m_ConquestTeamsLarge_LogicPrefabBlueprint = DC(Guid("466C8E5C-BD29-11E0-923F-C41005FFB7BD"), Guid("D0DB1029-9313-7D6D-BBA9-9C8F92C0040B"))
 
-local m_Logger = Logger("ConquestModifier", true)
+local m_Logger = Logger("ConquestModifier", false)
 
 function ConquestModifier:RegisterCallbacks()
 	m_Conquest_PreRoundEntityData:RegisterLoadHandler(self, self.OnPreRoundEntityData)

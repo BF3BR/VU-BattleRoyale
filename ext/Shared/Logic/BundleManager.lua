@@ -1,7 +1,7 @@
 ---@class BundleManager
 BundleManager = class "BundleManager"
 
-local m_Logger = Logger("BundleManager", true)
+local m_Logger = Logger("BundleManager", false)
 
 function BundleManager:__init()
 	self.m_LevelName = ""

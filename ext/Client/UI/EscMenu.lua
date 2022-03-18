@@ -3,7 +3,7 @@ EscMenu = class 'EscMenu'
 
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
-local m_Logger = Logger("EscMenu", true)
+local m_Logger = Logger("EscMenu", false)
 
 function EscMenu:__init()
 	self.m_HudOnSetUIState = CachedJsExecutor("OnSetUIState('%s')", UiStates.Loading)

@@ -3,7 +3,7 @@ MapSpecificModifier = class "MapSpecificModifier"
 
 local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier"
 
-local m_Logger = Logger("MapSpecificModifier", true)
+local m_Logger = Logger("MapSpecificModifier", false)
 
 local m_LastMapConfig = nil
 

@@ -3,7 +3,7 @@ GunshipCamera = class "GunshipCamera"
 
 ---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
-local m_Logger = Logger("GunshipCamera", true)
+local m_Logger = Logger("GunshipCamera", false)
 
 function GunshipCamera:__init()
 	self.m_Distance = 50.0

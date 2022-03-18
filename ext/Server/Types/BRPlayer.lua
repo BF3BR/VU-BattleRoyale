@@ -8,7 +8,7 @@ local m_TimerManager = require "__shared/Utils/Timers"
 local m_InventoryManager = require "BRInventoryManager"
 local m_GameStateManager = require "GameStateManager"
 ---@type Logger
-local m_Logger = Logger("BRPlayer", true)
+local m_Logger = Logger("BRPlayer", false)
 
 ---@param p_Player Player
 function BRPlayer:__init(p_Player)

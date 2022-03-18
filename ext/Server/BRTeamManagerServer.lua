@@ -2,7 +2,7 @@
 BRTeamManagerServer = class "BRTeamManagerServer"
 
 ---@type Logger
-local m_Logger = Logger("BRTeamManagerServer", true)
+local m_Logger = Logger("BRTeamManagerServer", false)
 ---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
@@ -19,6 +19,9 @@ function BRTeamManagerServer:RegisterVars()
 	-- [name] -> [BRPlayer]
 	---@type table<string, BRPlayer>
 	self.m_Players = {}
+
+	---@type integer
+	self.m_PlayersPerTeam = ServerConfig.PlayersPerTeam
 end
 
 function BRTeamManagerServer:RegisterEvents()
@@ -33,6 +36,14 @@ function BRTeamManagerServer:RegisterEvents()
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamToggleLock, self, self.OnLockToggle)
 	NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinStrategy, self, self.OnTeamJoinStrategy)
 	NetEvents:Subscribe("UpdateSpectator", self, self.OnUpdateSpectator)
+end
+
+function BRTeamManagerServer:UpdatePlayerPerTeam(p_PlayerPerTeam)
+	self.m_PlayersPerTeam = p_PlayerPerTeam
+
+	for _, l_BrTeam in pairs(self.m_Teams) do
+		l_BrTeam:UpdatePlayerPerTeam(p_PlayerPerTeam)
+	end
 end
 
 -- =============================================
@@ -230,7 +241,7 @@ end
 ---@return BRTeam
 function BRTeamManagerServer:CreateTeam()
 	-- create team and add it's reference
-	local s_Team = BRTeam(self:CreateId())
+	local s_Team = BRTeam(self:CreateId(), self.m_PlayersPerTeam)
 	self.m_Teams[s_Team.m_Id] = s_Team
 
 	return s_Team
