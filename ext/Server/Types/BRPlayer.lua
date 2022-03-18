@@ -52,6 +52,21 @@ function BRPlayer:__init(p_Player)
 	-- The score count of the player
 	self.m_Score = 0
 
+	-- The received revive count of the player
+	self.m_ReceivedRevives = 0
+
+	-- The given revive count of the player
+	self.m_GivenRevives = 0
+
+	-- The headshot count of the player (when downing/killing an enemy)
+	self.m_Headshots = 0
+
+	-- The amount of damage this player dealt
+	self.m_DamageDealt = 0.0
+
+	-- The downed enemies count
+	self.m_DownedEnemies = 0
+
 	-- The appearance name
 	self.m_Appearance = "Persistence/Unlocks/Soldiers/Visual/MP/RU/MP_RU_Assault_Appearance_Wood01"
 
@@ -74,16 +89,13 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 		return 0.0
 	end
 
-	if p_Giver ~= nil then
-		NetEvents:SendToLocal(DamageEvent.Hit, p_Giver.m_Player, p_Damage)
-	end
-
 	local s_Soldier = self:GetSoldier()
 	if s_Soldier == nil then
 		return p_Damage
 	end
 
 	local s_Health = s_Soldier.health
+
 	if s_Soldier.isInteractiveManDown and p_Damage >= s_Health then
 		self:Kill(true)
 		Events:DispatchLocal(TeamManagerEvent.RegisterKill, self, p_Giver)
@@ -101,11 +113,17 @@ function BRPlayer:OnDamaged(p_Damage, p_Giver, p_IsHeadShot)
 		self.m_Inventory:DeferSendState()
 
 		if p_Damage >= s_Health then
+			-- for stats
+			if p_IsHeadShot and p_Giver ~= nil and not self:Equals(p_Giver) then
+				p_Giver:IncreaseHeadshotCount()
+			end
+
 			-- kill instantly if no teammates left
 			if self:HasAliveTeammates() then
-				if p_Giver ~= nil then
+				if p_Giver ~= nil and not self:Equals(p_Giver) then
 					self.m_KillerName = p_Giver:GetName()
 					NetEvents:SendToLocal(DamageEvent.PlayerDown, p_Giver.m_Player, self:GetName())
+					p_Giver:IncreaseDownedEnemies()
 				else
 					self.m_KillerName = nil
 				end
@@ -138,9 +156,9 @@ function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage, p_Giver)
 		return p_Damage
 	end
 
-	---@type boolean
-	local s_WasDestroyed = nil
-	p_Damage, s_WasDestroyed = p_Item:ApplyDamage(p_Damage)
+	local s_Damage, s_WasDestroyed = p_Item:ApplyDamage(p_Damage)
+
+	p_Giver:IncreaseDamageDealt(p_Damage - s_Damage)
 
 	-- if item was destroyed, remove it from inventory
 	if s_WasDestroyed then
@@ -152,7 +170,7 @@ function BRPlayer:ApplyDamageToProtectiveItem(p_Item, p_Damage, p_Giver)
 		self.m_Inventory:DestroyItem(p_Item.m_Id)
 	end
 
-	return p_Damage
+	return s_Damage
 end
 
 -- =============================================
@@ -385,6 +403,11 @@ end
 function BRPlayer:Reset()
 	self.m_Kills = 0
 	self.m_Score = 0
+	self.m_ReceivedRevives = 0
+	self.m_GivenRevives = 0
+	self.m_Headshots = 0
+	self.m_DamageDealt = 0.0
+	self.m_DownedEnemies = 0
 	self.m_KillerName = nil
 	self.m_SpectatedPlayerName = nil
 	self.m_SpectatorNames = {}
@@ -415,7 +438,31 @@ function BRPlayer:LeaveTeam(p_Forced, p_IgnoreBroadcast)
 end
 
 -- =============================================
--- Set Functions
+	-- Some stat functions
+-- =============================================
+
+function BRPlayer:IncreaseReceivedRevives()
+	self.m_ReceivedRevives = self.m_ReceivedRevives + 1
+end
+
+function BRPlayer:IncreaseGivenRevives()
+	self.m_GivenRevives = self.m_GivenRevives + 1
+end
+
+function BRPlayer:IncreaseHeadshotCount()
+	self.m_Headshots = self.m_Headshots + 1
+end
+
+function BRPlayer:IncreaseDamageDealt(p_Damage)
+	self.m_DamageDealt = self.m_DamageDealt + p_Damage
+end
+
+function BRPlayer:IncreaseDownedEnemies()
+	self.m_DownedEnemies = self.m_DownedEnemies + 1
+end
+
+-- =============================================
+	-- Set Functions
 -- =============================================
 
 ---@param p_Strategy TeamJoinStrategy|integer

@@ -39,12 +39,9 @@ end
 --==============================
 
 -- Applies damage to the armor.
--- returns:
---  * (int) the damage passed through.
---  * (bool) if the armor was destoyed
---
--- @param p_Damage number
---
+---@param p_Damage number
+---@return number @the damage passed through.
+---@return boolean @if the armor was destoyed
 function BRItemArmor:ApplyDamage(p_Damage)
 	-- check if armor is fully damaged
 	if self.m_CurrentDurability <= 0 then

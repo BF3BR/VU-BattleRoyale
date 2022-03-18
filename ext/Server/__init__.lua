@@ -303,6 +303,26 @@ end
 ---@param p_IsAdrenalineRevive boolean
 function VuBattleRoyaleServer:OnPlayerManDownRevived(p_Player, p_Reviver, p_IsAdrenalineRevive)
 	p_Player.soldier.health = 130
+
+	-- for stats:
+	-- check if that player has a reviver
+	if p_Reviver == nil then
+		return
+	end
+
+	-- get the BRPlayer to update the stats
+	local s_BrPlayer = m_TeamManagerServer:GetPlayer(p_Player)
+
+	if s_BrPlayer ~= nil then
+		s_BrPlayer:IncreaseReceivedRevives()
+	end
+
+	-- get the BRPlayer of the reviver to update the stats
+	local s_Reviver_BrPlayer = m_TeamManagerServer:GetPlayer(p_Reviver)
+
+	if s_Reviver_BrPlayer ~= nil then
+		s_Reviver_BrPlayer:IncreaseGivenRevives()
+	end
 end
 
 ---VEXT Server Player:Killed Event
@@ -559,12 +579,6 @@ end
 function VuBattleRoyaleServer:OnSoldierDamage(p_HookCtx, p_Soldier, p_Info, p_GiverInfo)
 	-- If we are in warmup we should disable all damages
 	if m_GameStateManager:GetGameState() <= GameStates.WarmupToPlane or m_GameStateManager:GetGameState() >= GameStates.EndGame then
-		-- if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
-			-- return
-		-- end
-
-		-- p_Info.damage = 0.0
-		-- p_Hook:Pass(p_Soldier, p_Info, p_GiverInfo)
 		p_HookCtx:Return()
 		return
 	end
@@ -574,7 +588,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_HookCtx, p_Soldier, p_Info, p_Gi
 	end
 
 	-- let healing items "damage" pass
-	if p_Info.damage < 0 then
+	if p_Info.damage < 0.0 then
 		p_HookCtx:Pass(p_Soldier, p_Info, p_GiverInfo)
 		return
 	end
@@ -588,6 +602,11 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_HookCtx, p_Soldier, p_Info, p_Gi
 	end
 
 	p_Info.damage = s_BrPlayer:OnDamaged(p_Info.damage, s_BrGiver, p_Info.boneIndex == 1)
+
+	if s_BrGiver ~= nil and not s_BrPlayer:Equals(s_BrGiver) then
+		s_BrGiver:IncreaseDamageDealt(p_Info.damage)
+	end
+
 	p_HookCtx:Pass(p_Soldier, p_Info, p_GiverInfo)
 end
 
