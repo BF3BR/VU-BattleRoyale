@@ -20,7 +20,15 @@
 	"settings": {
 		"Lua.workspace.maxPreload": 10000,
 		"Lua.diagnostics.libraryFiles": "Disable",
-		"editor.insertSpaces": false,
-		"editor.tabSize": 4
+		"Lua.runtime.version": "Lua 5.4",
+		"Lua.format.enable": "true",
+		"Lua.misc.parameters": [
+			"--preview"
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"Imposter.vscode-lua-vu"
+		]
 	}
 }
