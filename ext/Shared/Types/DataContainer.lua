@@ -2,7 +2,7 @@
 ---@field WaitForInstances fun(p_Instances : DC[], p_Userdata : userdata|function, p_Callback : function|nil)
 DC = class "DC"
 
-local m_Logger = Logger("DC", true)
+local m_Logger = Logger("DC", false)
 
 ---Creates a new DC class
 ---@param p_PartitionGuid Guid

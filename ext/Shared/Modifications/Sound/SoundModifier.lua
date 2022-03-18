@@ -1,6 +1,7 @@
 ---@class SoundModifier
 SoundModifier = class "SoundModifier"
 
+---@type Logger
 local m_Logger = Logger("SoundModifier", false)
 
 function SoundModifier:__init()
@@ -72,6 +73,7 @@ function SoundModifier:OnPartitionLoaded(p_Partition)
 	end
 end
 
+---@param p_SoundPatchAsset SoundPatchAsset
 function SoundModifier:IsSoundPatchAssetForGun(p_SoundPatchAsset)
 	local s_Name = p_SoundPatchAsset.name:lower()
 
@@ -84,6 +86,7 @@ function SoundModifier:IsSoundPatchAssetForGun(p_SoundPatchAsset)
 	return false
 end
 
+---@param p_SoundPatchAsset SoundPatchAsset
 function SoundModifier:IsSoundPatchAssetForAirVehicles(p_SoundPatchAsset)
 	local s_Name = p_SoundPatchAsset.name:lower()
 
@@ -96,6 +99,7 @@ function SoundModifier:IsSoundPatchAssetForAirVehicles(p_SoundPatchAsset)
 	return false
 end
 
+---@param p_SoundPatchAsset SoundPatchAsset
 function SoundModifier:IsSoundPatchAssetForBulletImpact(p_SoundPatchAsset)
 	local s_Name = p_SoundPatchAsset.name:lower()
 

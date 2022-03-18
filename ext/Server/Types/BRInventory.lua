@@ -11,7 +11,7 @@ local m_TimerManager = require "__shared/Utils/Timers"
 BRInventory = class ("BRInventory", TimersMixin)
 
 ---@type Logger
-local m_Logger = Logger("BRInventory", true)
+local m_Logger = Logger("BRInventory", false)
 
 ---@param p_Owner BRPlayer
 function BRInventory:__init(p_Owner)

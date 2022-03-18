@@ -1,7 +1,7 @@
 ---@class MapLoader
 MapLoader = class 'MapLoader'
 
-local m_Logger = Logger("MapLoader", true)
+local m_Logger = Logger("MapLoader", false)
 
 local GameObjectOriginType = {
 	Vanilla = 1,

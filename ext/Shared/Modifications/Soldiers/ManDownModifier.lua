@@ -1,7 +1,7 @@
 ---@class ManDownModifier
 ManDownModifier = class "ManDownModifier"
 
-local m_Logger = Logger("ManDownModifier", true)
+local m_Logger = Logger("ManDownModifier", false)
 local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"
 local m_RegistryManager = require("__shared/Logic/RegistryManager")
 

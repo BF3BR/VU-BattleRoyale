@@ -65,7 +65,7 @@ local m_MapLoader = require "__shared/Logic/MapLoader"
 local m_RegistryManager = require "__shared/Logic/RegistryManager"
 ---@type ModificationsCommon
 local m_ModificationsCommon = require "__shared/Modifications/ModificationsCommon"
-local m_Logger = Logger("VuBattleRoyaleShared", true)
+local m_Logger = Logger("VuBattleRoyaleShared", false)
 
 function VuBattleRoyaleShared:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -168,6 +168,7 @@ end
 ---@param p_Partition DatabasePartition
 function VuBattleRoyaleShared:OnPartitionLoaded(p_Partition)
 	m_MapLoader:OnPartitionLoaded(p_Partition)
+	m_ModificationsCommon:OnPartitionLoaded(p_Partition)
 end
 
 ---VEXT Shared Level:LoadingInfo Event

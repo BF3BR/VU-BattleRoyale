@@ -1,9 +1,10 @@
 ---@class BRLootManager
 BRLootManager = class "BRLootManager"
 
-local m_Logger = Logger("BRLootManager", true)
+local m_Logger = Logger("BRLootManager", false)
 
 local m_LootRandomizer = require "BRLootRandomizer"
+local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 function BRLootManager:SpawnMapSpecificLootPickups()
 	m_Logger:Write("Spawning map specific pickups.")
@@ -19,8 +20,8 @@ function BRLootManager:SpawnMapSpecificLootPickups()
 	end
 end
 
-function BRLootManager:Clear()
-	-- TODO: Clear out all dropped / non-dropped items (non-inventory items)
+function BRLootManager:RemoveAllLootPickups()
+	m_LootPickupDatabase:RemoveAllLootPickups()
 end
 
 return BRLootManager()

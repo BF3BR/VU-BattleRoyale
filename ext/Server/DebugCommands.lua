@@ -11,7 +11,7 @@ local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
 
 ---@type Logger
-local m_Logger = Logger("DebugCommands", true)
+local m_Logger = Logger("DebugCommands", false)
 
 --============================================================
 -- Custom debug commands

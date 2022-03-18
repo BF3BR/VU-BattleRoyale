@@ -5,7 +5,7 @@ DeployScreen = class 'DeployScreen'
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("DeployScreen", true)
+local m_Logger = Logger("DeployScreen", false)
 
 ---VEXT Client Level:Loaded Event
 function DeployScreen:OnLevelLoaded()
@@ -45,7 +45,10 @@ function DeployScreen:CloseDeployScreen()
 	m_HudUtils:ShowroomCamera(false)
 	m_HudUtils:EnableShowroomSoldier(false)
 	m_HudUtils:ExitSoundState()
-	m_HudUtils:HUDEnterUIGraph()
+	-- this delay is to fix a crash when respawning
+	m_TimerManager:Timeout(0.2, function()
+		m_HudUtils:HUDEnterUIGraph()
+	end)
 end
 
 return DeployScreen()

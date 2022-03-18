@@ -62,6 +62,7 @@ PlayerEvents = {
 	UpdateTimer = "VuBattleRoyale:UpdateTimer",
 	GameStateChanged = "VuBattleRoyale:GameStateChanged",
 	MinPlayersToStartChanged = "VuBattleRoyale:MinPlayersToStartChanged",
+	PlayersPerTeamChanged = "VuBattleRoyale:PlayersPerTeamChanged",
 	WinnerTeamUpdate = "VuBattleRoyale:WinnerTeamUpdate",
 	PlayerConnected = "VuBattleRoyale:PlayerConnected",
 	PlayerDeploy = "VuBattleRoyale:PlayerDeploy",

@@ -2,9 +2,7 @@
 BRLootPickup = class "BRLootPickup"
 
 ---@type Logger
-local m_Logger = Logger("BRLootPickup", true)
----@type RotationHelper
-local m_RotationHelper = require "__shared/Utils/RotationHelper"
+local m_Logger = Logger("BRLootPickup", false)
 ---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
 
@@ -67,7 +65,7 @@ end
 
 ---@return MeshModel|nil
 function BRLootPickup:GetMesh()
-	if m_MapHelper:SizeEquals(self.m_Items, 1) then
+	if self.m_Type.Name ~= "Airdrop" and m_MapHelper:SizeEquals(self.m_Items, 1) then
 		-- If there is only one item then use its mesh
 		return m_MapHelper:NextItem(self.m_Items).m_Definition.m_Mesh
 	elseif self.m_Type.Mesh ~= nil then
@@ -80,7 +78,7 @@ end
 
 ---@return LinearTransform
 function BRLootPickup:GetLinearTransform()
-	if m_MapHelper:SizeEquals(self.m_Items, 1) then
+	if self.m_Type.Name ~= "Airdrop" and m_MapHelper:SizeEquals(self.m_Items, 1) then
 		-- If there is only one item then use its LT
 		return m_MapHelper:NextItem(self.m_Items).m_Definition.m_Transform
 	elseif self.m_Type.Mesh ~= nil then
@@ -148,7 +146,7 @@ function BRLootPickup:Spawn()
 			end
 		else
 			-- Spawn the light on the client side only if the loot has only one item
-			if m_MapHelper:SizeEquals(self.m_Items, 1) then
+			if self.m_Type.Name ~= "Airdrop" and m_MapHelper:SizeEquals(self.m_Items, 1) then
 				--- m_Tier can be nil that's correct
 				---@diagnostic disable-next-line
 				local s_BusLight = m_PickupLight:Draw(self.m_Transform, s_SingleItem.m_Definition.m_Tier)

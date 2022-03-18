@@ -5,7 +5,6 @@ require "ClientCommands"
 
 require "__shared/Configs/SettingsConfig"
 require "__shared/Configs/CircleConfig"
-require "Utils/LootPointHelper"
 require "Utils/CachedJsExecutor"
 
 require "Types/BRInventory"
@@ -54,12 +53,10 @@ local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 local m_CommonSpatialRaycast = require "CommonSpatialRaycast"
 ---@type BRLooting
 local m_BRLooting = require "Types/BRLooting"
----@type SoundModifier
-local m_SoundModifier = require "SoundModifier"
 ---@type VoipManager
 local m_VoipManager = require "VoipManager"
 
-local m_Logger = Logger("VuBattleRoyaleClient", true)
+local m_Logger = Logger("VuBattleRoyaleClient", false)
 
 function VuBattleRoyaleClient:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
@@ -77,6 +74,8 @@ function VuBattleRoyaleClient:OnExtensionLoaded()
 	self:RegisterCommands()
 
 	m_Hud:OnExtensionLoaded()
+	m_VoipManager:OnExtensionLoaded()
+	m_Ping:OnExtensionLoaded()
 	self:OnHotReload()
 end
 
@@ -136,6 +135,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
 		NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer),
 		NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged),
+		NetEvents:Subscribe(PlayerEvents.PlayersPerTeamChanged, self, self.OnPlayersPerTeamChanged),
 		NetEvents:Subscribe(PlayerEvents.WinnerTeamUpdate, self, self.OnWinnerTeamUpdate),
 		NetEvents:Subscribe(PlayerEvents.EnableSpectate, self, self.OnEnableSpectate),
 		NetEvents:Subscribe(SpectatorEvents.PostPitchAndYaw, self, self.OnPostPitchAndYaw),
@@ -151,8 +151,6 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe(InventoryNetEvent.UnregisterLootPickup, self, self.OnUnregisterLootPickup),
 		NetEvents:Subscribe(InventoryNetEvent.UpdateLootPickup, self, self.OnUpdateLootPickup),
 		NetEvents:Subscribe(InventoryNetEvent.ItemActionCanceled, self, self.OnItemActionCanceled),
-
-		Events:Subscribe("Partition:Loaded", self, self.OnPartitionLoaded),
 
 		NetEvents:Subscribe("Airdrop:Dropped", self, self.OnAirdropDropped),
 	}
@@ -453,17 +451,6 @@ function VuBattleRoyaleClient:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 end
 
 -- =============================================
-	-- Partiton Event
--- =============================================
-
--- TODO: Move it to shared __init__
----VEXT Shared Partition:Loaded Event
----@param p_Partition DatabasePartition
-function VuBattleRoyaleClient:OnPartitionLoaded(p_Partition)
-	m_SoundModifier:OnPartitionLoaded(p_Partition)
-end
-
--- =============================================
 -- Custom (Net-)Events
 -- =============================================
 
@@ -741,6 +728,12 @@ end
 ---@param p_MinPlayersToStart integer
 function VuBattleRoyaleClient:OnMinPlayersToStartChanged(p_MinPlayersToStart)
 	m_Hud.m_MinPlayersToStart = p_MinPlayersToStart
+end
+
+---Custom Client PlayerEvents.PlayersPerTeamChanged NetEvent
+---@param p_PlayerPerTeam integer
+function VuBattleRoyaleClient:OnPlayersPerTeamChanged(p_PlayerPerTeam)
+	m_Hud.m_PlayersPerTeam = p_PlayerPerTeam
 end
 
 ---Custom Client PlayerEvents.WinnerTeamUpdate NetEvent
