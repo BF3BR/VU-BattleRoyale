@@ -136,7 +136,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- Create / Destroy Camera
+-- Create / Destroy Camera
 -- =============================================
 
 ---Creates the CameraEntityData
@@ -186,7 +186,7 @@ function GunshipCamera:DestroyCamera()
 end
 
 -- =============================================
-	-- Take- / ReleaseControl Camera
+-- Take- / ReleaseControl Camera
 -- =============================================
 
 ---Fires event "TakeControl" at the entity
@@ -207,7 +207,7 @@ function GunshipCamera:ReleaseControl()
 end
 
 -- =============================================
-	-- Enable / Disable Camera
+-- Enable / Disable Camera
 -- =============================================
 
 ---Enables the Camera (Create & TakeControl)

@@ -63,7 +63,7 @@ function MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServ
 			local s_PresetPath = self:GetPresetPath(s_PresetName)
 			local s_JSONPreset = require(s_PresetPath)
 
-			m_Logger:Write("Registering preset with name: ".. s_PresetName .. " - Path: " .. s_PresetPath)
+			m_Logger:Write("Registering preset with name: " .. s_PresetName .. " - Path: " .. s_PresetPath)
 			self:RegisterPreset(s_PresetName, s_JSONPreset)
 		end
 	end

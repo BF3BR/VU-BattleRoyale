@@ -160,7 +160,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- Player Damage/ Kill Functions
+-- Player Damage/ Kill Functions
 -- =============================================
 
 ---Increments the kill counter of the player
@@ -231,7 +231,7 @@ function BRPlayer:FinishTeammates()
 end
 
 -- =============================================
-	-- Player Spawn Functions
+-- Player Spawn Functions
 -- =============================================
 
 ---@param p_Transform LinearTransform
@@ -307,7 +307,7 @@ function BRPlayer:Spawn(p_Transform)
 end
 
 -- =============================================
-	-- Spectator Functions
+-- Spectator Functions
 -- =============================================
 
 ---@param p_BRPlayer BRPlayer|nil
@@ -348,7 +348,7 @@ function BRPlayer:RemoveSpectator(p_PlayerName)
 end
 
 -- =============================================
-	-- Other Functions
+-- Other Functions
 -- =============================================
 
 ---Updates the vanilla player team/squad Ids
@@ -368,7 +368,7 @@ function BRPlayer:SendEventToSpectators(p_EventName, ...)
 
 		if s_Spectator ~= nil then
 			m_Logger:WriteF("Send '%s' to spectator '%s'", p_EventName, s_Spectator.name)
-			NetEvents:SendToLocal(p_EventName, s_Spectator, table.unpack({...}))
+			NetEvents:SendToLocal(p_EventName, s_Spectator, table.unpack({ ... }))
 		else
 			table.remove(self.m_SpectatorNames, i)
 			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
@@ -454,12 +454,12 @@ function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
 			return
 		end
 
-		self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+		self.m_Player:SelectUnlockAssets(s_SoldierAsset, { s_Appearance })
 	end
 end
 
 -- =============================================
-	-- Get Functions
+-- Get Functions
 -- =============================================
 
 ---Returns the username of the player
@@ -613,7 +613,7 @@ end
 ---@return string
 function BRPlayer.static:GetPlayerName(p_Player)
 	return (type(p_Player) == "string" and p_Player) or (type(p_Player) == "userdata" and p_Player.name) or
-				(type(p_Player) == "table" and p_Player:GetName()) or nil
+		(type(p_Player) == "table" and p_Player:GetName()) or nil
 end
 
 -- Garbage collector metamethod

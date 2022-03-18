@@ -131,7 +131,7 @@ function PhaseManagerServer:InitPhase()
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then
 		self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
 		self:SetTimer("MovingCircle",
-					m_TimerManager:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
+			m_TimerManager:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
 	end
 
 	self:DebugMessage()

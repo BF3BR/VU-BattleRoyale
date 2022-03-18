@@ -116,6 +116,7 @@ function BRItemConsumable:SendNetEvent(p_Name)
 
 	-- send event to each receiver
 	for _, l_Receiver in ipairs(s_Receivers) do
+		---@diagnostic disable-next-line: undefined-global
 		NetEvents:SendToLocal(p_Name, l_Receiver, self.m_Id)
 	end
 end

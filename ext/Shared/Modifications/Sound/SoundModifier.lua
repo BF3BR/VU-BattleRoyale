@@ -6,24 +6,24 @@ local m_Logger = Logger("SoundModifier", false)
 
 function SoundModifier:__init()
 	self.m_WeaponAttenuationMultipliers = {
-		{Distance = 8, Gain = 8},
-		{Distance = 8, Gain = 8},
-		{Distance = 4, Gain = 4},
-		{Distance = 1.4, Gain = 1.4},
-		{Distance = 1.3, Gain = 1.3},
-		{Distance = 1.7, Gain = 1.7},
+		{ Distance = 8, Gain = 8 },
+		{ Distance = 8, Gain = 8 },
+		{ Distance = 4, Gain = 4 },
+		{ Distance = 1.4, Gain = 1.4 },
+		{ Distance = 1.3, Gain = 1.3 },
+		{ Distance = 1.7, Gain = 1.7 },
 	}
 
 	self.m_WeaponMaxDistanceMultiplier = 3
 	self.m_WeaponMinDistanceMultiplier = 3
 
 	self.m_AirVehiclesAttenuationMultipliers = {
-		{Distance = 4, Gain = 4},
-		{Distance = 3, Gain = 3},
-		{Distance = 2, Gain = 2},
-		{Distance = 1.3, Gain = 1.3},
-		{Distance = 1.2, Gain = 1.2},
-		{Distance = 1, Gain = 1},
+		{ Distance = 4, Gain = 4 },
+		{ Distance = 3, Gain = 3 },
+		{ Distance = 2, Gain = 2 },
+		{ Distance = 1.3, Gain = 1.3 },
+		{ Distance = 1.2, Gain = 1.2 },
+		{ Distance = 1, Gain = 1 },
 	}
 
 	self.m_AirVehicleMaxDistanceMultiplier = 3
@@ -54,7 +54,7 @@ function SoundModifier:__init()
 
 	self.m_AirVehicles = {
 		"uh1",
-        "c130"
+		"c130"
 	}
 end
 
@@ -158,7 +158,7 @@ function SoundModifier:ModifySoundPatchAsset(p_SoundPatchAsset, p_AttenuationMul
 					local s_Multiplier = p_AttenuationMultipliers[l_CurveKey]
 
 					if s_Multiplier == nil then
-						s_Multiplier = {Distance = 1, Gain = 1}
+						s_Multiplier = { Distance = 1, Gain = 1 }
 					end
 
 					--Make louder

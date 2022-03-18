@@ -67,7 +67,7 @@ end
 
 -- Returns circle's data as a table
 function Circle:AsTable()
-	return {Center = self.m_Center, Radius = self.m_Radius}
+	return { Center = self.m_Center, Radius = self.m_Radius }
 end
 
 -- Creates a Circle instance from table data

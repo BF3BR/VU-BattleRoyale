@@ -114,7 +114,6 @@ function MapHelper:SizeEquals(p_Map, p_TargetSize)
 	return true
 end
 
-
 -- Check if the Map has exactly one item
 ---@param p_Map table
 ---@return boolean

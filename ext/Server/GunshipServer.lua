@@ -101,8 +101,8 @@ function GunshipServer:OnJumpOutOfGunship(p_Player, p_Transform)
 	local s_Transform = self:GetDropPosition()
 
 	if p_Transform ~= nil then
-		s_Transform.left = p_Transform.left * - 1
-		s_Transform.forward = p_Transform.forward * - 1
+		s_Transform.left = p_Transform.left * -1
+		s_Transform.forward = p_Transform.forward * -1
 	end
 
 	local s_BrPlayer = m_TeamManagerServer:GetPlayer(p_Player)
@@ -131,7 +131,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- Enable / Disable Gunship
+-- Enable / Disable Gunship
 -- =============================================
 
 ---@param p_StartPos Vec3
@@ -172,7 +172,7 @@ function GunshipServer:Disable()
 end
 
 -- =============================================
-	-- Spawn / Unspawn Gunship
+-- Spawn / Unspawn Gunship
 -- =============================================
 
 function GunshipServer:Spawn()
@@ -206,7 +206,7 @@ function GunshipServer:Destroy()
 end
 
 -- =============================================
-	-- Set Functions
+-- Set Functions
 -- =============================================
 
 ---@param p_Transform LinearTransform
@@ -244,7 +244,7 @@ function GunshipServer:SetLocatorEntityTransform(p_Transform)
 end
 
 -- =============================================
-	-- Get Functions
+-- Get Functions
 -- =============================================
 
 ---@return LinearTransform|nil

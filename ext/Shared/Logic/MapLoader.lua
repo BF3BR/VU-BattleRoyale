@@ -68,7 +68,7 @@ function MapLoader:OnPartitionLoaded(p_Partition)
 	end
 
 	-- if l_Instance:Is("Blueprint") then
-		--m_Logger:Write("-------"..Blueprint(l_Instance).name)
+	--m_Logger:Write("-------"..Blueprint(l_Instance).name)
 	-- end
 
 	if s_PrimaryInstance.typeInfo.name == "LevelData" then
@@ -291,7 +291,7 @@ function MapLoader:CreateWorldPart(p_PrimaryLevel, p_RegistryContainer)
 	end
 
 	-- m_IndexCount = 30000
-	m_Logger:Write('Index count is: '..tostring(self.m_IndexCount))
+	m_Logger:Write('Index count is: ' .. tostring(self.m_IndexCount))
 
 	for _, l_Object in pairs(self.m_MapPreset.data) do
 		if l_Object.origin == GameObjectOriginType.Custom then

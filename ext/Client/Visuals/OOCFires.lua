@@ -27,7 +27,7 @@ function OOCFires:SpawnItem(p_Item)
 	local s_From = Vec3(p_Item.Position.x, 600.0, p_Item.Position.y)
 	local s_To = Vec3(p_Item.Position.x, -600.0, p_Item.Position.y)
 	local s_RaycastHit = RaycastManager:Raycast(s_From, s_To, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter |
-											RayCastFlags.DontCheckRagdoll)
+	RayCastFlags.DontCheckRagdoll)
 
 	if s_RaycastHit == nil then
 		-- wouldn't make any sense to spawn something at the default height

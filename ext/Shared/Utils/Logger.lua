@@ -7,7 +7,7 @@ Logger = class "Logger"
 ---@param p_ActivateLogging boolean
 function Logger:__init(p_ClassName, p_ActivateLogging)
 	if type(p_ClassName) ~= "string" then
-		error("Logger: Wrong arguments creating object, className is not a string. ClassName: ".. tostring(p_ClassName))
+		error("Logger: Wrong arguments creating object, className is not a string. ClassName: " .. tostring(p_ClassName))
 		return
 	elseif type(p_ActivateLogging) ~= "boolean" then
 		error("Logger: Wrong arguments creating object, ActivateLogging is not a boolean. ActivateLogging: " .. tostring(p_ActivateLogging))
@@ -19,7 +19,7 @@ function Logger:__init(p_ClassName, p_ActivateLogging)
 end
 
 function Logger:WriteF(...)
-	self:Write(string.format(table.unpack({...})))
+	self:Write(string.format(table.unpack({ ... })))
 end
 
 ---@param p_Message string|number|boolean|table
@@ -36,15 +36,14 @@ function Logger:Write(p_Message, p_Highlight)
 	end
 
 	::continue::
-
 	if type(p_Message) == "table" then
-		print("["..self.m_ClassName.."]")
+		print("[" .. self.m_ClassName .. "]")
 		print(p_Message)
 	else
 		if p_Highlight and SharedUtils:IsClientModule() then
-			print("["..self.m_ClassName.."] *" .. tostring(p_Message))
+			print("[" .. self.m_ClassName .. "] *" .. tostring(p_Message))
 		else
-			print("["..self.m_ClassName.."] " .. tostring(p_Message))
+			print("[" .. self.m_ClassName .. "] " .. tostring(p_Message))
 		end
 	end
 end
@@ -71,7 +70,7 @@ function Logger:WriteTable(p_Table, p_Highlight, p_Key)
 end
 
 function Logger:WarningF(...)
-	self:Warning(string.format(table.unpack({...})))
+	self:Warning(string.format(table.unpack({ ... })))
 end
 
 ---@param p_Message boolean|string|number|table
@@ -81,19 +80,19 @@ function Logger:Warning(p_Message)
 	end
 
 	if type(p_Message) == "table" then
-		print("["..self.m_ClassName.."] WARNING:")
+		print("[" .. self.m_ClassName .. "] WARNING:")
 		print(p_Message)
 	else
 		if SharedUtils:IsClientModule() then
-			print("["..self.m_ClassName.."] *WARNING: " .. tostring(p_Message))
+			print("[" .. self.m_ClassName .. "] *WARNING: " .. tostring(p_Message))
 		else
-			print("["..self.m_ClassName.."] WARNING: " .. tostring(p_Message))
+			print("[" .. self.m_ClassName .. "] WARNING: " .. tostring(p_Message))
 		end
 	end
 end
 
 function Logger:ErrorF(...)
-	self:Error(string.format(table.unpack({...})))
+	self:Error(string.format(table.unpack({ ... })))
 end
 
 ---@param p_Message string|number|boolean|table
@@ -103,13 +102,13 @@ function Logger:Error(p_Message)
 	end
 
 	if type(p_Message) == "table" then
-		print("["..self.m_ClassName.."] ERROR:")
+		print("[" .. self.m_ClassName .. "] ERROR:")
 		print(p_Message)
 	else
 		if SharedUtils:IsClientModule() then
-			print("["..self.m_ClassName.."] *ERROR: " .. tostring(p_Message))
+			print("[" .. self.m_ClassName .. "] *ERROR: " .. tostring(p_Message))
 		else
-			print("["..self.m_ClassName.."] ERROR: " .. tostring(p_Message))
+			print("[" .. self.m_ClassName .. "] ERROR: " .. tostring(p_Message))
 		end
 	end
 end

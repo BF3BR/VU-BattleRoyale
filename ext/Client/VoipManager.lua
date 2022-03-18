@@ -19,7 +19,7 @@ local function GetPushToTalkSetting(p_String)
 			s_DefaultInputDeviceKey = InputDeviceKeys.IDK_C
 		end
 
-		s_PushToTalkSetting = SettingsManager:DeclareKeybind("Voip_" .. p_String .. "_PushToTalk_Key", s_DefaultInputDeviceKey, { displayName = p_String .. " Voip Push-To-Talk Key", showInUi = true})
+		s_PushToTalkSetting = SettingsManager:DeclareKeybind("Voip_" .. p_String .. "_PushToTalk_Key", s_DefaultInputDeviceKey, { displayName = p_String .. " Voip Push-To-Talk Key", showInUi = true })
 		s_PushToTalkSetting.value = s_DefaultInputDeviceKey
 
 		m_Logger:Write("GetPushToTalkSetting created setting for " .. p_String)
@@ -38,7 +38,7 @@ local function GetTransmissionModeSetting(p_String)
 		local s_SettingOptions = SettingOptions()
 		s_SettingOptions.displayName = p_String .. " Voip TransmissionMode"
 		s_SettingOptions.showInUi = true
-		s_TransmissionModeSetting = SettingsManager:DeclareOption("Voip_" .. p_String .. "_TransmissionMode", "PushToTalk", { "AlwaysOn", "PushToTalk", "VoiceActivation"}, false, s_SettingOptions)
+		s_TransmissionModeSetting = SettingsManager:DeclareOption("Voip_" .. p_String .. "_TransmissionMode", "PushToTalk", { "AlwaysOn", "PushToTalk", "VoiceActivation" }, false, s_SettingOptions)
 		s_TransmissionModeSetting.value = "PushToTalk"
 
 		m_Logger:Write("GetTransmissionModeSetting created setting for " .. p_String)
@@ -175,9 +175,9 @@ function VoipManager:OnVoipEmitterEmitting(p_Emitter, p_IsEmitting)
 	end
 
 	if p_Emitter.channel.name:match("BRTeam") then
-		WebUI:ExecuteJS("VoipEmitterEmitting('" .. p_Emitter.player.name .. "'," .. tostring(p_IsEmitting) ..", false);")
+		WebUI:ExecuteJS("VoipEmitterEmitting('" .. p_Emitter.player.name .. "'," .. tostring(p_IsEmitting) .. ", false);")
 	else
-		WebUI:ExecuteJS("VoipEmitterEmitting('" .. p_Emitter.player.name .. "'," .. tostring(p_IsEmitting) ..", true);")
+		WebUI:ExecuteJS("VoipEmitterEmitting('" .. p_Emitter.player.name .. "'," .. tostring(p_IsEmitting) .. ", true);")
 	end
 end
 
@@ -215,7 +215,7 @@ function VoipManager:OnWebUIVoipMutePlayer(p_PlayerName, p_Mute)
 	s_Emitter.volume = p_Mute and 0.0 or 5.0
 
 	-- send confirmation back to webui
-	WebUI:ExecuteJS("VoipPlayerMuted('" .. p_PlayerName .. "'," .. tostring(p_Mute) ..");")
+	WebUI:ExecuteJS("VoipPlayerMuted('" .. p_PlayerName .. "'," .. tostring(p_Mute) .. ");")
 end
 
 return VoipManager()

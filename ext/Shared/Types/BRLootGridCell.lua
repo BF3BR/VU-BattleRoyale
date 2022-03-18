@@ -29,7 +29,7 @@ function BRLootGridCell:RemoveLootPickup(p_LootPickup)
 end
 
 function BRLootGridCell:AsTable()
-	return {Version = self.m_Version}
+	return { Version = self.m_Version }
 end
 
 function BRLootGridCell:Destroy()

@@ -48,7 +48,7 @@ function VanillaUIModifier:RegisterCallbacks()
 	m_UINametagCompData:RegisterLoadHandler(self, self.OnUINametagCompData)
 
 	m_UITrackingtagCompData:RegisterLoadHandler(self, self.OnUITrackingtagCompData) -- Need healing / repair / ammo indicators
-	m_UI3dIconCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)			-- Grenade icons
+	m_UI3dIconCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData) -- Grenade icons
 	m_CapturepointtagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_3dLaserTagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
 	m_MapmarkertagCompData:RegisterLoadHandler(self, self.OnUI3dIconCompData)
@@ -90,15 +90,15 @@ function VanillaUIModifier:DeregisterCallbacks()
 end
 
 function VanillaUIModifier:OnHudScreen(p_ScreenAsset)
-	self:KeepNodes(p_ScreenAsset, {"InteractionManager", "DamageIndicator"})
+	self:KeepNodes(p_ScreenAsset, { "InteractionManager", "DamageIndicator" })
 end
 
 function VanillaUIModifier:OnHudMpScreen(p_ScreenAsset)
-	self:KeepNodes(p_ScreenAsset, {"LatencyIndicator", "AdminYellMessage", "Hitindicator"})
+	self:KeepNodes(p_ScreenAsset, { "LatencyIndicator", "AdminYellMessage", "Hitindicator" })
 end
 
 function VanillaUIModifier:OnHudConquestScreen(p_ScreenAsset)
-	self:KeepNodes(p_ScreenAsset, {"Minimap", "MapmarkerManager"})
+	self:KeepNodes(p_ScreenAsset, { "Minimap", "MapmarkerManager" })
 end
 
 function VanillaUIModifier:OnUINametagCompData(p_UIComponentData)
@@ -139,11 +139,11 @@ function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)
 
 		if s_Icon ~= nil then
 			if s_Icon.iconType == UIHudIcon.UIHudIcon_SquadLeader or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_SquadleaderBg or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_Gunship or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_PercetageBarMiddle or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_PercetageBarEdge or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_PercentageBarBackground then
+				s_Icon.iconType == UIHudIcon.UIHudIcon_SquadleaderBg or
+				s_Icon.iconType == UIHudIcon.UIHudIcon_Gunship or
+				s_Icon.iconType == UIHudIcon.UIHudIcon_PercetageBarMiddle or
+				s_Icon.iconType == UIHudIcon.UIHudIcon_PercetageBarEdge or
+				s_Icon.iconType == UIHudIcon.UIHudIcon_PercentageBarBackground then
 				for _, l_State in ipairs(s_Icon.states) do
 					for _, l_TextureInfo in ipairs(l_State.textureInfos) do
 						l_TextureInfo.minUv = Vec2(0.0, 0.0)
@@ -153,11 +153,11 @@ function VanillaUIModifier:OnIconTexture(p_TextureAtlasAsset)
 			end
 
 			if s_Icon.iconType == UIHudIcon.UIHudIcon_KitAssault or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_KitEngineer or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_KitSupport or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_KitRecon or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_NeedMedic or
-			s_Icon.iconType == UIHudIcon.UIHudIcon_NeedAmmo then
+				s_Icon.iconType == UIHudIcon.UIHudIcon_KitEngineer or
+				s_Icon.iconType == UIHudIcon.UIHudIcon_KitSupport or
+				s_Icon.iconType == UIHudIcon.UIHudIcon_KitRecon or
+				s_Icon.iconType == UIHudIcon.UIHudIcon_NeedMedic or
+				s_Icon.iconType == UIHudIcon.UIHudIcon_NeedAmmo then
 				-- replace kit icons for squad
 				s_Icon.states[1].textureInfos[1].minUv = Vec2(0.50090625, 0.6659453125)
 				s_Icon.states[1].textureInfos[1].maxUv = Vec2(0.5546875, 0.6845703125)
@@ -226,7 +226,7 @@ function VanillaUIModifier:ModifyMenu(p_MPMenuScreenAsset, p_UISquadCompData)
 	local s_ItemListNode = WidgetNode(s_ScreenAsset.nodes[m_WidgetIndexes.itemList])
 	local s_ItemListBinding = UIListDataBinding(s_ItemListNode.dataBinding)
 	s_ItemListBinding:MakeWritable()
-	s_ItemListBinding.listQuery = UIDataSourceInfo()	-- remove dynamic item lookup
+	s_ItemListBinding.listQuery = UIDataSourceInfo() -- remove dynamic item lookup
 
 	for _, l_ItemName in ipairs(m_MenuItems) do
 		s_ItemListBinding.staticItems:add(self:_GetStaticItem(l_ItemName))
@@ -236,7 +236,7 @@ function VanillaUIModifier:ModifyMenu(p_MPMenuScreenAsset, p_UISquadCompData)
 	local s_CenterHeaderNode = WidgetNode(s_ScreenAsset.nodes[m_WidgetIndexes.gamemodeInfoHeader])
 	local s_CenterHeaderBinding = UIPageHeaderBinding(s_CenterHeaderNode.dataBinding)
 	s_CenterHeaderBinding:MakeWritable()
-	s_CenterHeaderBinding.header = UIDataSourceInfo()		-- remove dynamic gamemode lookup
+	s_CenterHeaderBinding.header = UIDataSourceInfo() -- remove dynamic gamemode lookup
 	s_CenterHeaderBinding.staticHeader = "YOUR SQUAD"
 	s_CenterHeaderBinding.subHeader.dataCategory = UISquadCompData(p_UISquadCompData)
 	s_CenterHeaderBinding.subHeader.dataKey = -917467149
@@ -245,7 +245,7 @@ function VanillaUIModifier:ModifyMenu(p_MPMenuScreenAsset, p_UISquadCompData)
 	local s_MapHeaderNode = WidgetNode(s_ScreenAsset.nodes[m_WidgetIndexes.mapHeader])
 	local s_MapHeaderBinding = UIPageHeaderBinding(s_MapHeaderNode.dataBinding)
 	s_MapHeaderBinding:MakeWritable()
-	s_MapHeaderBinding.header = UIDataSourceInfo()		-- remove dynamic gamemode lookup
+	s_MapHeaderBinding.header = UIDataSourceInfo() -- remove dynamic gamemode lookup
 	s_MapHeaderBinding.staticHeader = "BATTLE ROYALE"
 
 	-- Remove gamemodeInfo

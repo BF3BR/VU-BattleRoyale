@@ -150,7 +150,7 @@ function VuBattleRoyaleServer:OnExtensionUnloading()
 end
 
 -- =============================================
-	-- Level Events
+-- Level Events
 -- =============================================
 
 ---VEXT Shared Extension:Loaded Event
@@ -213,7 +213,7 @@ function VuBattleRoyaleServer:OnLevelDestroy()
 end
 
 -- =============================================
-	-- Update Events
+-- Update Events
 -- =============================================
 
 ---VEXT Shared Engine:Update Event
@@ -264,7 +264,7 @@ function VuBattleRoyaleServer:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 end
 
 -- =============================================
-	-- Player Events
+-- Player Events
 -- =============================================
 
 ---VEXT Server Player:Created Event
@@ -342,7 +342,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- Player Events
+-- Player Events
 -- =============================================
 
 ---Custom Server PlayerEvents.PlayerConnected NetEvent
@@ -419,7 +419,7 @@ function VuBattleRoyaleServer:OnPlayerDespawn(p_Player)
 end
 
 -- =============================================
-	-- Spectator Events
+-- Spectator Events
 -- =============================================
 
 ---Custom Server SpectatorEvents.RequestPitchAndYaw NetEvent
@@ -430,7 +430,7 @@ function VuBattleRoyaleServer:OnSpectatorRequestPitchAndYaw(p_Player, p_Spectati
 end
 
 -- =============================================
-	-- Ping Events
+-- Ping Events
 -- =============================================
 
 ---Custom Server PingEvents.ClientPing NetEvent
@@ -448,7 +448,7 @@ function VuBattleRoyaleServer:OnRemovePlayerPing(p_Player)
 end
 
 -- =============================================
-	-- Gunship Events
+-- Gunship Events
 -- =============================================
 
 ---Custom Server GunshipEvents.JumpOut NetEvent
@@ -471,7 +471,7 @@ function VuBattleRoyaleServer:OnChatMessageSquadSend(p_Player, p_Message)
 	local s_BrTeam = m_TeamManagerServer:GetTeamByPlayer(p_Player)
 
 	if s_BrTeam == nil then
-		m_Logger:Write("Chat: BrTeam of player ".. p_Player.name .. "is nil. We can't send this message.")
+		m_Logger:Write("Chat: BrTeam of player " .. p_Player.name .. "is nil. We can't send this message.")
 		return
 	end
 
@@ -479,7 +479,7 @@ function VuBattleRoyaleServer:OnChatMessageSquadSend(p_Player, p_Message)
 		NetEvents:SendToLocal("ChatMessage:SquadReceive", l_Player:GetPlayer(), p_Player.name, p_Message)
 	end
 
-	RCON:TriggerEvent("player.onChat", {p_Player.name, p_Message, "squad", tostring(p_Player.teamId), tostring(p_Player.squadId)})
+	RCON:TriggerEvent("player.onChat", { p_Player.name, p_Message, "squad", tostring(p_Player.teamId), tostring(p_Player.squadId) })
 end
 
 ---Custom Server ChatMessage:AllSend NetEvent
@@ -487,7 +487,7 @@ end
 ---@param p_Message string
 function VuBattleRoyaleServer:OnChatMessageAllSend(p_Player, p_Message)
 	NetEvents:BroadcastLocal("ChatMessage:AllReceive", p_Player.name, p_Message)
-	RCON:TriggerEvent("player.onChat", {p_Player.name, p_Message, "all"})
+	RCON:TriggerEvent("player.onChat", { p_Player.name, p_Message, "all" })
 end
 
 ---Custom Server PhaseManagerNetEvent.InitialState NetEvent
@@ -497,7 +497,7 @@ function VuBattleRoyaleServer:OnPhaseManagerInitialState(p_Player)
 end
 
 -- =============================================
-	-- GameState Event
+-- GameState Event
 -- =============================================
 
 ---Custom Server PlayerEvents.GameStateChanged Event
@@ -560,7 +560,7 @@ function VuBattleRoyaleServer:OnSoldierDamage(p_HookCtx, p_Soldier, p_Info, p_Gi
 	-- If we are in warmup we should disable all damages
 	if m_GameStateManager:GetGameState() <= GameStates.WarmupToPlane or m_GameStateManager:GetGameState() >= GameStates.EndGame then
 		-- if p_GiverInfo.giver == nil then --or p_GiverInfo.damageType == DamageType.Suicide
-			-- return
+		-- return
 		-- end
 
 		-- p_Info.damage = 0.0

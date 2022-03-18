@@ -44,7 +44,7 @@ local function ModifyTextureParameters(p_DatabaseMaterial, p_TextureConfig)
 
 			p_DatabaseMaterial.textureParameters:add(s_Parameter)
 		else
-			print("ERROR: Invalid texture parameter specified: no "..l_ParameterName.." parameter for material: "..p_DatabaseMaterial.material.instanceGuid:ToString('P'))
+			print("ERROR: Invalid texture parameter specified: no " .. l_ParameterName .. " parameter for material: " .. p_DatabaseMaterial.material.instanceGuid:ToString('P'))
 		end
 	end
 end
@@ -64,7 +64,7 @@ local function ModifyVectorParameters(p_ShaderConfig, p_MeshMaterial)
 
 			p_MeshMaterial.shader.vectorParameters:add(s_Parameter)
 		else
-			print("ERROR: Invalid vector parameter specified: no "..l_ParameterName.." parameter for material: "..p_MeshMaterial.instanceGuid:ToString('P'))
+			print("ERROR: Invalid vector parameter specified: no " .. l_ParameterName .. " parameter for material: " .. p_MeshMaterial.instanceGuid:ToString('P'))
 		end
 	end
 end

@@ -183,7 +183,7 @@ function VuBattleRoyaleClient:RegisterHooks()
 	self.m_Hooks = {
 		Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent),
 		Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen),
-		Hooks:Install("UI:CreateChatMessage",999, self, self.OnUICreateChatMessage),
+		Hooks:Install("UI:CreateChatMessage", 999, self, self.OnUICreateChatMessage),
 		Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage),
 		Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate),
 		Hooks:Install("UI:DrawEnemyNametag", 1, self, self.OnUIDrawEnemyNametag),
@@ -223,7 +223,7 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 end
 
 -- =============================================
-	-- Level Events
+-- Level Events
 -- =============================================
 
 ---VEXT Client Level:Loaded Event
@@ -298,7 +298,7 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 end
 
 -- =============================================
-	-- Update Events
+-- Update Events
 -- =============================================
 
 ---VEXT Shared Engine:Update Event
@@ -341,7 +341,7 @@ function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
 end
 
 -- =============================================
-	-- Player Events
+-- Player Events
 -- =============================================
 
 ---VEXT Client Player:Connected Event
@@ -412,7 +412,7 @@ function VuBattleRoyaleClient:OnSoldierSpawn(p_Soldier)
 end
 
 -- =============================================
-	-- GunSway Event
+-- GunSway Event
 -- =============================================
 
 ---VEXT Shared GunSway:Update Event
@@ -425,7 +425,7 @@ function VuBattleRoyaleClient:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFirin
 end
 
 -- =============================================
-	-- Voip Events
+-- Voip Events
 -- =============================================
 
 ---VEXT Client VoipChannel:PlayerJoined Event
@@ -455,7 +455,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- Player Damage Events
+-- Player Damage Events
 -- =============================================
 
 ---Custom Client ServerPlayer:Killed NetEvent
@@ -533,7 +533,7 @@ function VuBattleRoyaleClient:OnPingUpdateConfig(p_CooldownTime)
 end
 
 -- =============================================
-	-- Gunship Events
+-- Gunship Events
 -- =============================================
 
 -- TODO: switch to enum
@@ -564,7 +564,7 @@ function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
 end
 
 -- =============================================
-	-- PhaseManager Events
+-- PhaseManager Events
 -- =============================================
 
 ---Custom Client PhaseManagerEvent.Update Event
@@ -588,7 +588,7 @@ function VuBattleRoyaleClient:OnPhaseManagerUpdateState(p_State)
 end
 
 -- =============================================
-	-- ManDownLoot Events
+-- ManDownLoot Events
 -- =============================================
 
 ---Custom Client SpectatedPlayerTeamMembers NetEvent
@@ -598,7 +598,7 @@ function VuBattleRoyaleClient:OnSpectatedPlayerTeamMembers(p_PlayerNames)
 end
 
 -- =============================================
-	-- Inventory Events
+-- Inventory Events
 -- =============================================
 
 ---Custom Client InventoryNetEvent.InventoryState NetEvent
@@ -632,7 +632,7 @@ function VuBattleRoyaleClient:OnItemActionCanceled()
 end
 
 -- =============================================
-	-- Some more Events
+-- Some more Events
 -- =============================================
 
 ---Custom Client PlayerEvents.GameStateChanged NetEvent
@@ -850,7 +850,7 @@ function VuBattleRoyaleClient:OnWebUIVoipMutePlayer(p_Params)
 end
 
 -- =============================================
-	-- WebUI Inventory Events
+-- WebUI Inventory Events
 -- =============================================
 
 ---Custom Client WebUI:MoveItem WebUI Event

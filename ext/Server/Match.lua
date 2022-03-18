@@ -208,7 +208,7 @@ function Match:GetRandomWarmupSpawnpoint()
 
 	---@type Vec3
 	local s_SpawnTrans = nil
-	s_SpawnTrans = MapsConfig[s_LevelName].WarmupSpawnPoints[ math.random( #MapsConfig[s_LevelName]["WarmupSpawnPoints"] ) ]
+	s_SpawnTrans = MapsConfig[s_LevelName].WarmupSpawnPoints[math.random(#MapsConfig[s_LevelName]["WarmupSpawnPoints"])]
 
 	return s_SpawnTrans
 end

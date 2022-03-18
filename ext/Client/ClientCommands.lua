@@ -21,8 +21,7 @@ local m_WeaponDefinitions = require "__shared/Items/Definitions/BRItemWeaponDefi
 local m_GadgetDefinition = require "__shared/Items/Definitions/BRItemGadgetDefinition"
 
 ---@class ClientCommands
-ClientCommands =
-{
+ClientCommands = {
 	errInvalidCommand = "Invalid command",
 
 	---Give Command

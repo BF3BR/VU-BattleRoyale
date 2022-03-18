@@ -66,7 +66,7 @@ end
 ---@param p_Array table
 ---@return table
 function ArrayHelper:Clone(p_Array)
-	return {table.unpack(p_Array)}
+	return { table.unpack(p_Array) }
 end
 
 return ArrayHelper()
