@@ -199,6 +199,7 @@ end
 
 -- Responds to the request of a player to use an item from his inventory
 function BRInventoryManager:OnInventoryUseItem(p_Player, p_ItemId)
+	---@type BRItemConsumable
 	local s_Item = m_ItemDatabase:GetItem(p_ItemId)
 
 	-- TODO validate that player is owner of this item
