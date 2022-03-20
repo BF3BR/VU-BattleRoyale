@@ -238,6 +238,30 @@ end
 	-- Player Spawn Functions
 -- =============================================
 
+---@param p_Player Player
+---@param p_Transform LinearTransform
+function BRPlayer:FireSpawn(p_Player, p_Transform)
+	local s_Event = ServerPlayerEvent("Spawn", p_Player, true, false, false, false, false, false, p_Player.teamId)
+	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
+	local s_Entity = s_EntityIterator:Next()
+
+	while s_Entity do
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1") then
+			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
+			s_CharacterSpawnReferenceObjectData:MakeWritable()
+			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Transform
+
+			-- spawn the player
+			s_Entity:FireEvent(s_Event)
+
+			m_Logger:Write("Spawning player " .. p_Player.name)
+			break
+		end
+
+		s_Entity = s_EntityIterator:Next()
+	end
+end
+
 ---@param p_Transform LinearTransform
 ---@param p_MatchStarted boolean
 function BRPlayer:Spawn(p_Transform, p_MatchStarted)
@@ -273,25 +297,7 @@ function BRPlayer:Spawn(p_Transform, p_MatchStarted)
 	local s_CustomizeSoldierData = s_Inventory:CreateCustomizeSoldierData()
 	s_Inventory:SendState()
 
-	local s_Event = ServerPlayerEvent("Spawn", self.m_Player, true, false, false, false, false, false, self.m_Player.teamId)
-	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
-	local s_Entity = s_EntityIterator:Next()
-
-	while s_Entity do
-		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1") then
-			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
-			s_CharacterSpawnReferenceObjectData:MakeWritable()
-			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Transform
-
-			-- spawn the player
-			s_Entity:FireEvent(s_Event)
-
-			m_Logger:Write("Spawning player " .. self.m_Player.name)
-			break
-		end
-
-		s_Entity = s_EntityIterator:Next()
-	end
+	self:FireSpawn(self.m_Player, p_Transform)
 
 	---@param p_PlayerName string
 	---@param p_Timer Timer
@@ -344,16 +350,19 @@ function BRPlayer:ReplaceSoldierWithBot(p_Soldier)
 		return
 	end
 
+	--TODO bree: use custom eventName
+	Events:Dispatch("Player:Authenticated", s_Bot)
+
 	local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier"))
 	local s_VeniceSoldierCustomizationAsset = VeniceSoldierCustomizationAsset(ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault"))
 
 	-- Get it from BRPlayer.m_Appearance
-	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer("persistence/unlocks/soldiers/visual/mp/us/mp_us_assault_appearance01"))
+	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer(self.m_Appearance))
 
 	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
 		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
-	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
+	s_Bot:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
 
 	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
 	s_Inventory:DeferUpdateSoldierCustomization(0.85)
@@ -380,7 +389,7 @@ function BRPlayer:ReplaceBotSoldierWithPlayer(p_BotSoldier)
 	local s_VeniceSoldierCustomizationAsset = VeniceSoldierCustomizationAsset(ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault"))
 
 	-- Get it from BRPlayer.m_Appearance
-	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer("persistence/unlocks/soldiers/visual/mp/us/mp_us_assault_appearance01"))
+	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer(self.m_Appearance))
 
 	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
 		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
