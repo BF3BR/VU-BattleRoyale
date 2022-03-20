@@ -375,6 +375,7 @@ end
 ---Custom Server PlayerEvents.PlayerConnected NetEvent
 ---@param p_Player Player
 function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
+	m_TeamManagerServer:OnPlayerConnected(p_Player)
 	m_OOCFiresServer:OnPlayerConnected(p_Player)
 	m_PingServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
@@ -382,7 +383,6 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	NetEvents:SendTo(PlayerEvents.MinPlayersToStartChanged, p_Player, self.m_MinPlayersToStart)
 	NetEvents:SendTo(PlayerEvents.PlayersPerTeamChanged, p_Player, self.m_PlayersPerTeam)
 
-	m_TeamManagerServer:OnPlayerConnected(p_Player)
 	m_LootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
 
 	-- Fade in the default (showroom) camera

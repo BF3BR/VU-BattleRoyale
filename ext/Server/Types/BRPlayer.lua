@@ -410,6 +410,8 @@ function BRPlayer:ReplaceBotSoldierWithPlayer(p_BotSoldier)
 	self.m_Player:SpawnSoldierAt(s_Soldier, p_BotSoldier.transform, p_BotSoldier.pose)
 	self.m_Player:AttachSoldier(s_Soldier)
 
+	NetEvents:SendToLocal("Player:Rejoined", self.m_Player)
+
 	m_Logger:Write("Replaced bot with player: " .. self.m_Player.name)
 end
 
@@ -581,6 +583,10 @@ end
 ---@param p_AppearanceName string|nil
 ---@param p_RefreshPlayer boolean
 function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
+	if self.m_Player.soldier then
+		return
+	end
+
 	if p_AppearanceName ~= nil then
 		self.m_Appearance = p_AppearanceName
 	end
