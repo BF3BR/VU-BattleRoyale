@@ -91,7 +91,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 		Events:Subscribe("Engine:Update", self, self.OnEngineUpdate),
 		Events:Subscribe("UpdateManager:Update", self, self.OnUpdateManagerUpdate),
 
-		Events:Subscribe("Player:Created", self, self.OnPlayerCreated),
+		Events:Subscribe("Player:Authenticated", self, self.OnPlayerAuthenticated),
 		Events:Subscribe("Player:UpdateInteract", self, self.OnPlayerUpdateInteract),
 		Events:Subscribe("Player:ManDownRevived", self, self.OnPlayerManDownRevived),
 		Events:Subscribe("Player:Killed", self, self.OnPlayerKilled),
@@ -102,6 +102,7 @@ function VuBattleRoyaleServer:RegisterEvents()
 		NetEvents:Subscribe(PlayerEvents.PlayerDeploy, self, self.OnPlayerDeploy),
 		NetEvents:Subscribe(PlayerEvents.PlayerSetSkin, self, self.OnPlayerSetSkin),
 		NetEvents:Subscribe(PlayerEvents.Despawn, self, self.OnPlayerDespawn),
+		NetEvents:Subscribe("Player:Quit", self, self.OnPlayerQuit),
 		NetEvents:Subscribe(SpectatorEvents.RequestPitchAndYaw, self, self.OnSpectatorRequestPitchAndYaw),
 		NetEvents:Subscribe(PingEvents.ClientPing, self, self.OnPlayerPing),
 		NetEvents:Subscribe(PingEvents.RemoveClientPing, self, self.OnRemovePlayerPing),
@@ -210,6 +211,14 @@ function VuBattleRoyaleServer:OnLevelDestroy()
 	m_PhaseManagerServer:OnLevelDestroy()
 	m_MapVEManagerServer:OnLevelDestroy()
 	m_LootPickupDatabase:OnLevelDestroy()
+
+	-- destroy all bots
+	for _, l_Player in pairs(PlayerManager:GetPlayers()) do
+		if l_Player.onlineId == 0 then
+			-- this will trigger Player:Destroyed and from there we remove the BrPlayer
+			PlayerManager:DeletePlayer(l_Player)
+		end
+	end
 end
 
 -- =============================================
@@ -267,13 +276,13 @@ end
 	-- Player Events
 -- =============================================
 
----VEXT Server Player:Created Event
+---VEXT Server Player:Authenticated Event
 ---@param p_Player Player
-function VuBattleRoyaleServer:OnPlayerCreated(p_Player)
-	m_TeamManagerServer:OnPlayerCreated(p_Player)
+function VuBattleRoyaleServer:OnPlayerAuthenticated(p_Player)
+	m_TeamManagerServer:OnPlayerAuthenticated(p_Player)
 
 	if p_Player.onlineId ~= 0 then
-		m_MapVEManagerServer:OnPlayerCreated(p_Player)
+		m_MapVEManagerServer:OnPlayerAuthenticated(p_Player)
 	end
 end
 
@@ -322,6 +331,24 @@ end
 ---@param p_Player Player
 function VuBattleRoyaleServer:OnPlayerLeft(p_Player)
 	m_Logger:Write(p_Player.name .. " left")
+
+	local s_BrPlayer = m_TeamManagerServer:GetPlayer(p_Player)
+
+	if s_BrPlayer == nil or s_BrPlayer.m_QuitManually then
+		return
+	end
+
+	-- check if this BrPlayer was replaced with a bot
+	if s_BrPlayer:GetPlayer().onlineId == 0	and p_Player.onlineId ~= 0 then
+		return
+	end
+
+	-- check if this bot was replaced with a real player
+	if s_BrPlayer:GetPlayer().onlineId ~= 0	and p_Player.onlineId == 0 then
+		return
+	end
+
+	-- that player left, so we remove his BrPlayer
 	m_TeamManagerServer:OnPlayerLeft(p_Player)
 	m_InventoryManager:OnPlayerLeft(p_Player)
 end
@@ -348,6 +375,7 @@ end
 ---Custom Server PlayerEvents.PlayerConnected NetEvent
 ---@param p_Player Player
 function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
+	m_TeamManagerServer:OnPlayerConnected(p_Player)
 	m_OOCFiresServer:OnPlayerConnected(p_Player)
 	m_PingServer:OnPlayerConnected(p_Player)
 	-- Send out gamestate information if he connects or reconnects
@@ -382,12 +410,15 @@ function VuBattleRoyaleServer:OnPlayerDeploy(p_Player, p_AppearanceName)
 			return
 		end
 
-		s_BrPlayer:Spawn(LinearTransform(
-			Vec3(1.0, 0.0, 0.0),
-			Vec3(0.0, 1.0, 0.0),
-			Vec3(0.0, 0.0, 1.0),
-			s_SpawnTrans
-		))
+		s_BrPlayer:Spawn(
+			LinearTransform(
+				Vec3(1.0, 0.0, 0.0),
+				Vec3(0.0, 1.0, 0.0),
+				Vec3(0.0, 0.0, 1.0),
+				s_SpawnTrans
+			),
+			false
+		)
 	else
 		NetEvents:SendTo(PlayerEvents.EnableSpectate, p_Player)
 	end
@@ -416,6 +447,18 @@ function VuBattleRoyaleServer:OnPlayerDespawn(p_Player)
 	end
 
 	s_BrPlayer:Kill(true)
+end
+
+---Custom Server Player:Quit NetEvent
+---@param p_Player Player
+function VuBattleRoyaleServer:OnPlayerQuit(p_Player)
+	local s_BrPlayer = m_TeamManagerServer:GetPlayer(p_Player)
+
+	if s_BrPlayer == nil then
+		return
+	end
+
+	s_BrPlayer:SetQuitManually(true)
 end
 
 -- =============================================
@@ -724,13 +767,13 @@ function VuBattleRoyaleServer:OnHotReload()
 
 	-- Delay because client didn't finish the mod reload yet
 	m_TimerManager:Timeout(1, function()
-		-- OnPlayerCreated
+		-- OnPlayerAuthenticated
 		local s_Players = PlayerManager:GetPlayers()
 
 		if s_Players ~= nil and #s_Players > 0 then
 			for _, l_Player in pairs(s_Players) do
 				if l_Player ~= nil then
-					self:OnPlayerCreated(l_Player)
+					self:OnPlayerAuthenticated(l_Player)
 				end
 			end
 		end

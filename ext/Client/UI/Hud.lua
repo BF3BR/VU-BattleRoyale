@@ -773,6 +773,24 @@ function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
 end
 
 -- =============================================
+	-- Rejoined Player
+-- =============================================
+
+function VuBattleRoyaleHud:Rejoined()
+	self:OnLevelFinalized()
+	m_DeployScreen:CloseDeployScreen()
+	self.m_HudOnInteractiveMessageAndKey:ForceUpdate(json.encode({
+		["msg"] = nil,
+		["key"] = nil,
+	}))
+
+	--sometimes the mouse is still enabled, disable it again
+	m_TimerManager:Timeout(1.0, function()
+		m_HudUtils:HUDEnterUIGraph()
+	end)
+end
+
+-- =============================================
 	-- Push HUD Information
 -- =============================================
 

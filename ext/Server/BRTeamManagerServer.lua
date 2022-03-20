@@ -72,7 +72,7 @@ end
 
 ---VEXT Server Player:Created Event
 ---@param p_Player Player
-function BRTeamManagerServer:OnPlayerCreated(p_Player)
+function BRTeamManagerServer:OnPlayerAuthenticated(p_Player)
 	self:CreatePlayer(p_Player)
 end
 
@@ -110,6 +110,31 @@ function BRTeamManagerServer:OnPlayerLeft(p_Player)
 	end
 
 	self:RemovePlayer(p_Player)
+end
+
+---Custom Server PlayerEvents.PlayerConnected NetEvent
+---@param p_Player Player
+function BRTeamManagerServer:OnPlayerConnected(p_Player)
+	local s_Name = p_Player.name
+	local s_BrPlayer = self.m_Players[s_Name]
+
+	-- check if BRPlayer already exists
+	if s_BrPlayer ~= nil then
+		-- check if its a bot and replace him with the real player
+		local s_BotPlayer = s_BrPlayer:GetPlayer()
+
+		if s_BotPlayer.onlineId == 0 then
+			s_BrPlayer.m_Player = p_Player
+			s_BrPlayer:SetQuitManually(false)
+
+			if s_BotPlayer.alive then
+				-- replace bot with player
+				s_BrPlayer:ReplaceBotSoldierWithPlayer(s_BotPlayer.soldier)
+			end
+
+			PlayerManager:DeletePlayer(s_BotPlayer)
+		end
+	end
 end
 
 ---Returns the BRPlayer instance of a player
@@ -265,16 +290,17 @@ function BRTeamManagerServer:CreatePlayer(p_Player)
 	end
 
 	local s_Name = p_Player.name
+	local s_BrPlayer = self.m_Players[s_Name]
 
 	-- check if BRPlayer already exists
-	if self.m_Players[s_Name] ~= nil then
+	if s_BrPlayer ~= nil then
 		return self.m_Players[s_Name]
 	end
 
 	m_Logger:Write(string.format("Creating BRPlayer for '%s'", s_Name))
 
 	-- create player
-	local s_BrPlayer = BRPlayer(p_Player)
+	s_BrPlayer = BRPlayer(p_Player)
 	self.m_Players[s_Name] = s_BrPlayer
 
 	-- create a team and put the player in it

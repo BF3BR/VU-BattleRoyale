@@ -112,7 +112,7 @@ function GunshipServer:OnJumpOutOfGunship(p_Player, p_Transform)
 		s_BrPlayer = m_TeamManagerServer:CreatePlayer(p_Player)
 	end
 
-	s_BrPlayer:Spawn(s_Transform)
+	s_BrPlayer:Spawn(s_Transform, true)
 	NetEvents:SendToLocal(GunshipEvents.JumpOut, p_Player)
 end
 

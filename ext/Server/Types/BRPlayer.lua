@@ -6,6 +6,7 @@ BRPlayer = class "BRPlayer"
 local m_TimerManager = require "__shared/Utils/Timers"
 ---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
+local m_GameStateManager = require "GameStateManager"
 ---@type Logger
 local m_Logger = Logger("BRPlayer", false)
 
@@ -23,6 +24,9 @@ function BRPlayer:__init(p_Player)
 
 	-- indicates if the player joined the team by code
 	self.m_JoinedByCode = false
+
+	-- if a player quits per esc menu this will be set to true
+	self.m_QuitManually = false
 
 	-- the name of the player who killed this BRPlayer
 	---@type string|nil
@@ -234,8 +238,33 @@ end
 	-- Player Spawn Functions
 -- =============================================
 
+---@param p_Player Player
 ---@param p_Transform LinearTransform
-function BRPlayer:Spawn(p_Transform)
+function BRPlayer:FireSpawn(p_Player, p_Transform)
+	local s_Event = ServerPlayerEvent("Spawn", p_Player, true, false, false, false, false, false, p_Player.teamId)
+	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
+	local s_Entity = s_EntityIterator:Next()
+
+	while s_Entity do
+		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1") then
+			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
+			s_CharacterSpawnReferenceObjectData:MakeWritable()
+			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Transform
+
+			-- spawn the player
+			s_Entity:FireEvent(s_Event)
+
+			m_Logger:Write("Spawning player " .. p_Player.name)
+			break
+		end
+
+		s_Entity = s_EntityIterator:Next()
+	end
+end
+
+---@param p_Transform LinearTransform
+---@param p_MatchStarted boolean
+function BRPlayer:Spawn(p_Transform, p_MatchStarted)
 	-- check if alive
 	if self:IsAlive() then
 		return
@@ -268,25 +297,7 @@ function BRPlayer:Spawn(p_Transform)
 	local s_CustomizeSoldierData = s_Inventory:CreateCustomizeSoldierData()
 	s_Inventory:SendState()
 
-	local s_Event = ServerPlayerEvent("Spawn", self.m_Player, true, false, false, false, false, false, self.m_Player.teamId)
-	local s_EntityIterator = EntityManager:GetIterator("ServerCharacterSpawnEntity")
-	local s_Entity = s_EntityIterator:Next()
-
-	while s_Entity do
-		if s_Entity.data ~= nil and s_Entity.data.instanceGuid == Guid("67A2C146-9CC0-E7EC-5227-B2DCB9D316C1") then
-			local s_CharacterSpawnReferenceObjectData = CharacterSpawnReferenceObjectData(s_Entity.data)
-			s_CharacterSpawnReferenceObjectData:MakeWritable()
-			s_CharacterSpawnReferenceObjectData.blueprintTransform = p_Transform
-
-			-- spawn the player
-			s_Entity:FireEvent(s_Event)
-
-			m_Logger:Write("Spawning player " .. self.m_Player.name)
-			break
-		end
-
-		s_Entity = s_EntityIterator:Next()
-	end
+	self:FireSpawn(self.m_Player, p_Transform)
 
 	---@param p_PlayerName string
 	---@param p_Timer Timer
@@ -298,12 +309,140 @@ function BRPlayer:Spawn(p_Transform)
 			p_Timer:Destroy()
 		elseif s_Player.soldier ~= nil then
 			-- the ApplyCustomization is needed otherwise the transform will reset to Vec3(1,0,0) Vec3(0,1,0) Vec3(0,0,1)
-			s_Player.soldier:ApplyCustomization(s_CustomizeSoldierData)
+			s_Player.soldier:ApplyCustomization(self:CreateCustomizeSoldierData())
 			s_Player.soldier:SetTransform(p_Transform)
+
+			if p_MatchStarted then
+				-- we need this to replace crashed/ disconnected players with bots
+				self:RegisterUnspawnCallback(s_Player.soldier)
+			end
+
 			-- we are done, so we can destroy this timer
 			p_Timer:Destroy()
 		end
 	end)
+end
+
+---@param p_Soldier SoldierEntity
+function BRPlayer:RegisterUnspawnCallback(p_Soldier)
+	---@param p_Entity SoldierEntity|Entity
+	p_Soldier:RegisterUnspawnCallback(function(p_Entity)
+		if m_GameStateManager:IsGameState(GameStates.EndGame) then
+			return
+		end
+
+		p_Entity = SoldierEntity(p_Entity)
+
+		if p_Entity.player ~= nil and not self.m_QuitManually and p_Entity.isAlive then
+			self:ReplaceSoldierWithBot(p_Entity)
+		else
+			-- TODO: drop his loot
+		end
+	end)
+end
+
+---@param p_Soldier SoldierEntity
+function BRPlayer:ReplaceSoldierWithBot(p_Soldier)
+	local s_Bot = PlayerManager:CreatePlayer(p_Soldier.player.name, p_Soldier.player.teamId, p_Soldier.player.squadId)
+
+	if s_Bot == nil then
+		m_Logger:Warning("Couldn't create bot player: " .. p_Soldier.player.name)
+		return
+	end
+
+	--TODO bree: use custom eventName
+	Events:Dispatch("Player:Authenticated", s_Bot)
+
+	local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier"))
+	local s_VeniceSoldierCustomizationAsset = VeniceSoldierCustomizationAsset(ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault"))
+
+	-- Get it from BRPlayer.m_Appearance
+	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer(self.m_Appearance))
+
+	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
+		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+	s_Bot:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
+
+	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
+	s_Inventory:DeferUpdateSoldierCustomization(0.85)
+	s_Inventory:SendState()
+
+	s_Bot:SelectUnlockAssets(s_VeniceSoldierCustomizationAsset, {s_VisualUnlockAsset})
+	local s_Soldier = s_Bot:CreateSoldier(s_SoldierBlueprint, p_Soldier.transform)
+
+	-- copy health
+	s_Soldier.health = p_Soldier.health
+
+	-- copy transform & characterpose
+	s_Bot:SpawnSoldierAt(s_Soldier, p_Soldier.transform, p_Soldier.pose)
+	s_Bot:AttachSoldier(s_Soldier)
+
+	self.m_Player = s_Bot
+
+	m_Logger:Write("Replaced player with bot: " .. s_Bot.name)
+end
+
+---@param p_BotSoldier SoldierEntity
+function BRPlayer:ReplaceBotSoldierWithPlayer(p_BotSoldier)
+	local s_SoldierBlueprint = SoldierBlueprint(ResourceManager:SearchForDataContainer("Characters/Soldiers/MpSoldier"))
+	local s_VeniceSoldierCustomizationAsset = VeniceSoldierCustomizationAsset(ResourceManager:SearchForDataContainer("Gameplay/Kits/RUAssault"))
+
+	-- Get it from BRPlayer.m_Appearance
+	local s_VisualUnlockAsset = UnlockAsset(ResourceManager:SearchForDataContainer(self.m_Appearance))
+
+	local s_Pistol = SoldierWeaponUnlockAsset(ResourceManager:FindInstanceByGuid(
+		Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),
+		Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B")))
+	self.m_Player:SelectWeapon(WeaponSlot.WeaponSlot_0, s_Pistol, {})
+
+	local s_Inventory = m_InventoryManager:GetOrCreateInventory(self.m_Player)
+	s_Inventory:DeferUpdateSoldierCustomization(0.85)
+	s_Inventory:SendState()
+
+	self.m_Player:SelectUnlockAssets(s_VeniceSoldierCustomizationAsset, {s_VisualUnlockAsset})
+	local s_Soldier = self.m_Player:CreateSoldier(s_SoldierBlueprint, p_BotSoldier.transform)
+
+	-- copy health
+	s_Soldier.health = p_BotSoldier.health
+
+	-- copy transform & characterpose
+	self.m_Player:SpawnSoldierAt(s_Soldier, p_BotSoldier.transform, p_BotSoldier.pose)
+	self.m_Player:AttachSoldier(s_Soldier)
+
+	NetEvents:SendToLocal("Player:Rejoined", self.m_Player)
+
+	m_Logger:Write("Replaced bot with player: " .. self.m_Player.name)
+end
+
+-- TODO move to a util
+---@return CustomizeSoldierData
+function BRPlayer:CreateCustomizeSoldierData()
+	local s_CustomizeSoldierData = CustomizeSoldierData()
+	s_CustomizeSoldierData.restoreToOriginalVisualState = false
+	s_CustomizeSoldierData.clearVisualState = true
+	s_CustomizeSoldierData.overrideMaxHealth = -1.0
+	s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
+
+	local s_UnlockWeaponAndSlot7 = UnlockWeaponAndSlot()
+	s_UnlockWeaponAndSlot7.weapon = SoldierWeaponUnlockAsset(
+		ResourceManager:FindInstanceByGuid(Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73"))
+	)
+	s_UnlockWeaponAndSlot7.slot = WeaponSlot.WeaponSlot_7
+	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot7)
+
+	local s_UnlockWeaponAndSlot9 = UnlockWeaponAndSlot()
+	s_UnlockWeaponAndSlot9.weapon = SoldierWeaponUnlockAsset(
+		ResourceManager:FindInstanceByGuid(Guid("7C58AA2F-DCF2-4206-8880-E32497C15218"),Guid("B145A444-BC4D-48BF-806A-0CEFA0EC231B"))
+	)
+	s_UnlockWeaponAndSlot9.slot = WeaponSlot.WeaponSlot_9
+	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot9)
+
+	s_CustomizeSoldierData.activeSlot = WeaponSlot.WeaponSlot_7
+	s_CustomizeSoldierData.removeAllExistingWeapons = true
+	s_CustomizeSoldierData.disableDeathPickup = false
+
+	return s_CustomizeSoldierData
 end
 
 -- =============================================
@@ -376,6 +515,8 @@ function BRPlayer:SendEventToSpectators(p_EventName, ...)
 	end
 end
 
+---@param p_Simple boolean
+---@param p_TeamData BRTeamTable
 function BRPlayer:SendState(p_Simple, p_TeamData)
 	local s_Data = self:AsTable(p_Simple, p_TeamData)
 	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerState, self.m_Player, s_Data)
@@ -442,6 +583,10 @@ end
 ---@param p_AppearanceName string|nil
 ---@param p_RefreshPlayer boolean
 function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
+	if self.m_Player.soldier then
+		return
+	end
+
 	if p_AppearanceName ~= nil then
 		self.m_Appearance = p_AppearanceName
 	end
@@ -456,6 +601,11 @@ function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
 
 		self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
 	end
+end
+
+---@param p_QuitManually boolean
+function BRPlayer:SetQuitManually(p_QuitManually)
+	self.m_QuitManually = p_QuitManually
 end
 
 -- =============================================

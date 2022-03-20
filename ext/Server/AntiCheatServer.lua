@@ -42,7 +42,7 @@ function AntiCheatServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
 
 		if self.m_Timer >= 30.0 and self.m_Verify == true then
 			for _, l_Player in pairs(PlayerManager:GetPlayers()) do
-				if self.m_VerifiedPlayers[l_Player.name] == nil and l_Player.accountGuid ~= Guid('00000000-0000-0000-0000-000000000000') then
+				if self.m_VerifiedPlayers[l_Player.name] == nil and l_Player.onlineId ~= 0 then
 					if self.m_PlayerCount[l_Player.name] == nil then
 						self.m_PlayerCount[l_Player.name] = 1
 					elseif self.m_PlayerCount[l_Player.name] <= 10 then

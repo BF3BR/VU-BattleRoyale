@@ -43,7 +43,7 @@ end
 function BRInventoryManager:OnPlayerLeft(p_Player)
 	m_Logger:Write(string.format("Destroying Inventory for '%s'", p_Player.name))
 
-	if self.m_Inventories[p_Player.id] ~= nil then
+	if self.m_Inventories[p_Player.name] ~= nil then
 		self:RemoveInventory(p_Player)
 	end
 end
@@ -74,13 +74,13 @@ end
 ---@return BRInventory
 function BRInventoryManager:GetOrCreateInventory(p_Player)
 	-- get existing inventory
-	local s_Inventory = self.m_Inventories[p_Player.id]
-
-	-- get BRPlayer for this player
-	local s_BRPlayer = m_BRTeamManagerServer:GetPlayer(p_Player)
+	local s_Inventory = self.m_Inventories[p_Player.name]
 
 	-- create a new one if needed
 	if s_Inventory == nil then
+		-- get BRPlayer for this player
+		local s_BRPlayer = m_BRTeamManagerServer:GetPlayer(p_Player)
+
 		s_Inventory = BRInventory(s_BRPlayer)
 		self:AddInventory(s_Inventory, p_Player)
 	end
@@ -92,7 +92,7 @@ end
 ---@param p_Inventory BRInventory
 ---@param p_Player Player
 function BRInventoryManager:AddInventory(p_Inventory, p_Player)
-	self.m_Inventories[p_Player.id] = p_Inventory
+	self.m_Inventories[p_Player.name] = p_Inventory
 
 	-- set inventory reference in BRPlayer
 	local s_BRPlayer = m_BRTeamManagerServer:GetPlayer(p_Player)
@@ -105,13 +105,13 @@ end
 ---Removes a BRInventory
 ---@param p_Player Player
 function BRInventoryManager:RemoveInventory(p_Player)
-	if self.m_Inventories[p_Player.id] == nil then
+	if self.m_Inventories[p_Player.name] == nil then
 		return
 	end
 
 	-- destroy inventory and clear reference
-	self.m_Inventories[p_Player.id]:Destroy()
-	self.m_Inventories[p_Player.id] = nil
+	self.m_Inventories[p_Player.name]:Destroy()
+	self.m_Inventories[p_Player.name] = nil
 
 	-- clear inventory reference in BRPlayer
 	local s_BRPlayer = m_BRTeamManagerServer:GetPlayer(p_Player)
@@ -213,7 +213,7 @@ function BRInventoryManager:OnPlayerPostReload(p_Player, p_AmmoAdded, p_Weapon)
 		return
 	end
 
-	local s_Inventory = self.m_Inventories[p_Player.id]
+	local s_Inventory = self.m_Inventories[p_Player.name]
 	local p_Weapon = p_Weapon or p_Player.soldier.weaponsComponent.currentWeapon
 
 	if s_Inventory == nil or p_Weapon == nil then

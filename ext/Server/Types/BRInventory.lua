@@ -505,6 +505,7 @@ end
 function BRInventory:Destroy()
 	self.m_Owner = nil
 	self.m_Slots = {}
+	self:RemoveTimers()
 end
 
 -- Garbage collector metamethod
@@ -698,8 +699,4 @@ function BRInventory:CreateCustomizeSoldierData()
 	s_CustomizeSoldierData.disableDeathPickup = false
 
 	return s_CustomizeSoldierData
-end
-
-function BRInventory:Destroy()
-	self:RemoveTimers()
 end

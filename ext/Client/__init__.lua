@@ -132,6 +132,7 @@ function VuBattleRoyaleClient:RegisterEvents()
 		NetEvents:Subscribe("SpectatedPlayerTeamMembers", self, self.OnSpectatedPlayerTeamMembers),
 
 		NetEvents:Subscribe(TeamManagerNetEvent.TeamJoinDenied, self, self.OnTeamJoinDenied),
+		NetEvents:Subscribe("Player:Rejoined", self, self.OnPlayerRejoined),
 		NetEvents:Subscribe(PlayerEvents.GameStateChanged, self, self.OnGameStateChanged),
 		NetEvents:Subscribe(PlayerEvents.UpdateTimer, self, self.OnUpdateTimer),
 		NetEvents:Subscribe(PlayerEvents.MinPlayersToStartChanged, self, self.OnMinPlayersToStartChanged),
@@ -635,6 +636,17 @@ end
 	-- Some more Events
 -- =============================================
 
+---Custom Client Player:Rejoined NetEvent
+function VuBattleRoyaleClient:OnPlayerRejoined()
+	m_Logger:Write("Rejoined. Disable DeployScreen.")
+
+	if SpectatorManager:GetSpectating() then
+		m_SpectatorClient:Disable()
+	end
+
+	m_Hud:Rejoined()
+end
+
 ---Custom Client PlayerEvents.GameStateChanged NetEvent
 ---@param p_OldGameState GameStates|integer
 ---@param p_GameState GameStates|integer
@@ -656,8 +668,12 @@ function VuBattleRoyaleClient:OnGameStateChanged(p_OldGameState, p_GameState)
 
 	-- player joined too late -> SetSpectating(true)
 	if p_GameState >= GameStates.WarmupToPlane and self.m_GameState == GameStates.None then
-		m_Logger:Write("Joined too late - enabling spectator")
-		SpectatorManager:SetSpectating(true)
+		local s_LocalPlayer = PlayerManager:GetLocalPlayer()
+
+		if s_LocalPlayer == nil or not s_LocalPlayer.alive then
+			m_Logger:Write("Joined too late - enabling spectator")
+			SpectatorManager:SetSpectating(true)
+		end
 	end
 
 	self.m_GameState = p_GameState
@@ -815,6 +831,7 @@ end
 function VuBattleRoyaleClient:OnWebUITriggerMenuFunction(p_Function)
 	if p_Function == "quit" then
 		m_SpectatorClient:Disable()
+		NetEvents:SendLocal("Player:Quit")
 	end
 
 	m_Hud:OnWebUITriggerMenuFunction(p_Function)
