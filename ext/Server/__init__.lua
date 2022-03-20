@@ -382,6 +382,7 @@ function VuBattleRoyaleServer:OnPlayerConnected(p_Player)
 	NetEvents:SendTo(PlayerEvents.MinPlayersToStartChanged, p_Player, self.m_MinPlayersToStart)
 	NetEvents:SendTo(PlayerEvents.PlayersPerTeamChanged, p_Player, self.m_PlayersPerTeam)
 
+	m_TeamManagerServer:OnPlayerConnected(p_Player)
 	m_LootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
 
 	-- Fade in the default (showroom) camera

@@ -112,6 +112,31 @@ function BRTeamManagerServer:OnPlayerLeft(p_Player)
 	self:RemovePlayer(p_Player)
 end
 
+---Custom Server PlayerEvents.PlayerConnected NetEvent
+---@param p_Player Player
+function BRTeamManagerServer:OnPlayerConnected(p_Player)
+	local s_Name = p_Player.name
+	local s_BrPlayer = self.m_Players[s_Name]
+
+	-- check if BRPlayer already exists
+	if s_BrPlayer ~= nil then
+		-- check if its a bot and replace him with the real player
+		local s_BotPlayer = s_BrPlayer:GetPlayer()
+
+		if s_BotPlayer.onlineId == 0 then
+			s_BrPlayer.m_Player = p_Player
+			s_BrPlayer:SetQuitManually(false)
+
+			if s_BotPlayer.alive then
+				-- replace bot with player
+				s_BrPlayer:ReplaceBotSoldierWithPlayer(s_BotPlayer.soldier)
+			end
+
+			PlayerManager:DeletePlayer(s_BotPlayer)
+		end
+	end
+end
+
 ---Returns the BRPlayer instance of a player
 ---@param p_Player Player|BRPlayer|string
 ---@return BRPlayer|nil
@@ -269,21 +294,6 @@ function BRTeamManagerServer:CreatePlayer(p_Player)
 
 	-- check if BRPlayer already exists
 	if s_BrPlayer ~= nil then
-		-- check if its a bot and replace him with the real player
-		local s_BotPlayer = s_BrPlayer:GetPlayer()
-
-		if s_BotPlayer.onlineId == 0 then
-			s_BrPlayer.m_Player = p_Player
-			s_BrPlayer:SetQuitManually(false)
-
-			if s_BotPlayer.alive then
-				-- replace bot with player
-				s_BrPlayer:ReplaceBotSoldierWithPlayer(s_BotPlayer.soldier)
-			end
-
-			PlayerManager:DeletePlayer(s_BotPlayer)
-		end
-
 		return self.m_Players[s_Name]
 	end
 
