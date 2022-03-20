@@ -416,6 +416,8 @@ function SpectatorClient:Disable()
 
 	WebUI:ExecuteJS("SpectatorTarget('');")
 	WebUI:ExecuteJS("SpectatorEnabled(" .. tostring(false) .. ");")
+
+	m_HudUtils:SetDisabledFreecamMovement(false)
 end
 
 -- =============================================
