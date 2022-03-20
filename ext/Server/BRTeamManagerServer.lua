@@ -72,7 +72,7 @@ end
 
 ---VEXT Server Player:Created Event
 ---@param p_Player Player
-function BRTeamManagerServer:OnPlayerCreated(p_Player)
+function BRTeamManagerServer:OnPlayerAuthenticated(p_Player)
 	self:CreatePlayer(p_Player)
 end
 

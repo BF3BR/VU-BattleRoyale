@@ -76,7 +76,7 @@ end
 
 ---VEXT Server Player:Created Event
 ---@param p_Player Player
-function MapVEManagerServer:OnPlayerCreated(p_Player)
+function MapVEManagerServer:OnPlayerAuthenticated(p_Player)
 	m_Logger:Write("Player " .. p_Player.name .. " joined, updating him with current preset")
 
 	NetEvents:SendToLocal("MapVEManager:SetMapVEPreset", p_Player, self.m_CurrentMapPresetIndex)
