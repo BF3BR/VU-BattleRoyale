@@ -1,14 +1,18 @@
 ---@class MapSpecificModifier
 MapSpecificModifier = class "MapSpecificModifier"
 
-local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier"
-
+---@type Logger
 local m_Logger = Logger("MapSpecificModifier", false)
 
+---@type ManDownModifier
+local m_ManDownModifier = require "__shared/Modifications/Soldiers/ManDownModifier"
+
+---@type MapsConfigMap
 local m_LastMapConfig = nil
 
 -- This function gets called every round in Level:LoadResources in ModificationsCommon
 -- Thats why we use RegisterLoadHandlerOnce
+---@param p_MapConfig MapsConfigMap
 function MapSpecificModifier:RegisterCallbacks(p_MapConfig)
 	m_LastMapConfig = p_MapConfig
 
@@ -37,6 +41,7 @@ function MapSpecificModifier:DeregisterCallbacks()
 	m_LastMapConfig = nil
 end
 
+---@param p_WorldPartReferenceObjectData WorldPartReferenceObjectData
 function MapSpecificModifier:OnWorldPartLoaded(p_WorldPartReferenceObjectData)
 	local s_CustomWorldPartData = WorldPartData()
 
@@ -50,18 +55,23 @@ function MapSpecificModifier:OnWorldPartLoaded(p_WorldPartReferenceObjectData)
 	ResourceManager:AddRegistry(s_Registry, ResourceCompartment.ResourceCompartment_Game)
 end
 
-function MapSpecificModifier:OnVehiclesWorldPartData(p_Instance)
+---@param p_WorldPartData WorldPartData
+function MapSpecificModifier:OnVehiclesWorldPartData(p_WorldPartData)
 	local s_FoundC130 = false
 
+	-- Gameplay/GameModes/Conquest/ADDF2F84-F2E8-2AD8-5FE6-56620207AC95
+	local s_ConquestGuid = Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95")
+	-- XP5/Dynamic_VehicleSpawners/Outpostspawn_XP_US_C130Airdrop_RU_C130Airdrop/B57E136A-0E4D-4952-8823-98A20DFE8F44
+	local s_C130BlueprintGuid = Guid("B57E136A-0E4D-4952-8823-98A20DFE8F44")
+
 	-- Remove / exclude all the vehicles from the map
-	for i, l_Object in pairs(p_Instance.objects) do
+	---@param l_Object ReferenceObjectData
+	for i, l_Object in pairs(p_WorldPartData.objects) do
 		if l_Object:Is("ReferenceObjectData") then
 			l_Object = ReferenceObjectData(l_Object)
 
-			-- Gameplay/GameModes/Conquest/ADDF2F84-F2E8-2AD8-5FE6-56620207AC95
-			-- XP5/Dynamic_VehicleSpawners/Outpostspawn_XP_US_C130Airdrop_RU_C130Airdrop/B57E136A-0E4D-4952-8823-98A20DFE8F44
-			if l_Object.blueprint.instanceGuid ~= Guid("ADDF2F84-F2E8-2AD8-5FE6-56620207AC95") then
-				if l_Object.blueprint.instanceGuid ~= Guid("B57E136A-0E4D-4952-8823-98A20DFE8F44") then
+			if l_Object.blueprint.instanceGuid ~= s_ConquestGuid then
+				if l_Object.blueprint.instanceGuid ~= s_C130BlueprintGuid then
 					l_Object:MakeWritable()
 					l_Object.excluded = true
 				else
@@ -76,24 +86,33 @@ function MapSpecificModifier:OnVehiclesWorldPartData(p_Instance)
 		return
 	end
 
-	local s_C130Reference = ResourceManager:FindInstanceByGuid(Guid("8A1B5CE5-A537-49C6-9C44-0DA048162C94"), Guid("86BFA7DC-4233-4FE3-91C9-BA4C746A1873"))
+	---@type SpatialPrefabBlueprint|DataContainer|nil
+	local s_C130Blueprint = ResourceManager:FindInstanceByGuid(Guid("1D3F5D69-2012-4DF1-B326-C5FBF77FDB56"), Guid("B57E136A-0E4D-4952-8823-98A20DFE8F44"))
 
-	if s_C130Reference ~= nil then
+	if s_C130Blueprint ~= nil then
 		m_Logger:Write("Adding C130 Reference")
-		p_Instance.objects:add(ReferenceObjectData(s_C130Reference))
+
+		local s_C130Reference = ReferenceObjectData()
+		s_C130Reference.blueprint = SpatialPrefabBlueprint(s_C130Blueprint)
+		s_C130Reference.castSunShadowEnable = true
+		s_C130Reference.excluded = false
+
+		p_WorldPartData.objects:add(s_C130Reference)
 	else
-		m_Logger:Error("Didn\'t find C130 Reference")
+		m_Logger:Error("Didn\'t find C130 Blueprint")
 	end
 end
 
+---@param p_WorldPartData WorldPartData
+---@param p_Registry RegistryContainer
 function MapSpecificModifier:CreateMapMarkers(p_WorldPartData, p_Registry)
 	for i = 1, 24 do
 		local s_MapMarkerEntityData = MapMarkerEntityData()
-		s_MapMarkerEntityData.transform.trans = Vec3(-9999, -9999, -9999)
-		s_MapMarkerEntityData.baseTransform = Vec3(-9999, -9999, -9999)
+		s_MapMarkerEntityData.transform.trans = Vec3(-9999.0, -9999.0, -9999.0)
+		s_MapMarkerEntityData.baseTransform = Vec3(-9999.0, -9999.0, -9999.0)
 		s_MapMarkerEntityData.sid = ""
-		s_MapMarkerEntityData.showRadius = 9999
-		s_MapMarkerEntityData.hideRadius = 0
+		s_MapMarkerEntityData.showRadius = 9999.0
+		s_MapMarkerEntityData.hideRadius = 0.0
 
 		if i <= 4 then
 			s_MapMarkerEntityData.hudIcon = UIHudIcon.UIHudIcon_ObjectiveMoveTo -- normal ping
@@ -117,8 +136,8 @@ function MapSpecificModifier:CreateMapMarkers(p_WorldPartData, p_Registry)
 		s_MapMarkerEntityData.showAirTargetBox = true
 		s_MapMarkerEntityData.isFocusPoint = false
 		s_MapMarkerEntityData.indexInBlueprint = 132 + i
-		s_MapMarkerEntityData.isEventConnectionTarget = 2
-		s_MapMarkerEntityData.isPropertyConnectionTarget = 3
+		s_MapMarkerEntityData.isEventConnectionTarget = Realm.Realm_ClientAndServer
+		s_MapMarkerEntityData.isPropertyConnectionTarget = Realm.Realm_None
 
 		local s_SpatialPrefabBlueprint = SpatialPrefabBlueprint()
 		s_SpatialPrefabBlueprint.needNetworkId = true
@@ -143,6 +162,7 @@ function MapSpecificModifier:CreateMapMarkers(p_WorldPartData, p_Registry)
 	m_Logger:Write("Created pinging mapmarkers")
 end
 
+---@param p_VolumeVectorShape VolumeVectorShapeData
 function MapSpecificModifier:OnOOBLoaded(p_VolumeVectorShape)
 	m_Logger:Write("VolumeVectorShape Loaded")
 

@@ -65,11 +65,13 @@ function OOCVision:Enable()
 
 	-- change VE state
 	local s_CurrentPresetName = m_MapVEManager.m_CurrentMapPresetNames[m_MapVEManager.m_CurrentMapPresetIndex]
-	if string.find(s_CurrentPresetName, "Night") then
+
+	if s_CurrentPresetName and string.find(s_CurrentPresetName, "Night") then
 		Events:Dispatch("VEManager:FadeIn", m_OutOfCircleNightPresetName, 400)
 	else
 		Events:Dispatch("VEManager:FadeIn", m_OutOfCirclePresetName, 400)
 	end
+
 	self.m_IsEnabled = true
 end
 
@@ -87,11 +89,13 @@ function OOCVision:Disable()
 
 	-- change VE state
 	local s_CurrentPresetName = m_MapVEManager.m_CurrentMapPresetNames[m_MapVEManager.m_CurrentMapPresetIndex]
-	if string.find(s_CurrentPresetName, "Night") then
+
+	if s_CurrentPresetName and string.find(s_CurrentPresetName, "Night") then
 		Events:Dispatch("VEManager:FadeOut", m_OutOfCircleNightPresetName, 400)
 	else
 		Events:Dispatch("VEManager:FadeOut", m_OutOfCirclePresetName, 400)
 	end
+
 	self.m_IsEnabled = false
 end
 

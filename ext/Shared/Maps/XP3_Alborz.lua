@@ -9,24 +9,26 @@
 -- XP3_Alborz Alborz Mountains
 return {
 	SuperBundles = {
-		"XP1Chunks",
-		"Levels/XP1_004/XP1_004",
+		"Levels/MP_013/MP_013",
+		"XP3Chunks",
 		"Levels/XP3_Shield/XP3_Shield",
-		"Levels/COOP_010/COOP_010",
+		"SPChunks",
+		"Levels/COOP_009/COOP_009",
 		"XP5Chunks",
-		"Levels/XP5_003/XP5_003"
+		"Levels/XP5_004/XP5_004"
 	},
 	Bundles = {
-		"Levels/XP1_004/XP1_004",
+		"Levels/MP_013/MP_013",
 		"Levels/XP3_Shield/XP3_Shield",
-		"Levels/COOP_010/COOP_010",
-		"Levels/XP5_003/XP5_003",
-		"Levels/XP5_003/Conquest",
-		"Levels/XP5_003/CQL",
+		"Levels/COOP_009/COOP_009",
+		"Levels/XP5_004/XP5_004",
+		"Levels/XP5_004/Conquest",
+		"Levels/XP5_004/CQL",
 		"Levels/XP3_Alborz/XP3_Alborz"
 	},
 	BundleRegistries = {
-		DC(Guid("4D59552D-787F-402E-8FED-7B360186BD8A"), Guid("D52CD0C7-7BFF-EDC8-1198-1CC70F9E68F8"))
+		-- Levels/XP5_004/CQL
+		DC(Guid("BF796B16-4BBD-4D46-BFDA-BC6568BAEAEA"), Guid("C00FAE31-9E59-7C29-8216-BA2F7AAC4464"))
 	},
 	TerrainName = "levels/mp_whitepeak/terrain/terrain",
 	SubWorldInstance = DC(Guid("707F4A91-B837-47AC-8BEE-5EB614399714"), Guid("A83D8333-F6D5-43AA-BA65-96122FAE8F7C")),
@@ -57,49 +59,49 @@ return {
 			Damage = 0.4,
 			Ratio = 0.3,
 			HasAirdrop = false,
-		},{
+		}, {
 			StartsAt = 90.0,
 			MoveDuration = 90.0,
 			Damage = 0.6,
 			Ratio = 0.45,
 			HasAirdrop = true,
-		},{
+		}, {
 			StartsAt = 60.0,
 			MoveDuration = 60.0,
 			Damage = 0.8,
 			Ratio = 0.6,
 			HasAirdrop = false,
-		},{
+		}, {
 			StartsAt = 60.0,
 			MoveDuration = 60.0,
 			Damage = 1.0,
 			Ratio = 0.6,
 			HasAirdrop = true,
-		},{
+		}, {
 			StartsAt = 45.0,
 			MoveDuration = 45.0,
 			Damage = 3.0,
 			Ratio = 0.55,
 			HasAirdrop = false,
-		},{
+		}, {
 			StartsAt = 30.0,
 			MoveDuration = 30.0,
 			Damage = 5.0,
 			Ratio = 0.5,
 			HasAirdrop = true,
-		},{
+		}, {
 			StartsAt = 30.0,
 			MoveDuration = 30.0,
 			Damage = 7.0,
 			Ratio = 0.4,
 			HasAirdrop = true,
-		},{
+		}, {
 			StartsAt = 25.0,
 			MoveDuration = 25.0,
 			Damage = 9.0,
 			Ratio = 0.4,
 			HasAirdrop = false,
-		},{
+		}, {
 			StartsAt = 15.0,
 			MoveDuration = 15.0,
 			Damage = 11.0,

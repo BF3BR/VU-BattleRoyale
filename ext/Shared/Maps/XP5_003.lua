@@ -15,6 +15,7 @@ return {
 		"XP3Chunks",
 		"Levels/XP3_Shield/XP3_Shield",
 		"Levels/XP3_Alborz/XP3_Alborz",
+		"SPChunks",
 		"Levels/COOP_009/COOP_009",
 	},
 	Bundles = {
@@ -53,49 +54,49 @@ return {
 			Damage = 0.4,
 			Ratio = 0.55,
 			HasAirdrop = false,
-		},{
+		}, {
 			StartsAt = 100.0,
 			MoveDuration = 70.0,
 			Damage = 0.8,
 			Ratio = 0.7,
 			HasAirdrop = true,
-		},{
+		}, {
 			StartsAt = 80.0,
 			MoveDuration = 60.0,
 			Damage = 1.0,
 			Ratio = 0.6,
 			HasAirdrop = false,
-		},{
+		}, {
 			StartsAt = 60.0,
 			MoveDuration = 50.0,
 			Damage = 2.0,
 			Ratio = 0.6,
 			HasAirdrop = true,
-		},{
+		}, {
 			StartsAt = 50.0,
 			MoveDuration = 40.0,
 			Damage = 4.0,
 			Ratio = 0.6,
 			HasAirdrop = false,
-		},{
+		}, {
 			StartsAt = 40.0,
 			MoveDuration = 30.0,
 			Damage = 6.0,
 			Ratio = 0.5,
 			HasAirdrop = true,
-		},{
+		}, {
 			StartsAt = 30.0,
 			MoveDuration = 20.0,
 			Damage = 8.0,
 			Ratio = 0.5,
 			HasAirdrop = true,
-		},{
+		}, {
 			StartsAt = 30.0,
 			MoveDuration = 20.0,
 			Damage = 10.0,
 			Ratio = 0.5,
 			HasAirdrop = false,
-		},{
+		}, {
 			StartsAt = 20.0,
 			MoveDuration = 20.0,
 			Damage = 12.0,
@@ -106,10 +107,10 @@ return {
 	InitialCircle = {
 		Radius = 600,
 		Triangles = {
-			{ Vec2(191.130 , -1538.430), Vec2(684.880 , -1425.930), Vec2(641.130 , -738.430) },
-			{ Vec2(159.880 , -900.930), Vec2(-321.370 , -825.930), Vec2(-246.370 , -1419.680) },
-			{ Vec2(-246.370 , -1419.680), Vec2(191.130 , -1538.430), Vec2(641.130 , -738.430) },
-			{ Vec2(641.130 , -738.430), Vec2(159.880 , -900.930), Vec2(-246.370 , -1419.680) }
+			{ Vec2(191.130, -1538.430), Vec2(684.880, -1425.930), Vec2(641.130, -738.430) },
+			{ Vec2(159.880, -900.930), Vec2(-321.370, -825.930), Vec2(-246.370, -1419.680) },
+			{ Vec2(-246.370, -1419.680), Vec2(191.130, -1538.430), Vec2(641.130, -738.430) },
+			{ Vec2(641.130, -738.430), Vec2(159.880, -900.930), Vec2(-246.370, -1419.680) }
 		},
 		CumulativeDistribution = { 0.28424039205571316, 0.5154436419912303, 0.84843306680423, 1 }
 	},
