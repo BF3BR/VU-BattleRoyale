@@ -1,8 +1,6 @@
 ---@class BRPlayer
 BRPlayer = class "BRPlayer"
 
-local m_Logger = Logger("BRPlayer", false)
-
 function BRPlayer:__init()
 	---@type BRTeam
 	self.m_Team = BRTeam()

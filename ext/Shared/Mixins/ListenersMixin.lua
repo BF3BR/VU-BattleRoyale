@@ -1,7 +1,7 @@
 ---@class ListenersMixin
 ListenersMixin = class "ListenersMixin"
 
-local ListenerType = {Event = 1, NetEvent = 2, Hook = 3}
+local ListenerType = { Event = 1, NetEvent = 2, Hook = 3 }
 
 function ListenersMixin:__init()
 	self.m__Listeners = {}
@@ -16,7 +16,7 @@ function ListenersMixin:AddListener(p_Type, p_EventName, p_Listener, p_Key)
 
 	self:RemoveListener(p_Key)
 
-	self.m__Listeners[p_Key] = {Type = p_Type, Listener = p_Listener}
+	self.m__Listeners[p_Key] = { Type = p_Type, Listener = p_Listener }
 end
 
 function ListenersMixin:AddEventListener(p_EventName, p_Context, p_Callback)
@@ -24,6 +24,7 @@ function ListenersMixin:AddEventListener(p_EventName, p_Context, p_Callback)
 end
 
 function ListenersMixin:AddNetEventListener(p_EventName, p_Context, p_Callback)
+	---@diagnostic disable-next-line: undefined-global
 	self:AddListener(ListenerType.NetEvent, p_EventName, NetEvents:Subscribe(p_EventName, p_Context, p_Callback))
 end
 

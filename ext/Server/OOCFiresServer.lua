@@ -81,7 +81,7 @@ function OOCFiresServer:CanAddItem(p_Item)
 	return not self.m_SpawnGrid[self:GridKey(p_Item)]
 end
 
----@return integer
+---@return integer|'1'|'2'
 function OOCFiresServer:GetRandomEffectIndex()
 	local s_RandNum = MathUtils:GetRandom(0.0, 1.0)
 

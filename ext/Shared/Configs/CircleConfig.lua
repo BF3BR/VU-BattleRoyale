@@ -13,7 +13,7 @@ CircleConfig = {
 	Height = 200,
 
 	-- The length of each arc that is used to draw the circles
-	ArcLen = { Min = 4, Max = 30},
+	ArcLen = { Min = 4, Max = 30 },
 
 	-- The number of points used to draw the circles
 	RenderPoints = { Min = 7, Max = 80 },

@@ -1,9 +1,14 @@
 ---@class BRLootPickupDatabase : BRLootPickupDatabaseShared
 BRLootPickupDatabase = class("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
+---@type Logger
 local m_Logger = Logger("BRLootPickupDatabase", false)
+
+---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"
+---@type MapHelper
 local m_MapHelper = require "__shared/Utils/MapHelper"
+---@type ArrayHelper
 local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
 
 ---@param p_Transform Vec3|LinearTransform
@@ -12,11 +17,17 @@ function BRLootPickupDatabase:CreateBasicLootPickup(p_Transform, p_Items)
 	return self:CreateLootPickup(LootPickupType.Basic.Name, p_Transform, p_Items)
 end
 
+---@param p_Transform Vec3|LinearTransform
+---@param p_Items BRItem[]
 function BRLootPickupDatabase:CreateAirdropLootPickup(p_Transform, p_Items)
 	return self:CreateLootPickup(LootPickupType.Airdrop.Name, p_Transform, p_Items)
 end
 
+---@param p_Position Vec3
+---@param p_Inventory BRInventory
+---@return BRLootPickup|nil
 function BRLootPickupDatabase:CreateFromInventory(p_Position, p_Inventory)
+	---@type BRItem[]
 	local s_Items = {}
 	for _, l_Slot in pairs(p_Inventory.m_Slots) do
 		m_ArrayHelper:InsertMany(s_Items, l_Slot:Drop())
@@ -25,6 +36,10 @@ function BRLootPickupDatabase:CreateFromInventory(p_Position, p_Inventory)
 	return self:CreateLootPickup(LootPickupType.Basic.Name, p_Position, s_Items)
 end
 
+---@param p_Type string
+---@param p_Transform Vec3|LinearTransform
+---@param p_Items BRItem[]
+---@return BRLootPickup|nil
 function BRLootPickupDatabase:CreateLootPickup(p_Type, p_Transform, p_Items)
 	if p_Type == nil or p_Transform == nil or p_Items == nil or #p_Items == 0 then
 		m_Logger:Error("Invalid CreateLootPickup parameters")
@@ -62,6 +77,7 @@ function BRLootPickupDatabase:CreateLootPickup(p_Type, p_Transform, p_Items)
 	return s_LootPickup
 end
 
+---@param p_LootPickup BRLootPickup
 function BRLootPickupDatabase:Remove(p_LootPickup)
 	if not BRLootPickupDatabaseShared.Remove(self, p_LootPickup) then
 		return
@@ -79,6 +95,8 @@ function BRLootPickupDatabase:Remove(p_LootPickup)
 	m_Logger:Write("Loot Pickup removed from database.")
 end
 
+---@param p_LootPickupId string
+---@param p_ItemId string @Guid tostring
 function BRLootPickupDatabase:RemoveItemFromLootPickup(p_LootPickupId, p_ItemId)
 	local s_LootPickup = self.m_LootPickups[p_LootPickupId]
 
@@ -107,6 +125,7 @@ function BRLootPickupDatabase:RemoveAllLootPickups()
 	end
 end
 
+---@param p_LootPickupId string
 function BRLootPickupDatabase:UpdateState(p_LootPickupId)
 	local s_LootPickup = self.m_LootPickups[p_LootPickupId]
 
@@ -122,6 +141,7 @@ function BRLootPickupDatabase:GetRandomId()
 	return tostring(MathUtils:RandomGuid())
 end
 
+---@param p_Player Player|nil
 function BRLootPickupDatabase:SendPlayerAllLootpickupStates(p_Player)
 	if p_Player == nil then
 		return

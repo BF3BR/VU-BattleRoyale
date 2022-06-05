@@ -1,6 +1,9 @@
 ---@class PhaseManagerServer : PhaseManagerShared
 PhaseManagerServer = class("PhaseManagerServer", PhaseManagerShared)
 
+---@type Logger
+local m_Logger = Logger("PhaseManagerServer", false)
+
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 ---@type MathHelper
@@ -9,8 +12,6 @@ local m_MathHelper = require "__shared/Utils/MathHelper"
 local m_BRTeamManagerServer = require "BRTeamManagerServer"
 ---@type BRAirdropManager
 local m_BRAirdropManager = require "BRAirdropManager"
----@type Logger
-local m_Logger = Logger("PhaseManagerServer", false)
 
 function PhaseManagerServer:RegisterVars()
 	PhaseManagerShared.RegisterVars(self)
@@ -131,7 +132,7 @@ function PhaseManagerServer:InitPhase()
 	elseif self.m_SubphaseIndex == SubphaseType.Moving then
 		self.m_PrevOuterCircle = self.m_OuterCircle:Clone()
 		self:SetTimer("MovingCircle",
-					m_TimerManager:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
+			m_TimerManager:Sequence(0.5, math.floor(self:GetCurrentDelay() / 0.5), self, self.MoveOuterCircle))
 	end
 
 	self:DebugMessage()

@@ -1,9 +1,11 @@
 ---@class OOCFires
 OOCFires = class "OOCFires"
 
+---@type Logger
 local m_Logger = Logger("OOCFires", false)
 
 function OOCFires:__init()
+	---@type Queue
 	self.m_Queue = Queue()
 
 	self:ResetVars()
@@ -27,7 +29,7 @@ function OOCFires:SpawnItem(p_Item)
 	local s_From = Vec3(p_Item.Position.x, 600.0, p_Item.Position.y)
 	local s_To = Vec3(p_Item.Position.x, -600.0, p_Item.Position.y)
 	local s_RaycastHit = RaycastManager:Raycast(s_From, s_To, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter |
-											RayCastFlags.DontCheckRagdoll)
+	RayCastFlags.DontCheckRagdoll)
 
 	if s_RaycastHit == nil then
 		-- wouldn't make any sense to spawn something at the default height
@@ -115,11 +117,13 @@ function OOCFires:OnReceiveItems(p_Items)
 	end
 end
 
+---VEXT Shared Level:Destroy Event
 function OOCFires:OnLevelDestroy()
 	self:UnspawnAll()
 	self:ResetVars()
 end
 
+---VEXT Shared Extension:Unloading Event
 function OOCFires:OnExtensionUnloading()
 	self:UnspawnAll()
 end

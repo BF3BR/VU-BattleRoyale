@@ -10,7 +10,7 @@ function RaycastHelper:__init()
 	Events:Subscribe(PhaseManagerEvent.Update, self, self.Clear)
 
 	-- Memoize Functions https://www.lua.org/pil/17.1.html
-	setmetatable(self.m_RaycastMemo, {__mode = "kv"})
+	setmetatable(self.m_RaycastMemo, { __mode = "kv" })
 end
 
 -- Returns the ground height (Y) value of a certain position
@@ -34,8 +34,9 @@ function RaycastHelper:GetY(p_Pos, p_Height)
 
 	local s_From = p_Pos + Vec3(0, p_Height, 0)
 	local s_To = p_Pos - Vec3(0, p_Height, 0)
+	---@diagnostic disable-next-line: undefined-global
 	local s_Hit = RaycastManager:Raycast(s_From, s_To, RayCastFlags.DontCheckWater | RayCastFlags.DontCheckCharacter |
-											 RayCastFlags.DontCheckRagdoll)
+	RayCastFlags.DontCheckRagdoll)
 
 	-- return initial y if there's no hit
 	if s_Hit == nil then

@@ -7,7 +7,7 @@ function DisableDebugRenderer:OnExtensionLoaded()
 	local s_DebugRenderSettings = ResourceManager:GetSettings('DebugRenderSettings')
 
 	if s_DebugRenderSettings == nil or ServerConfig.Debug.EnableLootPointSpheres
-	or ServerConfig.Debug.EnableDebugRenderer then
+		or ServerConfig.Debug.EnableDebugRenderer then
 		m_Logger:Write("Didn\'t disable DebugRenderer")
 		return
 	end

@@ -29,13 +29,13 @@ function AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaT
 	self.m_GunSwayTimer = 0.0
 
 	if p_GunSway.currentGameplayDeviationScaleFactor < 1.0 or p_GunSway.currentVisualDeviationScaleFactor < 1.0 then
-		NetEvents:SendLocal('Cheat', {"No Spread/ No Recoil 1", p_GunSway.currentGameplayDeviationScaleFactor, p_GunSway.currentVisualDeviationScaleFactor, p_GunSway.data.instanceGuid})
+		NetEvents:SendLocal('Cheat', { "No Spread/ No Recoil 1", p_GunSway.currentGameplayDeviationScaleFactor, p_GunSway.currentVisualDeviationScaleFactor, p_GunSway.data.instanceGuid })
 	end
 
 	local s_GunSwayData = GunSwayData(p_GunSway.data)
 
 	if s_GunSwayData.gameplayDeviationScaleFactorNoZoom < 1.0 or s_GunSwayData.gameplayDeviationScaleFactorZoom < 1.0 or s_GunSwayData.deviationScaleFactorNoZoom < 1.0 or s_GunSwayData.deviationScaleFactorZoom < 1.0 then
-		NetEvents:SendLocal('Cheat', {"No Spread/ No Recoil 2", s_GunSwayData.gameplayDeviationScaleFactorNoZoom, s_GunSwayData.gameplayDeviationScaleFactorZoom, s_GunSwayData.deviationScaleFactorNoZoom, s_GunSwayData.deviationScaleFactorZoom, p_GunSway.data.instanceGuid})
+		NetEvents:SendLocal('Cheat', { "No Spread/ No Recoil 2", s_GunSwayData.gameplayDeviationScaleFactorNoZoom, s_GunSwayData.gameplayDeviationScaleFactorZoom, s_GunSwayData.deviationScaleFactorNoZoom, s_GunSwayData.deviationScaleFactorZoom, p_GunSway.data.instanceGuid })
 	end
 
 	local s_WeaponFiringData = WeaponFiringData(p_WeaponFiring.data)
@@ -60,7 +60,7 @@ function AntiCheat:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFiring, p_DeltaT
 		end
 
 		if s_BulletEntityData.instantHit == true and s_BulletEntityData.instanceGuid ~= Guid('61D16421-B5B1-4FD7-81E5-2AE21FA0BAEE') and s_BulletEntityData.instanceGuid ~= Guid('BDBFA354-1B1E-4AD3-8826-D7BA1C0C3287') and s_BulletEntityData.instanceGuid ~= Guid('DDE585ED-C043-48E3-A023-C73D549D8F6E') and s_BulletEntityData.instanceGuid ~= Guid('1861554A-8C81-4944-96D1-7347494F7688') and s_BulletEntityData.instanceGuid ~= Guid('71CB722D-BF79-4B6F-858F-95D107C49B36') and s_BulletEntityData.instanceGuid ~= Guid('A075A428-1D08-40C2-A985-2DA85A80B20B') then
-			NetEvents:SendLocal('Cheat', {"Instant Bullet 6", s_BulletEntityData.instanceGuid})
+			NetEvents:SendLocal('Cheat', { "Instant Bullet 6", s_BulletEntityData.instanceGuid })
 		end
 	end
 end
@@ -80,7 +80,7 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 		s_VeniceFPSCameraData = VeniceFPSCameraData(s_VeniceFPSCameraData)
 
 		if s_VeniceFPSCameraData.suppressionBlurAmountMultiplier < 0.8 or s_VeniceFPSCameraData.suppressionBlurSizeMultiplier < 1.0 then
-			NetEvents:SendLocal('Cheat', {"No Suppression 1", s_VeniceFPSCameraData.suppressionBlurAmountMultiplier, s_VeniceFPSCameraData.suppressionBlurSizeMultiplier})
+			NetEvents:SendLocal('Cheat', { "No Suppression 1", s_VeniceFPSCameraData.suppressionBlurAmountMultiplier, s_VeniceFPSCameraData.suppressionBlurSizeMultiplier })
 		end
 
 		::continue::
@@ -94,7 +94,7 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 		s_SoldierSuppressionComponentData = SoldierSuppressionComponentData(s_SoldierSuppressionComponentData)
 
 		if s_SoldierSuppressionComponentData.suppressionSphereRadius < 1.5 or s_SoldierSuppressionComponentData.fallOffDelay > 2 or s_SoldierSuppressionComponentData.suppressionAbortsHealthRegeneration == false or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionHighThreshold > 0.4001 or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionLowThreshold > 0.3001 or SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionUIThreshold > 0.15001 then
-			NetEvents:SendLocal('Cheat', {"No Suppression 2", s_SoldierSuppressionComponentData.suppressionSphereRadius, s_SoldierSuppressionComponentData.fallOffDelay, s_SoldierSuppressionComponentData.suppressionAbortsHealthRegeneration, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionHighThreshold, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionLowThreshold, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionUIThreshold})
+			NetEvents:SendLocal('Cheat', { "No Suppression 2", s_SoldierSuppressionComponentData.suppressionSphereRadius, s_SoldierSuppressionComponentData.fallOffDelay, s_SoldierSuppressionComponentData.suppressionAbortsHealthRegeneration, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionHighThreshold, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionLowThreshold, SuppressionReactionData(s_SoldierSuppressionComponentData.reactionToSuppression).suppressionUIThreshold })
 		end
 
 		::continue2::
@@ -108,7 +108,7 @@ function AntiCheat:OnEngineUpdate(p_DeltaTime)
 		s_DebugRenderSettings = DebugRenderSettings(s_DebugRenderSettings)
 
 		if s_DebugRenderSettings.enable and not ServerConfig.Debug.EnableDebugRenderer and not ServerConfig.Debug.EnableLootPointSpheres then
-			NetEvents:SendLocal('Cheat', {"Wallhack"})
+			NetEvents:SendLocal('Cheat', { "Wallhack" })
 		end
 	end
 end
@@ -123,7 +123,7 @@ end
 function AntiCheat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId, p_RecipientMask, p_SenderIsDead)
 	if p_Channel == ChatChannelType.CctAdmin and p_PlayerId ~= 0 then
 		if PlayerManager:GetLocalPlayer() == PlayerManager:GetPlayerById(p_PlayerId) then
-			NetEvents:SendLocal('Cheat', {"Chat Hack"})
+			NetEvents:SendLocal('Cheat', { "Chat Hack" })
 		end
 
 		p_HookCtx:Return()
@@ -137,7 +137,7 @@ end
 ---Custom Client Verify NetEvent
 ---Used to verify that NetEvents are working
 NetEvents:Subscribe('Verify', function()
-	NetEvents:SendLocal('Cheat', {"Verify"})
+	NetEvents:SendLocal('Cheat', { "Verify" })
 	-- NetEvents:SendLocal('Debug', {"Verify"})
 end)
 

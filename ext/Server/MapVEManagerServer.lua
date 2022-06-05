@@ -41,13 +41,13 @@ end
 ---@param p_Round integer
 ---@param p_RoundsPerMap integer
 function MapVEManagerServer:OnLevelLoaded(p_LevelName, p_GameMode, p_Round, p_RoundsPerMap)
-    local m_Map = MapsConfig[LevelNameHelper:GetLevelName()]
+	local m_Map = MapsConfig[LevelNameHelper:GetLevelName()]
 
 	if m_Map == nil or m_Map.VEPresets == nil or #m_Map.VEPresets == 0 then
 		return
 	end
 
-    self:SetMapVEPreset(math.random(1, #m_Map.VEPresets))
+	self:SetMapVEPreset(math.random(1, #m_Map.VEPresets))
 end
 
 ---@param p_VEIndex integer

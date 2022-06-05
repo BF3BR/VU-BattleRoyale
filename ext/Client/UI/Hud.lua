@@ -1,6 +1,9 @@
 ---@class VuBattleRoyaleHud
 VuBattleRoyaleHud = class "VuBattleRoyaleHud"
 
+---@type Logger
+local m_Logger = Logger("VuBattleRoyaleHud", false)
+
 ---@type EscMenu
 local m_EscMenu = require "UI/EscMenu"
 ---@type DeployScreen
@@ -11,7 +14,6 @@ local m_HudUtils = require "UI/Utils/HudUtils"
 local m_BrPlayer = require "BRPlayer"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("VuBattleRoyaleHud", false)
 
 ---@return ModSetting
 local function GetShowFPSSetting()
@@ -197,7 +199,6 @@ function VuBattleRoyaleHud:OnUIDrawHud()
 	self:OnUpdateTeamData()
 end
 
-
 ---VEXT Client Client:UpdateInput Event
 function VuBattleRoyaleHud:OnClientUpdateInput()
 	if not self.m_IsLevelLoaded then
@@ -211,7 +212,7 @@ function VuBattleRoyaleHud:OnClientUpdateInput()
 	end
 
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_F10)
-	and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle then
+		and self.m_GameState ~= GameStates.Plane and self.m_GameState ~= GameStates.PlaneToFirstCircle then
 		if self.m_GameState ~= GameStates.Match and s_LocalPlayer.soldier ~= nil then
 			m_DeployScreen:OpenDeployScreen()
 			NetEvents:Send(PlayerEvents.Despawn)
@@ -291,7 +292,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- PlayerKilled Event
+-- PlayerKilled Event
 -- =============================================
 
 ---Custom Client ServerPlayer:Killed NetEvent
@@ -349,7 +350,7 @@ function VuBattleRoyaleHud:OnPlayerBrokeShield(p_PlayerName)
 end
 
 -- =============================================
-	-- GameState Events
+-- GameState Events
 -- =============================================
 
 ---Custom Client PlayerEvents.GameStateChanged NetEvent
@@ -399,7 +400,7 @@ function VuBattleRoyaleHud:OnGameOverScreen(p_IsWin, p_Team)
 end
 
 -- =============================================
-	-- PhaseManager Events
+-- PhaseManager Events
 -- =============================================
 
 ---Custom Client PhaseManagerEvent.Update Event
@@ -411,11 +412,11 @@ end
 ---Custom Client PhaseManagerEvent.CircleMove Event
 ---@param p_OuterCircle table
 function VuBattleRoyaleHud:OnOuterCircleMove(p_OuterCircle)
-	self.m_HudOnUpdateCircles:Update(json.encode({OuterCircle = p_OuterCircle}))
+	self.m_HudOnUpdateCircles:Update(json.encode({ OuterCircle = p_OuterCircle }))
 end
 
 -- =============================================
-	-- Gunship Events
+-- Gunship Events
 -- =============================================
 
 ---Custom Client GunshipEvents.Enable NetEvent
@@ -479,7 +480,7 @@ function VuBattleRoyaleHud:OnGunshipPlayerYaw(p_YawRad)
 end
 
 -- =============================================
-	-- Some more Events
+-- Some more Events
 -- =============================================
 
 ---Custom Client PlayerEvents.UpdateTimer NetEvent
@@ -568,8 +569,8 @@ function VuBattleRoyaleHud:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	if p_Action == UIInputAction.UIInputAction_Tab then
 		-- make sure the player is in no other menu
 		if not m_HudUtils:GetIsInOptionsMenu()
-		and not m_HudUtils:GetIsInEscMenu()
-		and not m_HudUtils:GetIsInDeployScreen() then
+			and not m_HudUtils:GetIsInEscMenu()
+			and not m_HudUtils:GetIsInDeployScreen() then
 			if m_HudUtils:GetIsInventoryOpened() then
 				m_HudUtils:SetIsInventoryOpened(false)
 				WebUI:ExecuteJS("OnInventoryOpen(false);")
@@ -600,12 +601,12 @@ end
 ---@param p_Screen Asset
 function VuBattleRoyaleHud:OnUIPushScreen(p_HookCtx, p_Screen)
 	if p_Screen.name == "UI/Flow/Screen/SpawnScreenPC"
-	or p_Screen.name == "UI/Flow/Screen/SpawnScreenTicketCounterConquestScreen"
-	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen"
-	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen"
-	or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD64Screen"
-	or p_Screen.name == "UI/Flow/Screen/KillScreen"
-	or p_Screen.name == "UI/Flow/Screen/SpawnButtonScreen" then
+		or p_Screen.name == "UI/Flow/Screen/SpawnScreenTicketCounterConquestScreen"
+		or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD32Screen"
+		or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD16Screen"
+		or p_Screen.name == "UI/Flow/Screen/Scoreboards/ScoreboardTwoTeamsHUD64Screen"
+		or p_Screen.name == "UI/Flow/Screen/KillScreen"
+		or p_Screen.name == "UI/Flow/Screen/SpawnButtonScreen" then
 		p_HookCtx:Return()
 	end
 end
@@ -663,7 +664,7 @@ function VuBattleRoyaleHud:OnUpdateTeamData()
 end
 
 -- =============================================
-	-- Being Interacted Callbacks
+-- Being Interacted Callbacks
 -- =============================================
 
 ---If we revive a mate or get revived we need this for it to work
@@ -697,7 +698,7 @@ function VuBattleRoyaleHud:OnSoldierInteractionFinished(p_Entity, p_Event)
 end
 
 -- =============================================
-	-- Custom Level Finalized 'Event'
+-- Custom Level Finalized 'Event'
 -- =============================================
 
 ---When we are done with loading we have to do this
@@ -725,9 +726,8 @@ function VuBattleRoyaleHud:OnLevelFinalized()
 	self.m_HudOnSetUIState:Update(UiStates.Game)
 end
 
-
 -- =============================================
-	-- Custom OnSpatialRaycast "event" (called from CommonSpatialRaycast)
+-- Custom OnSpatialRaycast "event" (called from CommonSpatialRaycast)
 -- =============================================
 
 ---Gets called every UpdatePass_PreSim
@@ -773,7 +773,7 @@ function VuBattleRoyaleHud:OnSpatialRaycast(p_Entities)
 end
 
 -- =============================================
-	-- Push HUD Information
+-- Push HUD Information
 -- =============================================
 
 function VuBattleRoyaleHud:PushLocalPlayerPos()
@@ -987,8 +987,8 @@ end
 function VuBattleRoyaleHud:OpenInventory()
 	-- make sure the player is in no other menu
 	if not m_HudUtils:GetIsInOptionsMenu()
-	and not m_HudUtils:GetIsInEscMenu()
-	and not m_HudUtils:GetIsInDeployScreen() then
+		and not m_HudUtils:GetIsInEscMenu()
+		and not m_HudUtils:GetIsInDeployScreen() then
 		m_Logger:Write("Open Inventory")
 
 		-- if the minimap is opened we close it
@@ -1006,7 +1006,7 @@ function VuBattleRoyaleHud:OpenInventory()
 end
 
 -- =============================================
-	-- Create / Remove Marker
+-- Create / Remove Marker
 -- =============================================
 
 ---comment

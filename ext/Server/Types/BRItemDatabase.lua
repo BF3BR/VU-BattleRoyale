@@ -1,14 +1,18 @@
 ---@class BRItemDatabase
 BRItemDatabase = class "BRItemDatabase"
 
+---@type Logger
 local m_Logger = Logger("BRItemDatabase", false)
 
 function BRItemDatabase:__init()
 	-- A table of items (id -> BRItem)
+	---@type table<string, BRItemHelmet|BRItemAmmo|BRItemArmor|BRItemConsumable|BRItemAttachment|BRItemWeapon|BRItemGadget|BRItem>
 	self.m_Items = {}
 end
 
 -- Returns an item from the database, by it's id
+---@param p_Id string @it is a tostring(Guid)
+---@return BRItemHelmet|BRItemAmmo|BRItemArmor|BRItemConsumable|BRItemAttachment|BRItemWeapon|BRItemGadget|BRItem|nil
 function BRItemDatabase:GetItem(p_Id)
 	return self.m_Items[p_Id]
 end
@@ -39,6 +43,7 @@ function BRItemDatabase:CreateItem(p_Definition, p_Quantity, p_Props)
 end
 
 -- Removes and destroys an item from the item database
+---@param p_Id string @it is a tostring(Guid)
 function BRItemDatabase:UnregisterItem(p_Id)
 	local s_Item = self:GetItem(p_Id)
 

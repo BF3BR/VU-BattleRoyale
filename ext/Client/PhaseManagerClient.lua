@@ -101,9 +101,9 @@ function PhaseManagerClient:OnPhaseManagerUpdateState(p_State)
 		-- start moving the outer circle
 		self.m_PrevOuterCircle = Circle(self.m_OuterCircle.m_Center, self.m_OuterCircle.m_Radius)
 		self:SetTimer("MovingCircle",
-					m_TimerManager:Sequence(CircleConfig.ClientUpdateMs,
-										math.floor(p_State.Duration / CircleConfig.ClientUpdateMs) + 1, self,
-										self.MoveOuterCircle))
+			m_TimerManager:Sequence(CircleConfig.ClientUpdateMs,
+				math.floor(p_State.Duration / CircleConfig.ClientUpdateMs) + 1, self,
+				self.MoveOuterCircle))
 	end
 
 	-- update inner circle data

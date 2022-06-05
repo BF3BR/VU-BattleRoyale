@@ -3,12 +3,13 @@
 ---@class WindowsCircleSpawner
 WindowsCircleSpawner = class "WindowsCircleSpawner"
 
+---@type RotationHelper
 local m_RotationHelper = require "__shared/Utils/RotationHelper"
 
-local m_Logger = Logger("WindowsCircleSpawner", false)
 local m_MagicScalingNumber = 2.5
 
 -- 'Architecture/Warehouse_02/DebrisClusters/Warehouse_02_WindowBroken_01'
+---@type DC
 local m_WindowBP = DC(Guid("AFEA12FF-A2F8-11E0-9D5D-D43B5C1D8C9B"), Guid("319952E5-30F8-86E1-2FA0-890716D7D491"))
 
 function WindowsCircleSpawner:__init()
@@ -16,6 +17,10 @@ function WindowsCircleSpawner:__init()
 	self.m_EntityData = nil
 end
 
+---@param p_From Vec3
+---@param p_To Vec3
+---@param p_EdgeLength number
+---@param p_CachedEntityIndex integer
 function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength, p_CachedEntityIndex)
 	local s_MapConfig = MapsConfig[LevelNameHelper:GetLevelName()]
 
@@ -43,7 +48,10 @@ function WindowsCircleSpawner:SpawnWindow(p_From, p_To, p_EdgeLength, p_CachedEn
 	end
 end
 
-function WindowsCircleSpawner:GetOrCreateEntity(p_Index, p_EntityTrans)
+---@param p_Index integer
+---@param p_EntityTransform LinearTransform
+---@return Entity|nil
+function WindowsCircleSpawner:GetOrCreateEntity(p_Index, p_EntityTransform)
 	-- check if there's an available entity to use
 	if p_Index <= #self.m_Entities then
 		return self.m_Entities[p_Index]
@@ -56,7 +64,7 @@ function WindowsCircleSpawner:GetOrCreateEntity(p_Index, p_EntityTrans)
 	end
 
 	-- create and save new entity
-	local s_CreatedEntity = EntityManager:CreateEntity(s_EntityData, p_EntityTrans)
+	local s_CreatedEntity = EntityManager:CreateEntity(s_EntityData, p_EntityTransform)
 	if s_CreatedEntity ~= nil then
 		s_CreatedEntity:Init(Realm.Realm_Client, true)
 		table.insert(self.m_Entities, s_CreatedEntity)
@@ -65,6 +73,7 @@ function WindowsCircleSpawner:GetOrCreateEntity(p_Index, p_EntityTrans)
 	return s_CreatedEntity
 end
 
+---@return StaticModelEntityData
 function WindowsCircleSpawner:GetEntityData()
 	if self.m_EntityData ~= nil then
 		return self.m_EntityData
@@ -79,6 +88,7 @@ function WindowsCircleSpawner:GetEntityData()
 	return self.m_EntityData
 end
 
+---@param p_StartIndex integer|nil
 function WindowsCircleSpawner:DestroyEntities(p_StartIndex)
 	p_StartIndex = p_StartIndex or 1
 
@@ -103,10 +113,12 @@ function WindowsCircleSpawner:Destroy()
 	self.m_EntityData = nil
 end
 
+---VEXT Shared Extension:Unloading Event
 function WindowsCircleSpawner:OnExtensionUnloading()
 	self:Destroy()
 end
 
+---VEXT Shared Level:Destroy Event
 function WindowsCircleSpawner:OnLevelDestroy()
 	self:Destroy()
 end

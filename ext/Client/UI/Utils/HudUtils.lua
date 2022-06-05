@@ -1,9 +1,11 @@
 ---@class HudUtils
 HudUtils = class "HudUtils"
 
+---@type Logger
+local m_Logger = Logger("HudUtils", false)
+
 ---@type ConnectionHelper
 local m_ConnectionHelper = require "__shared/Utils/ConnectionHelper"
-local m_Logger = Logger("HudUtils", false)
 
 function HudUtils:__init()
 	self:RegisterVars()
@@ -250,7 +252,7 @@ function HudUtils:StartupChat()
 end
 
 -- =============================================
-	-- Mouse
+-- Mouse
 -- =============================================
 
 ---When going into a menu
@@ -347,7 +349,7 @@ function HudUtils:GetEnableMouseEntityData()
 end
 
 -- =============================================
-	-- GameInput
+-- GameInput
 -- =============================================
 
 ---When going into a menu
@@ -443,7 +445,7 @@ function HudUtils:GetDisableGameInputEntityData()
 end
 
 -- =============================================
-	-- BlurEffect
+-- BlurEffect
 -- =============================================
 
 ---When going into a menu (true) or leaving it (false)
@@ -502,7 +504,7 @@ function HudUtils:CreateBlurEffect()
 end
 
 -- =============================================
-	-- ShowroomSoldier
+-- ShowroomSoldier
 -- =============================================
 
 ---@param p_Enable boolean
@@ -582,7 +584,7 @@ function HudUtils:GetShowSoldierGraphEntityData()
 end
 
 -- =============================================
-	-- Clear Entities
+-- Clear Entities
 -- =============================================
 
 ---Destroy all custom created entities to avoid issues

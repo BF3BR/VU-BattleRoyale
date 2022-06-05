@@ -1,3 +1,6 @@
+---@type Logger
+local m_Logger = Logger("DebugCommands", false)
+
 ---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
 ---@type BRAirdropManager
@@ -9,9 +12,6 @@ local m_ItemDatabase = require "Types/BRItemDatabase"
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 ---@type BRItemFactory
 local m_BRItemFactory = require "__shared/Utils/BRItemFactory"
-
----@type Logger
-local m_Logger = Logger("DebugCommands", false)
 
 --============================================================
 -- Custom debug commands
@@ -37,8 +37,8 @@ local function OnPlayerGiveCommand(p_Player, p_Args)
 		return
 	end
 
-    local s_Inventory = m_InventoryManager:GetOrCreateInventory(p_Player)
-    local s_CreatedItem = m_ItemDatabase:CreateItem(s_Definition, p_Args[2] ~= nil and tonumber(p_Args[2]) or 1)
+	local s_Inventory = m_InventoryManager:GetOrCreateInventory(p_Player)
+	local s_CreatedItem = m_ItemDatabase:CreateItem(s_Definition, p_Args[2] ~= nil and tonumber(p_Args[2]) or 1)
 
 	s_Inventory:AddItem(s_CreatedItem.m_Id)
 	m_Logger:Write(s_Definition.m_Name .. " - Item given to player: " .. p_Player.name)
@@ -65,28 +65,28 @@ local function OnPlayerSpawnCommand(p_Player, p_Args)
 	end
 
 	local s_CreatedItem = m_ItemDatabase:CreateItem(s_Definition, p_Args[2] ~= nil and tonumber(p_Args[2]) or 1)
-	m_LootPickupDatabase:CreateBasicLootPickup(p_Player.soldier.worldTransform, {s_CreatedItem})
+	m_LootPickupDatabase:CreateBasicLootPickup(p_Player.soldier.worldTransform, { s_CreatedItem })
 
 	m_Logger:Write(s_Definition.m_Name .. " - Item spawned for player: " .. p_Player.name)
 end
 
 ---@param p_Player Player
 local function OnSpawnAirdropCommand(p_Player)
-    local s_LevelName = LevelNameHelper:GetLevelName()
+	local s_LevelName = LevelNameHelper:GetLevelName()
 
-    if s_LevelName == nil then
-        return
-    end
+	if s_LevelName == nil then
+		return
+	end
 
-    if p_Player == nil then
-        return
-    end
+	if p_Player == nil then
+		return
+	end
 
-    m_BRAirdropManager:CreatePlane(Vec3(
-        p_Player.soldier.worldTransform.trans.x,
-        MapsConfig[s_LevelName]["AirdropPlaneFlyHeight"],
-        p_Player.soldier.worldTransform.trans.z
-    ))
+	m_BRAirdropManager:CreatePlane(Vec3(
+		p_Player.soldier.worldTransform.trans.x,
+		MapsConfig[s_LevelName]["AirdropPlaneFlyHeight"],
+		p_Player.soldier.worldTransform.trans.z
+	))
 end
 
 -- subscribe to commands

@@ -1,11 +1,13 @@
 ---@class BRTeamManagerClient
 BRTeamManagerClient = class 'BRTeamManagerClient'
 
+---@type Logger
+local m_Logger = Logger("BRTeamManagerClient", false)
+
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("BRTeamManagerClient", false)
 
 function BRTeamManagerClient:__init()
 	self:RegisterVars()

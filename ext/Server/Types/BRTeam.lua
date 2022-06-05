@@ -8,6 +8,7 @@ local m_Logger = Logger("BRTeam", false)
 local m_MapHelper = require "__shared/Utils/MapHelper"
 
 ---@param p_Id string
+---@param p_PlayersPerTeam integer
 function BRTeam:__init(p_Id, p_PlayersPerTeam)
 	-- the unique id of the team
 	---@type string

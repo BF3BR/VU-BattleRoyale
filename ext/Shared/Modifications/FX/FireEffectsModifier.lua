@@ -47,7 +47,7 @@ function FireEffectsModifier:DisableLightComponent(p_EffectBlueprint)
 			local s_EmitterEntityData = EmitterEntityData(l_Component)
 
 			if s_EmitterEntityData.emitter.isLazyLoaded then
-				s_EmitterEntityData.emitter:RegisterLoadHandlerOnce({s_EffectEntityData, l_Index}, function(p_Table, p_Instance)
+				s_EmitterEntityData.emitter:RegisterLoadHandlerOnce({ s_EffectEntityData, l_Index }, function(p_Table, p_Instance)
 					local s_EmitterDocument = EmitterDocument(s_EmitterEntityData.emitter)
 
 					if s_EmitterDocument.templateData ~= nil then

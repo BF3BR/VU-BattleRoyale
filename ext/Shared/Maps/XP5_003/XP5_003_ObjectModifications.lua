@@ -103,7 +103,7 @@ function XP5_003_ObjectModifications:OnIndustrialYardWordPartData(p_WorldPartDat
 	s_PredestructionEntityData.transform = s_LinearTransform
 	s_PredestructionEntityData.radius = 1
 	p_WorldPartData.objects:add(s_PredestructionEntityData)
-	
+
 	s_LinearTransform.trans = Vec3(715.993164, 194.293747, -1141.727539)
 	local s_PredestructionEntityData2 = PredestructionEntityData()
 	s_PredestructionEntityData2.transform = s_LinearTransform

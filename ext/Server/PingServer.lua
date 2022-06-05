@@ -91,7 +91,7 @@ function PingServer:OnPlayerPing(p_Player, p_Position, p_PingType)
 
 	if self.m_Debug then
 		m_Logger:Write("Player: " .. p_Player.name .. " pinged " .. p_Position.x .. ", " ..
-					p_Position.y .. ", " .. p_Position.z)
+		p_Position.y .. ", " .. p_Position.z)
 	end
 
 	-- Update the cooldown

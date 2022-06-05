@@ -1,9 +1,11 @@
 ---@class EscMenu
 EscMenu = class 'EscMenu'
 
+---@type Logger
+local m_Logger = Logger("EscMenu", false)
+
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
-local m_Logger = Logger("EscMenu", false)
 
 function EscMenu:__init()
 	self.m_HudOnSetUIState = CachedJsExecutor("OnSetUIState('%s')", UiStates.Loading)
@@ -21,20 +23,20 @@ function EscMenu:OnClientUpdateInput()
 		if InputManager:WentKeyDown(InputDeviceKeys.IDK_Escape) then
 			WebUI:ExecuteJS("OnMenuEsc()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowUp)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_W) then
+			or InputManager:WentKeyDown(InputDeviceKeys.IDK_W) then
 			WebUI:ExecuteJS("OnMenuArrowUp()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowDown)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_S) then
+			or InputManager:WentKeyDown(InputDeviceKeys.IDK_S) then
 			WebUI:ExecuteJS("OnMenuArrowDown()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_D) then
+			or InputManager:WentKeyDown(InputDeviceKeys.IDK_D) then
 			WebUI:ExecuteJS("OnMenuArrowRight()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_A) then
+			or InputManager:WentKeyDown(InputDeviceKeys.IDK_A) then
 			WebUI:ExecuteJS("OnMenuArrowLeft()")
 		elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_Enter)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_NumpadEnter)
-		or InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) then
+			or InputManager:WentKeyDown(InputDeviceKeys.IDK_NumpadEnter)
+			or InputManager:WentKeyDown(InputDeviceKeys.IDK_Space) then
 			WebUI:ExecuteJS("OnMenuEnter()")
 		end
 	elseif m_HudUtils:GetIsInDeployScreen() then
@@ -62,7 +64,7 @@ function EscMenu:OnWebUITriggerMenuFunction(p_Function)
 end
 
 -- =============================================
-	-- Esc Menu Callbacks
+-- Esc Menu Callbacks
 -- =============================================
 
 ---Loop through ClientUIGraphEntities and RegisterEventCallbacks for the one that gets triggered when pressing Escape
@@ -94,9 +96,8 @@ function EscMenu:OnEscapeMenuCallback(p_Entity, p_EntityEvent)
 	end
 end
 
-
 -- =============================================
-	-- Open Escape Menu
+-- Open Escape Menu
 -- =============================================
 
 ---Opens the Escape Menu and does a bunch of entity related stuff
@@ -115,9 +116,8 @@ function EscMenu:OnOpenEscapeMenu()
 	self.m_HudOnSetUIState:Update(UiStates.Menu)
 end
 
-
 -- =============================================
-	-- Close Escape Menu
+-- Close Escape Menu
 -- =============================================
 
 ---Closes the Escape Menu and does a bunch of entity related stuff
@@ -133,7 +133,7 @@ function EscMenu:OnResume()
 end
 
 -- =============================================
-	-- Open Options
+-- Open Options
 -- =============================================
 
 ---Enter the Options Menu from BF
@@ -155,7 +155,7 @@ function EscMenu:OnOptions()
 end
 
 -- =============================================
-	-- Quit the game
+-- Quit the game
 -- =============================================
 
 ---When pressing Quit

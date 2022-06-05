@@ -53,10 +53,9 @@ function PhaseManagerShared:OnLevelLoaded()
 	self:LoadPhases()
 end
 
-function PhaseManagerShared:OnLoadResources()
+function PhaseManagerShared:OnLevelLoadResources()
 	self:LoadPhases()
 end
-
 
 function PhaseManagerShared:OnLevelDestroy()
 	self:Destroy()

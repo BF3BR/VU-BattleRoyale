@@ -39,6 +39,9 @@ function BRLootRandomizer:__init()
 	self.m_AccumulatedWeight = {}
 end
 
+---@param p_Point Vec3|nil
+---@param p_TypeIndex string|nil
+---@param p_Tier Tier|nil
 function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 	if p_Point == nil then
 		return
@@ -69,7 +72,7 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 
 	local s_Point = LinearTransform()
 	s_Point.trans = p_Point
-	
+
 	local s_RandomItemDefinition = nil
 	local s_RandomItemQuantity = 1
 
@@ -101,7 +104,7 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 				s_Point.trans.x + 0.5,
 				s_Point.trans.y,
 				s_Point.trans.z
-			), {s_AddedItem})
+			), { s_AddedItem })
 
 			s_Point.trans = Vec3(
 				s_Point.trans.x - 0.5,
@@ -114,14 +117,14 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 				s_Point.trans.x - 0.35,
 				s_Point.trans.y,
 				s_Point.trans.z + 0.35
-			), {s_AddedItem})
+			), { s_AddedItem })
 
 			local s_AddedSecondItem = m_ItemDatabase:CreateItem(s_AmmoDefinition, s_AmmoDefinition.m_SpawnStack)
 			m_LootPickupDatabase:CreateBasicLootPickup(Vec3(
 				s_Point.trans.x - 0.35,
 				s_Point.trans.y,
 				s_Point.trans.z - 0.35
-			), {s_AddedSecondItem})
+			), { s_AddedSecondItem })
 
 			s_Point.trans = Vec3(
 				s_Point.trans.x + 0.5,
@@ -134,14 +137,14 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 				s_Point.trans.x - 0.35,
 				s_Point.trans.y,
 				s_Point.trans.z + 0.35
-			), {s_AddedItem})
+			), { s_AddedItem })
 
 			local s_AddedSecondItem = m_ItemDatabase:CreateItem(s_AmmoDefinition, s_AmmoDefinition.m_SpawnStack)
 			m_LootPickupDatabase:CreateBasicLootPickup(Vec3(
 				s_Point.trans.x - 0.35,
 				s_Point.trans.y,
 				s_Point.trans.z - 0.35
-			), {s_AddedSecondItem})
+			), { s_AddedSecondItem })
 
 			s_Point.trans = Vec3(
 				s_Point.trans.x + 0.5,
@@ -178,7 +181,7 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 				s_Point.trans.x + 0.5,
 				s_Point.trans.y,
 				s_Point.trans.z
-			), {s_AddedItem})
+			), { s_AddedItem })
 
 			s_Point.trans = Vec3(
 				s_Point.trans.x - 0.5,
@@ -191,14 +194,14 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 				s_Point.trans.x - 0.35,
 				s_Point.trans.y,
 				s_Point.trans.z + 0.35
-			), {s_AddedItem})
+			), { s_AddedItem })
 
 			local s_AddedSecondItem = m_ItemDatabase:CreateItem(s_RandomItemDefinition, s_RandomItemDefinition.m_SpawnStack)
 			m_LootPickupDatabase:CreateBasicLootPickup(Vec3(
 				s_Point.trans.x - 0.35,
 				s_Point.trans.y,
 				s_Point.trans.z - 0.35
-			), {s_AddedSecondItem})
+			), { s_AddedSecondItem })
 
 			s_Point.trans = Vec3(
 				s_Point.trans.x + 0.5,
@@ -214,15 +217,21 @@ function BRLootRandomizer:Spawn(p_Point, p_TypeIndex, p_Tier)
 	end
 
 	local s_Item = m_ItemDatabase:CreateItem(s_RandomItemDefinition, s_RandomItemQuantity)
-	m_LootPickupDatabase:CreateBasicLootPickup(s_Point, {s_Item})
+	m_LootPickupDatabase:CreateBasicLootPickup(s_Point, { s_Item })
 end
 
+---@param p_Name string
+---@param p_LevelOrDefinitions BRItemDefinition|RandomWeightsTable
+---@param p_IsItem boolean|nil
+---@param p_Tier Tier|integer|nil
+---@param p_Attachments any|nil
+---@return table|string|nil
 function BRLootRandomizer:Randomizer(p_Name, p_LevelOrDefinitions, p_IsItem, p_Tier, p_Attachments)
 	local s_WeightTable = {}
 	local s_AccumulatedWeight = 0
 
 	if p_LevelOrDefinitions == nil then
-		return
+		return nil
 	end
 
 	if self.m_WeightTable[p_Name] ~= nil and self.m_AccumulatedWeight[p_Name] ~= nil then

@@ -70,6 +70,7 @@ function PostReloadEvent:OnWeaponFiring(p_WeaponFiring)
 	self.m_ReloadEvents[p_WeaponFiring.instanceId] = nil
 
 	-- Event parameters
+	---@diagnostic disable-next-line: undefined-global
 	local s_Player = PlayerManager:GetPlayerById(s_Data.PlayerId)
 	local s_AmmoAdded = s_Player.soldier.weaponsComponent.currentWeapon.primaryAmmo - s_Data.Ammo
 

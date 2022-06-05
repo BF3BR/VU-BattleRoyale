@@ -1,5 +1,5 @@
 ---@class BRLootPickupDatabaseClient : BRLootPickupDatabaseShared
-BRLootPickupDatabase = class ("BRLootPickupDatabase", BRLootPickupDatabaseShared)
+BRLootPickupDatabase = class("BRLootPickupDatabase", BRLootPickupDatabaseShared)
 
 function BRLootPickupDatabase:ResetVars()
 	BRLootPickupDatabaseShared.ResetVars(self)
@@ -8,6 +8,7 @@ function BRLootPickupDatabase:ResetVars()
 
 	-- close items cache
 	self.m_CachedCloseEntitiesUpdatedAt = 0
+	---@type table<string, BRLootPickup>
 	self.m_CachedCloseEntities = {}
 end
 
@@ -15,6 +16,8 @@ function BRLootPickupDatabase:GetByInstanceId(p_InstanceId)
 	return self.m_InstanceIdToLootPickup[p_InstanceId]
 end
 
+---@param p_LootPickup BRLootPickup
+---@return boolean
 function BRLootPickupDatabase:Add(p_LootPickup)
 	if not BRLootPickupDatabaseShared.Add(self, p_LootPickup) then
 		return false
@@ -48,6 +51,7 @@ function BRLootPickupDatabase:Update(p_LootPickupData)
 	return s_LootPickup
 end
 
+---@param p_LootPickup BRLootPickup
 function BRLootPickupDatabase:Remove(p_LootPickup)
 	if not BRLootPickupDatabaseShared.Remove(self, p_LootPickup) then
 		return false
@@ -64,12 +68,15 @@ function BRLootPickupDatabase:Remove(p_LootPickup)
 end
 
 -- override with a temporary solution for client
+---@param p_Position Vec3|nil
+---@param p_Radius number|nil
+---@return table
 function BRLootPickupDatabase:GetCloseLootPickups(p_Position, p_Radius)
 	if p_Position == nil then
 		return
 	end
 
-	p_Radius = p_Radius or 3
+	p_Radius = p_Radius or 3.0
 	self:UpdateCachedCloseLootPickups(p_Position)
 
 	-- search the LootPickups that are close (<= p_Radius)
@@ -83,6 +90,8 @@ function BRLootPickupDatabase:GetCloseLootPickups(p_Position, p_Radius)
 	return s_CloseLootPickups
 end
 
+---@param p_Position Vec3|nil
+---@param p_CachedRadius|nil
 function BRLootPickupDatabase:UpdateCachedCloseLootPickups(p_Position, p_CachedRadius)
 	if p_Position == nil or SharedUtils:GetTime() - self.m_CachedCloseEntitiesUpdatedAt < InventoryConfig.CloseItemCacheFrequency then
 		return
@@ -104,9 +113,11 @@ function BRLootPickupDatabase:UpdateCachedCloseLootPickups(p_Position, p_CachedR
 	self.m_CachedCloseEntitiesUpdatedAt = SharedUtils:GetTime()
 end
 
+---@param p_LootPickup BRLootPickup|nil
+---@return table<integer, Entity>|nil
 function BRLootPickupDatabase:CreateLootPickupEntities(p_LootPickup)
 	-- try to spawn entities for the LootPickup
-	if p_LootPickup == nil or not p_LootPickup:Spawn(p_LootPickup.m_Id) then
+	if p_LootPickup == nil or not p_LootPickup:Spawn() then
 		return nil
 	end
 
@@ -118,6 +129,7 @@ function BRLootPickupDatabase:CreateLootPickupEntities(p_LootPickup)
 	return p_LootPickup.m_Entities
 end
 
+---@param p_LootPickup BRLootPickup|nil
 function BRLootPickupDatabase:DestroyLootPickupEntities(p_LootPickup)
 	if p_LootPickup == nil or p_LootPickup.m_Entities == nil then
 		return
@@ -135,22 +147,30 @@ end
 -- Events
 -- =============================================
 
+---Custom Client InventoryNetEvent.CreateLootPickup NetEvent
+---@param p_LootPickupData table @BRLootPickup as table
 function BRLootPickupDatabase:OnCreateLootPickup(p_LootPickupData)
 	self:Add(BRLootPickup:CreateFromTable(p_LootPickupData))
 end
 
+---Custom Client InventoryNetEvent.UpdateLootPickup NetEvent
+---@param p_LootPickupData table @BRLootPickup as table
 function BRLootPickupDatabase:OnUpdateLootPickup(p_LootPickupData)
 	self:Update(p_LootPickupData)
 end
 
+---Custom Client InventoryNetEvent.UnregisterLootPickup NetEvent
+---@param p_LootPickupId string @Guid as string
 function BRLootPickupDatabase:OnUnregisterLootPickup(p_LootPickupId)
 	self:RemoveById(p_LootPickupId)
 end
 
+---VEXT Shared Level:Destroy Event
 function BRLootPickupDatabase:OnLevelDestroy()
 	self:Destroy()
 end
 
+---VEXT Shared Extension:Unloading Event
 function BRLootPickupDatabase:OnExtensionUnloading()
 	self:Destroy()
 end

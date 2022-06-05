@@ -56,7 +56,7 @@ function BRItemFactory:FindDefinitionByUId(p_DefinitionUId)
 end
 
 ---@param p_Table table
----@return BRItem|nil @can be all sorts of BRItem
+---@return BRItemHelmet|BRItemAmmo|BRItemArmor|BRItemConsumable|BRItemAttachment|BRItemWeapon|BRItemGadget|BRItem|nil @can be all sorts of BRItem
 function BRItemFactory:CreateFromTable(p_Table)
 	local s_Definition = self.m_Definitions[p_Table.UId]
 

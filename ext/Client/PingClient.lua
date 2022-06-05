@@ -1,21 +1,22 @@
 ---@class PingClient
 PingClient = class "PingClient"
 
+---@type Logger
+local m_Logger = Logger("PingClient", false)
+
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
 ---@type BRPlayer
 local m_BrPlayer = require "BRPlayer"
----@type Logger
-local m_Logger = Logger("PingClient", false)
 
 ---@return ModSetting
 local function GetPingKeySetting()
 	local s_PingKeySetting = SettingsManager:GetSetting("PingKey")
 
 	if s_PingKeySetting == nil then
-		s_PingKeySetting = SettingsManager:DeclareKeybind("PingKey", InputDeviceKeys.IDK_Q, { displayName = "Ping Key", showInUi = true})
+		s_PingKeySetting = SettingsManager:DeclareKeybind("PingKey", InputDeviceKeys.IDK_Q, { displayName = "Ping Key", showInUi = true })
 		s_PingKeySetting.value = InputDeviceKeys.IDK_Q
 
 		m_Logger:Write("GetPingKeySetting created.")
@@ -33,7 +34,7 @@ local function GetEnemyPingOptionSetting()
 		local s_SettingOptions = SettingOptions()
 		s_SettingOptions.displayName = "Ping Enemy"
 		s_SettingOptions.showInUi = true
-		s_EnemyPingOptionSetting = SettingsManager:DeclareOption("PingEnemyOption", "Define MouseButton", { "Define MouseButton", "Define Key", "Press Ping-Key twice"}, false, s_SettingOptions)
+		s_EnemyPingOptionSetting = SettingsManager:DeclareOption("PingEnemyOption", "Define MouseButton", { "Define MouseButton", "Define Key", "Press Ping-Key twice" }, false, s_SettingOptions)
 		s_EnemyPingOptionSetting.value = "Define MouseButton"
 
 		m_Logger:Write("GetEnemyPingOptionSetting created.")
@@ -47,7 +48,7 @@ local function GetEnemyPingKeySetting()
 	local s_EnemyPingKeySetting = SettingsManager:GetSetting("PingEnemyKey")
 
 	if s_EnemyPingKeySetting == nil then
-		s_EnemyPingKeySetting = SettingsManager:DeclareKeybind("PingEnemyKey", InputDeviceKeys.IDK_None, { displayName = "Ping Enemy Key", showInUi = true})
+		s_EnemyPingKeySetting = SettingsManager:DeclareKeybind("PingEnemyKey", InputDeviceKeys.IDK_None, { displayName = "Ping Enemy Key", showInUi = true })
 		s_EnemyPingKeySetting.value = InputDeviceKeys.IDK_None
 
 		m_Logger:Write("GetEnemyPingKeySetting created.")
@@ -61,7 +62,7 @@ local function GetEnemyPingMouseButtonSetting()
 	local s_EnemyPingButtonSetting = SettingsManager:GetSetting("PingEnemyMouseButton")
 
 	if s_EnemyPingButtonSetting == nil then
-		s_EnemyPingButtonSetting = SettingsManager:DeclareNumber("PingEnemyMouseButton", InputDeviceMouseButtons.IDB_Button_2, InputDeviceMouseButtons.IDB_Button_0, InputDeviceMouseButtons.IDB_Button_Undefined, { displayName = "Ping Enemy MouseButton", showInUi = true})
+		s_EnemyPingButtonSetting = SettingsManager:DeclareNumber("PingEnemyMouseButton", InputDeviceMouseButtons.IDB_Button_2, InputDeviceMouseButtons.IDB_Button_0, InputDeviceMouseButtons.IDB_Button_Undefined, { displayName = "Ping Enemy MouseButton", showInUi = true })
 		s_EnemyPingButtonSetting.value = InputDeviceMouseButtons.IDB_Button_2
 
 		m_Logger:Write("GetEnemyPingMouseButtonSetting created.")
@@ -423,18 +424,18 @@ function PingClient:RaycastWorld()
 
 	local s_RayStart = s_Transform.trans + s_Direction
 	local s_RayEnd = Vec3(s_Transform.trans.x + (s_Direction.x * self.m_RaycastLength),
-						s_Transform.trans.y + (s_Direction.y * self.m_RaycastLength),
-						s_Transform.trans.z + (s_Direction.z * self.m_RaycastLength))
+		s_Transform.trans.y + (s_Direction.y * self.m_RaycastLength),
+		s_Transform.trans.z + (s_Direction.z * self.m_RaycastLength))
 
 	local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater |
-													RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
+	RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
 	return s_RaycastHit
 end
 
 ---Raycast when we click on the minimap
 ---@return RayCastHit|nil
 function PingClient:RaycastScreen()
-	local s_Position = Vec3(self.m_Position_X, 2000.0 ,self.m_Position_Z)
+	local s_Position = Vec3(self.m_Position_X, 2000.0, self.m_Position_Z)
 
 	if s_Position == nil then
 		m_Logger:Write("invalid transform")
@@ -445,11 +446,11 @@ function PingClient:RaycastScreen()
 
 	local s_RayStart = s_Position
 	local s_RayEnd = Vec3(s_Position.x + (s_Direction.x * self.m_RaycastLength),
-							s_Position.y + (s_Direction.y * self.m_RaycastLength),
-							s_Position.z + (s_Direction.z * self.m_RaycastLength))
+		s_Position.y + (s_Direction.y * self.m_RaycastLength),
+		s_Position.z + (s_Direction.z * self.m_RaycastLength))
 
 	local s_RaycastHit = RaycastManager:Raycast(s_RayStart, s_RayEnd, RayCastFlags.DontCheckWater |
-													RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
+	RayCastFlags.DontCheckRagdoll | RayCastFlags.CheckDetailMesh)
 
 	self.m_Position_X = 0.0
 	self.m_Position_Z = 0.0
@@ -525,7 +526,6 @@ function PingClient:SetPingPosition(p_IndexInBlueprint, p_Position)
 		s_Entity = s_EntityIterator:Next()
 	end
 end
-
 
 ---@return boolean
 function PingClient:ShouldRemovePing()

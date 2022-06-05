@@ -2,12 +2,13 @@
 ---@field GetPlayerName fun(p_Player : Player|BRPlayer|string)
 BRPlayer = class "BRPlayer"
 
+---@type Logger
+local m_Logger = Logger("BRPlayer", false)
+
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 ---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
----@type Logger
-local m_Logger = Logger("BRPlayer", false)
 
 ---@param p_Player Player
 function BRPlayer:__init(p_Player)
@@ -160,7 +161,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- Player Damage/ Kill Functions
+-- Player Damage/ Kill Functions
 -- =============================================
 
 ---Increments the kill counter of the player
@@ -231,7 +232,7 @@ function BRPlayer:FinishTeammates()
 end
 
 -- =============================================
-	-- Player Spawn Functions
+-- Player Spawn Functions
 -- =============================================
 
 ---@param p_Transform LinearTransform
@@ -307,7 +308,7 @@ function BRPlayer:Spawn(p_Transform)
 end
 
 -- =============================================
-	-- Spectator Functions
+-- Spectator Functions
 -- =============================================
 
 ---@param p_BRPlayer BRPlayer|nil
@@ -327,7 +328,7 @@ function BRPlayer:SpectatePlayer(p_BRPlayer)
 	end
 end
 
----@param p_PlayerName string|nil
+---@param p_PlayerName string
 function BRPlayer:AddSpectator(p_PlayerName)
 	if self.m_SpectatorNames[p_PlayerName] == nil then
 		table.insert(self.m_SpectatorNames, p_PlayerName)
@@ -348,7 +349,7 @@ function BRPlayer:RemoveSpectator(p_PlayerName)
 end
 
 -- =============================================
-	-- Other Functions
+-- Other Functions
 -- =============================================
 
 ---Updates the vanilla player team/squad Ids
@@ -368,7 +369,7 @@ function BRPlayer:SendEventToSpectators(p_EventName, ...)
 
 		if s_Spectator ~= nil then
 			m_Logger:WriteF("Send '%s' to spectator '%s'", p_EventName, s_Spectator.name)
-			NetEvents:SendToLocal(p_EventName, s_Spectator, table.unpack({...}))
+			NetEvents:SendToLocal(p_EventName, s_Spectator, table.unpack({ ... }))
 		else
 			table.remove(self.m_SpectatorNames, i)
 			NetEvents:SendToLocal("UpdateSpectatorCount", self.m_Player, #self.m_SpectatorNames)
@@ -376,6 +377,8 @@ function BRPlayer:SendEventToSpectators(p_EventName, ...)
 	end
 end
 
+---@param p_Simple boolean|nil
+---@param p_TeamData BRTeamTable|nil
 function BRPlayer:SendState(p_Simple, p_TeamData)
 	local s_Data = self:AsTable(p_Simple, p_TeamData)
 	NetEvents:SendToLocal(TeamManagerNetEvent.PlayerState, self.m_Player, s_Data)
@@ -454,12 +457,12 @@ function BRPlayer:SetAppearance(p_AppearanceName, p_RefreshPlayer)
 			return
 		end
 
-		self.m_Player:SelectUnlockAssets(s_SoldierAsset, {s_Appearance})
+		self.m_Player:SelectUnlockAssets(s_SoldierAsset, { s_Appearance })
 	end
 end
 
 -- =============================================
-	-- Get Functions
+-- Get Functions
 -- =============================================
 
 ---Returns the username of the player
@@ -613,7 +616,7 @@ end
 ---@return string
 function BRPlayer.static:GetPlayerName(p_Player)
 	return (type(p_Player) == "string" and p_Player) or (type(p_Player) == "userdata" and p_Player.name) or
-				(type(p_Player) == "table" and p_Player:GetName()) or nil
+		(type(p_Player) == "table" and p_Player:GetName()) or nil
 end
 
 -- Garbage collector metamethod

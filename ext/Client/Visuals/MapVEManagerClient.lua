@@ -1,17 +1,35 @@
----@class MapVEManager
-MapVEManager = class "MapVEManager"
+---@class MapVEManagerClient
+MapVEManagerClient = class "MapVEManagerClient"
 
-local m_Logger = Logger("MapVEManager", false)
+---@type Logger
+local m_Logger = Logger("MapVEManagerClient", false)
 
-function MapVEManager:__init()
+function MapVEManagerClient:__init()
 	self:RegisterVars()
 end
 
-function MapVEManager:RegisterVars()
+function MapVEManagerClient:RegisterVars()
 	self:ResetVars()
 end
 
-function MapVEManager:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
+function MapVEManagerClient:ResetVars()
+	self.m_CurrentMapPresetNames = nil
+	self.m_CurrentMapPresetIndex = 1
+
+	if self.m_RegisteredPresets ~= nil then
+		for _, l_VEPresetName in pairs(self.m_RegisteredPresets) do
+			self:UnregisterPreset(l_VEPresetName)
+		end
+	end
+
+	--TODO: is this used?
+	self.m_RegisteredPresets = nil
+end
+
+---@param p_VEIndex integer
+---@param p_OldFadeTime integer|nil
+---@param p_NewFadeTime integer|nil
+function MapVEManagerClient:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
 	-- If map presets have been loaded already we apply the current preset, otherwise it
 	-- will be applied when VEManager registers them.
 	if self.m_CurrentMapPresetNames then
@@ -25,24 +43,13 @@ function MapVEManager:SetMapVEPreset(p_VEIndex, p_OldFadeTime, p_NewFadeTime)
 	self.m_CurrentMapPresetIndex = p_VEIndex
 end
 
-function MapVEManager:OnLevelDestroy()
+---VEXT Shared Level:Destroy Event
+function MapVEManagerClient:OnLevelDestroy()
 	self:ResetVars()
 end
 
-function MapVEManager:ResetVars()
-	self.m_CurrentMapPresetNames = nil
-	self.m_CurrentMapPresetIndex = 1
-
-	if self.m_RegisteredPresets ~= nil then
-		for _, l_VEPresetName in pairs(self.m_RegisteredPresets) do
-			self:UnregisterPreset(l_VEPresetName)
-		end
-	end
-
-	self.m_RegisteredPresets = nil
-end
-
-function MapVEManager:OnPresetsLoaded()
+---Custom Client VEManager:PresetsLoaded Event
+function MapVEManagerClient:OnPresetsLoaded()
 	if self.m_CurrentMapPresetNames then
 		if self.m_CurrentMapPresetNames[self.m_CurrentMapPresetIndex] then
 			self:EnablePreset(self.m_CurrentMapPresetNames[self.m_CurrentMapPresetIndex])
@@ -54,7 +61,11 @@ function MapVEManager:OnPresetsLoaded()
 	end
 end
 
-function MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+---VEXT Shared Level:LoadResources Event
+---@param p_LevelName string
+---@param p_GameModeName string
+---@param p_IsDedicatedServer boolean
+function MapVEManagerClient:OnLevelLoadResources(p_LevelName, p_GameModeName, p_IsDedicatedServer)
 	local m_Map = MapsConfig[LevelNameHelper:GetLevelName()]
 
 	if m_Map then
@@ -63,47 +74,62 @@ function MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServ
 			local s_PresetPath = self:GetPresetPath(s_PresetName)
 			local s_JSONPreset = require(s_PresetPath)
 
-			m_Logger:Write("Registering preset with name: ".. s_PresetName .. " - Path: " .. s_PresetPath)
+			m_Logger:Write("Registering preset with name: " .. s_PresetName .. " - Path: " .. s_PresetPath)
 			self:RegisterPreset(s_PresetName, s_JSONPreset)
 		end
 	end
 end
 
-function MapVEManager:GetPresetPath(p_PresetName)
+---@param p_PresetName string
+---@return string
+function MapVEManagerClient:GetPresetPath(p_PresetName)
 	return string.format("Visuals/Presets/Maps/%s/%s.lua", LevelNameHelper:GetLevelName(), p_PresetName)
 end
 
-function MapVEManager:RegisterPreset(p_PresetName, p_Preset)
+---@param p_PresetName string
+---@param p_JSONPreset string
+function MapVEManagerClient:RegisterPreset(p_PresetName, p_JSONPreset)
 	m_Logger:Write(string.format("Dispatching event to register preset \"%s\"", p_PresetName))
-	Events:Dispatch("VEManager:RegisterPreset", p_PresetName, p_Preset)
+	Events:Dispatch("VEManager:RegisterPreset", p_PresetName, p_JSONPreset)
 end
 
-function MapVEManager:UnregisterPreset(p_PresetName)
+---@param p_PresetName string
+function MapVEManagerClient:UnregisterPreset(p_PresetName)
 	m_Logger:Write(string.format("Dispatching event to unregister preset \"%s\"", p_PresetName))
 	Events:Dispatch("VEManager:UnregisterPreset", p_PresetName) -- this doesnt actually exist yet on the VEManager
 end
 
-function MapVEManager:FadeInPreset(p_PresetName, p_Time)
+---@param p_PresetName string
+---@param p_Time number
+function MapVEManagerClient:FadeInPreset(p_PresetName, p_Time)
 	m_Logger:Write(string.format("Dispatching event to fade in preset \"%s\"", p_PresetName))
 	Events:Dispatch("VEManager:FadeIn", p_PresetName, p_Time)
 end
 
-function MapVEManager:FadeOutPreset(p_PresetName, p_Time)
+---@param p_PresetName string
+---@param p_Time number
+function MapVEManagerClient:FadeOutPreset(p_PresetName, p_Time)
 	m_Logger:Write(string.format("Dispatching event to fade out preset \"%s\"", p_PresetName))
 	Events:Dispatch("VEManager:FadeOut", p_PresetName, p_Time)
 end
 
-function MapVEManager:EnablePreset(p_PresetName)
+---@param p_PresetName string
+function MapVEManagerClient:EnablePreset(p_PresetName)
 	m_Logger:Write(string.format("Dispatching event to enable preset \"%s\"", p_PresetName))
 	Events:Dispatch("VEManager:EnablePreset", p_PresetName)
 end
 
-function MapVEManager:DisablePreset(p_PresetName)
+---@param p_PresetName string
+function MapVEManagerClient:DisablePreset(p_PresetName)
 	m_Logger:Write(string.format("Dispatching event to disable preset \"%s\"", p_PresetName))
 	Events:Dispatch("VEManager:DisablePreset", p_PresetName)
 end
 
-function MapVEManager:SwitchPreset(p_NewPresetIndex, p_OldFadeTime, p_NewFadeTime) -- this can be invoked by the server later on (admin command - not implemented)
+-- this can be invoked by the server later on (admin command - not implemented)
+---@param p_NewPresetIndex integer
+---@param p_OldFadeTime integer|nil
+---@param p_NewFadeTime integer|nil
+function MapVEManagerClient:SwitchPreset(p_NewPresetIndex, p_OldFadeTime, p_NewFadeTime)
 	if not self.m_CurrentMapPresetNames then
 		m_Logger:Error("Cannot switch preset, as there were no visual environments defined.")
 		return
@@ -136,4 +162,4 @@ function MapVEManager:SwitchPreset(p_NewPresetIndex, p_OldFadeTime, p_NewFadeTim
 	end
 end
 
-return MapVEManager()
+return MapVEManagerClient()

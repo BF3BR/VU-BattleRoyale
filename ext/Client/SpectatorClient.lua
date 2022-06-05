@@ -1,13 +1,15 @@
 ---@class SpectatorClient : TimersMixin
 SpectatorClient = class("SpectatorClient", TimersMixin)
 
+---@type Logger
+local m_Logger = Logger("SpectatorClient", false)
+
 ---@type MathHelper
 local m_MathHelper = require "__shared/Utils/MathHelper"
 ---@type HudUtils
 local m_HudUtils = require "UI/Utils/HudUtils"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
-local m_Logger = Logger("SpectatorClient", false)
 
 function SpectatorClient:__init()
 	-- call TimersMixin's constructor
@@ -27,7 +29,7 @@ function SpectatorClient:RegisterVars()
 	self.m_LastPitch = 0.0
 	self.m_LastYaw = 0.0
 
-	---@type GameStates|nil
+	---@type GameStates|integer|nil
 	self.m_GameState = nil
 	self.m_IsSpectatingGunship = false
 
@@ -150,11 +152,11 @@ function SpectatorClient:OnClientUpdateInput()
 	end
 
 	if InputManager:WentKeyDown(InputDeviceKeys.IDK_Space)
-	or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight)
-	or InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_0) then
+		or InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowRight)
+		or InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_0) then
 		self:SpectateNextPlayer()
 	elseif InputManager:WentKeyDown(InputDeviceKeys.IDK_ArrowLeft)
-	or InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_1) then
+		or InputManager:WentMouseButtonDown(InputDeviceMouseButtons.IDB_Button_1) then
 		self:SpectatePreviousPlayer()
 	end
 
@@ -241,7 +243,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			end
 		end)
 		return
-	-- Handle death of player being spectated.
+		-- Handle death of player being spectated.
 	elseif SpectatorManager:GetSpectating() then
 		local s_SpectatedPlayer = SpectatorManager:GetSpectatedPlayer()
 
@@ -263,7 +265,7 @@ function SpectatorClient:OnPlayerKilled(p_PlayerId, p_InflictorId)
 			if s_NextPlayer ~= nil and s_NextPlayer.id ~= p_PlayerId then
 				self:SpectatePlayer(s_NextPlayer)
 				return
-			-- otherwise spectate the inflictor if there is one
+				-- otherwise spectate the inflictor if there is one
 			elseif p_InflictorId ~= nil then
 				local s_Inflictor = PlayerManager:GetPlayerById(p_InflictorId)
 
@@ -319,7 +321,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- (Re-)Enable / Disable Camera
+-- (Re-)Enable / Disable Camera
 -- =============================================
 
 ---Enable the Spectator
@@ -419,7 +421,7 @@ function SpectatorClient:Disable()
 end
 
 -- =============================================
-	-- Set Freecamera transform
+-- Set Freecamera transform
 -- =============================================
 
 ---Update the camera transform
@@ -442,7 +444,7 @@ function SpectatorClient:OnSetFreecameraTransform(p_Timer)
 end
 
 -- =============================================
-	-- Spectate Player
+-- Spectate Player
 -- =============================================
 
 ---Spectate this player
@@ -554,7 +556,7 @@ function SpectatorClient:FindFirstPlayerToSpectate(p_OnlySquadMates, p_Inflictor
 end
 
 -- =============================================
-	-- Spectate Gunship
+-- Spectate Gunship
 -- =============================================
 
 ---If nobody spawned spectate the gunship
@@ -583,7 +585,7 @@ function SpectatorClient:SpectateGunship(p_Enable)
 end
 
 -- =============================================
-	-- Spectate Next Player
+-- Spectate Next Player
 -- =============================================
 
 ---Spectate the next available Player if possible
@@ -696,7 +698,7 @@ function SpectatorClient:GetNextPlayer(p_OnlySquadMates)
 end
 
 -- =============================================
-	-- Spectate Previous Player
+-- Spectate Previous Player
 -- =============================================
 
 ---Spectate the previous available Player if possible
@@ -809,7 +811,7 @@ function SpectatorClient:GetPreviousPlayer(p_OnlySquadMates)
 end
 
 -- =============================================
-	-- Freecam
+-- Freecam
 -- =============================================
 
 ---No players found, no gunship found, now enable freecam

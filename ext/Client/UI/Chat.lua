@@ -63,7 +63,7 @@ function Chat:OnChatMessageSquadReceive(p_PlayerName, p_Message)
 		s_PlayerRelation = "localPlayer"
 	end
 
-	local s_Table = {author = p_PlayerName, content = p_Message, target = "squad", playerRelation = s_PlayerRelation}
+	local s_Table = { author = p_PlayerName, content = p_Message, target = "squad", playerRelation = s_PlayerRelation }
 	WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
 end
 
@@ -84,7 +84,7 @@ function Chat:OnChatMessageAllReceive(p_PlayerName, p_Message)
 	end
 
 	local s_PlayerRelation = self:GetPlayerRelation(s_OtherPlayer, s_LocalPlayer)
-	local s_Table = {author = s_OtherPlayer.name, content = p_Message, target = "all", playerRelation = s_PlayerRelation}
+	local s_Table = { author = s_OtherPlayer.name, content = p_Message, target = "all", playerRelation = s_PlayerRelation }
 	WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
 end
 
@@ -102,7 +102,7 @@ function Chat:OnInputConceptEvent(p_HookCtx, p_EventType, p_Action)
 	end
 
 	if p_Action == UIInputAction.UIInputAction_SayAllChat or p_Action == UIInputAction.UIInputAction_TeamChat
-	or p_Action == UIInputAction.UIInputAction_SquadChat then
+		or p_Action == UIInputAction.UIInputAction_SquadChat then
 		if m_HudUtils:GetIsInOptionsMenu() then
 			p_HookCtx:Pass(UIInputAction.UIInputAction_None, p_EventType)
 			return
@@ -151,7 +151,7 @@ function Chat:OnUICreateChatMessage(p_HookCtx, p_Message, p_Channel, p_PlayerId,
 		-- "Admin: " to admin messages.
 		local s_String = p_Message:gsub("^Admin: ", '')
 
-		local s_Table = {author = "Admin", content = s_String, target = "admin", playerRelation = "none"}
+		local s_Table = { author = "Admin", content = s_String, target = "admin", playerRelation = "none" }
 		WebUI:ExecuteJS(string.format("OnMessage(%s)", json.encode(s_Table)))
 	end
 
@@ -179,8 +179,8 @@ function Chat:OnWebUIOutgoingChatMessage(p_JsonData)
 	end
 
 	-- Trim the message.
-	local s_From = s_Message:match"^%s*()"
- 	s_Message = s_From > #s_Message and "" or s_Message:match(".*%S", s_From)
+	local s_From = s_Message:match("^%s*()")
+	s_Message = s_From > #s_Message and "" or s_Message:match(".*%S", s_From)
 
 	-- Ignore if the message is empty.
 	if s_Message:len() == 0 then

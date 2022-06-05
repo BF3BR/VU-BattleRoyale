@@ -66,13 +66,13 @@ end
 
 local function outInQuad(t, b, c, d)
 	if t < d / 2 then
-		return outQuad (t * 2, b, c / 2, d)
+		return outQuad(t * 2, b, c / 2, d)
 	else
 		return inQuad((t * 2) - d, b + c / 2, c / 2, d)
 	end
 end
 
-local function inCubic (t, b, c, d)
+local function inCubic(t, b, c, d)
 	t = t / d
 	return c * _pow(t, 3) + b
 end
@@ -172,7 +172,7 @@ local function outInSine(t, b, c, d)
 	if t < d / 2 then
 		return outSine(t * 2, b, c / 2, d)
 	else
-		return inSine((t * 2) -d, b + c / 2, c / 2, d)
+		return inSine((t * 2) - d, b + c / 2, c / 2, d)
 	end
 end
 
@@ -214,12 +214,12 @@ end
 
 local function inCirc(t, b, c, d)
 	t = t / d
-	return(-c * (sqrt(1 - _pow(t, 2)) - 1) + b)
+	return (-c * (sqrt(1 - _pow(t, 2)) - 1) + b)
 end
 
 local function outCirc(t, b, c, d)
 	t = t / d - 1
-	return(c * sqrt(1 - _pow(t, 2)) + b)
+	return (c * sqrt(1 - _pow(t, 2)) + b)
 end
 
 local function inOutCirc(t, b, c, d)
@@ -255,7 +255,7 @@ local function inElastic(t, b, c, d, a, p)
 		a = c
 		s = p / 4
 	else
-		s = p / (2 * pi) * asin(c/a)
+		s = p / (2 * pi) * asin(c / a)
 	end
 
 	t = t - 1
@@ -280,7 +280,7 @@ local function outElastic(t, b, c, d, a, p)
 		a = c
 		s = p / 4
 	else
-		s = p / (2 * pi) * asin(c/a)
+		s = p / (2 * pi) * asin(c / a)
 	end
 
 	return a * _pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p) + c + b
@@ -312,7 +312,7 @@ local function inOutElastic(t, b, c, d, a, p)
 		return -0.5 * (a * _pow(2, 10 * t) * sin((t * d - s) * (2 * pi) / p)) + b
 	else
 		t = t - 1
-		return a * _pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p ) * 0.5 + c + b
+		return a * _pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p) * 0.5 + c + b
 	end
 end
 
@@ -401,7 +401,7 @@ local easing = {
 	outQuad = outQuad,
 	inOutQuad = inOutQuad,
 	outInQuad = outInQuad,
-	inCubic = inCubic ,
+	inCubic = inCubic,
 	outCubic = outCubic,
 	inOutCubic = inOutCubic,
 	outInCubic = outInCubic,

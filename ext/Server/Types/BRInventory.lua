@@ -1,5 +1,14 @@
+---@class BRInventory : TimersMixin
+BRInventory = class("BRInventory", TimersMixin)
+
+---@type Logger
+local m_Logger = Logger("BRInventory", false)
+
+---@type BRItemDatabase
 local m_ItemDatabase = require "Types/BRItemDatabase"
+---@type BRInventoryManager
 local m_InventoryManager = require "BRInventoryManager"
+---@type BRLootPickupDatabase
 local m_LootPickupDatabase = require "Types/BRLootPickupDatabase"
 
 ---@type ArrayHelper
@@ -7,11 +16,6 @@ local m_ArrayHelper = require "__shared/Utils/ArrayHelper"
 ---@type TimerManager
 local m_TimerManager = require "__shared/Utils/Timers"
 
----@class BRInventory : TimersMixin
-BRInventory = class ("BRInventory", TimersMixin)
-
----@type Logger
-local m_Logger = Logger("BRInventory", false)
 
 ---@param p_Owner BRPlayer
 function BRInventory:__init(p_Owner)
@@ -144,9 +148,9 @@ end
 -- will have a link to it's owner. Then we will only need to check if it's owner is
 -- a LootPickup or not
 
----@param p_ItemId any
----@param p_SlotIndex any
----@param p_CreateLootPickup any
+---@param p_ItemId string @it is a tostring(Guid)
+---@param p_SlotIndex InventorySlot|integer
+---@param p_CreateLootPickup boolean
 ---@return boolean
 function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 	-- Check if item exists
@@ -173,15 +177,15 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 
 	-- replace helmet or armor if the item you try to pickup has higher tier
 	if s_Slot == nil and (s_Item:IsOfType(ItemType.Armor) or s_Item:IsOfType(ItemType.Helmet)) then
-        local s_ItemSlotIndex = (s_Item:IsOfType(ItemType.Armor) and InventorySlot.Armor) or InventorySlot.Helmet
+		local s_ItemSlotIndex = (s_Item:IsOfType(ItemType.Armor) and InventorySlot.Armor) or InventorySlot.Helmet
 		---@type BRInventoryArmorSlot|BRInventoryHelmetSlot
-        local s_ItemSlot = self:GetSlot(s_ItemSlotIndex)
+		local s_ItemSlot = self:GetSlot(s_ItemSlotIndex)
 
-        -- compare tier levels
-        if s_ItemSlot.m_Item ~= nil and s_ItemSlot.m_Item.m_Definition.m_Tier < s_Item.m_Definition.m_Tier then
-            s_Slot = s_ItemSlot
-        end
-    end
+		-- compare tier levels
+		if s_ItemSlot.m_Item ~= nil and s_ItemSlot.m_Item.m_Definition.m_Tier < s_Item.m_Definition.m_Tier then
+			s_Slot = s_ItemSlot
+		end
+	end
 
 	-- if none of the above cases worked, pick first free slot that can accept the item
 	if s_Slot == nil then
@@ -193,7 +197,7 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 		m_Logger:Write("No available slot in the inventory.")
 
 		if p_CreateLootPickup and s_Soldier ~= nil then
-			m_LootPickupDatabase:CreateBasicLootPickup(s_Soldier.worldTransform, {s_Item})
+			m_LootPickupDatabase:CreateBasicLootPickup(s_Soldier.worldTransform, { s_Item })
 		end
 
 		return false
@@ -206,7 +210,7 @@ function BRInventory:AddItem(p_ItemId, p_SlotIndex, p_CreateLootPickup)
 		local s_SimilarItems = self:GetItemsByDefinition(s_Item.m_Definition)
 
 		-- Sort by quantity from low to high
-		table.sort(s_SimilarItems, function (p_ItemA, p_ItemB)
+		table.sort(s_SimilarItems, function(p_ItemA, p_ItemB)
 			return p_ItemA.m_Quantity < p_ItemB.m_Quantity
 		end)
 
@@ -390,7 +394,7 @@ end
 ---@param p_WeaponName string @It is the ebx partition name
 ----@return BRInventorySlot|nil
 function BRInventory:GetWeaponItemByName(p_WeaponName)
-	for _, l_SlotIndex in pairs({InventorySlot.PrimaryWeapon, InventorySlot.SecondaryWeapon, InventorySlot.Gadget}) do
+	for _, l_SlotIndex in pairs({ InventorySlot.PrimaryWeapon, InventorySlot.SecondaryWeapon, InventorySlot.Gadget }) do
 		local s_Slot = self.m_Slots[l_SlotIndex]
 
 		if s_Slot:HasWeapon(p_WeaponName) then
@@ -577,7 +581,7 @@ function BRInventory:RemoveAmmo(p_WeaponName, p_Quantity)
 	local s_AmmoItems = self:GetItemsByDefinition(s_AmmoDefinition)
 
 	-- Sort by quantity from low to high
-	table.sort(s_AmmoItems, function (p_AmmoItemA, p_AmmoItemB)
+	table.sort(s_AmmoItems, function(p_AmmoItemA, p_AmmoItemB)
 		return p_AmmoItemA.m_Quantity < p_AmmoItemB.m_Quantity
 	end)
 
@@ -660,7 +664,7 @@ function BRInventory:CreateCustomizeSoldierData()
 	s_CustomizeSoldierData.overrideCriticalHealthThreshold = -1.0
 
 	-- Update weapon and gadget slots
-	local s_SlotIndexes = {InventorySlot.PrimaryWeapon, InventorySlot.SecondaryWeapon, InventorySlot.Gadget}
+	local s_SlotIndexes = { InventorySlot.PrimaryWeapon, InventorySlot.SecondaryWeapon, InventorySlot.Gadget }
 
 	for _, l_SlotIndex in pairs(s_SlotIndexes) do
 		local s_UnlockWeaponAndSlot = self.m_Slots[l_SlotIndex]:GetUnlockWeaponAndSlot()
@@ -672,7 +676,7 @@ function BRInventory:CreateCustomizeSoldierData()
 
 	local s_UnlockWeaponAndSlot = UnlockWeaponAndSlot()
 	s_UnlockWeaponAndSlot.weapon = SoldierWeaponUnlockAsset(
-		ResourceManager:FindInstanceByGuid(Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"),Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73"))
+		ResourceManager:FindInstanceByGuid(Guid("0003DE1B-F3BA-11DF-9818-9F37AB836AC2"), Guid("8963F500-E71D-41FC-4B24-AE17D18D8C73"))
 	)
 	s_UnlockWeaponAndSlot.slot = WeaponSlot.WeaponSlot_7
 	s_CustomizeSoldierData.weapons:add(s_UnlockWeaponAndSlot)

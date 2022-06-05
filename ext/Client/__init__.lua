@@ -1,6 +1,9 @@
 ---@class VuBattleRoyaleClient
 VuBattleRoyaleClient = class("VuBattleRoyaleClient")
 
+---@type Logger
+local m_Logger = Logger("VuBattleRoyaleClient", false)
+
 require "ClientCommands"
 
 require "__shared/Configs/SettingsConfig"
@@ -45,8 +48,8 @@ local m_CircleEffects = require "Visuals/CircleEffects"
 local m_OOCVision = require "Visuals/OOCVision"
 ---@type WindowsCircleSpawner
 local m_WindowsCircleSpawner = require "Visuals/WindowsCircleSpawner"
----@type MapVEManager
-local m_MapVEManager = require "Visuals/MapVEManager"
+---@type MapVEManagerClient
+local m_MapVEManager = require "Visuals/MapVEManagerClient"
 ---@type BRLootPickupDatabaseClient
 local m_BRLootPickupDatabase = require "Types/BRLootPickupDatabase"
 ---@type CommonSpatialRaycast
@@ -56,15 +59,13 @@ local m_BRLooting = require "Types/BRLooting"
 ---@type VoipManager
 local m_VoipManager = require "VoipManager"
 
-local m_Logger = Logger("VuBattleRoyaleClient", false)
-
 function VuBattleRoyaleClient:__init()
 	Events:Subscribe("Extension:Loaded", self, self.OnExtensionLoaded)
 end
 
 ---VEXT Shared Extension:Loaded Event
 function VuBattleRoyaleClient:OnExtensionLoaded()
-	Events:Subscribe("Level:LoadResources", self, self.OnLoadResources)
+	Events:Subscribe("Level:LoadResources", self, self.OnLevelLoadResources)
 	---@type boolean
 	self.m_IsHotReload = self:GetIsHotReload()
 	self:RegisterVars()
@@ -183,7 +184,7 @@ function VuBattleRoyaleClient:RegisterHooks()
 	self.m_Hooks = {
 		Hooks:Install("UI:InputConceptEvent", 999, self, self.OnInputConceptEvent),
 		Hooks:Install("UI:PushScreen", 999, self, self.OnUIPushScreen),
-		Hooks:Install("UI:CreateChatMessage",999, self, self.OnUICreateChatMessage),
+		Hooks:Install("UI:CreateChatMessage", 999, self, self.OnUICreateChatMessage),
 		Hooks:Install("UI:CreateKillMessage", 999, self, self.OnUICreateKillMessage),
 		Hooks:Install("Input:PreUpdate", 999, self, self.OnInputPreUpdate),
 		Hooks:Install("UI:DrawEnemyNametag", 1, self, self.OnUIDrawEnemyNametag),
@@ -223,7 +224,7 @@ function VuBattleRoyaleClient:OnExtensionUnloading()
 end
 
 -- =============================================
-	-- Level Events
+-- Level Events
 -- =============================================
 
 ---VEXT Client Level:Loaded Event
@@ -255,10 +256,10 @@ function VuBattleRoyaleClient:OnLevelDestroy()
 end
 
 ---VEXT Shared Level:LoadResources Event
----@param p_MapName string
+---@param p_LevelName string
 ---@param p_GameModeName string
----@param p_DedicatedServer boolean
-function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
+---@param p_IsDedicatedServer boolean
+function VuBattleRoyaleClient:OnLevelLoadResources(p_LevelName, p_GameModeName, p_IsDedicatedServer)
 	if MapsConfig[LevelNameHelper:GetLevelName()] == nil then
 		for _, l_Event in pairs(self.m_Events) do
 			l_Event:Unsubscribe()
@@ -292,13 +293,13 @@ function VuBattleRoyaleClient:OnLoadResources(p_MapName, p_GameModeName, p_Dedic
 		m_Hud:OnLevelDestroy()
 	end
 
-	m_OOCVision:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_MapVEManager:OnLoadResources(p_MapName, p_GameModeName, p_DedicatedServer)
-	m_PhaseManagerClient:OnLoadResources()
+	m_OOCVision:OnLevelLoadResources(p_LevelName, p_GameModeName, p_IsDedicatedServer)
+	m_MapVEManager:OnLevelLoadResources(p_LevelName, p_GameModeName, p_IsDedicatedServer)
+	m_PhaseManagerClient:OnLevelLoadResources()
 end
 
 -- =============================================
-	-- Update Events
+-- Update Events
 -- =============================================
 
 ---VEXT Shared Engine:Update Event
@@ -341,7 +342,7 @@ function VuBattleRoyaleClient:OnClientUpdateInput(p_DeltaTime)
 end
 
 -- =============================================
-	-- Player Events
+-- Player Events
 -- =============================================
 
 ---VEXT Client Player:Connected Event
@@ -412,7 +413,7 @@ function VuBattleRoyaleClient:OnSoldierSpawn(p_Soldier)
 end
 
 -- =============================================
-	-- GunSway Event
+-- GunSway Event
 -- =============================================
 
 ---VEXT Shared GunSway:Update Event
@@ -425,7 +426,7 @@ function VuBattleRoyaleClient:OnGunSwayUpdate(p_GunSway, p_Weapon, p_WeaponFirin
 end
 
 -- =============================================
-	-- Voip Events
+-- Voip Events
 -- =============================================
 
 ---VEXT Client VoipChannel:PlayerJoined Event
@@ -455,7 +456,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- Player Damage Events
+-- Player Damage Events
 -- =============================================
 
 ---Custom Client ServerPlayer:Killed NetEvent
@@ -533,7 +534,7 @@ function VuBattleRoyaleClient:OnPingUpdateConfig(p_CooldownTime)
 end
 
 -- =============================================
-	-- Gunship Events
+-- Gunship Events
 -- =============================================
 
 -- TODO: switch to enum
@@ -564,7 +565,7 @@ function VuBattleRoyaleClient:OnForceJumpOufOfGunship()
 end
 
 -- =============================================
-	-- PhaseManager Events
+-- PhaseManager Events
 -- =============================================
 
 ---Custom Client PhaseManagerEvent.Update Event
@@ -588,7 +589,7 @@ function VuBattleRoyaleClient:OnPhaseManagerUpdateState(p_State)
 end
 
 -- =============================================
-	-- ManDownLoot Events
+-- ManDownLoot Events
 -- =============================================
 
 ---Custom Client SpectatedPlayerTeamMembers NetEvent
@@ -598,7 +599,7 @@ function VuBattleRoyaleClient:OnSpectatedPlayerTeamMembers(p_PlayerNames)
 end
 
 -- =============================================
-	-- Inventory Events
+-- Inventory Events
 -- =============================================
 
 ---Custom Client InventoryNetEvent.InventoryState NetEvent
@@ -632,7 +633,7 @@ function VuBattleRoyaleClient:OnItemActionCanceled()
 end
 
 -- =============================================
-	-- Some more Events
+-- Some more Events
 -- =============================================
 
 ---Custom Client PlayerEvents.GameStateChanged NetEvent
@@ -850,7 +851,7 @@ function VuBattleRoyaleClient:OnWebUIVoipMutePlayer(p_Params)
 end
 
 -- =============================================
-	-- WebUI Inventory Events
+-- WebUI Inventory Events
 -- =============================================
 
 ---Custom Client WebUI:MoveItem WebUI Event

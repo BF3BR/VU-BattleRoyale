@@ -1,9 +1,11 @@
 ---@class GunshipCamera
 GunshipCamera = class "GunshipCamera"
 
+---@type Logger
+local m_Logger = Logger("GunshipCamera", false)
+
 ---@type VuBattleRoyaleHud
 local m_Hud = require "UI/Hud"
-local m_Logger = Logger("GunshipCamera", false)
 
 function GunshipCamera:__init()
 	self.m_Distance = 50.0
@@ -136,7 +138,7 @@ end
 -- =============================================
 
 -- =============================================
-	-- Create / Destroy Camera
+-- Create / Destroy Camera
 -- =============================================
 
 ---Creates the CameraEntityData
@@ -186,7 +188,7 @@ function GunshipCamera:DestroyCamera()
 end
 
 -- =============================================
-	-- Take- / ReleaseControl Camera
+-- Take- / ReleaseControl Camera
 -- =============================================
 
 ---Fires event "TakeControl" at the entity
@@ -207,7 +209,7 @@ function GunshipCamera:ReleaseControl()
 end
 
 -- =============================================
-	-- Enable / Disable Camera
+-- Enable / Disable Camera
 -- =============================================
 
 ---Enables the Camera (Create & TakeControl)
